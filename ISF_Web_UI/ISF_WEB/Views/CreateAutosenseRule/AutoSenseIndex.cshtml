@@ -1,0 +1,176 @@
+﻿@{
+    Layout = "";
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf8" />
+
+    <title>AutoSense Rule</title>
+    <script src="~/Scripts/Rappid/node_modules/jquery/dist/jquery.js"></script>
+    <script src="~/Scripts/Rappid/node_modules/lodash/index.js"></script>
+    <script src="~/Scripts/Rappid/node_modules/backbone/backbone.js"></script>
+    <script src="~/Scripts/CreateAutosenseRule/rappid.min.js"></script>
+    <script src="~/Scripts/CreateAutosenseRule/createHTMLMarkups.js"></script>
+    <script src="~/Scripts/CreateAutosenseRule/joint.shapes.html.js"></script>
+    <script src="~/Scripts/CreateAutosenseRule/validation_rule.js"></script>
+    @*@Scripts.Render("~/bundles/autosenseApp")*@
+    @Scripts.Render("~/bundles/global")
+    @Scripts.Render("~/bundles/GetSessionVars")
+    @Scripts.Render("~/bundles/config")
+    @Scripts.Render("~/bundles/jqueryui")
+    @Scripts.Render("~/bundles/bootstrap")
+    @Styles.Render("~/bundles/css/autosenseApp")
+    @Styles.Render("~/bundles/css/bootstrap")
+    @Scripts.Render("~/bundles/select2")
+    @Styles.Render("~/bundles/css/select2")
+    @Scripts.Render("~/bundles/SessionManagement")
+    @Scripts.Render("~/bundles/customConsole")
+    @Scripts.Render("~/bundles/ajaxRequest")
+    @*@Scripts.Render("~/bundles/CreateAutosenseRule")*@
+    <link type="text/css" rel="stylesheet" href="~/Content/CSS/font-awesome.min.css" />
+
+    @*<link rel="stylesheet" type="text/css" href="~/Scripts/autosense/joint.min.css" />
+        <link rel="stylesheet" type="text/css" href="~/Scripts/autosense/css/html.css" />*@
+
+<style>
+    .ui-autocomplete {
+        background-color: white;
+    }
+   
+
+</style>
+
+
+
+</head>
+<body style="padding:0px;">
+
+    <div id="paper"></div>
+
+    <div id="formArea" style="height: 110px;">
+        <input type="hidden" id="ruleID" />
+        <div class="col-lg-12" style="position:relative;top:10px;">
+
+            <div class="col-lg-2" style="width:20%" id="select_serviceAreaRuleDiv">
+                <span style="color:red">*</span>
+                <select id="select_serviceAreaRule" class="select2able" onchange="fillDomainFilterRule()">
+                    <option value="">Select Service Area/Sub Service Area</option>
+                </select>
+
+            </div>
+
+
+            <div class="col-lg-2" style="width:20%" id="select_domainRuleDiv">
+                <span style="color:red">*</span>
+                <select id="select_domainRule" class="select2able" onchange="fillTechFilterRule()">
+                    <option value="">Select Domain/Sub Domain</option>
+                </select>
+
+            </div>
+
+
+
+            <div class="col-lg-2" style="width:20%" id="select_technologyRuleDiv">
+
+                <span style="color:red">*</span>
+                <select id="select_technologyRule" class="select2able" onchange="getActivitiesRule()">
+                    <option value="">Select Technology</option>
+                </select>
+            </div>
+
+            <div class="col-lg-2" style="width:20%" id="select_activityRuleDiv">
+
+                <span style="color:red">*</span>
+                <select id="select_activityRule" class="select2able" onchange="getTasksRule()">
+                    <option value="">Select Activity/Subactivity</option>
+                </select>
+            </div>
+
+
+            <div class="col-lg-2" style="width:20%" id="select_taskRuleDiv">
+
+                <span style="color:red">*</span>
+                <select id="select_taskRule" class="select2able" onchange="onTaskChangeDropDown()">
+                    <option value="">Select Task</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="col-sm-12" style="position:relative;top:1px;">
+
+            <div class="col-sm-3" style="margin-left:7px">
+                <label>Rule Name</label>
+                <span style="color:red">*</span>
+                <input type="text" class="form-control col-sm-3" style="border:1px solid #cccccc; height:30px;" maxlength="50" placeholder="Rule Name" id="ruleName" onkeyup="ruleNameTextCheck()" />
+            </div>
+
+            <div class="col-sm-5">
+                <label>Description</label>
+                <span style="color:red">*</span>
+                <textarea class="form-control ruleDesc" rows="1" maxlength="1000" placeholder="Kindly mention name of scanners used in this Rule such that reusability on basis of scanner is also possible" id="ruleDesc" onkeyup="ruleDescriptioTextCheck()"></textarea>
+            </div>
+
+            <div class="col-sm-1 " id="ruleActiveCheckboxDiv" style="position:relative; top:20px; display:none;">
+                <label><input type="checkbox" value="" id="rule_active"> Active</label>
+            </div>
+
+            <div class="col-sm-3" style="position:relative; left:50px; display:none;" id="autoSignumMigrate">
+                <label>Owner Signum</label>
+                <span style="color:red">*</span>
+                <input class="form-control ui-autocomplete-input" style="height:30px;" maxlength="7" type="text" id="workOrderViewIdPrefix_assigned_to" onkeyup="signumTextCheck()" autocomplete="off">
+
+            </div>
+        </div>
+    </div>
+
+    <div id="navigator"></div>
+
+    <div class="stencil" @*style="height:80%;overflow-y:scroll;"*@>
+        <label>Applications</label>
+        <div class="component" draggable="true" ondragstart="event.dataTransfer.setData('type', 'html.AppScan')">Scanner</div>
+        <div class="component" draggable="true" ondragstart="event.dataTransfer.setData('type', 'html.AppMatch')">Match</div>
+        <div class="component" draggable="true" ondragstart="event.dataTransfer.setData('type', 'html.AppCondition')">AND/OR</div>
+        <label>File System</label>
+        <div class="component" draggable="true" ondragstart="event.dataTransfer.setData('type', 'html.FileScan')">Scanner</div>
+        <div class="component" draggable="true" ondragstart="event.dataTransfer.setData('type', 'html.FileMatch')">Match</div>
+        <div class="component" draggable="true" ondragstart="event.dataTransfer.setData('type', 'html.FileCondition')">AND/OR</div>
+        <label>Email</label>
+        <div class="component" draggable="true" ondragstart="event.dataTransfer.setData('type', 'html.EmailScan')">Scanner</div>
+        <div class="component" draggable="true" ondragstart="event.dataTransfer.setData('type', 'html.EmailMatch')">Match</div>
+        <div class="component" draggable="true" ondragstart="event.dataTransfer.setData('type', 'html.EmailCondition')">AND/OR</div>
+        <label>Inter Scanner Connector</label>
+        <div class="component" draggable="true" ondragstart="event.dataTransfer.setData('type', 'html.ConnectorCondition')">AND/OR</div>
+        <label>Outcome</label>
+        <div class="component" draggable="true" ondragstart="event.dataTransfer.setData('type', 'html.ConnectorNotification')">Success Action</div>
+        @*<button class="btn btn-primary component" type="button" title="Download Rule" onclick="downloadObjectAsJson(graph.toJSON())">Download Rule</button>*@
+        <a id="downloadAnchorElem" style="display:none"></a>
+    </div>
+
+    <div class="toolbar">
+        <span id="zoom-out" class="toolbar-button" title="Zoom Out"><i class="fa fa-search-minus" style="font-size: 14px;"></i></span>
+        <span id="zoom-in" class="toolbar-button" title="Zoom In"><i class="fa fa-search-plus" style="font-size: 14px;"></i></span>
+        <span id="zoomToFit" class="toolbar-button" title="Zoom to Fit"><i class="fa fa-expand" style="font-size: 14px;"></i></span>
+        @*<span id="reset" class="toolbar-button" title="Reset"><i class="fa fa-undo" style="font-size: 14px;"></i></span>*@
+
+    </div>
+    <!-- Dependencies: -->
+    @*<script src="~/Scripts/autosense/jquery.min.js"></script>
+        <script src="~/Scripts/autosense/lodash.min.js"></script>
+        <script src="~/Scripts/autosense/backbone.min.js"></script>
+
+        <script src="~/Scripts/autosense/joint.min.js"></script>
+
+        <script src="~/Scripts/autosense/joint.shapes.html.js"></script>*@
+    @*<script src="~/Scripts/Rappid/node_modules/jquery/dist/jquery.js"></script>
+    <script src="~/Scripts/Rappid/node_modules/lodash/index.js"></script>
+    <script src="~/Scripts/Rappid/node_modules/backbone/backbone.js"></script>
+    <script src="~/Scripts/CreateAutosenseRule/rappid.js"></script>
+    <script src="~/Scripts/CreateAutosenseRule/createHTMLMarkups.js"></script>
+    <script src="~/Scripts/CreateAutosenseRule/joint.shapes.html.js"></script>
+    <script src="~/Scripts/CreateAutosenseRule/validation_rule.js"></script>*@
+    <script src="~/Scripts/CreateAutosenseRule/autoSense.js"></script>
+
+
+</body>
+</html>

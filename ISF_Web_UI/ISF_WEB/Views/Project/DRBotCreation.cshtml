@@ -1,0 +1,328 @@
+﻿@{
+    Layout = "";
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Work Flow</title>
+
+    @Styles.Render("~/bundles/css/rappid")
+    <link href="~/Scripts/select2/select2.min.css" rel="stylesheet" />
+    @Styles.Render("~/bundles/css/bootstrap")
+
+
+    <style>
+        input:required {
+            background: hsl(180, 50%, 90%);
+            border: 1px solid #ff0000;
+        }
+        .datalist {
+   height:50px !important;
+   max-height:80px !important;
+   overflow-y:auto;
+   display:block !important;
+}
+                 .icon-size {
+            font-size: 20px;
+        }
+       
+       .joint-toolbar.joint-theme-material button{
+            height:29px;
+        }
+        .navigator-container{
+             bottom:50px;
+         }
+       
+        .joint-popup.joint-theme-material {
+            background-color: lightcyan;
+            border: 2px solid #31d0c6;
+            border-radius: 10px;
+            padding: 10px;
+            font-family: lato-light,Arial,sans-serif;
+        }
+        .popover {
+            max-width: 100%;
+            // Max Width of the popover (depending on the container!)
+        }
+        .toolbar-container button.joint-widget[data-type="zoomIn"], .toolbar-container button.joint-widget[data-type="zoomOut"] {
+             display: block;
+        }
+
+
+
+        /*For Rappid overwrite*/
+        .app-title h1 {
+            font-size: 12px;
+            line-height:33px !important;
+        }
+
+        .app-header {
+            height: 28px !important;
+        }
+
+        .joint-widget.joint-theme-material[data-type=zoomToFit]:after {
+            background-position: 0px -39px;
+        }
+
+        .joint-widget.joint-theme-material[data-type=zoomOut]:after {
+            background-position: -62px -4px;
+        }
+
+        .joint-widget.joint-theme-material[data-type=zoomIn]:after {
+            background-position: -27px -39px;
+        }
+
+        .joint-widget.joint-theme-material[data-type=fullscreen]:after {
+            background-position: -58px -33px;
+        }
+
+        .joint-widget.joint-theme-material[data-type=undo]:after, .joint-widget.joint-theme-material[data-type=redo]:after, .joint-widget.joint-theme-material[data-type=zoomToFit]:after, .joint-widget.joint-theme-material[data-type=zoomIn]:after, .joint-widget.joint-theme-material[data-type=zoomOut]:after, .joint-widget.joint-theme-material[data-type=fullscreen]:after{
+            background-size:92px;
+        }
+
+        .stencil-container{
+            max-height:75%;
+        }
+       .joint-app.joint-theme-material .toolbar-container{
+           overflow-y:inherit
+       }
+        /*Navigater*/
+        .joint-navigator {
+            
+            right: 18px !important;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            background-color: #fdfdfd;
+        }
+
+        .navigator-container {
+            bottom:52px !important;
+        }
+
+        .joint-select-button-group.joint-theme-material{
+            display:none;
+        }
+
+    </style>
+    
+</head>
+<body>
+    <form method="POST" enctype="multipart/form-data" id="newBotFrm">
+        <div class="page-header text-center">
+            <h4>AUTOMATION INFORMATION</h4>
+        </div>
+
+        <div class="row">
+            <div class="col-md-2">
+                <label style="margin-left:10px">Automation Name:</label>
+                <input type="text" class="form-control" id="reqName" required aria-required="true" />
+            </div>
+            <div class="col-md-2">
+                <label style="margin-left:10px">SPOC Name:</label>
+                <input type="text" class="form-control" id="spocName" required aria-required="true" />
+            </div>
+            <div class="col-md-3">
+                <label style="margin-left:10px">Manual Execution Time:</label>
+                <input type="number" class="form-control" id="manualTime" required aria-required="true" />
+            </div>
+            <div class="col-md-2">
+                <label style="margin-left:10px">User Count:</label>
+                <input type="number" class="form-control" id="userCount" required aria-required="true" />
+            </div>
+            <div class="col-md-2">
+                <label style="margin-left:10px">Frequency:</label>
+                <div class="btn-group recurrence" data-toggle="buttons" id="recGrp">
+                    <label class="btn btn-primary btn-sm ">
+                        <input type="radio" name="options" value="Weekly" autocomplete="off" required aria-required="true"> Weekly
+                    </label>
+                    <label class="btn btn-primary btn-sm">
+                        <input type="radio" name="options" value="Daily" autocomplete="off" required aria-required="true"> Daily
+                    </label>
+
+                </div>
+            </div>
+        </div>
+        <hr />
+        <div class="row">
+            <div class="col-md-12">
+                <label style="margin-left:10px">Description:</label>
+                <textarea class="form-control" rows="3" id="comment" required aria-required="true"></textarea>
+            </div>
+        </div>
+        <div id="approveDiv" class="tab-content">
+            <div class="page-header text-center">
+                <h4>CHOOSE LANGUAGE</h4>
+            </div>
+            <ul class="nav nav-pills">
+                <li><a data-toggle="pill" href="#macroDiv">MACRO</a></li>
+                <li><a data-toggle="pill" href="#javaDiv">JAVA</a></li>
+                <li><a data-toggle="pill" href="#pythonDiv">PYTHON</a></li>
+
+
+            </ul>
+            <hr />
+            <div class="tab-content">
+                <div id="macroDiv" class="tab-pane fade">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label style="margin-left:10px">Upload Macro File</label>
+                            <input style="margin-left:10px" class="btn btn-default" type="file" required aria-required="true">
+                        </div>
+                        <div class="col-md-4">
+                            <label style="margin-left:10px">Module Name : </label>
+                            <input class="form-control" type="text" required aria-required="true">
+                        </div>
+
+                        <div class="col-md-4">
+                            <label style="margin-left:10px">Module Method Name :</label>
+                            <input class="form-control" type="text" required aria-required="true">
+                        </div>
+                    </div>
+                    <hr />
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label style="margin-left:10px">Input Sample :</label>
+
+                            <input style="margin-left:10px" class="btn btn-default" type="file" required aria-required="true">
+
+                        </div>
+                        <div class="col-md-4">
+                            <label style="margin-left:10px">Output Sample :</label>
+                            <input style="margin-left:10px" class="btn btn-default" type="file" required aria-required="true">
+
+                        </div>
+
+                        <div class="col-md-4">
+                            <label style="margin-left:10px">Logic Doc :</label>
+                            <input class="btn btn-default" type="file" required aria-required="true">
+                        </div>
+
+                    </div>
+                    <hr />
+                    <div class="row">
+                        <div class="col-md-2 pull-right">
+                            <button type="button" class="btn btn-sm btn-success" style="margin-left:10px">UPLOAD</button>
+                            <button type="button" class="btn btn-sm btn-warning" style="margin-left:10px">DEPLOY</button>
+                            <button type="button" class="btn btn-sm btn-warning" style="margin-left:10px">TEST</button>
+                        </div>
+
+
+                    </div>
+
+                </div>
+
+                <div id="javaDiv" class="tab-pane fade">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label style="margin-left:10px">Upload BOT Jar File</label>
+                            <input style="margin-left:10px" class="btn btn-default" type="file" required aria-required="true">
+                        </div>
+                        <div class="col-md-6">
+                            <label style="margin-left:10px">Upload code zip : </label>
+                            <input class="btn btn-default" type="file" required aria-required="true">
+                        </div>
+                    </div>
+
+                    <hr />
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label style="margin-left:10px">Input Sample :</label>
+
+                            <input style="margin-left:10px" class="btn btn-default" type="file" required aria-required="true">
+
+                        </div>
+                        <div class="col-md-4">
+                            <label style="margin-left:10px">Output Sample :</label>
+                            <input style="margin-left:10px" class="btn btn-default" type="file" required aria-required="true">
+
+                        </div>
+
+                        <div class="col-md-4">
+                            <label style="margin-left:10px">Logic Doc :</label>
+                            <input class="btn btn-default" type="file" required aria-required="true">
+                        </div>
+
+                    </div>
+
+                    <hr />
+                    <div class="row">
+                        <div class="col-md-2 pull-right">
+                            <button type="button" class="btn btn-sm btn-success" style="margin-left:10px">UPLOAD</button>
+                            <button type="button" class="btn btn-sm btn-warning" style="margin-left:10px">DEPLOY</button>
+                            <button type="button" class="btn btn-sm btn-warning" style="margin-left:10px">TEST</button>
+                        </div>
+
+
+                    </div>
+
+                </div>
+
+
+                <div id="pythonDiv" class="tab-pane fade">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label style="margin-left:10px">Upload EXE</label>
+                            <input style="margin-left:10px" class="btn btn-default" type="file" aria-required="true">
+                        </div>
+                        <div class="col-md-6">
+                            <label style="margin-left:10px">Upload code zip : </label>
+                            <input class="btn btn-default" type="file" aria-required="true">
+                        </div>
+                    </div>
+
+                    <hr />
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label style="margin-left:10px">Input Sample :</label>
+
+                            <input style="margin-left:10px" class="btn btn-default" type="file" aria-required="true">
+
+                        </div>
+                        <div class="col-md-4">
+                            <label style="margin-left:10px">Output Sample :</label>
+                            <input style="margin-left:10px" class="btn btn-default" type="file" aria-required="true">
+
+                        </div>
+
+                        <div class="col-md-4">
+                            <label style="margin-left:10px">Logic Doc :</label>
+                            <input class="btn btn-default" type="file" aria-required="true">
+                        </div>
+
+                    </div>
+
+                    <hr />
+                    <div class="row">
+                        <div class="col-md-2 pull-right">
+                            <button type="button" class="btn btn-sm btn-success" style="margin-left:10px">UPLOAD</button>
+                            <button type="button" class="btn btn-sm btn-warning" style="margin-left:10px">DEPLOY</button>
+                            <button type="button" class="btn btn-sm btn-warning" style="margin-left:10px">TEST</button>
+                        </div>
+
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <!-- Rappid/JointJS dependencies: -->
+
+    @Scripts.Render("~/bundles/rappid")
+    @Scripts.Render("~/bundles/GetSessionVars")
+    @Scripts.Render("~/bundles/config")
+    @Scripts.Render("~/bundles/bootstrap")
+    @Scripts.Render("~/bundles/datepicker")
+    @Scripts.Render("~/bundles/Project")
+    @Scripts.Render("~/bundles/global")
+
+
+
+
+
+
+</body>
+    </html>
+

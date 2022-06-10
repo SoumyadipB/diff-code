@@ -1,0 +1,33 @@
+/* .example-container{
+    display:flex;
+    flex-direction: column;
+    box-sizing:border-box;
+}
+.example-card{
+    width:30%;
+    border-radius: 5px;
+    padding:20px;
+  
+} */
+.formfields{
+    width:100%;
+}
+
+.ambitioninput{
+    width:50%;
+}
+
+.ambitionToggle{
+    margin-left:5px; 
+    margin-bottom: 5px; 
+    float: right;
+}
+/* .mat-button-toggle-appearance-standard .mat-button-toggle-label-content {
+    line-height: 23px;
+    padding: 0 8px;
+} */
+.submitButton{    
+    padding-left: 12px;
+    padding-right: 12px;
+
+}

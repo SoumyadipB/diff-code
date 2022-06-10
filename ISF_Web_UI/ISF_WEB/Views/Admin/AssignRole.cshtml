@@ -1,0 +1,50 @@
+﻿@{
+    ViewBag.Title = "Admin/AssignRole";
+}
+
+@Scripts.Render("~/bundles/Admin")
+@Scripts.Render("~/bundles/jqueryui")
+<div class="col-md-12">
+    <div id="content" class="panel panel-default">
+        <div class="panel-heading">
+            Assign Role
+        </div>
+        <div id="panel-body">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            <label>Select Role</label>
+                            <select id="cbxRolesAR" class="select2able" onchange="getAccessProfileByRole()"></select>
+                        </div>
+
+                    </div>
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            <label>Select Access Profile</label>
+                            <select id="cbxAccessProfileAR" class="select2able"></select>
+                        </div>
+
+                    </div>
+                    <div class="col-lg-3">
+                        <div class="form-group" style="margin-bottom: 0px;">
+                            <label>Select Employee Signum</label>
+                            <input type="text" id="cbxSignumAR" placeholder="Select Signum" style="width:250px" />
+                        </div>
+                        <div class="row">
+                            <label id="Signum-Required" style="color: red; font-size: 10px; text-align: center; display: none;"></label>
+                        </div>
+
+                    </div>
+                    <div class="col-lg-3">
+                        <br />
+                        <button class="btn btn-primary" onclick="btnAssignRole()">Assign</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+

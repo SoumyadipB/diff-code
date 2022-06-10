@@ -1,0 +1,600 @@
+﻿@{
+    ViewBag.Title = "ResourceRequestFulfilment";
+}
+@Scripts.Render("~/bundles/DataTableScript")
+@Scripts.Render("~/bundles/DataTablesAdvancedScript")
+@Styles.Render("~/bundles/css/DataTableStyle")
+@Scripts.Render("~/bundles/Resource")
+@Styles.Render("~/bundles/css/Resource")
+
+
+@Scripts.Render("~/bundles/datepicker")
+@Styles.Render("~/bundles/css/bootstrapDatepicker")
+
+<style>
+    thead label{
+        font-weight: 600 !important;
+    }
+    thead {
+        text-transform: uppercase;        
+    }
+    .select2able {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+
+    tfoot {
+        text-transform: uppercase;
+        display: table-header-group;
+    }
+</style>
+
+<script>
+    //*****Document Ready*****
+
+    $(function () {
+        var dataTable;
+        var resultGridData;
+        var RRID;
+        //*****Fill Search Filters*****
+        fillSearchFilter();
+        submitSearchBtn();
+
+    });
+
+</script>
+
+<div id="wrapper">
+
+    <!-- /.row -->
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    Demand Fulfillment
+                </div>
+                <!-- .panel-heading -->
+                <div class="panel-body" style="padding:5px;">
+
+                    <div id="alertErr" style="display:none" class="alert alert-danger">
+                        <strong>Error!</strong>
+                        No data found
+                    </div>
+                    <div class="col-lg-12" style="border: 1px solid #d0d0d0;background-color: #fdfdfd;">
+
+                        <a data-toggle="collapse" href="#searchDiv" aria-expanded="false" aria-controls="searchDiv" style="float:right;width:100%"><span class="pull-right clickable"><i class="fa fa-angle-up"></i></span></a>
+                        <h5 style="font-weight:600;">Search</h5>
+
+                        <div class="collapse" id="searchDiv">
+                            <div class="panel-body" style="padding:  0 0 0 15px !important;">
+                                <form class="form-horizontal" role="form" id="projectViewForm">
+                                    <div class="row">
+                                        <div class="col-lg-4 form-group">
+                                            <label for="contain">ProjectID/ProjectName</label>
+                                            <select name="ProjectID" class="select2able" id="selectProjectID">
+                                                <option value="0" selected>Select</option>
+                                            </select>
+                                            <!--<input class="form-control" type="text" style="width:80%;" />-->
+                                        </div>
+                                        <div class="col-lg-4 form-group">
+                                            <label for="filter">Domain/SubDomain</label>
+                                            <select name="DomainID" class="select2able" id="selectDomainID">
+                                                <option value="0" selected>Select</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-lg-4 form-group">
+                                            <label for="filter">Sub Service Area</label>
+                                            <select name="SubServiceAreaID" class="select2able" id="selectSubServiceAreaID">
+                                                <option value="0" selected>Select</option>
+                                            </select>
+                                        </div>
+                                    </div><div class="row">
+
+                                        <div class="col-lg-4 form-group">
+                                            <label for="filter">Technology</label>
+                                            <select name="TechnologyID" class="select2able" id="selectTechID">
+                                                <option value="0" selected>Select</option>
+                                            </select>
+                                        </div>
+                                        @*<div class="form-group">
+                                                <label for="filter">Priority</label>
+                                                <select name="selectPriorityID" class="select2able" id="selectPriorityID">
+                                                    <option value="0" selected>Select</option>
+                                                </select>
+                                            </div>*@
+                                        <div class="col-lg-4 form-group">
+                                            <label for="filter">Position Status</label>
+                                            <select name="positionStatus" class="select2able" id="selectPositionID">
+                                                <option value="0" selected>Select</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-lg-4 form-group">
+                                            <label for="filter">Allocated Resource ID</label>
+                                            <select name="allocatedResourceId" class="select2able" id="selectARID">
+                                                <option value="0" selected>Select</option>
+                                            </select>
+                                            <input type="text" style="display:none;" name="spoc" id="spocID" value="" />
+                                        </div>
+                                    </div><div class="row">
+
+                                        <div class="col-lg-4 form-group" style="display:none">
+                                            <label for="filter">Sub Domain</label>
+                                            <select name="SubDomainID" class="select2able" id="selectSubDomainID">
+                                                <option value="0" selected>Select</option>
+                                            </select>
+                                        </div>
+                                        @*<input type="button" value="Search" onclick="submitSearchBtn()" class="btn btn-primary">*@
+                                        <div class="col-lg-4" style="float:right">
+                                            <button title="Search" type="button" id="searchProjectByFilter" onclick="submitSearchBtn()" class="btn btn-primary"><span class="fa fa-search" aria-hidden="true"></span></button>
+                                            <button title="Reset" type="reset" class="btn btn-primary" onclick="cleanFieldsRequest()"><span class="fa fa-refresh" aria-hidden="true"></span></button>
+                                        </div>
+                                    </div>
+                                </form>
+
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="col-lg-12" id="loaderGif" style="display:none;">
+                        <img src="~/Content/images/loading.gif" style="padding-left:50%;">
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-12 btn-group" style="padding-top:2px;display:none;" id="groubyDiv">
+                            <button type="button" class="btn btn-primary disabled" style="font-weight:bold !important">Group By :</button>
+                            <button type="button" colindex="1" class="groupByBtns btn btn-primary active">Project wise</button>
+                            <button type="button" colindex="5" class="groupByBtns btn btn-primary">Domain/SubDomain wise</button>
+                            @*<button type="button" class="groupByBtns btn btn-primary">SubDomain wise</button>*@
+                            <button type="button" colindex="4" class="groupByBtns btn btn-primary">Sub Service Area wise</button>
+                            <button type="button" colindex="6" class="groupByBtns btn btn-primary">Technology wise</button>
+                            @*<button type="button" colIndex="6" class="groupByBtns btn btn-primary">Priority wise</button>*@
+                        </div>
+                    </div>
+                    <!--End of Group By-->
+                    <div class="row">
+                        <div class="col-lg-12">
+
+                            <div class="table-responsive" style="overflow-x:auto;max-height:500px;">
+
+                                <table class="table table-striped table-bordered table-hover" style="" id="filterDataTable"></table>
+                                <!-- /.table-responsive -->
+                            </div>
+
+
+                        </div>
+                    </div>
+                </div>
+
+
+                <!--End of panel group accordion-->
+            </div>
+            <!--End main panel-->
+        </div>
+        <!-- end col-lg-12 -->
+    </div>
+    <!-- /end row -->
+</div>
+
+<!--end wrapper-->
+
+<!-- Modal : View Project Details-->
+<div class="modal fade" id="myModal" role="dialog" style="z-index:2050;">
+    <div class="modal-dialog" style="width:70% !important">
+        <!-- Modal content-->
+        <div class="modal-content">
+
+            <div class="modal-header" style="padding-bottom:0;background:  #C0D0F0 !important;">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title" style="font-size:medium;">View Project Details</h4>
+            </div>
+            <div class="modal-body">
+                <div id="myModalError" style="display:none" class="alert alert-danger">
+                    <strong>No Data Available</strong>
+                </div>
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="col-lg-4">
+                            <label style="font-weight:600">ProjectID: </label>
+                            @*<p id="project_ID"></p>*@
+                            <p id="project_ID"></p>
+                        </div>
+                        <div class="col-lg-4">
+                            <label style="font-weight:600">ProjectName: </label>
+                            <p id="project_name"></p>
+                        </div>
+                        <div class="col-lg-4">
+                            <label style="font-weight:600">ProjectType: </label>
+                            <p id="select_Project_Type"></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-14">
+                        <div class="col-lg-7">
+                            <table style="width:100%" class="table table-striped table-bordered table-hover" id="dataTables-example">
+                                <thead>
+                                    <tr>
+                                        <th colspan="2" style="font-weight:600;font-size:medium">Project Details</th>
+
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr><td style="font-weight:600;width:20px;">CPMSignum</td><td><p class="projectDetails-cellmargin" id="cpm"></p></td></tr>
+                                    <tr><td style="font-weight:600;width:20px;">ServiceArea</td><td><p class="projectDetails-cellmargin" id="select_product_area"></p></td></tr>
+                                    <tr><td style="font-weight:600;width:20px;">CreatedBy</td><td><p class="projectDetails-cellmargin" id="project_creator"></p></td></tr>
+                                    <tr><td style="font-weight:600;width:20px;">Project StartDate</td><td><p class="projectDetails-cellmargin" id="start_date"></p></td></tr>
+                                    <tr><td style="font-weight:600;width:20px;">Project EndDate</td><td><p class="projectDetails-cellmargin" id="select_enddate"></p></td></tr>
+                                    <tr><td style="font-weight:600;width:20px;">ProjectDescription</td><td><p class="projectDetails-cellmargin" id="project_description"></p></td></tr>
+                                    <tr><td style="font-weight:600;width:20px;">Status</td><td><p class="projectDetails-cellmargin" id="select_status"></p></td></tr>
+
+                                </tbody>
+                            </table>
+
+                        </div>
+                        <div class="col-lg-5">
+                            <table style="width:100%" class="table table-striped table-bordered table-hover" id="dataTables-example">
+                                <thead>
+                                    <tr>
+                                        <th colspan="2" style="font-weight:600;font-size:medium">Opportunity Details</th>
+
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr><td style="font-weight:600;width:20px;">OpportunityName</td><td><p class="projectDetails-cellmargin" id="select_opportunity_name"></p></td></tr>
+                                    <tr><td style="font-weight:600;width:20px;">MarketArea</td><td><p class="projectDetails-cellmargin" id="select_market_area"></p></td></tr>
+                                    <tr><td style="font-weight:600;width:20px;">Country</td><td><p class="projectDetails-cellmargin" id="select_country"></p></td></tr>
+                                    <tr><td style="font-weight:600;width:20px;">Customer</td><td><p class="projectDetails-cellmargin" id="select_customer_name"></p></td></tr>
+                                    <tr><td style="font-weight:600;width:20px;">Company</td><td><p class="projectDetails-cellmargin" id="select_demand_owning_company"></p></td></tr>
+                                    <tr><td style="font-weight:600;width:20px;">Operational Manager</td><td><p class="projectDetails-cellmargin" id="select_operationalmanager"></p></td></tr>
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="panel panel-primary" style="border-color: #eeeeee;">
+                            <div class="panel-heading " style="border-color: #eeeeee; background-color: #eeeeee;">
+                                <h4 class="panel-title" style="font-family: 'Lato', sans-serif; font-weight: 400;font-size: 20px; opacity: 0.7; color: #102a63"> Project Document Details </h4>
+                                <span class="pull-right clickable"><i class="fa fa-angle-up"></i></span>
+                            </div>
+                            <div class="panel-body">
+                                <table style="width:100%" class="table table-striped table-bordered table-hover" id="dataTables_ViewDocuments">
+                                    <thead>
+                                        <tr>
+                                            <th style="font-weight:600">Document Type</th>
+                                            <th style="font-weight:600">Document Link</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @*<tr class="odd gradeX">
+                                                <td><p id="select_document_type"></p></td>
+                                                <td><p id="select_document_link"></p></td>
+                                            </tr>*@
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- Modal2 : View Resource Request Details-->
+<div class="modal fade" id="myModal2" role="dialog" style="z-index:2050;">
+    <div class="modal-dialog" style="width:90% !important">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header" style="padding-bottom:0;background:  #C0D0F0 !important;">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title" style="font-size:small;">View Resource Request Details</h4>
+            </div>
+
+            <div class="modal-body">
+                <div id="myModalErr" style="display:none" class="alert alert-danger">
+                    <strong>No Data Available</strong>
+
+                </div>
+
+                <div class="row">
+                    @*<div class="col-lg-12">
+                            <label class="col-lg-4">Requested Resources</label>
+                        </div>*@
+
+                    <div class="col-lg-12">
+                        <div class="table-responsive col-lg-6">
+                            <table style="width:100%" class="table table-striped table-bordered table-hover" id="ResourceDetailsTable">
+                                <thead>
+                                    <tr>
+                                        <th colspan="2"><h5>Resource Type Details</h5> </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr><td>RequestType</td>        <td><label id="lblRequestType"></label></td></tr>
+                                    <tr><td>Vendors</td>            <td><label id="lblVendors"></label></td></tr>
+                                    <tr><td>ResourceType</td>       <td><label id="lblResourceType"></label></td></tr>
+                                    <tr><td>JobStage</td>           <td><label id="lblJobStage"></label></td></tr>
+                                    <tr><td>JobRole</td>            <td><label id="lblJobRole"></label></td></tr>
+                                    <tr><td>DeliveryLocation</td>   <td><label id="lblDeliveryLocation"></label></td></tr>
+                                    <tr><td>OnsiteCount</td>        <td><label id="lblOnsiteCount"></label></td></tr>
+                                    <tr><td>RemoteCount</td>        <td><label id="lblRemoteCount"></label></td></tr>
+
+                                </tbody>
+                            </table>
+                        </div>
+
+
+
+                        <div class="table-responsive col-lg-6">
+                            <table style="width:100%" class="table table-striped table-bordered table-hover" id="WEDetailsTable">
+                                <thead>
+                                    <tr>
+                                        <th colspan="2"><h5>Work Effort Details</h5> </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr><td>StartDate</td>      <td><label id="lblStartDate"></label></td></tr>
+                                    <tr><td>EndDate</td>        <td><label id="lblEndDate"></label></td></tr>
+                                    @*<tr><td>Duration</td>       <td><label id="lblDuration"></label></td></tr>
+                                        <tr><td>FTE%</td>           <td><label id="lblFTE"></label></td></tr>*@
+                                    <tr><td>Hours</td>    <td><label id="lblHoursPerDay"></label></td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="table-responsive col-lg-6">
+                            <h4><strong>Competence Details</strong></h4>
+                            <table style="width:100%" class="table table-striped table-bordered table-hover" id="CompetenceDetailsTable">
+                                <thead>
+                                   
+                                    <tr>
+                                        <th>CompetenceType</th>
+                                        <th>Competence</th>
+                                        <th>Level</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr><td></td><td></td><td></td></tr>
+                                </tbody>
+                              
+                            </table>
+                        </div>
+
+
+                        <div class="table-responsive col-lg-6">
+                            <h4><strong>Certifications Detail</strong></h4>
+                            <table style="width:100%" class="table table-striped table-bordered table-hover" id="CertificationDetailsTable">
+                                <thead>
+
+                                    <tr>
+                                        <th>CertificationType</th>
+                                        <th>Certificate</th>
+
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td></td>
+                                        <td></td>
+
+                                    </tr>
+                                </tbody>
+                               
+                            </table>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+        <!-- Table -->
+
+    </div>
+</div>
+<!--End Model 2-->
+
+<!-- Modal3 : Allocated Resources -->
+<div class="modal fade" id="ARmodal" role="dialog" style="z-index:2050;">
+    <div class="modal-dialog" style="width:95% !important">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header" style="padding-bottom:0;background:  #C0D0F0 !important;">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title" style="font-size:small;">Positions View</h4>
+            </div>
+            <div class="modal-body">
+                <div id="ARModalError" style="display:none" class="alert alert-danger">
+                    <strong>No Data Available</strong>
+                </div>
+                <div class="row">
+                    <div class="col-lg-12">
+                        <!--**********************-->
+                        <ul class="nav nav-pills">
+                            <li class="active"><a data-toggle="tab" href="#reservedTab">Positions Reserved & Deployed</a></li>
+                            <li><a data-toggle="tab" href="#proposedTab">Positions Proposed</a></li>
+
+                        </ul>
+
+                        <div class="tab-content">
+                            <div id="reservedTab" class="tab-pane fade in active">
+                                @*<h3>Positions Reserved</h3>*@
+                                <div class="table-responsive" style="overflow-x:auto;max-height:400px;">
+                                    <table class="table table-striped table-bordered table-hover" id="dataTable_allocatedResource_Reserved" style="width:100%;"></table>
+                                    <!-- /.table-responsive -->
+                                </div>
+                            </div>
+
+                            <div id="proposedTab" class="tab-pane fade">
+                                @*<h3>Positions Proposed</h3>*@
+                                @*<button type="button" class="btn btn-primary" style="margin-top: 10px;" onclick="updateChanges()">Save</button>*@
+                                <div class="table-responsive" style="overflow-x:auto;max-height:400px;">
+                <table class="table table-striped table-bordered table-hover" id="dataTable_allocatedResource" style="width:100%;"></table>                 
+            </div>
+
+        </div>
+
+    </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">                
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!--Create CR Modal-->
+    
+    <div id="createCRModal" class="modal fade" style="width:100%;height:100%">
+        <div class="modal-dialog" style="width:90%">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h5 class="modal-title">Create Change Request</h5>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="panel-body" style="border: 1px solid #eceaea;border-radius:  5px;padding-bottom: 0px;margin-bottom:  2px;">
+                            Exsiting Position :
+                            <div class="row">
+                                <div class="col-lg-12" id="PreviousResourceDiv">
+                                </div>
+                            </div>
+                        </div>
+                        <!--PanelBody-->
+                        <div class="panel-body" style="border: 1px solid #eceaea;border-radius:  5px;">
+                            Position Change Request :
+                            <div class="row">
+                                <div class="col-lg-12" id="CRResourceDiv">
+                                    <div class="col-lg-2 form-group">
+                                        <label for="filter">Domain/SubDomain</label>
+                                        <select name="DomainID" class="select2able" id="selectDomainIDCR">
+                                            <option value="0" selected>Select</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-lg-2 form-group">
+                                        <label for="filter">Service Area</label>
+                                        <select name="SubServiceAreaID" class="select2able" id="selectSubServiceAreaIDCR">
+                                            <option value="0" selected>Select</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-lg-2 form-group">
+                                        <label for="filter">Job Stage</label>
+                                        <select name="JobStageID" class="select2able" id="search_select_jobstage">
+                                            <option value="0" selected>Select</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-lg-2 form-group">
+                                        <label for="filter">Job Role</label>
+                                        <select name="JobroleID" class="select2able" id="search_select_jobrole">
+                                            <option value="0" selected>Select</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-lg-2 form-group">
+                                        <label for="filter">Manager</label>
+                                        <select name="ManagerID" class="select2able" id="search_select_manager">
+                                            <option value="0" selected>Select</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-lg-2 form-group" style="padding-top:15px;">
+
+                                        <button class="btn btn-primary" title="Search" onclick="searchNewPositionForCR()"><i class="fa fa-search"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- table-responsive -->
+                            <div class="table-responsive" style="overflow-x:auto;max-height:250px;">
+                                <table class="table table-striped table-bordered table-hover" id="dataTableNewResourceList" style="width:100%;">
+                                    @*<thead><tr><th>Singum</th><th>Manager</th><th>Availability</th><th>FTE%</th><th>Hours</th></tr></thead>
+                                    <tbody>
+                                        <tr style="background-color:blue"><th>Singum</th><th>Manager</th><th>0</th><th>70%</th><th>50</th></tr>
+                                        <tr><th>Singum</th><th>Manager</th><th>100</th><th>50%</th><th>100</th></tr>
+                                        <tr><th>Singum</th><th>Manager</th><th>100</th><th>60%</th><th>120</th></tr>
+                                        <tr><th>Singum</th><th>Manager</th><th>100</th><th>20%</th><th>60</th></tr>
+                                        <tr><th>Singum</th><th>Manager</th><th>0</th><th>70%</th><th>50</th></tr>
+                                        <tr><th>Singum</th><th>Manager</th><th>100</th><th>50%</th><th>100</th></tr>
+                                        <tr><th>Singum</th><th>Manager</th><th>100</th><th>60%</th><th>120</th></tr>
+                                        <tr><th>Singum</th><th>Manager</th><th>100</th><th>20%</th><th>60</th></tr>
+                                    </tbody>*@
+                                </table>
+                            </div>
+                            <!-- /.table-responsive -->
+                        </div>
+                        <!--/PanelBody-->
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary">Create CR</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <!--/Create CR Modal-->
+</div>
+
+
+<!--CUSTOM ALert POP UP-->
+<div class="modal fade" id="Errmodal" role="dialog">
+    <div class="modal-dialog" style="width:95% !important">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header" style="padding-bottom:0;background:  #C0D0F0 !important;">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title" style="font-size:small;">Error</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <label>Error</label>
+
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!--Search Allocate Resource (SAR)-->
+<!--Modal4 SAR modal-->
+<div id="SARmodal" class="modal fade" >
+    <div class="modal-dialog" style="width:80% !important">
+        @*<div class="modal-content">
+
+                <div class="modal-header" style="padding-bottom:0;background:  #C0D0F0 !important;">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Resource Request ID :<var id="rrid">rrid</var></h4>
+                </div>
+                <div class="modal-body">
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+
+                </div>
+
+            </div>*@
+    </div>
+</div>
+

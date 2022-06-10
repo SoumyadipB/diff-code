@@ -1,0 +1,91 @@
+﻿.eaContainer-SystemBar {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 1.2rem;
+  position: relative;
+  width: 100%;
+  height: 40px;
+  z-index: 1500;
+  border-top: 4px solid #0066b3;
+  white-space: nowrap;
+  background: #2b323a;
+  /*background: -webkit-gradient(linear, left top, left bottom, color-stop(0, #ffffff), color-stop(1, #f0f0f0));
+  background: -ms-linear-gradient(top, #ffffff, #f0f0f0);
+  background: -o-linear-gradient(center top, #ffffff 0%, #f0f0f0 100%);
+  background: -webkit-linear-gradient(center top, #ffffff 0%, #f0f0f0 100%);
+  background: -moz-linear-gradient(center top, #ffffff 0%, #f0f0f0 100%);
+  background: linear-gradient(center top, #ffffff 0%, #f0f0f0 100%);*/
+  -webkit-box-shadow: 0 2px 2px #D2D2D2;
+  -moz-box-shadow: 0 2px 2px #D2D2D2;
+  box-shadow: 0 2px 2px #D2D2D2;
+  color:white;
+}
+.eaContainer-SystemBar::before {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 4px;
+  font-size: 0;
+  top: -4px;
+  left: 0;
+  background: #0066b3;
+  background: -o-linear-gradient(left, #a2c517 10%, #009046 30%, #0082b6 50%, #151f77 70%, #db0050 100%);
+  background: -moz-linear-gradient(left, #a2c517 10%, #009046 30%, #0082b6 50%, #151f77 70%, #db0050 100%);
+  background: -webkit-linear-gradient(left, #a2c517 10%, #009046 30%, #0082b6 50%, #151f77 70%, #db0050 100%);
+  background: -ms-linear-gradient(left, #a2c517 10%, #009046 30%, #0082b6 50%, #151f77 70%, #db0050 100%);
+  background: -webkit-gradient(linear, left top, right top, color-stop(0.1, #a2c517), color-stop(0.3, #009046), color-stop(0.5, #0082b6), color-stop(0.7, #151f77), color-stop(1, #db0050));
+  background: linear-gradient(left, #a2c517 10%, #009046 30%, #0082b6 50%, #151f77 70%, #db0050 100%);
+}
+.eaContainer-SystemBar-name {
+  display: inline-block;
+  padding: 0 5px 0 0;
+  margin: 0;
+  font-size: 1.4em;
+  line-height: 40px;
+  color: #58585A;
+  max-width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  position: absolute;
+  left: 40px;
+  right: 0;
+  top: 0;
+  bottom: 0;
+}
+.eaContainer-SystemBar-nameValue {
+  font-size: 16.8px;
+  color: #58585A;
+}
+.eaContainer-SystemBar-nameValue:hover {
+  color: #58585A;
+}
+.eaContainer-SystemBar-nameValue:focus {
+  text-decoration: none;
+  outline: none;
+}
+.eaContainer-SystemBar-logoAnchor {
+  outline: none;
+}
+.eaContainer-SystemBar-logo {
+    height: 40px;
+    display: inline-block;
+    background: url('../images/Ericssonlogo.png') no-repeat center center transparent;    
+    width: 40px;
+    background-size: 16px 20px;
+}
+.eaContainer-SystemBar-left {
+  overflow: hidden;
+  white-space: nowrap;
+  position: relative;
+}
+.eaContainer-SystemBar-right {
+  float: right;
+}
+a.eaContainer-SystemBar-nameValue:hover {
+  text-decoration: none !important;
+}
+@media screen and (max-width: 500px) {
+  .eaContainer-SystemBar {
+    z-index: 1000;
+  }
+}

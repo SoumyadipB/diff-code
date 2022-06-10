@@ -1,0 +1,1417 @@
+﻿@Scripts.Render("~/bundles/WorkOrderCreatePopUp")
+@Scripts.Render("~/bundles/DataTableScript")
+@Styles.Render("~/bundles/css/DataTableStyle")
+@*<script src="~/Scripts/lib/tooltip/protip/protip.min.js"></script>
+    <link href="~/Scripts/lib/tooltip/protip/protip.min.css" rel="stylesheet">*@
+<link rel="stylesheet" type="text/css" href="~/Scripts/lib/commentsjs/jquery-comments.css">
+@*<script src="~/Scripts/Project/JsWorkFlow.js"></script>*@
+
+
+<style>
+    /*CSS for Input Output Files*/
+    .inputFilesDiv {
+        padding-bottom: 0px !important;
+        padding-top: 20px !important;
+        padding-right: 20px !important;
+        padding-left: 20px !important;
+        padding-bottom: 0px;
+        max-height: 470px;
+        overflow-y: auto;
+        font-size: 12px !important;
+    }
+
+    .inputFileSelected {
+        color: #3d6333;
+        background-color: #e3efee78;
+        border: 1px solid #bedfbc;
+        border-radius: 4px;
+        box-shadow: #b6c4aa 0px 0px 6px;
+        margin-right: 5px;
+        margin-top: 5px;
+        padding: 2px 5px;
+    }
+
+    .inputFileClass {
+        width: 100%;
+        padding: 4px;
+        display: inline-block;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+    }
+
+    .woCountClass {
+        width: 100%;
+        padding: 4px;
+        display: inline-block;
+        border: 1px solid #aaa;
+        border-radius: 4px;
+        box-sizing: border-box;
+    }
+    /* start autocomplete style sheet*/
+
+    #Node_Names_WO_Create .select2-container .select2-selection {
+        height: 70px;
+        width: 90%;
+        overflow: auto;
+    }
+
+    .fixedHeight {
+        font-size: 10px;
+        max-height: 150px;
+        margin-bottom: 10px;
+        overflow-x: auto;
+        overflow-y: auto;
+        z-index: 10000;
+    }
+
+    .ui-autocomplete  {
+        max-height: 200px;
+        overflow-y: auto;
+        overflow-x: hidden;
+        z-index: 1000 !important;
+    }
+
+    .ui-autocomplete-loading {
+        background: url('//ajax.googleapis.com/ajax/libs/jqueryui/1.8.2/themes/smoothness/images/ui-anim_basic_16x16.gif') no-repeat right center
+    }
+    /* end autocomplete style sheet*/
+
+
+
+
+
+    .disabledbutton {
+        pointer-events: none;
+        opacity: 0.4;
+    }
+
+    #view_Task_filter {
+        display: none;
+    }
+
+    .select2-hidden-accessible {
+        display: none !important;
+    }
+
+    tfoot {
+        display: table-header-group;
+    }
+
+    .glyphicon-ring {
+        width: 25px;
+        height: 25px;
+        border-radius: 50%;
+        padding-top: 5px;
+        color: white;
+        display: inline-table;
+        text-align: center;
+    }
+
+    .glyphicon-mediumorchid {
+        background: mediumorchid;
+    }
+
+    .glyphicon-blue {
+        background: blue;
+    }
+
+    .glyphicon-orangered {
+        background: orangered;
+    }
+
+    .glyphicon-green {
+        background: forestgreen;
+    }
+</style>
+
+<script>
+    var projectID = localStorage.getItem("views_project_id");
+    var signum = signumGlobal;
+    var scopeID = null;
+    var priority = '';
+    var daily = [];
+    var hourly = [];
+    var weekly = '';
+    var recurr = '';
+    allScopesBool = false;
+    var WorkOrderPopUpWorkFlowData;
+
+    function changeWOCount(el) {
+        if (!$('#assignUserDiv').is(":hidden")) {
+            if ($(el).val() == "" || $(el).val() == null) {
+                $('#woCountDiv').show();
+                $("#woCount").val('1');
+            }
+            else {
+                $('#woCountDiv').show();
+                //$("#woCount").val('1');
+            }
+        }
+        else {
+            $("#woCount").val('1');
+        }
+    }
+
+    function changeHourly(el) {
+        if ($('.weekly label ').hasClass('active'))
+            $('.weekly label ').removeClass('active');
+        if ($('.daily label ').hasClass('active'))
+            $('.daily label ').removeClass('active');
+        if (weekly != '')
+            weekly = '';
+        if (daily != null)
+            daily = [];
+        let index = hourly.indexOf(el.value);
+        if (index > -1)
+            hourly.splice(index, 1);
+        else
+            hourly.push(el.value)
+
+        console.log(daily);
+        console.log(weekly);
+        console.log(hourly);
+    }
+
+    $(document).ready(function () {
+        var timeZone = localStorage.getItem("UserTimeZone");
+        if (timeZone == null || timeZone == "" || timeZone == undefined) {
+            timeZone = "Asia/Calcutta";
+        }
+        var now = new Date();
+        var today = moment(now.toString()).tz(timeZone).format();
+        var today1 = today.split("T")[0];
+
+        $("#Start_Date").datepicker({
+            dateFormat: "yy-mm-dd",
+            minDate: today1
+        });
+        $("#End_Date").datepicker({
+            dateFormat: "yy-mm-dd",
+            minDate: today1
+        });
+        $("#Plan_End_Date").datepicker({
+            dateFormat: "yy-mm-dd",
+            minDate: today1
+        });
+
+
+        $.fn.modal.Constructor.prototype.enforceFocus = function () { }; //Select2 search was not working in mozilla (on work order creation)
+
+        localStorage.setItem("views_scope_id", null);
+        $('.recurrence input[type=radio]').on('change', function () {
+            recurr = this.value;
+            console.log('recurr ' + recurr);
+            openModalSlaperiodicity(this.value);
+        });
+
+        $('.weekly input[type=radio]').on('change', function () {
+
+            if ($('.daily label ').hasClass('active'))
+                $('.daily label ').removeClass('active');
+            if (daily != null)
+                daily = [];
+            if ($('.hourly label ').hasClass('active'))
+                $('.hourly label ').removeClass('active');
+            if (hourly != null)
+                hourly = [];
+            weekly = this.value;
+            console.log(weekly);
+            console.log(daily);
+            console.log(hourly);
+
+        });
+        var formatted_date = function (date) {
+            var m = ("0" + (date.getMonth() + 1)).slice(-2); // in javascript month start from 0.
+            var d = ("0" + date.getDate()).slice(-2); // add leading zero
+            var y = date.getFullYear();
+            return y + '-' + m + '-' + d;
+        }
+        $('.daily input[type=checkbox]').on('change', function () {
+
+            if ($('.weekly label ').hasClass('active'))
+                $('.weekly label ').removeClass('active');
+            if (weekly != '')
+                weekly = '';
+            if ($('.hourly label ').hasClass('active'))
+                $('.hourly label ').removeClass('active');
+            if (hourly != null)
+                hourly = [];
+            let index = daily.indexOf(this.value);
+            if (index > -1)
+                daily.splice(index, 1);
+            else
+                daily.push(this.value)
+
+            console.log(daily);
+            console.log(weekly);
+
+        });
+
+
+        $('.priority input[type=radio]').on('change', function () {
+            priority = this.value;
+            console.log(priority);
+
+        });
+
+        $('#ContentHourly .hourly').html('');
+        for (let i = 0; i < 24; i++) {
+            let hour = i;
+            if (i < 10) {
+                hour = '0' + i;
+            }
+            $('#ContentHourly .hourly').append('<label class="btn btn-info"><input type="checkbox" name="checkbox_hourly" id="checkbox_hourly" value="' + hour + ':00:00" onchange="changeHourly(this)">' + hour + '</label >');
+        }
+
+
+        //$('.cssOnProjectDeleteWF').on('click', function (e) {
+        //    e.preventDefault();
+        //    onProjectDeleteWF(this);
+
+        //});
+
+        $('#modal_wo_creation').on('hidden.bs.modal', function () {
+            $('#inputFilesModal, #editInputFilesModal, #allLocalGlobalUrl').modal('hide');
+        })
+
+    });
+
+    (function () {
+        var fs = (document.location.protocol === 'file:');
+        var ff = (navigator.userAgent.toLowerCase().indexOf('firefox') !== -1);
+        if (fs && !ff) {
+            (new joint.ui.Dialog({
+                width: 300,
+                type: 'alert',
+                title: 'Local File',
+                content: $('#message-fs').show()
+            })).open();
+        }
+    })();
+
+    $(document).on("click", ".createWOPopUp", function () {
+        var subActivityID = $(this).data('subactivityid');
+        //var scopeName = $(this).data('scopename');
+        var scopeID = $(this).data('scopeid');
+        //var flowchartdefid = $(this).data('flowchartdefid');
+        //getExecutionPlans(subActivityID);
+        workOrderDisplayPopUpModal(projectID, scopeID);
+        $("#selectallSignumdiv").hide();
+        $("#signumbyprojectdiv").show();
+        $("#selectUserAllSignum").val('');
+        $('#woCountDiv').show();
+        $("#woCount").val('1');
+
+        $(".recurrenceOrder").css("display", "none");
+        $("#slaHrsDiv").css("display", "none");
+        $("#slaHrs").val("");
+        $("#planEndArea").css("display", "none");
+        $("#Select_WorkFlow_Wo").val("-1");
+        $("#selectUserAllSignum-required").hide();
+
+        $("#assignUserDiv").css("display", "none");
+
+
+    });
+
+    function workOrderDisplayPopUpModal(pId, sId) {
+        projectID = pId;
+        scopeID = sId;
+        allScopesBool = false;
+        getWFUserByProjectId();
+        //FillDropDownScope();
+        FillDropDownScopeAll();
+        $('#Wfdetails1').html('');
+        //GetWorkFlowDetail();
+        if (localStorage.getItem("projectType") == "ASP") {
+            $("#nonAspForm").hide();
+            $("#aspForm").show();
+        }
+        else {
+            $("#aspForm").hide();
+            $("#nonAspForm").show();
+        }
+        $(".mandatory_Box").slideDown();
+        $(".node_box").css("display", "none");
+        $("#slideUp").css("display", "inline");
+        $("#slideDwn").css("display", "none");
+
+        $("#planDtArea").css("display", "block");
+        $(".recurrenceOrder").removeClass("disabledbutton");
+
+        $("#ep_box").css("display", "none");
+
+
+        nodeNameClicked = 0;
+        $('#modal_wo_creation').modal('show');
+        var timeZone = localStorage.getItem("UserTimeZone");
+        if (timeZone == null || timeZone == "" || timeZone == undefined) {
+            timeZone = "Asia/Calcutta";
+        }
+        var now = new Date();
+        var today = moment(now.toString()).tz(timeZone).format();
+        var today1 = today.split("T")[0];
+        $("#Start_Date").val(today1);
+        $("#Plan_End_Date").val(today1);
+        var time = today.split("T")[1];
+        var hour = parseInt(time.split(":")[0]);
+        var min = parseInt(time.split(":")[1]);
+        if (min < 30) {
+
+            if (hour < 10) {
+                hour.toString();
+                hour = ("0" + hour);
+            }
+            min = "30";
+        } else {
+            min = "00";
+            hour = hour + 1;
+            let date = new Date(today1);
+            if (hour < 10) {
+                hour.toString();
+                hour = ("0" + hour);
+
+            }
+            if (hour == 24) {
+                hour = "00";
+                //dateArr = today1.split('-')
+                var nextDay = new Date(today1);
+                nextDay.setDate(new Date(today1).getDate() + 1);
+                var formatedNextDate = formatted_date(nextDay);
+                $("#Start_Date").val(formatedNextDate);
+                $("#Start_Date").datepicker({
+                    minDate: formatedNextDate
+                });
+
+            }
+        }
+        var curTime = hour + ":" + min + ":00"
+        $("#start_time").val(curTime).trigger('change');
+        if (allScopesBool)
+            $("#slaHrs").val(8);
+
+
+        $("input[name=radio_priority][value=Normal]").prop('checked', true);
+        $(".btn.btn-success.btn-sm").addClass('active');
+        priority = $("input[name=radio_priority][value=Normal]").val();
+
+
+
+
+    }
+
+    function validateTime() {
+        var timeZone = localStorage.getItem("UserTimeZone");
+        if (timeZone == null || timeZone == "" || timeZone == undefined) {
+            timeZone = "Asia/Calcutta";
+        }
+        var now = new Date();
+        var today = moment(now.toString()).tz(timeZone).format();
+        //var today1 = today.split("T")[0];
+        var time = today.split("T")[1];
+        var curDate = today.split("T")[0];
+        var hour = parseInt(time.split(":")[0]);
+        var min = parseInt(time.split(":")[1]);
+        if (min < 30) {
+
+            if (hour < 10) {
+                hour.toString();
+                hour = ("0" + hour);
+            }
+            min = "30";
+        } else {
+            min = "00";
+            hour = hour + 1;
+            if (hour < 10) {
+                hour.toString();
+                hour = ("0" + hour);
+
+            }
+            if (hour == 24) {
+                hour = "00";
+
+            }
+        }
+        var curTime = hour + ":" + min + ":00"
+        var selectedTime = $('#start_time').val();
+        var Start_Date = $('#Start_Date').val();
+
+
+
+        if (Start_Date > curDate) {
+
+        }
+
+        else {
+            if (selectedTime < curTime) {
+                pwIsf.alert({ msg: 'Cannot select time before the current time', type: 'warning' });
+                $('#start_time').val(curTime).trigger('change');
+
+            }
+        }
+
+    }
+
+    function FillDropDownScope() {
+        pwIsf.addLayer({ text: "Please wait ..." });
+        projectID = localStorage.getItem("views_project_id");
+        $.isf.ajax({
+            url: service_java_URL + "projectManagement/activeScopeByProject?projectId=" + projectID,
+            success: function (data) {
+                pwIsf.removeLayer();
+                $('#Select_Scope_Wo').empty();
+                $('#Select_Scope_Wo').append('<option value="-1"></option>');
+                $("#Select_Scope_Wo").prop("selectedIndex", -1);
+
+                $.each(data, function (i, d) {
+                    if (d.hasDeliverablePlan)
+                        $('#Select_Scope_Wo').append('<option data-planId="' + d.deliverablePlanId + '" data-vendor ="' + d.vendorCode + '" value="' + d.projectScopeID + '">' + d.scopeName + '</option>');
+                })
+
+                if (scopeID != undefined && scopeID != "null" && scopeID != null) {
+
+                    $("#Select_Scope_Wo").val(scopeID).trigger("change");
+
+                }
+
+            },
+
+            error: function (xhr, status, statusText) {
+                alert("Fail to get deliverables");
+                console.log('An error occurred');
+            }
+        });
+    }
+
+    function FillDropDownScopeAll() {
+        pwIsf.addLayer({ text: "Please wait ..." });
+        projectID = localStorage.getItem("views_project_id");
+        $.isf.ajax({
+            url: service_java_URL + "projectManagement/activeScopeByProject?projectId=" + projectID,
+            success: function (data) {
+                pwIsf.removeLayer();
+                $('#Select_Scope_Wo').empty();
+                $('#Select_Scope_Wo').append('<option value="-1"></option>');
+                $("#Select_Scope_Wo").prop("selectedIndex", -1);
+
+                $.each(data, function (i, d) {
+                    $('#Select_Scope_Wo').append('<option vendor ="' + d.vendorCode + '" value="' + d.projectScopeID + '">' + d.scopeName + '</option>');
+                })
+
+
+
+                if (scopeID != undefined && scopeID != "null" && scopeID != null) {
+
+                    $("#Select_Scope_Wo").val(scopeID).trigger("change");
+
+                }
+
+            },
+
+            error: function (xhr, status, statusText) {
+                alert("Fail to get deliverables");
+                console.log('An error occurred');
+            }
+        });
+    }
+
+    function addInput() {
+        $('#inputFile').html('');
+        let html = '<li><div class="row"><div class="col-lg-11" style="margin-bottom: 0px;"><div class="row"><div class="col-lg-4" style="margin-bottom: 0px;"><input onkeyup="giveTitle(this)" id="inputName" class="inputFileClass" type="text">'
+            + '</div><div class="col-lg-8" style="margin-bottom: 0px;"><input onkeyup="giveTitle(this)" id="inputUrl" class="inputFileClass" type="text"></div>'
+            + '</div></div><div class="col-lg-1" style="padding-left: 0px;margin-bottom: 0px;">'
+            + '<a title="Check URL" style="color:#367bab;cursor:pointer" onclick="checkFileURL(this)"> <i class="fa fa-lg fa-paper-plane"></i></a> <a title="Delete File" onclick="deleteFile(this)" style="color: #d9534f;cursor:pointer"><i class="fa fa-lg fa-trash"></i></a>'
+            + '</div></div></li>';
+        $('#inputFile').append(html);
+    }
+
+    function addMoreInputFiles() {
+        let html = '<li><div class="row"><div class="col-lg-11" style="margin-bottom: 0px;"><div class="row"><div class="col-lg-4" style="margin-bottom: 0px;"><input onkeyup="giveTitle(this)" id="inputName" class="inputFileClass" type="text">'
+            + '</div><div class="col-lg-8" style="margin-bottom: 0px;"><input onkeyup="giveTitle(this)" id="inputUrl" class="inputFileClass" type="text"></div>'
+            + '</div></div><div class="col-lg-1" style="padding-left: 0px;margin-bottom: 0px;">'
+            + '<a title="Check URL" style="color:#367bab;cursor:pointer" onclick="checkFileURL(this)"> <i class="fa fa-lg fa-paper-plane"></i></a> <a title="Delete File" onclick="deleteFile(this)" style="color: #d9534f;cursor:pointer"><i class="fa fa-lg fa-trash"></i></a>'
+            + '</div></div></li>';
+        $('#inputFile').append(html);
+    }
+
+    function validateNameAndUrl() {
+        let fileName = $("#editInputName").val();
+        let fileUrl = $("#editInputUrl").val();
+        if (fileName == "" || fileUrl == "" || fileName == null || fileUrl == null) {
+            pwIsf.alert({ msg: 'Please provide both Name and URL of the file!', type: 'warning' });
+            return false;
+        }
+        else if (!(/^(http|https|ftp):\/\/[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$/i.test(fileUrl))) {
+            pwIsf.alert({ msg: 'Invalid URL', type: 'warning' });
+            return false;
+        }
+
+        return true;
+    }
+
+    function validateFiles() {
+
+        let fileNameLength = $('#inputFile li').length;
+        let displayFileLength = $('#displayFiles li').length;
+        let filesArray = [];
+        if (fileNameLength == 0) {
+            pwIsf.alert({ msg: 'There is no file to add!', type: 'warning' });
+            return false;
+        }
+
+        for (let i = 0; i < fileNameLength; i++) {
+            let fileName = $("#inputFile li:eq(" + i + ") #inputName").val();
+            let fileUrl = $("#inputFile li:eq(" + i + ") #inputUrl").val();
+            if (fileName == "" || fileUrl == "" || fileName == null || fileUrl == null) {
+                pwIsf.alert({ msg: 'Please provide both Name and URL of the file!', type: 'warning' });
+                return false;
+            }
+
+            filesArray.push(fileName);
+        }
+        return true;
+
+    }
+
+    function showFiles() {
+        if (validateFiles()) {
+            let fileNameLength = $('#inputFile li').length;
+            let html = '';
+            for (let i = 0; i < fileNameLength; i++) {
+                let fileName = $("#inputFile li:eq(" + i + ") #inputName").val();
+                let fileUrl = $("#inputFile li:eq(" + i + ") #inputUrl").val();
+                html = "<li style='margin-bottom: 7px;'><a class='icon-edit' data-toggle='modal' data-target='#editInputFilesModal' title='Edit File' onclick='updateInputPopUp(\"" + fileName + "\",\"" + fileUrl + "\",this); getLocalGlobalURLs(\"editInputFilesModal\")'><i class='fa fa-edit'></i></a> <a onclick='deleteDisplayFile(this)' class='icon-delete' title='Delete File'><i class='fa fa-lg fa-trash-o'></i></a> &emsp;<a class='inputFileSelected' title='" + fileUrl + "'href='" + fileUrl + "' target='_blank'>" + fileName + "</a></li>";
+                $('#displayFiles').append(html);
+            }
+            $('#inputFilesModal').modal('hide');
+            $('#displayFilesDiv').show();
+            $('#inputName').val('');
+            $('#inputUrl').val('');
+        }
+
+    }
+
+    function updateInputPopUp(name, url, el) {
+        let index = $(el).closest('li').index();
+        $('#inputIndex').val('');
+        $('#editInputName').val('');
+        $('#editInputUrl').val('');
+        $('#editInputName').val(name);
+        $('#editInputUrl').val(url);
+        $('#editInputName').attr('title', name);
+        $('#editInputUrl').attr('title', url);
+        $('#inputIndex').val(index);
+
+    }
+
+    function updateInputFile() {
+        //if (validateNameAndUrl()) {
+        let index = $('#inputIndex').val();
+        let name = $('#editInputName').val();
+        let url = $('#editInputUrl').val();
+        $("#displayFiles li:eq(" + index + ") .inputFileSelected").attr('href', url);
+        $("#displayFiles li:eq(" + index + ") .inputFileSelected").attr('title', url);
+        $("#displayFiles li:eq(" + index + ") .inputFileSelected").html(name);
+        $('#editInputFilesModal').modal('hide');
+        $('#inputIndex').val('');
+        //}
+    }
+
+    function giveTitle(el) {
+        let title = $(el).val();
+        $(el).attr('title', title);
+    }
+
+    function getAspByVendor(vendorCode) {
+        return $.isf.ajax({
+            url: service_java_URL + "/aspManagement/getAspByVendor?vendorCode=" + vendorCode,
+            success: function (data) {
+                $.each(data, function (i, d) {
+                    $('#selectAspUserSignum').append('<option value="' + d.Signum + '">' + d.aspNameSignum + '</option>');
+                })
+            },
+            error: function (xhr, status, statusText) {
+                console.log("Fail " + xhr.responseText);
+            }
+        });
+    }
+
+    function selectScopeWo_onChange(selectObject) {
+        if (selectObject.value != "") {
+            $('#selectAspUserSignum').empty();
+            getAspByVendor($(selectObject.selectedOptions[0]).attr("vendor"));
+            FillDropDownWorkFlowByScope(selectObject.value);
+            $("#WO_name").val(selectObject.selectedOptions[0].text);
+            showAllDO();
+        }
+    }
+
+    function closeWFDetails() {
+        $('#Wfdetails1').hide();
+    }
+    function CreateWFDetails() {
+        $('#Wfdetails1').css('display', 'block');
+    }
+
+    function FillDropDownWorkFlowByScope(selectedScopeId) {
+
+        var serviceUrl = service_java_URL + "woManagement/getWFListForPlanDeliverablePlan?projectID=" + localStorage.getItem("views_project_id") + "&scopeID=" + selectedScopeId;
+        if (ApiProxy == true) {
+            serviceUrl = service_java_URL + "woManagement/getWFListForPlanDeliverablePlan?projectID=" + localStorage.getItem("views_project_id") + encodeURIComponent("&scopeID=" + selectedScopeId);
+        }
+        var domain = [];
+        var tech = [];
+        $.isf.ajax({
+            type: "GET",
+            url: service_java_URL + "projectManagement/activeScopeByProject?projectId=" + localStorage.getItem("views_project_id"),
+            success: function (data) {
+                $('#projID_DO').val(data[0].projectID);
+                 $.each(data, function (i, d) {
+                     if (d.projectScopeID == selectedScopeId) {
+                         $.each(d.domainTechList, function (c, j) {
+                             domain.push(j.domainID);
+                             tech.push(j.technologyID);
+                         });
+                     }
+                 });
+            },
+            error: function (msg) {
+
+            },
+            complete: function (msg) {
+                $('#domainSp').val(domain);
+                $('#techSp').val(tech);
+                setValuesToNEPartialView(null, 'create');
+            }
+        });
+
+        $.isf.ajax({
+            type: "GET",
+            url: serviceUrl,
+            success: function (data) {
+                $('#ep_box').show();
+
+                var html2 = '';
+                var html = '';
+                if (data.length != 0) {
+                    html2 = '<a onclick="closeWFDetails()" style="float: right;padding: 0px 5px;border: 1px solid;margin-left: 2px;color:lightcoral;position:absolute;right:0px;background-color:white;z-index:2;" title="Close WorkFlow Details"><i class="fa fa-times"></i></a>';
+                    html2 += '<table border="1">';
+                    html2 += '<tr><th>WorkFlow ID</th><th>WorkFlow Name</th><th>Version Number</th></tr>';
+
+                    $.each(data, function (i, d) {
+                        html2 += '<tr>'
+                        html2 += '<td width="50px">' + d.WFID + '</td>';
+                        html2 += '<td width="100px">' + d.WorkFlowName + '</td>';
+                        html2 += '<td width="25px">' + d.VersionNumber + '</td>';
+                        html2 += '</tr>';
+                    });
+                    html2 += '</table>';
+
+                    html += '<a onclick=CreateWFDetails()><i class="fa fa-info-circle fa-2x info_icon" title="Click Here For WorkFlow Details" ></i></a>';
+
+                    $('#Wfdetails1').hide();
+                }
+                else {
+                    $('#ep_box').hide();
+                }
+                $('#Wfdetails1').html('');
+                $('#Wfdetails1').append(html2);
+                $('#ep_box').html('');
+                $('#ep_box').append(html);
+            },
+            error: function (xhr, status, statusText) {
+                pwIsf.alert({ msg: xhr.responseJSON.errorMessage, type: 'error' });
+            },
+
+            complete: function (msg) {
+
+            }
+        });
+    }
+
+    function validateDate() {
+        var timeZone = localStorage.getItem("UserTimeZone");
+        if (timeZone == null || timeZone == "" || timeZone == undefined) {
+            timeZone = "Asia/Calcutta";
+        }
+        var now = new Date();
+        var today = moment(now.toString()).tz(timeZone).format();
+        var today1 = today.split("T")[0];
+        var time = today.split("T")[1];
+        var nextDay = new Date(today1);
+        nextDay.setDate(new Date(today1).getDate() + 1);
+        var formatedNextDate = formatted_date(nextDay);
+        var hour = parseInt(time.split(":")[0]);
+        var min = parseInt(time.split(":")[1]);
+        if (min < 30) {
+
+            if (hour < 10) {
+                hour.toString();
+                hour = ("0" + hour);
+            }
+            min = "30";
+        } else {
+            min = "00";
+            hour = hour + 1;
+            if (hour < 10) {
+                hour.toString();
+                hour = ("0" + hour);
+
+            }
+            if (hour == 24) {
+                hour = "00";
+
+            }
+        }
+        var curTime = hour + ":" + min + ":00";
+
+        var startDate = $('#Start_Date').val();
+        var startTimeNow = $('#start_time').val()
+        var errorFlag = false;
+        if (startTimeNow == "00:00:00" || curTime == "00:00:00") {
+            if ((startDate < today1) || (startDate == today1)) {
+                errorFlag = true;
+                $('#Start_Date').val(formatedNextDate);
+            }
+            $('#start_time').val(curTime).trigger('change');
+        }
+
+        if (startDate < today1) {
+
+            if (startTimeNow == "00:00:00" || curTime == "00:00:00") {
+                $('#Start_Date').val(formatedNextDate);
+                errorFlag = true;
+            }
+
+            $('#start_time').val(curTime).trigger('change');
+        }
+        else if (startDate == today1 || startDate == formatedNextDate) {
+            $('#start_time').val(curTime).trigger('change');
+        }
+
+        if (errorFlag == true) {
+            pwIsf.alert({ msg: "Cannot create a WorkOrder with previous date", type: "error" });
+        }
+    }
+
+    $(document).on("change", "#Select_WorkFlow_Wo", function () {
+        var flowChartDefId = this.value;
+
+        $.each(WorkOrderPopUpWorkFlowData, function (i, d) {
+
+            if (d.scopeId == $("#Select_Scope_Wo option:selected").val() && d.SubActivityFlowChartDefID == flowChartDefId) {
+
+                var version = d.VersionNumber;
+
+                var index = 1;
+                var versionName = d.WorkFlowName;
+                var domain = d.domain;
+                var subDomain = d.SubDomain;
+                var subServiceArea = d.SubServiceArea;
+                var tech = d.Technology;
+                var activity = d.Activity;
+                var subActivity = d.SubActivity;
+                var subActivityID = d.subactivityid;
+                var scopeName = d.ScopeName;
+                var slaHours = d.SLAHours;
+                scopeID = d.scopeId;
+                var flowchartdefid = d.SubActivityFlowChartDefID;
+
+                $("#WO_name").val(subActivity);
+                $("#slaHrs").val(slaHours);
+                //changeEndDate();
+
+                getExecutionPlans(subActivityID, version);
+                workOrderCreateModal(domain, subDomain, subServiceArea, tech, activity, subActivity, scopeName, scopeID, subActivityID, version, versionName, flowchartdefid, slaHours);
+            }
+        })
+
+
+    });
+
+    function closeWoPopUp() {
+        $('#modal_wo_creation').modal('hide');
+    }
+
+
+    //Deliverable Plan Work Order Creation
+    function showAllDO() {
+        $("#selectAspUserSignum").val("");
+        $(".recurrenceOrder").show();
+        $("#slaHrsDiv").show();
+        $("#assignUserDiv").show();
+        $("#planEndArea").show();
+        $("#woCountDiv").show();
+        $("#woCount").val('1');
+    }
+    //Individual Work Order Creation
+
+    $(document).on("change", "#Select_WorkFlow_Wo", function () {
+    });
+
+
+
+</script>
+<div id="createWO">
+    <span>
+        <a href="#" class="createWOPopUp icon-add" title="Create Deliverable Order Plan">DO <i class="fa fa-plus"></i></a>
+    </span>
+</div>
+<div class="modal fade " id="modal_wo_creation" role="dialog" aria-labelledby="myModalLabel" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog" role="document" style="width: 886px;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" onclick="closeModal();" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <div class="row"><h5 class="modal-title" id="scopeTitleModal">Deliverable Order Creation</h5></div>
+
+            </div>
+            <div class="modal-body" style="height:500px;overflow:hidden scroll;font-size:12px;text-transform:none;">
+
+                <div class="row">
+                    <input class="form-control" id="scopeID" type="hidden" />
+                    <input class="form-control" id="SubActivityID" type="hidden" />
+                    <input class="form-control" id="versionNumber" type="hidden" />
+                    <input class="form-control" id="versionName" type="hidden" />
+                    <input class="form-control" id="domainSp" type="hidden" />
+                    <input class="form-control" id="subvSp" type="hidden" />
+                    <input class="form-control" id="subDomainSp" type="hidden" />
+                    <input class="form-control" id="scopeSp" type="hidden" />
+                    <input class="form-control" id="techSp" type="hidden" />
+                    <input class="form-control" id="flowchartdefid" type="hidden">
+                    <input type="hidden" id="projID_DO" />
+                </div>
+
+                <div class="mandatory_Box">
+                    <div class="row">
+                        <div class="col-lg-4">
+                            <div class="form-group">
+
+                                <label><span class="reqFld">*</span>Deliverable</label>
+                                <select class="select2able select2-offscreen form-control" id="Select_Scope_Wo" onchange="selectScopeWo_onChange(this)"><option value="0">Select Deliverable</option></select>
+                                <div id="ep_box" style="float:right;"></div>
+                            </div>
+
+                            <label id="Scope_Name-Required" style="color:red; font-size:10px; text-align:center;"></label>
+                        </div>
+
+                        <div class="col-lg-4" style="margin-bottom:0px;">
+                            <div class="form-group">
+                                <label style="margin-left:10px">WorkOrder Name:</label>
+                                <div style="width: 20px;  margin-left: 1px; margin-top: -25px; font-size: 17px; color:red;">*</div>
+                                <input class="form-control" placeholder="" id="WO_name">
+
+                            </div>
+                            <label id="WO_name-Required" style="color:red; font-size:10px; text-align:center;"></label>
+                        </div>
+
+                        <div id="woCountDiv" class="col-lg-3">
+                            <div class="form-group">
+                                <label id="woVol" style="margin-left:10px">DO Volume :</label>
+                                <div style="width: 20px;  margin-left: 1px; margin-top: -25px; font-size: 17px; color:red;">*</div>
+                                <input id="woCount" class="form-control" style="width:50px;" type="number" value="1" min="1" max="20" onblur="checkNumber(this)">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+
+                        <div class="col-lg-6 ep_box">
+
+                            <div id="Wfdetails1" style="position: absolute;background-color: white;font-size:small;width:300px;z-index: 1;top: -51px;display:none;height:100px;overflow-x:auto;overflow-y:auto;box-shadow:4px 4px grey">
+
+                            </div>
+
+                        </div>
+
+
+                    </div>
+
+                    <div class="row" id="planDtArea">
+                        <div class="col-lg-3" style="margin-bottom:0px;cursor: pointer;">
+                            <div class="form-group">
+                                <label style="margin-left:1px"><i class="fa fa-calendar"></i> Plan Start Date</label>
+                                <div style="width: 20px;  margin-left: 13px; margin-top: -25px; font-size: 17px; color:red;">*</div>
+                                <input type="text" name="DateResigned" id="Start_Date" class="form-control" data-date-format='yyyy-mm-dd' placeholder="yyyy-mm-dd" onchange="validateDate();" />
+                            </div>
+
+                            <div class="row">
+                                <label id="Start_Date-Required" style="color:red; font-size:10px; text-align:center; margin-left:2px"></label>
+                            </div>
+
+                        </div>
+
+                        <div class="col-lg-3" style="margin-bottom:0px;">
+                            <div class="form-group">
+                                <label style="margin-left:10px">&nbsp Plan Start Time</label>
+                                <div style="width: 20px;  margin-left: 1px; margin-top: -25px; font-size: 17px; color:red;">*</div>
+                                <select class="select2able select2-offscreen" id="start_time" onchange="validateTime();">
+                                    <option value="0"></option>
+                                    <option value="00:00:00">00:00:00</option>
+                                    <option value="00:30:00">00:30:00</option>
+                                    <option value="01:00:00">01:00:00</option>
+                                    <option value="01:30:00">01:30:00</option>
+                                    <option value="02:00:00">02:00:00</option>
+                                    <option value="02:30:00">02:30:00</option>
+                                    <option value="03:00:00">03:00:00</option>
+                                    <option value="03:30:00">03:30:00</option>
+                                    <option value="04:00:00">04:00:00</option>
+                                    <option value="04:30:00">04:30:00</option>
+                                    <option value="05:00:00">05:00:00</option>
+                                    <option value="05:30:00">05:30:00</option>
+                                    <option value="06:00:00">06:00:00</option>
+                                    <option value="06:30:00">06:30:00</option>
+                                    <option value="07:00:00">07:00:00</option>
+                                    <option value="07:30:00">07:30:00</option>
+                                    <option value="08:00:00">08:00:00</option>
+                                    <option value="08:30:00">08:30:00</option>
+                                    <option value="09:00:00">09:00:00</option>
+                                    <option value="09:30:00">09:30:00</option>
+                                    <option value="10:00:00">10:00:00</option>
+                                    <option value="10:30:00">10:30:00</option>
+                                    <option value="11:00:00">11:00:00</option>
+                                    <option value="11:30:00">11:30:00</option>
+                                    <option value="12:00:00">12:00:00</option>
+                                    <option value="12:30:00">12:30:00</option>
+                                    <option value="13:00:00">13:00:00</option>
+                                    <option value="13:30:00">13:30:00</option>
+                                    <option value="14:00:00">14:00:00</option>
+                                    <option value="14:30:00">14:30:00</option>
+                                    <option value="15:00:00">15:00:00</option>
+                                    <option value="15:30:00">15:30:00</option>
+                                    <option value="16:00:00">16:00:00</option>
+                                    <option value="16:30:00">16:30:00</option>
+                                    <option value="17:00:00">17:00:00</option>
+                                    <option value="17:30:00">17:30:00</option>
+                                    <option value="18:00:00">18:00:00</option>
+                                    <option value="18:30:00">18:30:00</option>
+                                    <option value="19:00:00">19:00:00</option>
+                                    <option value="19:30:00">19:30:00</option>
+                                    <option value="20:00:00">20:00:00</option>
+                                    <option value="20:30:00">20:30:00</option>
+                                    <option value="21:00:00">21:00:00</option>
+                                    <option value="21:30:00">21:30:00</option>
+                                    <option value="22:00:00">22:00:00</option>
+                                    <option value="22:30:00">22:30:00</option>
+                                    <option value="23:00:00">23:00:00</option>
+                                    <option value="23:30:00">23:30:00</option>
+                                </select>
+                            </div>
+                        </div>
+                        <script>
+                            function addDays(myDate, days) {
+                                return new Date(myDate.getTime() + days * 24 * 60 * 60 * 1000);
+                            }
+                        </script>
+                        <div class="col-lg-5" style="margin-bottom:0px;">
+                            <label style="margin-left:10px">Priority:</label>
+                            <div style="width: 20px;  margin-left: 1px; margin-top: -25px; font-size: 17px; color:red;">*</div>
+                            <div class="btn-group priority" data-toggle="buttons">
+                                <label class="btn btn-danger btn-sm ">
+                                    <input type="radio" name="radio_priority" id="Critical" value="Critical">Critical
+                                </label>
+                                <label class="btn btn-warning btn-sm ">
+                                    <input type="radio" name="radio_priority" id="High" value="High">High
+                                </label>
+                                <label class="btn btn-success btn-sm ">
+                                    <input type="radio" name="radio_priority" id="Normal" value="Normal" checked="checked">Normal
+                                </label>
+                                <label class="btn btn-primary btn-sm ">
+                                    <input type="radio" name="radio_priority" id="Low" value="Low">Low
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-lg-7" id="assignUserDiv" style="display:none;margin-bottom:0px; overflow: auto;padding-left:0px;">
+                            <div class="form-group" id="nonAspForm">
+                                <a class="text-danger"></a>
+                                <label style="margin-left:10px">Assign to User:</label>
+                                <a onclick="getAllUsers()" id="allUserAnchor" style="color:blue;font-size:10px;cursor:pointer;"><i class="fa fa-lock" style="color:black"></i>(Click to unlock all users)</a>
+                                <a onclick="getWFUserByProject()" id="userByProjAnchor" style="color:blue;font-size:10px;cursor:pointer;display:none;">
+                                    <i class="fa fa-undo" style="color:black;"></i>(Click to get user mapped to project)
+                                </a>
+                                <div id="selectallSignumdiv">
+                                    <div style="display:flex">
+                                        <input onkeyup="changeWOCount(this)" id="selectUserAllSignum" style='width:100%' placeholder="Signum/Name" title="Minimum 3 characters required!" />@*&emsp; <input id="woCountAutoComplete" class="woCountClass" style="width:50px;" type="number" value="1" min="1" max="20" onblur="checkNumber(this)" />*@
+                                    </div>
+                                    <label id="selectUserAllSignum-required" style="color:red;margin-top: 0px; font-size:10px; text-align:center;"></label>
+                                    <br />
+                                    <b>Minimum 3 characters required.(choose signum from the list)</b>
+
+                                </div>
+                                <div id="emptysignum-message" style="display:none; color: red">Please select a Signum from the list</div>
+                                <div id="signumbyprojectdiv" class="col-lg-12" style="display:flex;">
+                                    <select onchange="changeWOCount(this)" class="select2able select2-offscreen assignuser" id="select_assign_to_user"></select>@*&emsp; <input id="woCount" class="woCountClass" style="width:50px;display:none" type="number" min="1" max="20" onblur="checkNumber(this)" />*@
+                                </div>
+
+                                <div class="row">
+                                    <label id="select_assign_to_user-Required" style="color:red;margin-top: 14px; font-size:10px; text-align:center;"></label>
+                                </div>
+                            </div>
+                            <div class="form-group" id="aspForm">
+                                <a class="text-danger"></a><label style="margin-left:10px">Assign to ASP User:</label>
+                                <div id="selectAspSignumDiv">
+                                    <select onchange="changeWOCount(this)" class="select2 select2able" id="selectAspUserSignum" style='width:100%' placeholder="Signum/Name"></select>
+                                    <br />
+                                    <br />
+                                    (Choose signum from the list.)
+                                </div>
+                                <div id="emptysignum-message" style="display:none; color: red">Please select an Signum from the list</div>
+                                <div class="row">
+                                    <label id="select_assign_to_user-Required" style="color:red;margin-top: 14px; font-size:10px; text-align:center;"></label>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="row">
+
+                            <div class="col-lg-6 recurrenceOrder" style="margin-bottom:0px;display:none;">
+                                <i id="faDwn" class="fa fa-angle-right" style="color:blue;font-size:12px;"></i>
+                                <i id="faUp" style="display:none;color:red;font-size:12px;" class="fa fa-angle-left"></i>
+                                <button class="btn btn-link" onclick="openRecurrence()">Recurrence</button>
+
+                                <div class="btn-group recurrence" data-toggle="buttons" id="recGrp" style="display:none;">
+                                    <label class="btn btn-primary btn-sm">
+                                        <input type="radio" name="options" value="Weekly" autocomplete="off" /> Weekly
+                                    </label>
+                                    <label class="btn btn-primary btn-sm">
+                                        <input type="radio" name="options" value="Daily" autocomplete="off" /> Daily
+                                    </label>
+                                    <label class="btn btn-primary btn-sm">
+                                        <input type="radio" name="options" value="Hourly" autocomplete="off" /> Hourly
+                                    </label>
+                                </div>
+                                <div class="row">
+                                    <label id="periodReq" style="color:red;margin-top: 14px; font-size:10px; text-align:center;"></label>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-6" style="margin-bottom:0px;cursor: pointer; display:none" id="endDateDiv">
+                                <div class="form-group">
+                                    <label><i class="fa fa-calendar"></i> &nbsp End By</label>
+                                    <div style="width: 20px;  margin-left: 13px; margin-top: -25px; font-size: 17px; color:red;">*</div>
+                                    <input type="text" name="EndDate" id="End_Date" class="form-control" data-date-format='yyyy-mm-dd' placeholder="yyyy-mm-dd" />
+                                </div>
+
+                                <div class="row">
+                                    <label id="End_Date-Required" style="color:red; font-size:10px; text-align:center;"></label>
+                                </div>
+                            </div>
+                            <div class="col-md-12" id="ContentDaily" style="display:none;">
+
+                                <div class="btn-group daily" data-toggle="buttons">
+                                    <label class="btn btn-warning ">
+                                        <input type="checkbox" name="checkbox_daily" id="checkbox_daily" value="Monday">Mon
+                                    </label>
+                                    <label class="btn btn-warning ">
+                                        <input type="checkbox" name="checkbox_daily" id="checkbox_daily" value="Tuesday">Tue
+                                    </label>
+                                    <label class="btn btn-warning ">
+                                        <input type="checkbox" name="checkbox_daily" id="checkbox_daily" value="Wednesday">Wed
+                                    </label>
+                                    <label class="btn btn-warning ">
+                                        <input type="checkbox" name="checkbox_daily" id="checkbox_daily" value="Thursday">Thu
+                                    </label>
+                                    <label class="btn btn-warning ">
+                                        <input type="checkbox" name="checkbox_daily" id="checkbox_daily" value="Friday">Fri
+                                    </label>
+                                    <label class="btn btn-warning ">
+                                        <input type="checkbox" name="checkbox_daily" id="checkbox_daily" value="Saturday">Sat
+                                    </label>
+                                    <label class="btn btn-warning ">
+                                        <input type="checkbox" name="checkbox_daily" id="checkbox_daily" value="Sunday">Sun
+                                    </label>
+                                </div>
+
+                            </div>
+
+                            <div class="col-md-12" id="ContentHourly" style="display:none;">
+
+                                <div class="btn-group hourly" data-toggle="buttons">
+                                </div>
+
+                            </div>
+
+                            <div class="col-md-12" id="ContentWeekly" style="display:none;">
+
+                                <div class="btn-group weekly" data-toggle="buttons">
+                                    <label class="btn btn-primary ">
+                                        <input type="radio" name="radio_weekly" id="mon" value="Monday">Mon
+                                    </label>
+                                    <label class="btn btn-primary ">
+                                        <input type="radio" name="radio_weekly" id="tue" value="Tuesday">Tue
+                                    </label>
+                                    <label class="btn btn-primary ">
+                                        <input type="radio" name="radio_weekly" id="wed" value="Wednesday">Wed
+                                    </label>
+                                    <label class="btn btn-primary ">
+                                        <input type="radio" name="radio_weekly" id="thu" value="Thursday">Thu
+                                    </label>
+                                    <label class="btn btn-primary ">
+                                        <input type="radio" name="radio_weekly" id="fri" value="Friday">Fri
+                                    </label>
+                                    <label class="btn btn-primary ">
+                                        <input type="radio" name="radio_weekly" id="sat" value="Saturday">Sat
+                                    </label>
+                                    <label class="btn btn-primary ">
+                                        <input type="radio" name="radio_weekly" id="sun" value="Sunday">Sun
+                                    </label>
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <label style="margin-left:10px;opacity:0.5">Comments:</label>
+                        <div class="commenting-field main">
+                            <div class="col-lg-1"><i class="fa fa-user profile-picture"></i></div>
+                            <div class="textarea-wrapper">
+                                <div><textarea id="commentsBox" class="textarea edit" placeholder="Add any additional comment for this Deliverable Order (Optional)"></textarea></div>
+                            </div>
+                            <div class="row">
+                                <label id="comments-Required" style="color:red; font-size:10px; text-align:center;"></label>
+                            </div>
+                        </div>
+                    </div>
+                    <a id="slideUp" class="btn btn-link" onclick="createTransition()" style="color:blue;font-size:10px"><i class="fa fa-angle-double-up" style="color:blue"></i> &nbsp;&nbsp;Select Network Elements for deliverable order(Non-mandatory)</a>
+                    <a id="slideDwn" class="btn btn-link" onclick="resetTransition()" style="display:none;color:green;font-size:10px"><i class="fa fa-angle-double-down" style="color:green"></i>&nbsp;&nbsp; Go Back</a>
+
+                    <div class="node_box" style="display:none;">
+                        <hr />
+                        <div id="mainDivNEAddEdit">
+                            @Html.Partial("_NetworkElementAddEdit", "create")
+                        </div>
+                        <hr />
+                        <div class="row" style="">
+                            <div class="col-md-12">
+                                <div>
+                                    <input type="checkbox" id="nodeWise" name="interest" value="" @*onclick="userWiseNodeSelectOtion()"*@>
+                                    <label style="color:red">Network Element wise deliverable order Creation</label>&nbsp;&nbsp;<i data-toggle="tooltip" title="Check this only for Network Element wise work order for single user. This will increase number of Work Order" class="fa fa-info-circle"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="displayFilesDiv" style="display:none;">
+                    <hr />
+                    <div>
+                        <label style="color:#2369c0">INPUT FILE URLs ADDED :</label>
+                        <ul id="displayFiles" style="list-style-type: unset"></ul>
+                    </div>
+                    <hr />
+                </div>
+
+                <div class="modal-footer" style="padding:8px;">
+                    <button id="inputFilesWO" data-toggle="modal" data-target="#inputFilesModal" class="btn btn-primary" onclick="addInput(); getLocalGlobalURLs('inputFilesModal')">Add Input File URL</button>
+                    <button id="saveWorkOrder" class="btn btn-primary" type="submit" onclick="createWorkOrderWrkFlow($('#scopeID').val(), $('#SubActivityID').val(), $('#versionNumber').val(), $('#flowchartdefid').val());">Save</button>
+                    @*<a id="submitModal" class="btn btn-primary" onclick="modalClose()">Close</a>*@
+                    <button id="closeModal" type="button" class="btn btn-default" onclick="closeModal(); ">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="inputFilesModal" role="dialog" style="font-size:12px;text-transform:none;">
+    <div class="modal-dialog" style="width:750px">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Add Input File URLs</h4>
+            </div>
+            <div class="modal-body inputFilesDiv">
+                <button class="btn btn-xs btn-success" onclick="addMoreInputFiles()"><i class="fa fa-plus"></i> Add More URLs</button>
+
+                <div class="row" style="margin-left: 0px;margin-right: 0px;">
+                    <ul id="inputFileHeaders" style="padding-left: 0px;list-style-type: none;">
+                        <li><div class="row"><div class="col-lg-11" style="margin-bottom: 0px;"><div class="row"><div class="col-lg-4" style="margin-bottom: 0px;">File Name</div><div class="col-lg-8" style="margin-bottom: 0px;">File URL</div></div></div><div class="col-lg-1" style="padding-left: 0px;margin-bottom: 0px;">Actions</div></div></li>
+                    </ul>
+
+                    <ul id="inputFile" style="padding-left: 0px;list-style-type: none;"></ul>
+                </div>
+                <button class="btn btn-xs btn-primary showLocalGlobal" onclick="showLocalGlobalURLs('inputFilesModal')" title="View all local and global URLs"><i class="fa fa-eye"></i> Show Local/Global URLs</button>
+                <button class="btn btn-xs btn-danger hideLocalGlobal" onclick="hideLocalGlobalURLs('inputFilesModal')" title="Hide all local and global URLs" style="display:none"><i class="fa fa-eye-slash"></i> Hide Local/Global URLs</button>
+                <div class="panel panel-default localGlobalURLTables" style="display:none">
+                    <div class="panel-heading" style="padding-bottom: 0px;">
+                        <div class="row">
+                            <div class="col-lg-6" style="margin-bottom: 0px;text-align: center;">
+                                <h4>Global URLs</h4>
+                            </div>
+                            <div class="col-lg-6" style="margin-bottom: 0px;text-align: center;">
+                                <h4>Local URLs</h4>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel-body" style="background: linear-gradient(#e8e8e8, #e8e8e8) no-repeat center/1.5px 100%;">
+
+                        <div class="row">
+
+                            <div class="col-lg-6">
+                                <div class="table-responsive globalURLTableAreaWOCreation" style="width:100%; overflow:auto">
+
+                                    <table class="table table-bordered table-striped table-hover globalURLTableWOCreation">
+                                    </table>
+
+                                </div>
+
+                            </div>
+
+                            <div class="col-lg-6">
+                                <div class="table-responsive localURLTableArea" style="width:100%; overflow:auto">
+
+                                    <table class="table table-bordered table-striped table-hover localURLTable">
+                                    </table>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-footer" style="margin-top: 0px;padding-top: 0px;">
+                <button class="btn btn-primary" onclick="showFiles()">Add</button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div class="modal fade" id="editInputFilesModal" role="dialog" style="font-size:12px;text-transform:none;">
+    <div class="modal-dialog" style="width:750px">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-body" style="padding-bottom: 0px;">
+                <div class="row"><div class="col-lg-11" style="margin-bottom: 0px;"><div class="row"><div class="col-lg-4" style="margin-bottom: 0px;">File Name</div><div class="col-lg-8" style="margin-bottom: 0px;">File URL</div></div></div><div class="col-lg-1" style="padding-left: 0px;margin-bottom: 0px;">Actions</div></div>
+
+                <div class="row" style="margin-bottom: 10px;">
+                    <div class="col-lg-11" style="margin-bottom: 0px;">
+                        <div class="row">
+                            <div class="col-lg-4" style="margin-bottom: 0px;">
+                                <input id="editInputName" class="inputFileClass" type="text">
+                                <input onkeyup="giveTitle(this)" id="inputIndex" type="hidden">
+
+                            </div>
+                            <div class="col-lg-8" style="margin-bottom: 0px;">
+                                <input onkeyup="giveTitle(this)" id="editInputUrl" class="inputFileClass" type="text">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-1" style="padding-left: 0px;margin-bottom: 0px;">
+
+                        <a title="Check URL" style="color:#367bab;cursor:pointer" onclick="checkFileURL()"> <i class="fa fa-lg fa-paper-plane"></i></a>
+
+                    </div>
+                </div>
+                <button class="btn btn-xs btn-primary showLocalGlobal" onclick="showLocalGlobalURLs('editInputFilesModal')" title="View all local and global URLs"><i class="fa fa-eye"></i> Show Local/Global URLs</button>
+                <button class="btn btn-xs btn-danger hideLocalGlobal" onclick="hideLocalGlobalURLs('editInputFilesModal')" title="Hide all local and global URLs" style="display:none"><i class="fa fa-eye-slash"></i> Hide Local/Global URLs</button>
+                <div class="panel panel-default localGlobalURLTables" style="display:none">
+                    <div class="panel-heading" style="padding-bottom: 0px;">
+                        <div class="row">
+                            <div class="col-lg-6" style="margin-bottom: 0px;text-align: center;">
+                                <h4>Global URLs</h4>
+                            </div>
+                            <div class="col-lg-6" style="margin-bottom: 0px;text-align: center;">
+                                <h4>Local URLs</h4>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel-body" style="background: linear-gradient(#e8e8e8, #e8e8e8) no-repeat center/1.5px 100%;">
+
+                        <div class="row">
+
+                            <div class="col-lg-6">
+                                <div class="table-responsive globalURLTableAreaWOCreation" style="width:100%; overflow:auto">
+
+                                    <table class="table table-bordered table-striped table-hover globalURLTableWOCreation">
+                                    </table>
+
+                                </div>
+
+                            </div>
+
+                            <div class="col-lg-6">
+                                <div class="table-responsive localURLTableArea" style="width:100%; overflow:auto">
+
+                                    <table class="table table-bordered table-striped table-hover localURLTable">
+                                    </table>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-footer" style="margin-top: 0px;padding-top: 0px;">
+                <button class="btn btn-primary" onclick="updateInputFile()">Update File URL</button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!--  Modal to show all Local URLs(for that project) and Global URLs -->
+<div class="modal fade" id="allLocalGlobalUrl" role="dialog" style="font-size:12px;text-transform:none;z-index: 10000;">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header" style="padding-bottom: 0px;">
+                <div class="row">
+                    <div class="col-lg-6" style="margin-bottom: 0px;text-align: center;">
+                        <h4>Global URLs</h4>
+                    </div>
+                    <div class="col-lg-6" style="margin-bottom: 0px;text-align: center;">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4>Local URLs</h4>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-body" style="background: linear-gradient(#847f7f, #847f7f) no-repeat center/1px 100%;">
+
+                <div class="row">
+
+                    <div class="col-lg-6">
+                        <div class="table-responsive" id="globalURLTableAreaWOCreation" style="width:100%; overflow:auto">
+
+                            <table class="table table-bordered table-striped table-hover" id="globalURLTableWOCreation">
+                            </table>
+
+                        </div>
+
+                    </div>
+
+                    <div class="col-lg-6">
+                        <div class="table-responsive" id="localURLTableArea" style="width:100%; overflow:auto">
+
+                            <table class="table table-bordered table-striped table-hover" id="localURLTable">
+                            </table>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div>
+    @Html.Partial("_NetworkElementsDuplicatePopUp")
+</div>

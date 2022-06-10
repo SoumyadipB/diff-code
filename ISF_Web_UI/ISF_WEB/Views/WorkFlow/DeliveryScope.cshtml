@@ -1,0 +1,242 @@
+﻿
+@{
+    ViewBag.Title = "Delivery Scope";
+}
+@Scripts.Render("~/bundles/WorkFlow")
+<div id="content">
+    <section>
+        <div class="section-header">
+            <ol class="breadcrumb">
+                <li class="active">Delivery Scope</li>
+            </ol>
+        </div>
+        <div id="page-wrapper">
+            
+
+                <div class="container">
+                    <div class="panel-group" id="accordion">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h4 class="panel-title">
+                                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse1">Project</a>
+                                </h4>
+                            </div>
+                            <div id="collapse1" class="panel-collapse collapse in">
+                                <div class="panel-body">
+                                    Lorem ipsum dolor sit amet, consectetur adipisicing elit,
+                                    sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+                                    quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h4 class="panel-title">
+                                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse2">Deliverable</a>
+                                </h4>
+                            </div>
+                            <div id="collapse2" class="panel-collapse collapse">
+                                <div class="panel-body">
+                                    Lorem ipsum dolor sit amet, consectetur adipisicing elit,
+                                    sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+                                    quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h4 class="panel-title">
+                                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse3">Resource</a>
+                                </h4>
+                            </div>
+                            <div id="collapse3" class="panel-collapse collapse">
+                                <div class="panel-body">
+                                    Lorem ipsum dolor sit amet, consectetur adipisicing elit,
+                                    sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+                                    quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h4 class="panel-title">
+                                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse4">Delivery Execution Scope</a>
+                                </h4>
+                            </div>
+                            <div id="collapse4" class="panel-collapse collapse">
+                                <div class="panel-body">
+                                    <div class="col-lg-12">
+                                        <div class="col-lg-2">
+                                            <label>Domain:</label>
+                                            <select id="cbxDomain" class="select2able" onchange="getSubDomain();"></select>
+                                            <input type="text" id="txtDomain" value="" style="display:none;" />
+                                        </div>
+                                        <div class="col-lg-2">
+                                            <label>SubDomain:</label>
+                                            <select id="cbxSubDomain" class="select2able"></select>
+                                        </div>
+                                        <div class="col-lg-2">
+                                            <label>Service Area:</label>
+                                            <select id="cbxServiceArea" class="select2able" onchange="getSubServiceAreas();"></select>
+                                            <input type="text" id="txtServiceArea" value="" style="display:none;" />
+                                        </div>
+                                        <div class="col-lg-2">
+                                            <label>Sub Service Area:</label>
+                                            <select id="cbxSubServiceArea" class="select2able"></select>
+                                        </div>
+                                        <div class="col-lg-2">
+                                            <label>Technology:</label>
+                                            <select id="cbxTechnology" class="select2able" onchange="getSubTechnologies();"></select>
+                                            <input type="text" id="txtTechnology" value="" style="display:none;" />
+                                        </div>
+                                        <div class="col-lg-2">
+                                            <label>Activity:</label>
+                                            <select id="cbxActivity" class="select2able" onchange="getSubActivity();"></select>
+                                            <input type="text" id="txtActivity" value="" style="display:none;" />
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-lg-12">
+                                        <div class="col-lg-2">
+                                            <label>Sub Activity:</label>
+                                            <select id="cbxSubActivity" class="select2able">
+                                                <option value="0"></option>
+                                            </select>
+                                            <input type="text" id="txtSubActivity" value="" style="display:none;" />
+                                        </div>
+                                        <div class="col-lg-2">
+                                            <br>
+                                            <button id="btnSearch" type="button" class="btn btn-primary" onclick="searchWFAvailabilityforScope()">Search</button>
+                                        </div>
+                                        <div class="col-lg-8">
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-12">
+                                        <br />
+                                        <div style="display: block; overflow-x: auto;">
+                                            <div class="dataTable_wrapper">
+                                                <table class="table table-striped table-bordered table-hover" id="delSco_table_info">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Deliverable ID</th>
+                                                            <th>Deliverable Name</th>
+                                                            <th>Domain</th>
+                                                            <th>SubDomain</th>
+                                                            <th>Service Area</th>
+                                                            <th>Subservice Area</th>
+                                                            <th>Tecnhology</th>
+                                                            <th>Activity</th>
+                                                            <th>Subactivity</th>
+                                                            <th>WF Avbl</th>
+                                                            <th>Action</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody id="delSco_tBodyInfo"></tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+         
+            
+
+    </section>
+</div>
+
+
+<!-- Modal -->
+<div class="modal fade" id="ViewTask" role="dialog">
+    <div class="modal-dialog5">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Task View</h4>
+            </div>
+            <div class="modal-body">
+
+                <div id="content">
+                    <section>
+                        <div id="page-wrapper">
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    @*<div class="col-lg-2">
+                                        <label>Domain</label>
+                                        <form action="" method="get" id="Domain">
+                                            <input name="Domain" id="DomainText" type="text" />
+                                        </form>
+                                    </div>
+                                    <div class="col-lg-2">
+                                        <label>SubDomain</label>
+                                        <form action="" method="get" id="SubDomain">
+                                            <input name="SubDomain" id="SubDomainText" type="text" />
+                                        </form>
+                                    </div>
+                                    <div class="col-lg-2">
+                                        <label>Service Area</label>
+                                        <form action="" method="get" id="ServiceArea">
+                                            <input name="ServiceArea" id="ServiceAreaText" type="text" />
+                                        </form>
+                                    </div>
+                                    <div class="col-lg-2">
+                                        <label>Sub Service Area</label>
+                                        <form action="" method="get" id="SubServiceArea">
+                                            <input name="SubServiceArea" id="SubServiceAreaText" type="text" />
+                                        </form>
+                                    </div>
+                                    <div class="col-lg-2">
+                                        <label>Technology</label>
+                                        <form action="" method="get" id="Technology">
+                                            <input name="Technology" id="TechnologyText" type="text" />
+                                        </form>
+                                    </div>
+                                    <div class="col-lg-2">
+                                        <label>Activity</label>
+                                        <form action="" method="get" id="Activity">
+                                            <input name="Activity" id="ActivityText" type="text" />
+                                        </form>
+                                    </div>
+                                    <div class="col-lg-2">
+                                        <label>SubActivity</label>
+                                        <form action="" method="get" id="SubActivity">
+                                            <input name="SubActivity" id="SubActivityText" type="text" />
+                                        </form>
+                                    </div>*@
+                                    <br>
+                                    <table class="table table-striped table-bordered table-hover" id="tableTask">
+                                        <thead>
+                                            <tr>
+                                                <th>Task Name</th>
+                                                <th>Execution Type</th>
+                                                <th>Estd effort</th>
+                                                <th>Tool</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="tBodyTask"></tbody>
+                                    </table>
+                                    <center><button id="btnSearch" type="button" class="btn btn-primary">Ok</button></center>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+                    </section>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+
+    </div>
+</div>

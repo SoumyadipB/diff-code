@@ -1,0 +1,116 @@
+
+
+@{
+    ViewBag.Title = "ViewProfile";
+}
+
+@Scripts.Render("~/bundles/SelfService")
+<div class="col-lg-12">
+<div id="content" class="panel panel-default">
+   
+        <div class="panel panel-heading">
+               Employee Details
+        </div>
+        <div id="panel-body">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="widget-container fluid-height">
+
+                       
+                        @*First Column*@
+                        <div class="col-lg-4">
+                            <div class="form-group">
+                                <label>Signum</label>
+                                <input class="form-control" placeholder="Signum" id="self_employee_signum" readonly="readonly">
+                            </div>
+
+                            <div class="form-group">
+                                <label>Email</label>
+                                <input class="form-control" placeholder="Email" id="self_employee_email" readonly="readonly">
+                            </div>
+                           
+                            <div class="form-group">
+                                <label>Job Role</label>
+                                <input class="form-control" placeholder="Job Role" id="self_employee_jobRole" readonly="readonly">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Service Area</label>
+                                <input class="form-control" placeholder="Service Area" id="self_employee_serviceArea" readonly="readonly">
+                            </div>
+                            <div class="form-group">
+                                <label>Building</label>
+                                <input class="form-control" placeholder="Building" id="self_employee_officeBuilding" readonly="readonly">
+                            </div>
+                            <div class="form-group">
+                                <label>Contact (main)</label>
+                                <input class="form-control" placeholder="Contact Number" id="self_employee_contactNumber" readonly="readonly">
+                            </div>                          
+                        </div>
+
+                        @*Second Column*@
+                        <div class="col-lg-4">
+                            <div class="form-group">
+                                <label>Name</label>
+                                <input class="form-control" placeholder="Name" id="self_employee_employeeName" readonly="readonly">
+
+                            </div>
+                            <div class="form-group">
+                                <label>Personnel No</label>
+                                <input class="form-control" placeholder="Personnel No" id="self_employee_personnelNumber" readonly="readonly">
+                            </div>
+                            <div class="form-group">
+                                <label>Manager Signum</label>
+                                <input class="form-control" placeholder="Manager Signum" id="self_employee_managerSignum" readonly="readonly">
+                            </div>
+                            <div class="form-group">
+                                <label>Org. Unit</label>
+                                <input class="form-control" placeholder="Org.Unit" id="self_employee_unit" readonly="readonly">
+                            </div>
+                            <div class="form-group">
+                                <label>Job Family</label>
+                                <input class="form-control" placeholder="Job Family" id="self_employee_jobRoleFamily" readonly="readonly">
+                            </div>                           
+                            <div class="form-group">
+                                <label>City</label>
+                                <input class="form-control" placeholder="City" id="self_employee_city" readonly="readonly">
+                            </div>
+                        </div>
+
+                        @*Third Column*@
+                        <div class="col-lg-4">
+                           
+                            <div class="form-group">
+                                <label>Cost Center</label>
+                                <input class="form-control" placeholder="Cost Center" id="self_employee_costCenter" readonly="readonly">
+                            </div>
+                           
+                            <div class="form-group">
+                                <label>Functional Area</label>
+                                <input class="form-control" placeholder="Functional Area" id="self_employee_functionalArea" readonly="readonly">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>HR Location</label>
+                                <input class="form-control" placeholder="HR Location" id="self_employee_hrLocation" readonly="readonly">
+                            </div>
+                            
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+
+
+        </div>
+
+</div>
+</div>
+<script>
+    $(document).ready(function () {
+        disableFields();
+        getEmployeeDetailsBySignumViewProfile();
+    });
+</script>

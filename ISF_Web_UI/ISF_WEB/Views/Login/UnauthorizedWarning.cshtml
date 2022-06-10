@@ -1,0 +1,76 @@
+@{
+    ViewBag.Title = "Unautorized Access";
+}
+@{
+    Layout = null;
+}
+<link type="text/css" rel="stylesheet" href="~/Content/CSS/ericssonCSS.css" media="all" />
+<link type="text/css" rel="stylesheet" href="~/Content/CSS/style.css" media="all" />
+@Styles.Render("~/bundles/css/bootstrap")
+@Scripts.Render("~/bundles/jquery")
+@*@Scripts.Render("~/bundles/GetSessionVars")
+
+@Scripts.Render("~/bundles/config")*@
+@Scripts.Render("~/bundles/bootstrap")
+<html>
+
+<head>
+    <script>
+        $(document).ready(function () {
+            localStorage.clear();
+        })
+    </script>
+    <style>
+        hr.style14 {
+            border: 0;
+            height: 1px;
+            width: 70%;
+            margin-top: 8px;
+            background-image: -webkit-linear-gradient(left, #f0f0f0, #213c62, #f0f0f0);
+            background-image: -moz-linear-gradient(left, #f0f0f0, #213c62, #f0f0f0);
+            background-image: -ms-linear-gradient(left, #f0f0f0, #213c62, #f0f0f0);
+            background-image: -o-linear-gradient(left, #f0f0f0, #213c62, #f0f0f0);
+        }
+
+        .center-div {
+            position: absolute;
+            margin: auto;
+            top: 400px;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            height: 70%;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar navbar-fixed-top">
+        <div class="eaContainer-SystemBar container-fluid top-bar">
+            <div class="eaContainer-SystemBar-logo">
+                <div class="isf-heading" style="padding: 4px 0 0 35px;">ISF <span style="font-size:12px;">Integrated Service Flow</span></div>
+            </div>
+
+
+        </div>
+        <br />
+        <div class="center-div" style="text-align:center">
+            <div style="font-size: 35px;color: #132f58;">
+                &nbsp;You are not authorized to access the page!
+            </div>
+            <hr class="style14">
+            <br />
+            <div class="row" style="margin-bottom: 10px;">
+                <div>
+                    &nbsp;<a href="~/Home" class="btn btn-primary" role="button"><span style="font-size:18px;">Return to Home</span></a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+</body>
+</html>
+

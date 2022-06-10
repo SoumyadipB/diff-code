@@ -1,0 +1,562 @@
+﻿
+<style>
+
+    .filtersForShiftTimings a:hover {
+        background-color: #eeeeee;
+    }
+
+    .filtersForShiftTimings a.active {
+        background-color: #eeeeee;
+        text-decoration: none;
+        padding: 4px 0px 4px 0px;
+    }
+
+    .filtersForShiftTimings .divider {
+        border-right: 1px solid;
+        color: #cec8c8;
+    }
+
+    .filtersForShiftTimings .link {
+        margin: 0px 5px 0px 5px;
+        color: blue;
+    }
+
+    .filtersForShiftTimings {
+        width: auto;
+        text-align: center;
+        text-transform: capitalize;
+        background-color: #ffffffc2;
+        padding: 4px;
+        /*border: 1px solid;
+        border-radius: 10px;*/
+        border-color: #cec8c8;
+        font-size: 10px;
+        margin-top: 5px;
+    }
+</style>
+
+
+<script>
+
+    localStorage.setItem('sc', "<script src='~/Scripts/jquery - ui.min.js' />");
+    var signumArrTeamExplorer = [];
+    let afterSelectOnLayoutPage = function (textVal) {
+        console.log(textVal);
+        getDateOfISOWeekShift(textVal)
+    }
+    var formatted_date = function (date) {
+        var m = ("0" + (date.getMonth() + 1)).slice(-2); // in javascript month start from 0.
+        var d = ("0" + date.getDate()).slice(-2); // add leading zero
+        var y = date.getFullYear();
+        return y + '-' + m + '-' + d;
+    }
+
+    let getSdateAndEdateForShiftTimings = (text, el) => {
+        let durationText = text;
+
+        let startDate = 'NA';
+        let endDate = 'NA';
+
+        if (durationText.toLowerCase() != 'all') {
+
+            let formatted_date = function (date) {
+                var m = ("0" + (date.getMonth() + 1)).slice(-2); // in javascript month start from 0.
+                var d = ("0" + date.getDate()).slice(-2); // add leading zero
+                var y = date.getFullYear();
+                return y + '-' + m + '-' + d;
+            };
+
+            switch (durationText) {
+                case "Today":
+                    var today = new Date();
+                    var tomorrow = new Date(today);
+                    tomorrow.setDate(tomorrow.getDate() + 0);
+                    startDate = formatted_date(today);
+                    endDate = formatted_date(tomorrow);
+                    break;
+
+                case "This Week":
+                    var today = new Date();
+                    var day = today.getDay();
+                    var diff = today.getDate() - day + (day == 0 ? -6 : 1); // 0 for sunday
+                    var week_start_tstmp = today.setDate(diff);
+                    var week_start = new Date(week_start_tstmp);
+                    startDate = formatted_date(week_start);
+                    var week_end = new Date(week_start_tstmp);  // first day of week
+                    week_end = new Date(week_end.setDate(week_end.getDate() + 6));
+                    endDate = formatted_date(week_end);
+                    break;
+                case "Last Week":
+                    var today = new Date();
+                    var day = today.getDay();
+                    var diff = today.getDate() - day + (day == 0 ? -13 : -6);
+                    var week_start_tstmp = today.setDate(diff);
+                    var week_start = new Date(week_start_tstmp);
+                    startDate = formatted_date(week_start);
+                    var week_end = new Date(week_start_tstmp);  // first day of week
+                    week_end = new Date(week_end.setDate(week_end.getDate() + 6));
+                    endDate = formatted_date(week_end);
+                    break;
+                case "Next Week":
+                    var today = new Date();
+                    var day = today.getDay();
+                    var diff = today.getDate() + (8 - (day == 0 ? 7 : day));
+                    var week_start_tstmp = today.setDate(diff);
+                    var week_start = new Date(week_start_tstmp);
+                    startDate = formatted_date(week_start);
+                    var week_end = new Date(week_start_tstmp);  // first day of week
+                    week_end = new Date(week_end.setDate(week_end.getDate() + 5));
+                    endDate = formatted_date(week_end);
+                    break;
+                case "This Month":
+                    var today = new Date();
+                    y = today.getFullYear(), m = today.getMonth();
+                    var firstDay = new Date(y, m, 1);
+                    var lastDay = new Date(y, m + 1, 0);
+                    startDate = formatted_date(firstDay);
+                    endDate = formatted_date(lastDay);
+                    break;
+                case "Last Month":
+                    var today = new Date();
+                    y = today.getFullYear(), m = today.getMonth();
+                    var firstDay = new Date(y, m - 1, 1);
+                    var lastDay = new Date(y, m, 0);
+                    startDate = formatted_date(firstDay);
+                    endDate = formatted_date(lastDay);
+                    break;
+
+                case "Next Month":
+                    var today = new Date();
+                    y = today.getFullYear(), m = today.getMonth();
+                    var firstDay = new Date(y, m + 1, 1);
+                    var lastDay = new Date(y, m + 2, 0);
+                    startDate = formatted_date(firstDay);
+                    endDate = formatted_date(lastDay);
+                    break;
+
+                case "Last 3 Months":
+                    var today = new Date();
+                    y = today.getFullYear(), m = today.getMonth();
+                    var firstDay = new Date(y, m - 2, 1);
+                    var lastDay = new Date(y, m + 1, 0);
+                    startDate = formatted_date(firstDay);
+                    endDate = formatted_date(lastDay);
+                    break;
+            }
+        }
+        return { 'sdate': startDate, 'edate': endDate };
+    };
+
+    function getDatesFromDurationLinkForShiftTimings(durationText) {
+
+        $(".filtersForShiftTimings a").removeClass("active");
+
+        $('.filtersForShiftTimings a').each(function (e) { if ($(this).text() == durationText) { $(this).addClass('active'); } });
+
+        let getDates = getSdateAndEdateForShiftTimings(durationText);
+
+        getSavedTimingsDetailsForView(getDates.sdate, getDates.edate);
+
+
+
+    }
+
+
+    function deleteSelectedShiftTimings(shiftId, signumDelete, currentStartDate) {
+        //shiftId = 3314;
+        let startDate = currentStartDate;
+        pwIsf.confirm({
+            title: 'Delete This Shift', msg: `Are you sure to delete #(${shiftId})?`,
+            'buttons': {
+                'Yes': {
+                    'action': function () {
+
+                        let signum = signumGlobal;
+
+                        $.isf.ajax({
+                            url: service_java_URL + `activityMaster/deleteShiftTimmingbyID?shiftId=${shiftId}&startDate=` + startDate + `&signum=${signumDelete}`,
+                            type: 'POST',
+                            success: function (data) {
+                                //console.log(data);
+                                if (data) {
+                                    let durationText = $(".filtersForShiftTimings a.active").text();
+                                    let getDates = getSdateAndEdateForShiftTimings(durationText);
+                                    getSavedTimingsDetailsForView(getDates.sdate, getDates.edate);
+                                } else {
+                                    pwIsf.alert({ msg: 'Something went wrong.', type: 'warning' });
+                                }
+                            },
+
+                            complete: function (xhr, statusText) {
+
+                            },
+                            error: function (xhr, status, statusText) {
+
+                            }
+
+                        });
+
+
+                    },
+                    'class': 'btn btn-danger'
+                },
+                'No': { 'action': function () { }, 'class': 'btn btn-success' },
+
+            }
+        });
+
+
+
+    }
+
+    function getSavedTimingsDetailsForView(sdate, edate) {
+        let savedSavedTimingsDataTable;
+
+        $('#table_area_for_saved_timings').empty();
+        $('#table_area_for_saved_timings').html(`<table id="table_for_saved_timings" class="responsive table table-bordered table-hover" cellspacing="0" ></table>`);
+        let signum = $('#shiftSignum').val();
+        let startDate = sdate; // yyyy-mm-dd
+        let endDate = edate;
+        let timeZone = localStorage.getItem("UserTimeZone");
+        var service_URL = service_java_URL + "activityMaster/getShiftTimmingByDate?signum=" + signum + "&startDate=" + startDate + "&endDate=" + endDate + "&timeZone=" + timeZone;
+        if (ApiProxy == true) {
+            var service_URL = service_java_URL + "activityMaster/getShiftTimmingByDate?" + encodeURIComponent("signum=" + signum + "&startDate=" + startDate + "&endDate=" + endDate + "&timeZone=" + timeZone);
+        }
+        $.isf.ajax({
+            url: service_URL,
+            success: function (data) {
+                createTable(data);
+                configureDataTable();
+
+            },
+
+            complete: function (xhr, statusText) {
+
+            },
+            error: function (xhr, status, statusText) {
+
+            }
+
+        });
+
+
+        let createTable = (getData) => {
+
+            let thead = `<thead>
+                            <tr>
+                            <th>Shift Start Year/Week</th>
+                            <th>Shift End Year/Week</th>
+                            <th>Shift Start Time/IST</th>
+                            <th>Shift End Time/IST</th>
+                            <th>Shift Start Date</th>
+                            <th>Shift End Date</th>
+                            <th>Time Zone</th>
+                            <th>Action</th>
+                            </tr>
+                            </thead>`;
+            let tbody = ``;
+
+            for (let i in getData) {
+                let endWeek = '';
+                let endDate = '';
+                if (getData[i].endWeek == 4227) {
+                    endWeek = '-';
+                    endDate = '-';
+                }
+                else {
+                    endWeek = getData[i].endWeek;
+                    endDate = getData[i].shiftISTEndDate;
+                    startDate = getData[i].shiftISTStartDate;
+                }
+
+                tbody += `  <tr id="shiftTableTr_${getData[i].shiftID}">
+                            <td>${getData[i].startWeek}</td>
+                            <td>${endWeek}</td>
+                            <td>${getData[i].start_IstStart_Date}</td>
+                            <td>${getData[i].end_IstEnd_Date}</td>
+                            <td>${startDate}</td>
+                            <td>${endDate}</td>
+                            <td>${getData[i].timeZone}</td>
+                            <td><a class="icon-delete lsp" title="Delete Shift" onclick="deleteSelectedShiftTimings(${getData[i].shiftID},'${signum}', '${getData[i].shiftISTStartDate}')"><i class="fa fa-trash-o"></i></a></td>
+                            </tr>`;
+
+            }
+
+            $("#table_for_saved_timings").html(thead + '<tbody>' + tbody + '</tbody>');
+
+        };
+
+
+        let configureDataTable = () => {
+
+            if ($.fn.dataTable.isDataTable("#table_for_saved_timings")) {
+                savedSavedTimingsDataTable.destroy();
+            }
+
+            savedSavedTimingsDataTable = $('#table_for_saved_timings').DataTable({
+                searching: true,
+                responsive: true,
+                retrieve: true,
+                destroy: true,
+                "pageLength": 10,
+                "info": false,
+                'columnDefs': [
+                    {
+                        "searchable": false,
+                        "targets": [7]
+                    },
+                    {
+                        "searchable": true,
+                        "targets": [0, 1, 2, 3, 4, 5, 6]
+                    }
+                ],
+                "aoColumnDefs": [
+                    { 'bSortable': false, 'aTargets': ['no-sort'] }
+                ],
+                'rowsGroup': [0, 1],
+                dom: 'Bfrtip',
+                buttons: [
+                    //'colvis', 'excelHtml5'
+                ],
+
+                //initComplete: function ()
+
+            });
+
+        };
+
+    }
+
+
+    $(document).ready(function () {
+
+
+
+        $('#datepickerShift').weekpicker({
+            dateFormat: 'dd/mm/yy',
+            showOthersMonths: true,
+            selectOtherMonths: true,
+            showWeek: true,
+            weekFormat: "w/oo"
+        });
+
+        $("#shiftModal").on('shown.bs.modal', function (e) {
+
+        });
+
+        $('#shiftModal').on('hidden.bs.modal', function () {
+
+        })
+
+
+
+        $('#ShiftBody .nav-tabs a').on('shown.bs.tab', function (event) {
+            selectedTabHref = $(event.target).attr('href');
+
+            if (selectedTabHref == '#savedTimings_tab_2') {
+                let durationText = "This Month";
+                let getDates = getSdateAndEdateForShiftTimings(durationText);
+                $(".filtersForShiftTimings a").removeClass("active");
+                $('.filtersForShiftTimings a').each(function (e) { if ($(this).text() == durationText) { $(this).addClass('active'); } });
+                getSavedTimingsDetailsForView(getDates.sdate, getDates.edate);
+
+            }
+
+            if (selectedTabHref == '#shiftTimingAdd_tab_1') {
+                $('#datepickerShift_weekpicker').val('');
+            }
+
+        });
+
+
+
+    });
+</script>
+<div id="shiftModal" class="modal" role="dialog" style="top:70px;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title text-center">Shift Timing Window - <span id="shiftTitle" style="font-size:14px;"></span></h4>
+        </div>
+        <div class="modal-body" id="ShiftBody">
+
+
+            <ul class="nav nav-tabs">
+                <li class="active"><a data-toggle="tab" href="#shiftTimingAdd_tab_1">Shift Timing</a> </li>
+                <li id="savedTimingsTab"><a data-toggle="tab" href="#savedTimings_tab_2">Saved Timings</a></li>
+
+            </ul>
+
+            <div class="tab-content">
+                <!-- START - tab shift timing add -->
+                <div id="shiftTimingAdd_tab_1" class="tab-pane fade in active">
+                    <div id="tabNewShift">
+                        <label style="padding-left: 20px; margin-bottom: 0px;margin-top: 15px;">Add New Shift Time :</label>
+                        <div class="row">
+                            <input type="hidden" id="shiftSignum" />
+                            <input type="hidden" id="singleOrMultiple" />
+                            <input type="hidden" id="multipleSignums" />
+                            <input type="hidden" id="weekNumberSelected" />
+                            <input type="hidden" id="startDateSelected" />
+                            <input type="hidden" id="endDateSelected" />
+                            <div class="col-lg-6" style="margin-bottom:0px;cursor: pointer;padding-top: 10px;">
+                                <div class="form-group">
+                                    <label style="margin-left:1px"><i class="fa fa-clock-o" style="font-size:17px;"></i> <span style="font-size: 17px;width: 20px; color:red;">*</span>Plan Start Time</label>
+                                    <input type="time" id="shiftStartTime" class="form-control"  value="00:00" oninput="endTimeChange(this)" />
+                                </div>
+
+
+                            </div>
+                            <div class="col-lg-6" style="margin-bottom:0px;cursor: pointer;padding-top: 10px;">
+                                <div class="form-group">
+                                    <label style="margin-left:1px"><i class="fa fa-clock-o" style="font-size:17px;"></i> <span style="font-size: 17px;width: 20px; color:red;">*</span>Plan End Time</label>
+                                    <input type="time" id="shiftEndTime" class="form-control"  value="00:00"  />
+                                </div>
+                            </div>
+                            <div class="row">
+                                <label id="Start_Time-Required" style="color:red; margin-left: 20px;display:none; font-size:10px; text-align:center;"></label>
+                            </div>
+                            <div class="row">
+                                <label id="End_Time-Required" style="color:red; margin-left: 20px;display:none; font-size:10px; text-align:center;"></label>
+                            </div>
+                            <div class="row">
+                                <label id="StartLessThanEnd" style="color:red; margin-left: 20px;display:none; font-size:10px; text-align:center;"></label>
+                            </div>
+                        </div>
+
+
+                        <label id="timeLabelDD" style="padding-left: 20px;">Select Time Zone :</label>
+
+                        <div class="row">
+
+                            <div class="col-lg-6" style="margin-bottom:0px;">
+                                <div class="form-group" style="margin-bottom: 2px;">
+                                    <label style="margin-left:10px"><span style="font-size: 17px;width: 20px; color:red;">*</span>Select Week</label>
+                                    <div id="shiftClick" style="width: 150px;"><input id="datepickerShift" type="text" class="form-control" /></div>
+                                </div>
+                                <div class="row">
+                                    <label id="timeWeek-Required" style="margin-left: 10px;color:red; display:none; font-size:10px; text-align:center;"></label>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-6" id="timeZoneDD" style="margin-bottom:0px;">
+                                <div class="form-group" style="margin-bottom: 2px;">
+                                    <label style="margin-left:10px"><span style="font-size: 17px;width: 20px; color:red;">*</span>Time Zone:</label>
+                                    <select class="select2able select2-offscreen" id="time_zone">
+                                        <option value="0">Select Time Zone</option>
+                                    </select>
+                                </div>
+                                <div class="row">
+                                    <label id="timeZone-Required" style="margin-left: 10px;color:red; display:none; font-size:10px; text-align:center;"></label>
+                                </div>
+                            </div>
+                            <div class="col-lg-6" id="timeZoneHome" style="margin-bottom:0px;">
+                                <div class="form-group" style="margin-bottom: 2px;">
+                                    <label style="margin-left:10px">User Preferred TimeZone:</label>
+                                    <input type="text" id="time_home" disabled />
+                                </div>
+
+                            </div>
+
+                        </div>
+                        <hr style="margin-bottom: 15px;" />
+                        <label id="labelCurrentShift" style="padding-left: 20px;">Current Shift :</label>
+                        <div id="currentShiftDiv" class="row">
+                            <div class="col-md-12">
+                                <div class="row">
+                                    <div class="col-md-8" style="padding-left: 0px;">
+                                        <div class="col-lg-6" style="margin-bottom:0px;cursor: pointer;padding-top: 10px;">
+                                            <div class="form-group">
+                                                <label style="margin-left:1px"><i class="fa fa-clock-o" style="font-size:17px;"></i> Start Time</label>
+
+                                                <input type="time" id="recordedShiftStartTime" class="form-control" value="" readonly />
+                                            </div>
+
+
+                                        </div>
+                                        <div class="col-lg-6" style="margin-bottom:0px;cursor: pointer;padding-top: 10px;">
+                                            <div class="form-group">
+                                                <label style="margin-left:1px"><i class="fa fa-clock-o" style="font-size:17px;"></i> End Time</label>
+
+                                                <input type="time" id="recordedShiftEndTime" class="form-control" @*data-date-format='yyyy-mm-dd'*@ value="" readonly />
+                                            </div>
+
+
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4" style="padding-top: 12px;">
+                                        <label style="padding-left: 10px;margin-bottom: 0px;">Time Zone :</label>
+                                        <input class="form-control" id="recordedTimeZone" readonly />
+                                    </div>
+                                </div>
+
+                                @*Hidden*@
+                                <div class="row" style="display:none">
+                                    <div class="col-lg-6" style="margin-bottom:0px;cursor: pointer;padding-top: 10px;">
+                                        <div class="form-group">
+                                            <label style="margin-left:1px">Start Date</label>
+
+                                            <input type="text" id="recordedShiftStartDate" class="form-control" value="" readonly />
+                                        </div>
+
+
+                                    </div>
+                                    <div class="col-lg-6" style="margin-bottom:0px;cursor: pointer;padding-top: 10px;">
+                                        <div class="form-group">
+                                            <label style="margin-left:1px">End Date</label>
+
+                                            <input type="text" id="recordedShiftEndDate" class="form-control" @*data-date-format='yyyy-mm-dd'*@ value="" readonly />
+                                        </div>
+
+
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="row">
+                            <div class="col-md-2 pull-right">
+                                <button type="submit" onclick="saveShiftTiming()" class="btn btn-sm btn-success">Plan Shift</button>
+                            </div>
+                        </div>
+
+                    </div>
+
+
+                </div>
+                <!-- END - tab shift timing add -->
+                <!-- START - tab saved shift timings -->
+                <div id="savedTimings_tab_2" class="tab-pane fade">
+
+
+                    <div class="col-lg-4 filtersForShiftTimings transfer">
+                        <a href="#" class="" style="cursor:default;font-weight:bold;"><span>Duration :</span></a>
+
+                        <a href="#" class="divider" onclick="getDatesFromDurationLinkForShiftTimings(this.innerText)"><span class="link">Last Month</span></a>
+                        <a href="#" class="divider active" onclick="getDatesFromDurationLinkForShiftTimings(this.innerText)"><span class="link">This Month</span></a>
+                        <a href="#" class="" onclick="getDatesFromDurationLinkForShiftTimings(this.innerText)"><span class="link">Next Month</span></a>
+
+                    </div>
+
+
+
+                    <div id="table_area_for_saved_timings" style="width:100%;overflow:auto;">
+                        <table id="table_for_saved_timings" class="responsive table table-bordered table-hover" cellspacing="0"></table>
+
+                    </div>
+
+                </div>
+                <!-- END - tab saved shift timings -->
+
+            </div>
+
+
+
+
+
+        </div>
+    </div>
+</div>
+
+@Scripts.Render("~/bundles/weekpicker")
+

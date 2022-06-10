@@ -1,0 +1,297 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ericsson.isf.mapper.AspMapper">
+
+	<!-- <resultMap type='ASPVendorModel' id="VendorModelResult">
+        <id property="vendorID" column="VendorID" />
+        <result property="vendor" column="Vendor" />
+        <result property="country" column="Country" />
+        
+    </resultMap> -->
+    
+    <select id ="getFailedAttempts" resultType="int">
+         SELECT passwordFailedAttempt FROM [transactionalData].[TBL_UserAccess]
+         
+         where signum=#{signum}
+    </select>
+    
+    <select id ="getAspSignumByEmail" resultType="String">
+         select Signum from refData.TBL_ASP_Employees where EmployeeEmailID=#{email}
+    </select>
+    
+    <update id ="updateFailedAttempts">
+         UPDATE [transactionalData].[TBL_UserAccess]
+         set passwordFailedAttempt = #{failedAttempts}
+         where signum=#{signum}
+    </update>
+    
+    <select id ="isResetRequired" resultType="int">
+         SELECT isResetRequired FROM [transactionalData].[TBL_UserAccess]
+         
+         where signum=#{signum}
+    </select>
+    
+    <update id ="setResetRequired">
+         UPDATE [transactionalData].[TBL_UserAccess]
+         set isResetRequired = #{flag}
+         where signum=#{signum}
+    </update>
+    
+    <select id ="isProfileLocked" resultType="int">
+         SELECT isLocked FROM [transactionalData].[TBL_UserAccess]
+         
+         where signum=#{signum}
+    </select>
+    
+    <update id ="setProfileLocked">
+         UPDATE [transactionalData].[TBL_UserAccess]
+         set isLocked = #{flag}
+         where signum=#{signum}
+    </update>
+    
+    <select id ="isProfileActive" resultType="int">
+         SELECT isProfileActive FROM [transactionalData].[TBL_UserAccess]
+         
+         where signum=#{signum}
+    </select>
+    
+    <update id ="setProfileActive">
+         UPDATE [transactionalData].[TBL_UserAccess]
+         set isProfileActive = #{flag}
+         where signum=#{signum}
+    </update>
+    
+    <select id ="isExpired" resultType="hashmap">
+         SELECT accessStartDate,accessEndDate FROM [transactionalData].[TBL_UserAccess]
+         
+         where signum=#{signum}
+    </select>
+
+	<select id ="getVendorDetailsByID" resultType="com.ericsson.isf.model.AspVendorModel">
+         SELECT Country , VendorName , ManagerSignum, VendorCode, aspVendorDetailId , VendorContactDetails , isActive
+         
+          FROM [refData].[TBL_ASPVendor]
+         
+         where VendorCode=#{vendorCode} and isActive = 1
+    </select>
+    
+    <select id = "getAspExplorerForManager" resultType="com.ericsson.isf.model.AspExplorerModel">
+    	select emp.EmployeeName,
+    	emp.EmployeeEmailID as email,
+    	ve.Country,
+    	emp.Signum,
+    	emp.VendorCode,
+    	ve.VendorName,
+    	emp.City,
+    	emp.ContactNumber,
+    	ua.accessStartDate as startDate,
+    	ua.accessEndDate as endDate,
+    	ua.isProfileActive,
+    	ua.isLocked,
+    	ua.isActive  
+    	from [refData].[TBL_ASP_Employees] as emp
+		join [refData].[TBL_ASPVendor] as ve on ve.VendorCode = emp.VendorCode
+		join [transactionalData].[TBL_UserAccess] as ua on emp.Signum = ua.signum
+		where ve.ManagerSignum = #{managerSignum}
+    </select>
+    
+    <select id ="getVendorByEmail" resultType="String">
+         SELECT VendorCode FROM [refData].[TBL_ASP_Employees]
+         
+         where EmployeeEmailID=#{email}
+    </select>
+    
+    <insert id="insertUserAccessAsp">
+    	insert into [transactionalData].[TBL_UserAccess]
+    	(
+    		signum,
+    		userType,
+    		createdBy,
+    		createdOn,
+    		lastModifiedBy,
+    		lastModifiedOn
+    	) values
+    	(
+    		#{signum},
+    		'ASP',
+    		#{signum},
+    		dbo.GetDateIST(),
+    		#{signum},
+    		dbo.GetDateIST()
+    	)
+    </insert>
+    
+    <select id="getAspProfileIdByName" resultType="int">
+    select [AccessProfileID] from [refData].[TBL_ACCESS_PROFILE] where AccessProfileName=#{name}
+    </select> 
+    
+    <insert id='insertAspUserAccessProfile'>
+   		insert into [transactionalData].[TBL_USER_ACCESS_PROFILE](SignumID,AccessProfileID,ApprovedBy,ApprovedDate,LastModifiedBy,Active,ApprovalStatus,LastModifiedDate,
+   		CreatedBy , CreatedDate)
+   		values (
+   		#{signum},#{profileID},'ekuyoge',dbo.GetDateIST(),'ekuyoge',1,'APPROVED',dbo.GetDateIST(),#{signum}, dbo.GetDateIST()
+   		)
+    </insert>
+    
+    <update id="updateAspProfileAccess" parameterType="com.ericsson.isf.model.AspAcceptRejectModel">
+    	update transactionalData.TBL_UserAccess
+    	set
+    	<if test="aspAcceptRejectModel.startDate != null">
+    		accessStartDate = #{aspAcceptRejectModel.startDate},
+    	</if>
+    	<if test="aspAcceptRejectModel.endDate != null">
+    		accessEndDate = #{aspAcceptRejectModel.endDate},
+    	</if>
+    	isProfileActive = #{aspAcceptRejectModel.isProfileActiveFlag},
+    	isActive = #{aspAcceptRejectModel.isActiveFlag},
+    	lastModifiedBy = #{aspAcceptRejectModel.managerSignum}
+    	where signum = #{aspAcceptRejectModel.userSignum}
+    </update>
+    <select id="getAspFlags" resultType="com.ericsson.isf.model.AspExplorerModel">
+    	select signum,isProfileActive,isLocked,isResetRequired,accessStartDate as startDate,accessEndDate as endDate
+    	from transactionalData.TBL_UserAccess where signum = #{signum}
+    </select>
+    <update id = "resetFlagsWhenForgetPassword">
+    	update transactionalData.TBL_UserAccess
+    	set isLocked = 0,
+    	isResetRequired = 1,
+    	passwordFailedAttempt = 0
+    	where signum = #{signum}
+    </update>
+    <select id = "getAspDetailsBySignum" resultType = "com.ericsson.isf.model.AspLoginModel">
+    SELECT top 1 a.[EmployeeName] as firstName
+      ,a.[Signum]
+      ,a.[EmployeeEmailID] as email
+      ,a.[Password]
+      ,a.[CreatedBy]
+      ,a.[CreatedOn]
+      ,a.[vendorCode]
+      ,a.[city]
+      ,a.[contactNumber]
+      ,v.country
+	  ,v.vendorName
+	  ,e.employeename +'('+ e.signum+') ' as managerName
+  	FROM [refData].[TBL_ASP_Employees] a
+	join [refData].[TBL_ASPVendor] v on v.vendorcode=a.vendorcode
+	join refdata.TBL_Employees e on e.signum=v.managersignum
+  	WHERE a.Signum = #{signum} 
+    </select>
+    
+    <select id = "getAllVendors" resultType = "com.ericsson.isf.model.AspVendorModel">
+    	select vendorCode , country , vendorName , vendorContactDetails , managerSignum ,  aspVendorDetailId , isActive
+    	 from refData.TBL_ASPVendor
+    </select>
+    
+     <select id = "getAllActiveAspVendors" resultType = "com.ericsson.isf.model.AspVendorModel">
+    	select vendorCode ,  vendorName 
+         from refData.TBL_ASPVendor where isActive=1
+    </select>
+    
+    <select id = "getAspByVendor" resultType = "hashmap">
+    	select ae.Signum,concat(ae.Signum,'/',ae.EmployeeName) as aspNameSignum
+    	from refData.TBL_ASP_Employees as ae
+    	join transactionalData.TBL_UserAccess as ua on ae.Signum = ua.signum
+    	where ae.VendorCode = #{vendorCode} and ua.isProfileActive = 1 and ua.isActive = 1
+    </select>
+    
+      <update id='updateAspLastPasswordChange'>
+    	update transactionalData.TBL_UserAccess
+    	set lastPasswordChange = dbo.GetDateIST()
+    	where signum = #{signum}
+    </update>
+    
+    <select id = "getVendorByScope" resultType = "String">
+    	select vendorCode
+    	from transactionalData.TBL_PROJECTSCOPE
+    	where ProjectScopeID = #{projectScopeId}
+    </select>
+    
+    <select id = "getVendorByWoid" resultType = "String">
+    	select distinct ps.vendorCode from transactionalData.TBL_WORK_ORDER wo
+		join transactionalData.TBL_WORK_ORDER_PLAN wop on wo.WOPlanID=wop.WOPlanID
+		join transactionalData.TBL_PROJECTSCOPE ps on wop.ScopeID=ps.ProjectScopeID
+		where wo.WOID = #{woid}
+    </select>
+    
+    <update id="updateStatusInEmployeeTable">
+    	update refData.TBL_Employees
+    	set Status = #{status}
+    	where Signum = #{signum}
+    </update>  
+    
+    <select id = "getAllAspVendorDetails" resultType = "com.ericsson.isf.model.AspVendorModel">
+    	select VendorCode,VendorName,Country,VendorContactDetails,ManagerSignum,isActive from refData.TBL_ASPVendor
+    </select>
+    
+    <insert id="insertAspVendorDetails" parameterType="com.ericsson.isf.model.AspVendorModel">
+    	INSERT INTO [refData].[TBL_ASPVendor]
+           ([VendorCode]
+           ,[VendorName]
+           ,[Country]
+           ,[VendorContactDetails]
+           ,[ManagerSignum]
+           ,[isActive]
+           ,[CreatedOn]
+           ,[LastModified]
+           ,[CreatedBy]
+           ,[LastModifiedBy])
+     VALUES
+           (#{input.vendorCode}
+           ,#{input.vendorName}
+           ,#{input.country}
+           ,#{input.vendorContactDetails}
+           ,#{input.managerSignum}
+           ,1
+           ,dbo.GetDateIST()
+           ,dbo.GetDateIST()
+           ,#{input.signum}
+           ,#{input.signum})
+    </insert>
+    
+    <update id="updateAspVendorDetails" parameterType="com.ericsson.isf.model.AspVendorModel">
+    	UPDATE [refData].[TBL_ASPVendor]
+ 	    SET [VendorName] = #{input.vendorName}
+        ,[Country] = #{input.country}
+        ,[VendorContactDetails] = #{input.vendorContactDetails}
+        ,[ManagerSignum] = #{input.managerSignum}
+        ,[isActive] = 1
+        ,[LastModified] = dbo.GetDateIST()
+        ,[LastModifiedBy] = #{input.signum}
+ 		WHERE AspVendorDetailId = #{input.aspVendorDetailId}
+    </update>
+    
+    <update id="enableDisableAspVendorDetails">
+    	UPDATE [refData].[TBL_ASPVendor]
+ 	    SET [isActive] = #{i}
+        ,[LastModified] = dbo.GetDateIST()
+        ,[LastModifiedBy] = #{signum}
+ 		WHERE VendorCode = #{vendorCode}
+    </update>
+    
+    <select id ="getAllAspVendorModelByCode" resultType="com.ericsson.isf.model.AspVendorModel">
+         SELECT VendorCode ,  VendorName , isActive  , Country , VendorContactDetails , ManagerSignum , AspVendorDetailId
+         FROM [refData].[TBL_ASPVendor] 
+         
+         where VendorCode=#{vendorCode}
+    </select>
+    
+    <select id='isSignumASPM' resultType="Boolean">
+		IF EXISTS(
+		select top 1 emp.Signum FROM refData.TBL_EMPLOYEES emp
+			join transactionalData.TBL_USER_ACCESS_PROFILE UAP on emp.Signum=UAP.SignumID
+			join refData.TBL_ACCESS_PROFILE AP on AP.accessProfileID=UAP.AccessProfileID
+			join refData.TBL_ACCESS_ROLE AR on AR.accessRoleID =AP.accessRoleID
+			where signum = #{signum}  and  emp.Status != 'Resigned' and AR.accessRoleID=13 
+			and UAP.Active=1 and AP.Active=1 and AR.Active=1  
+			)  
+			BEGIN
+                    SELECT 1 AS 'RESULT'
+                END
+            ELSE
+                BEGIN
+                    SELECT 0 AS 'RESULT'
+                END
+    </select>
+    
+</mapper>
+

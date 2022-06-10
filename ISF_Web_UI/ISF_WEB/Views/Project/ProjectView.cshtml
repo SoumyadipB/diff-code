@@ -1,0 +1,342 @@
+﻿@{
+    ViewBag.Title = "Project";
+}
+
+@*<div id="base">
+    <div id="content">*@
+@*@Scripts.Render("~/bundles/bootstrap")
+@Scripts.Render("~/bundles/datepicker")
+@Styles.Render("~/bundles/css/bootstrap")*@
+@Scripts.Render("~/Scripts/services/projectView")
+
+
+<div class="content">
+    <section>
+        <div class="panel-heading">
+            Project Creation
+        </div>
+        @*<button class="btn btn-primary" type="submit" onclick="newProject()" id="button_new">Create New Project</button>*@
+        @*<button class="btn btn-primary" type="submit" onclick="editProject()" id="button_edit">Edit</button>
+            <button class="btn btn-primary" type="submit" onclick="saveProject()" id="button_edit_save">Save</button>*@
+
+        <button class="btn btn-primary" onclick="cleanFields()" id="button_create" style="float: right;">Reset</button>
+        <button class="btn btn-default-outline" type="submit" onclick="cleanFields(); location.href='~/Home';" id="button_cancel" style="float: right;">Cancel</button>
+        <button class="btn btn-primary" onclick="createProject()" id="button_create" style="float: right;">Save</button>
+
+        <br />
+        <br />
+
+        <div id="page-wrapper">
+
+            <!-- /.row -->
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+
+                        </div>
+
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <form role="form">
+                                        <div class="form-group">
+                                            <label>*Project Name</label>
+                                            <input class="form-control" id="project_name" name="project_name" >
+                                        </div>
+                                        <div class="form-group">
+                                            <label>*CPM</label>
+                                            <input class="form-control" id="cpm">
+
+                                        </div>
+                                        <div style="width:60%">
+                                            <div class="form-group">
+                                                <label>*Opportunity Name</label>
+                                                <select id="select_opportunity_name" class="select2able" onchange="getOpportunityDetails()">
+                                                    <option value="0">Select one</option>
+                                                </select>
+
+                                            </div>
+
+                                        </div>
+                                        <div class="form-group">
+                                            @*<i class="fa fa-calendar"></i>*@
+                                            @*&nbsp; <label> Start Date </label>
+                                                <br />
+                                                <input type="date" Name="DateResigned" Id="start_date"  />*@
+
+                                            <div class="input-group date datepicker" data-date-autoclose="true" data-date-format="yyyy-mm-dd">
+                                                <i class="fa fa-calendar"></i>&nbsp;
+                                                *Start Date:<input id="start_date" class="form-control"   type="text" onchange="ChangeStartDate()">
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+
+                                            @*; <label>End Date</label>
+                                                <br />
+                                                <input type="date" Name="DateResigned" Id="end_date" />*@
+                                            <div class="input-group date datepicker" data-date-autoclose="true" data-date-format="yyyy-mm-dd">
+                                                <i class="fa fa-calendar"></i>&nbsp;
+                                                End Date:<input id="end_date" class="form-control"  type="text" >
+                                            </div>
+
+                                        </div>
+
+                                    </form>
+                                </div>
+                                <!-- /.col-lg-6 (nested) -->
+                                <div class="col-lg-6">
+                                    <form role="form">
+
+                                        <div class="form-group">
+                                            <label>*Project Type</label>
+                                            <select class="form-control" id="select_Project_Type">
+                                                <option value="0">Select one</option>
+                                            </select>
+
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label>*Service Area</label>
+                                            <select class="form-control"  id="select_product_area" >
+                                                <option value="0">Select one</option>
+                                            </select>
+
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label>*Project Creator</label>
+                                            <input class="form-control" placeholder="Project Creator" id="project_creator">
+
+                                        </div>
+                                        <div class="form-group floating-label">
+                                            <label>Description</label>
+                                            <textarea name="sidebarChatMessage" id="project_description" class="form-control autosize" rows="6" style="height: 100px;"></textarea>
+
+                                        </div>
+
+
+                                    </form>
+
+                                </div>
+                                <!-- /.col-lg-6 (nested) -->
+                            </div>
+                            <!-- /.row (nested) -->
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+                    <!-- /.panel -->
+                </div>
+                <!-- /.col-lg-12 -->
+            </div>
+            <!-- /.row -->
+        </div>
+        <!-- /#page-wrapper -->
+
+
+        <div class="section-header">
+            <ol class="breadcrumb">
+                <li class="active">Opportunity Details</li>
+            </ol>
+        </div>
+        <div id="page-wrapper">
+
+            <!-- /.row -->
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+
+                        </div>
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <form role="form">
+
+                                        <div class="form-group">
+                                            <label>*Market Area</label>
+                                            <select class="form-control select2able" placeholder="Project Type" id="select_market_area" onchange="getCountrybyMarketAreaID();fillProjectName();">
+                                                <option value="0">Select one</option>
+                                            </select>
+                                            <div class="row">
+                                                <label id="select_market_area-Required" style="color:red; font-size:10px; text-align:center;"></label>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label>*Customer Name</label>
+
+                                            <select class="form-control select2able" id="select_customer_name" onchange="fillProjectName();">
+                                                <option value="0">Select one</option>
+                                            </select>
+
+                                            <div class="row">
+                                                <label id="select_customer_name-Required" style="color:red; font-size:10px; text-align:center;"></label>
+                                            </div>
+                                        </div>
+
+
+                                    </form>
+                                </div>
+                                <!-- /.col-lg-6 (nested) -->
+                                <div class="col-lg-6">
+                                    <form role="form">
+
+                                        <div class="form-group">
+                                            <label>*Country</label>
+                                            <select class="form-control select2able" id="select_country" onchange="fillProjectName();">
+                                                <option value="0">Select one</option>
+                                            </select>
+                                            <div class="row">
+                                                <label id="select_country-Required" style="color:red; font-size:10px; text-align:center;"></label>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label>*Demand Owning Company</label>
+                                            <select class="form-control select2able" id="select_demand_owning_company" onchange="fillProjectName();">
+                                                <option value="0">Select one</option>
+                                            </select>
+                                            <div class="row">
+                                                <label id="select_demand_owning_company-Required" style="color:red; font-size:10px; text-align:center;"></label>
+                                            </div>
+
+                                        </div>
+
+
+                                    </form>
+
+                                </div>
+                                <!-- /.col-lg-6 (nested) -->
+                            </div>
+                            <!-- /.row (nested) -->
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+                    <!-- /.panel -->
+                </div>
+                <!-- /.col-lg-12 -->
+            </div>
+            <!-- /.row -->
+        </div>
+        <!-- /#page-wrapper -->
+
+
+
+        <div class="section-header">
+            <ol class="breadcrumb">
+                <li class="active">Project Documents</li>
+            </ol>
+
+        </div>
+
+
+        <div id="page-wrapper">
+
+            <!-- /.row -->
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+
+                        </div>
+                        <div class="panel-body">
+                            <div class="row">
+                                <!-- /.col-lg-6 (nested) -->
+                                <div class="col-lg-4">
+                                    <form role="form">
+
+
+                                        <div style="width:60%">
+                                            <div class="form-group">
+                                                <label class="control-label col-lg-3" style="width: 100%;">Document Type</label>
+                                                <select class="form-control" @* class="select2able" *@ id="select_document_type">
+                                                    <option value="0">Select one</option>
+                                                </select>
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+
+                                <div class="col-lg-4">
+                                    <form role="form">
+
+                                        <div class="form-group">
+                                            <label>Document URL</label>
+                                            <input class="form-control" placeholder="Document URL" id="input_document_url">
+                                        </div>
+                                        @*<center>
+                                            <button class="btn btn-primary" type="submit">Add Document</button>
+                                            </center>*@
+                                    </form>
+
+                                </div>
+
+                                <div class="col-lg-2">
+                                    <form role="form">
+
+                                        <div class="form-group">
+                                            <button class="btn btn-primary" type="submit" style="float: left;" onclick="addDocument()">Add Document</button>
+                                        </div>
+                                    </form>
+
+                                </div>
+
+                                <table class="table table-striped table-bordered table-hover" id="table_project_documents">
+                                    <thead>
+                                        <tr>
+                                            <th>Document Type</th>
+                                            <th>Document URL</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+
+
+                                <!-- /.col-lg-6 (nested) -->
+                            </div>
+                            <!-- /.row (nested) -->
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+                    <!-- /.panel -->
+                </div>
+                <!-- /.col-lg-12 -->
+            </div>
+            <!-- /.row -->
+        </div>
+        <!-- /#page-wrapper -->
+
+        <button class="btn btn-primary" onclick="cleanFields()" id="button_create2" style="float: right;">Reset</button>
+        <a class="btn btn-default-outline" type="submit" onclick="cleanFields();" href="~/" id="button_cancel2" style="float: right;">Cancel</a>
+        <button class="btn btn-primary" onclick="createProject()" id="button_create2" style="float: right;">Save</button>
+
+
+        <div class="modal fade" id="scopeModal2" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">Project Created</h4>
+                    </div>
+                    <div class="modal-body">
+
+                        <div class="form-group">
+                            <label class="control-label col-lg-8" id="modal_text" style="text-align: center;">Your project was created successfully.</label>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </section>
+
+
+</div>

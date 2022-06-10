@@ -1,0 +1,76 @@
+@{
+    ViewBag.Title = "Session Expiry";
+}
+@{
+    Layout = null;
+}
+@{
+
+    if (HttpContext.Current.Session["IsSessionTimeOut"] != null && (bool)HttpContext.Current.Session["IsSessionTimeOut"] == true)
+    {
+        ViewBag.IsSessionTimeOut = true;
+    }
+    else
+    {
+        ViewBag.IsSessionTimeOut = false;
+    }
+
+}
+@Styles.Render("~/bundles/css/bootstrap")
+@Scripts.Render("~/bundles/jquery")
+@Scripts.Render("~/bundles/bootstrap")
+<html>
+
+<head>
+    <style>
+        .center-div
+            {
+                 position: absolute;
+                 margin: auto;
+                 top: 0;
+                 right: 0;
+                 bottom: 0;
+                 left: 0;                 
+                 height: 70%;                 
+            }
+    </style>
+</head>
+<body>
+
+    <div class="container center-div">
+        <div class="panel-group">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <div class="row">
+                        <div class="col-sm-1"><img src="~/Content/images/Ericssonlogo.png" style="background-color:#428bca;height:52px;" /> </div>
+                        <span style="font-size:20px;">Integrated Service Flow</span>
+                    </div>
+                </div>
+                <div class="panel-body">
+                    @if (ViewBag.IsSessionTimeOut == true)
+                    {
+                        <div>
+                            Sorry for the inconvineince, your session has been logged off for security reasons
+                        </div>
+                    }
+                    else
+                    {
+                        <div>
+                            You have been logged out!
+                        </div>
+                    }
+                    <hr />
+                    <div class="row">
+                        <div class="col-md-3">
+                            <a href="~/Login">Return to Login</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+   
+    <br /><br />
+    
+</body>
+</html>

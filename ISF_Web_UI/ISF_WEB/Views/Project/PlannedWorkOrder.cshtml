@@ -1,0 +1,467 @@
+﻿
+@{
+    ViewBag.Title = "Delivery Execution";
+}
+
+@Styles.Render("~/bundles/css/DeliveryExecution")
+@Styles.Render("~/bundles/css/DataTableStyle")
+
+@Scripts.Render("~/bundles/DataTableScript")
+@*@Scripts.Render("~/bundles/DeliveryExecution")*@
+@Scripts.Render("~/bundles/DataTablesAdvancedScript")
+@Scripts.Render("~/bundles/projectWorkOrder")
+@*<script src="/Scripts/Project/projectWorkOrder.js"></script>*@
+<script src="/Scripts/WorkFlow/flowchart.js"></script>
+<script src="/Scripts/WorkFlow/wrkflow.js"></script>
+
+@*<script src="/Scripts/js.cookie.js"></script>*@
+
+@*<div class="panel panel-default">*@
+
+@*<div class="panel-heading">
+        Planned Work Order
+    </div>*@
+@*<div class="panel-body">*@
+
+<div class="row">
+    <div class="btn-group" data-toggle="buttons" id="groupDiv" style="display:none;">
+
+        <label class="btn">Group By: </label>
+        <label class="btn btn-primary active" onclick="bindDataTable(2)">
+            <input type="radio" name="options" value="2" id="groupOption1" autocomplete="off" checked> Project
+        </label>
+        <label class="btn btn-primary" onclick="bindDataTable(6)">
+            <input type="radio" name="options" value="6" id="groupOption2" autocomplete="off"> Status
+        </label>
+        <div class="" style="display:flex; margin-left:30%;line-height:2.1">
+            <div style="margin-right: 10px;">High<span style="margin-left: 5px ;padding: 0px 5px 0px 5px;background-color:#ffd995;"></span></div>
+            <div style="margin-right: 10px;">Critical<span style=" margin-left: 5px ;padding: 0px 5px 0px 5px;background-color:#FF0000;"></span></div>
+            <div style="margin-right: 10px;">Low<span style="margin-left: 5px ;padding: 0px 5px 0px 5px;background-color:#98FB98 ;"></span></div>
+            <div style="margin-right: 10px;">Normal<span style=" margin-left: 5px ;padding: 0px 5px 0px 5px;background-color:#87CEFA ;"></span></div>
+
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div style="padding-top:5px;" class="col-sm-1">
+        <label>Start Date:</label>
+    </div>
+    <div class="input-group date datepicker col-sm-2">
+        <input id="start_date_wo" class="form-control" data-date-format='yyyy-mm-dd' placeholder="YYYY/MM/DD" type="text" readonly><span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+    </div>
+    <div style="padding-top:5px;" class="col-sm-1">
+        <label>To Date:</label>
+    </div>
+    <div class="input-group date datepicker col-sm-2">
+        <input id="end_date_wo" class="form-control" data-date-format='yyyy-mm-dd' placeholder="YYYY/MM/DD" type="text" readonly><span class=" input-group-addon"><i class="fa fa-calendar"></i></span>
+
+    </div>
+    <div>
+        <a href="#" class="btn btn-primary" onclick="searchByDate($('#start_date_wo').val(), $('#end_date_wo').val())">Submit</a>
+        <a href="#" class="btn btn-default" onclick="resetDate()">Reset</a>
+    </div>
+
+</div>
+
+<div class="row">
+    <div class="col-md-2 pull-right" style="text-align:right;padding-bottom:5px;">
+
+        <a id="massTransfer" href="#"><span class="fa fa-share-square-o glyphicon-ring glyphicon-orangered" data-placement="bottom" data-toggle="tooltip" title="Mass Transfer"></span></a>&nbsp;&nbsp;
+
+        @*<a id="Transfer" href="#"><span class="fa fa-exchange glyphicon-ring glyphicon-mediumorchid" data-placement="bottom" data-toggle="tooltip" title="Transfer"></span></a>&nbsp;&nbsp;*@
+
+        @*<a id="sendBack" href="#"><span class="fa fa-arrow-left" style="color:green" data-placement="bottom" data-toggle="tooltip" title="Send Back"></span></a>&nbsp;&nbsp;*@
+        <a href="#" onclick="getAllPlannedWorkOrderDetailsProject('all','all');"><span class="fa fa-refresh glyphicon-ring glyphicon-blue" data-placement="bottom" data-toggle="tooltip" title="Refresh"></span></a>&nbsp;&nbsp;
+        @*<a href="downloadISFSetup" class="pull-right" data-toggle="tooltip" title="Download ISF setup"><i class="fa fa-download glyphicon-ring glyphicon-green"></i></a>*@
+
+    </div>
+</div>
+<div class="row">
+    <div class="table-responsive" style="overflow-x:auto">
+        <table id="plannedProjectListTab" class="table table-striped table-bordered table-hover">
+            <thead>
+                <tr>
+                    <th>Select <input type="checkbox" value="" id="ckbCheckAll"></th>
+                    <th>Action</th>
+                    <th>Project</th>
+                    <th>Wo ID</th>
+                    <th>Wo Name</th>
+                    <th>Priority</th>
+                    <th>Status</th>
+                    <th>LOE</th>
+                    <th>Signum</th>
+                    <th>Start Date</th>
+                    <th>Activty</th>
+                    <th>Sub Activity</th>
+                    <th>Nodes</th>
+
+                </tr>
+            </thead>
+            <tfoot>
+                <tr>
+                    <th></th>
+                    <th></th>
+                    <th>Project</th>
+                    <th>Wo ID</th>
+                    <th>Wo Name</th>
+                    <th>Priority</th>
+                    <th>Status</th>
+                    <th>LOE</th>
+                    <th>Signum</th>
+                    <th>Start Date</th>
+                    <th>Activty</th>
+                    <th>Sub Activity</th>
+                    <th></th>
+                </tr>
+            </tfoot>
+            <tbody id="plannedProjectList_tbody">
+                <tr><td colspan="12" align="center"><img src="~/Content/images/loading-1.gif" style=" width:50px; height:50px;"></td></tr>
+            </tbody>
+
+        </table>
+    </div>
+</div>
+
+<div class="modal fade" id="receiver" role="dialog">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title text-center">Enter Receiver Signum</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="form-group">
+                            <label>Select Employee Signum</label>
+                            <select id="cbxSignumAR" class="select2able"></select>
+                        </div>
+                    </div>
+                </div>
+                <hr />
+                <div class="row">
+                    <button type="button" class="btn btn-default pull-right" onclick="transferWorkOrder($('#cbxSignumAR').val())">Submit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="massTransferModal" role="dialog">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title text-center">Multiple WO Transfer, Date Change or Both</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Select Employee Signum</label>
+                            <select id="cbxSignum" class="select2able"></select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="input-group date datepicker">
+                            <label>Start Date</label><input id="start_date_mt" class="form-control" data-date-format='yyyy-mm-dd' data-date-start-date="0d" placeholder="YYYY-MM-DD" type="text">
+
+                        </div>
+                    </div>
+                    @*<div class="col-md-4">
+                            <div class="input-group date datepicker">
+                                <label>End Date</label><input id="end_date_mt" class="form-control" data-date-format='yyyy-mm-dd' placeholder="YYYY-MM-DD" type="text">
+
+                            </div>
+                        </div>*@
+                </div>
+                <hr />
+                <div class="row">
+                    <button id="massTransferSubmit" type="button" class="btn btn-default pull-right">Submit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="myModalMadEwo" role="dialog">
+    <div class="modal-dialog modal-lg" style="overflow-y: initial !important;width:60%">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title text-center">View Work Order</h4>
+            </div>
+            <div class="modal-body" style="height:600px;overflow-y: auto; ">
+                @Html.Partial("WorkOrderViews")
+                <hr />
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalDefferedWO" role="dialog">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title text-center">Mark as Deferred</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-8">
+                        <input id="workOrderIDDefWO" type="hidden" value="" />
+                        <input id="commentDefferedWO" class="form-control" type="text" placeholder="Enter comment" required />
+                    </div>
+                </div>
+
+                <hr />
+                <div class="row">
+                    <button type="button" class="btn btn-default pull-right" onclick="updateWOStatus(document.getElementById('workOrderIDDefWO').value,'DEFERRED', document.getElementById('commentDefferedWO').value)">Submit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalHoldWO" role="dialog">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title text-center">Mark as on Hold</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-8">
+                        <input id="workOrderIDHoldWO" type="hidden" value="" />
+                        <input id="commentHoldWO" class="form-control" type="text" placeholder="Enter comment" required />
+                    </div>
+                </div>
+
+                <hr />
+                <div class="row">
+                    <button type="button" class="btn btn-default pull-right" onclick="updateWOStatus(document.getElementById('workOrderIDHoldWO').value,'ONHOLD', document.getElementById('commentHoldWO').value)">Submit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="modalWONodes" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="scopeTitleModal"></h4>
+            </div>
+            <div class="modal-body">
+                <div class="table-responsive" style="overflow-x:auto">
+                    <table id="tableWONodes" class="table table-striped table-bordered table-hover">
+                        <thead>
+                            <tr>
+                                <th>Node Type</th>
+                                <th>Node Names</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableNodes"></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade in" id="mandatoryDL" role="dialog">
+    <div class="modal-dialog modal-sm mandate">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: #007aff">
+                @*<button type="button" class="close" data-dismiss="modal">&times;</button>*@
+                <h4 class="modal-title text-center" style="color:#fff">Get the latest ISF Setup</h4>
+            </div>
+            <div class="modal-body setup" style="background-color:lavender">
+                <div class="row">
+                    <div class="col-md-7">
+                        <div class="form-group">
+                            <a onclick="this.href = downloadISFSetup" id="isfSetupLink" class="pull-right" data-toggle="tooltip" title="Download ISF setup" style="cursor: pointer"><i class="fa fa-download glyphicon-ring glyphicon-green"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modal_wo_nodes_project" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" style="z-index:9999">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="scopeTitleModal">Node Details</h4>
+            </div>
+            <div class="modal-body" id="scopeContentModal">
+
+                <table id="table_wo_nodes_project" class="display table-bordered" cellspacing="0" width="100%"></table>
+
+            </div>
+            <div class="modal-footer">
+                @*<a id="submitModal" class="btn btn-primary" onclick="$('#modal_wo_nodes').modal('hide');">Close</a>*@
+                <button id="cancelModal" type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@*</div>
+    </div>*@
+<script>
+
+    $(document).ready(function () {
+
+        //        // If cookie found (already shown)
+        //        if (Cookies.get('notice') !== undefined) {
+        //            // Hide cookie notice
+        //            $("#mandatoryDL").remove();
+        //        }
+        //        // On button click
+        //        $('#isfSetupLink').click(function () {
+        //            $("#mandatoryDL").modal("hide");
+        //            // Calculate when you want   to display the notice again (change 1sec=10000ms 1min=60sec to number of minutes you want;change 1 to number of minutes you want)
+        //            var expireTime = new Date(new Date().getTime() + 60000 * 1);
+        //            //var expireTime = new Date(new Date().getTime() + 365 * 24 * 60 * 60 * 1000 * 1);
+        //            // Set this cookie
+        //            Cookies.set('notice', 'shown', { expires: expireTime });
+        //        });
+
+        //$('#mandatoryDL').modal({
+        //    backdrop: 'static',
+        //    keyboard: false
+        //})
+
+        //$("#mandatoryDL").modal("show");
+        $('#start_date_wo').datepicker("setDate", new Date());
+        $('#end_date_wo').datepicker("setDate", new Date());
+        //START- fetch NODE DETAILS
+        $(function () {
+            $("[id$=start_date_wo]").datepicker({
+                startDate: $("[id$=end_date_wo]").val(),
+                autoClose: true,
+                viewStart: 0,
+                weekStart: 1
+            });
+        });
+        $(function () {
+            $("[id$=end_date_wo]").datepicker({
+                startDate: $("[id$=start_date_wo]").val(),
+                autoClose: true,
+                viewStart: 0,
+                weekStart: 1
+            });
+        });
+        $(function () {
+            $("[id$=start_date_wo]").datepicker({ minDate: 0 });
+            $("[id$=start_date_mt]").datepicker({ minDate: 0 });
+        });
+
+        $('#edit_node_details').on('click', function () {
+
+            var projectID = $('#workOrderViewIdPrefix_project_id').val();
+            var type = $('#workOrderViewIdPrefix_sitetype-node-type').select2("val");
+
+            //$('#workOrderViewIdPrefix_sitetype-node-type').find('option').remove();
+            // $("#workOrderViewIdPrefix_sitetype-node-type").select2("val", "");
+            //  $('#workOrderViewIdPrefix_sitetype-node-type').append('<option value="0"></option>');
+            if (projectID == undefined || projectID == null || projectID == '' || isNaN(parseInt(projectID))) {
+                pwIsf.alert({ msg: "Project ID missing or invalid", type: "error" });
+            }
+            else {
+                $.isf.ajax({
+                    url: service_java_URL + "woManagement/getNodeType/" + projectID,
+                    async: false,
+                    success: function (data) {
+                        $('#workOrderViewIdPrefix_sitetype-node-type').empty();
+                        $.each(data, function (i, d) {
+                            if (type != d)
+                                $('#workOrderViewIdPrefix_sitetype-node-type').append('<option value="' + d + '">' + d + '</option>');
+                        })
+                        //$("#workOrderViewIdPrefix_sitetype-node-type").select2("val", type);
+                    },
+                    error: function (xhr, status, statusText) {
+                        console.log('An error occurred on getting Node type: ' + xhr.error);
+                    }
+                });
+
+                getNodeNamesForEditWO();
+            }
+
+
+
+        });
+
+
+        //END- fetch NODE DETAILS
+
+        var signum = signumGlobal;
+        var startDate = $('#start_date_wo').val();
+        var endDate = $('#end_date_wo').val();
+
+        if (startDate == '') startDate = 'all'
+        if (endDate == '') endDate = 'all'
+        //Search work order plan details
+        //getAllPlannedWorkOrderDetailsProject(startDate, endDate);
+
+        //getAllPlannedWorkOrderDetails();
+
+    });
+
+    function getNodeNamesForEditWO() {
+        var projectID = $('#workOrderViewIdPrefix_project_id').val();
+        var type = $('#workOrderViewIdPrefix_sitetype-node-type').select2('data')[0].text;
+        var eleType = $('#workOrderViewIdPrefix_sitetype-node-type').select2("val")
+        $.isf.ajax({
+
+            url: service_java_URL + "woManagement/getNodeNames/" + projectID + "/" + type + "/" + eleType,
+            success: function (data) {
+
+                $('#workOrderViewIdPrefix_node_master_select').html('');
+                $.each(data, function (j, d) {
+                    for (var i = 0; i < d.lstNodeName.length; i++) {
+                        $('#workOrderViewIdPrefix_node_master_select').append($('<option>', {
+                            value: d.lstNodeName[i],
+                            text: d.lstNodeName[i]
+                        }));
+                    }
+                })
+
+                var savedNodes = [];
+
+                $("#workOrderViewIdPrefix_node-site-name option").each(function () {
+                    savedNodes.push($(this).val());
+                });
+
+
+                $('#workOrderViewIdPrefix_node_master_select').select2();
+                $("#workOrderViewIdPrefix_node_master_select").select2("val", savedNodes); // craete tags
+
+
+                $('#all_nodes_master').show();
+
+                //Show Save button on view order form
+                $('#btn_update_nodes').attr("disabled", false);
+
+            },
+            error: function (xhr, status, statusText) {
+                alert("Failed to Edit Node");
+            }
+        });
+    }
+</script>
+
+<style>
+
+    tfoot {
+        display: table-header-group;
+    }
+</style>

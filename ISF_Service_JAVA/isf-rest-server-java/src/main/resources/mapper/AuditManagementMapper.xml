@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ericsson.isf.mapper.AuditManagementMapper">
+
+	<select id='getAuditDataByPageId' resultType="com.ericsson.isf.model.AuditDataModel">
+        SELECT a.commentid, a.dateCreated	, a.message,a.auditgroupid,a.type,a.fieldName,a.oldValue,a.newValue,a.actorType,
+		a.createdBy, a.context, a.notification, a.importance, g.auditPageId,REPLACE(a.additionalInfo, '%20', ' ') as additionalInfo, a.commentCategory,g.auditGroupCategory
+        from [transactionalData].[TBL_AuditDetails] a
+        join [transactionalData].[TBL_AuditGroup] g on g.auditGroupId =a.auditGroupId
+        where (g.auditPageId=#{auditPageId}) order by dateCreated desc
+        <if test="offset != null and limit != null">
+	      OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
+        </if>
+    </select>
+    
+    <select id='getAuditGroupByPageId' resultType="com.ericsson.isf.model.AuditGroupModel">
+        SELECT auditPageId, auditGroupCategory,auditgroupid from [transactionalData].[TBL_AuditGroup] where [auditPageId]=#{pageId} and auditGroupCategory=#{groupCategory}
+    </select>
+
+	<select id='insertAuditData'>
+				INSERT INTO [transactionalData].[TBL_AuditDetails]
+				           ([commentid]
+				           ,[auditgroupid]
+				           ,[message]
+				           ,[type]
+				           ,[fieldName]
+				           ,[oldValue]
+				           ,[newValue]
+				           ,[actorType]
+				           ,[createdBy]
+				           ,[dateCreated]
+				           ,[context]
+				           ,[notification]
+				           ,[importance]
+				           ,[additionalInfo]
+				           ,[commentCategory]
+				           ,[ModifiedBy]
+				           ,[ModifiedDate]
+				           ,[SourceID]
+				           )
+				     VALUES
+				           (#{auditData.commentid}
+				           ,#{auditData.auditgroupid}
+				           ,#{auditData.message}
+				           ,#{auditData.type}
+				           ,#{auditData.fieldName}
+				           ,#{auditData.oldValue}
+				           ,#{auditData.newValue}
+				           ,#{auditData.actorType}
+				           ,#{auditData.createdBy}
+				           ,dbo.GetDateIST()
+				           ,#{auditData.context}
+				           ,#{auditData.notification}
+				           ,#{auditData.importance}
+				           ,#{auditData.additionalInfo}
+				           ,#{auditData.commentCategory}
+				           ,#{auditData.createdBy}
+				           ,dbo.GetDateIST()
+				           ,#{auditData.sourceId}
+				           
+				           )
+    </select>
+    
+    
+    <insert id='insertAuditGroup' parameterType="com.ericsson.isf.model.AuditGroupModel" useGeneratedKeys="true" keyProperty="auditGroup.auditGroupId" keyColumn="auditGroupId">
+				INSERT INTO [transactionalData].[TBL_AuditGroup]
+				           (auditPageId
+				           ,auditGroupCategory)
+				     VALUES
+				           (#{auditGroup.auditPageId}
+				           ,#{auditGroup.auditGroupCategory})
+    </insert>
+   
+</mapper>
+

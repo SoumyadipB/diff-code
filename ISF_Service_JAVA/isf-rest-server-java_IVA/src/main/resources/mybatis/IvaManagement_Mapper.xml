@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="com.ericsson.isf.iva.mapper.IvaManagementMapper">
+
+	<select id='isEmployeeExist' resultType="java.lang.Boolean">
+	   IF EXISTS(SELECT 1 FROM refData.TBL_Employees
+	   WHERE signum=#{signum} and Status='ACTIVE')
+	   begin
+	   select 1 as result
+	   end
+	   else
+	   begin
+	   select 0 as result
+	   end
+	   
+	</select>
+	
+	 <select id='getAndValidateSource' resultType="java.util.Map">
+		select ApiTokenID from transactionalData.TBL_Token_API_List tpl
+		join refData.TBL_Subscribed_API_List sal on sal.SubscribedAPIID=tpl.SubscribedAPIID
+		where ( concat ('/',Controller,'/',APIEndpoint) = #{apiName} or concat ('/',Controller,'/',APIEndpoint,'/') = #{apiName} ) and tpl.OwnerSignum = #{ownerSignum} and tpl.Token = #{token} and tpl.active =1
+	</select>
+	
+	<select id='isWorkOrderAssignedToSignum' resultType="boolean">
+	   IF EXISTS(select top 1 WOID from transactionalData.TBL_WORK_ORDER where SignumID=#{signum} and WOID=#{workOrderID})
+	   begin
+	   select 1 as result
+	   end
+	   else
+	   begin
+	   select 0 as result
+	   end
+	   
+	</select>
+	
+	 <resultMap type="com.ericsson.isf.iva.model.WorkOrderModel" id="WorkOrderModelResult">
+        <id property="wOID" column="WOID" />
+        <result property="wOPlanID" column="wOPlanID" />
+        <result property="plannedStartDate" column="PlannedStartDate" />
+        <result property="plannedEndDate" column="PlannedEndDate" />
+        <result property="actualStartDate" column="ActualStartDate" />
+        <result property="actualEndDate" column="ActualEndDate" />
+        <result property="signumID" column="SignumID" />
+        <result property="status" column="Status" />
+        <result property="active" column="Active" />
+        <result property="createdBy" column="CreatedBy" />
+        <result property="createdDate" column="CreatedDate" />
+        <result property="lastModifiedBy" column="LastModifiedBy" />
+        <result property="lastModifiedDate" column="LastModifiedDate" />
+        <result property="priority" column="Priority"/>
+        <result property="closedOn" column="ClosedOn"/>
+        <result property="adHocWoID" column="AdhocWOID"/>
+        <result property="flowchartdefid" column="flowchartdefid"/>
+        <result property='projectid' column='projectid'/>
+        <result property='wfVersion' column='WorkFlowVersion'/>
+        <result property='parentWorkOrderID' column='parentWorkOrderID'/>
+        <result property='doID' column='DOID'/>
+        <result property='wOName' column='WOName'/>
+        <result property='slaHrs' column='SLAHrs'/>
+        <result property='subActivityID' column='SubActivityID'/>
+    </resultMap>
+    
+    <resultMap type="com.ericsson.isf.iva.model.ServerBotModel" id="ServerBotModelResult">
+     <result property="versionNO" column="VersionNumber" />
+      <result property="executionType" column="ExecutionType" />
+      <result property="taskID" column="TaskID" />
+      
+    </resultMap>
+    
+    
+	<select id = 'getWorkOrderDetailsById' resultMap="WorkOrderModelResult">
+        select wo.WOID, wo.WOPlanID, wo.SignumID, wo.PlannedStartDate, wo.PlannedEndDate, wo.ActualStartDate, wo.ActualEndDate, wo.ClosedOn, 
+	wo.Active, wo.Status, wo.Priority, wo.CreatedBy, wo.CreatedDate,wo.flowchartdefid,wo.projectId,
+	wo.WorkFlowVersion,wo.DOID,wo.slaHrs,wo.SubActivityID,wo.WOName from transactionalData.tbl_work_order wo
+        where wo.WOID =  #{woID,jdbcType=INTEGER}
+    </select>
+    
+    <select id='getWorkFlowNameForWoID'
+		resultType='java.util.HashMap'>
+		select def.WorkFlowName,def.type as Type,wo.flowchartdefid,def.WFID, def.VersionNumber from
+		transactionalData.TBL_WORK_ORDER WO
+		JOIN transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF def on def.ProjectID=WO.ProjectID
+		and def.SubActivityID = WO.SubActivityID
+		and def.SubActivityFlowChartDefID=WO.flowchartdefid
+		and
+		def.VersionNumber= WO.WorkFlowVersion
+		where WO.WOID= #{wOID}
+		
+	</select>
+	
+	<select id='getExpertDefID' resultType="Integer">
+		select top 1
+		SubActivityFlowChartDefID from
+		transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF where WFID=#{wfID}
+		and
+		WorkFlowName=#{wfName}
+		order by VersionNumber desc
+	</select>
+	
+	<select id='getExpertWorkFlow' resultMap="WorkFlowModelMap">
+		select  cells.StepType, cells.StepID ,cells.StepName, cells.AttributesTaskID, cells.AttributesLabel,
+		cells.AttributesExecutionType, cells.AttributesText, cells.SourceID,cells.TargetID, cells.Labels,Maxbook.*
+		 from
+		transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF sfd
+		CROSS APPLY OPENJSON(sfd.FlowChartJSON)
+		WITH(
+		cells nvarchar(max) as json
+		)as FlowChart
+		 CROSS APPLY OPENJSON (FlowChart.cells) WITH (
+		StepType NVARCHAR(30) '$.type',
+		StepID NVARCHAR(600) '$.id',
+		StepName NVARCHAR(600) '$.name',
+		AttributesTaskID  int '$.attrs.task.taskID',
+		AttributesLabel  NVARCHAR(MAX) '$.attrs.label'  AS JSON,
+		AttributesText  NVARCHAR(100) '$.attrs.text.text',
+		SourceID  NVARCHAR(600) '$.source.id',
+		TargetID NVARCHAR(600) '$.target.id',
+		Labels  NVARCHAR(MAX) '$.labels' AS JSON,
+		AttributesExecutionType  NVARCHAR(30) '$.attrs.task.executionType'
+		) as cells
+		left join (
+			Select  WOBdetail.WOID, WOBdetail.StartDate as StartDate, WOBdetail.EndDate as EndDate
+        , WOBdetail.TaskID, WOBdetail.Status, WOBdetail.Type
+    	, WOSdetail.FlowChartStepID
+    	, WOSdetail.decisionvalue, WOBdetail.BookingID
+    	, row_number() over (partition by WOSdetail.FlowChartStepID order by WOBdetail.StartDate desc ) Maxbookingrn
+		from transactionalData.TBL_WORK_ORDER_BOOKING_DETAILS WOBdetail
+		Inner join transactionalData.TBL_WORK_ORDER_FLOWCHART_STEP_DETAILS WOSdetail
+		On WOSdetail.WOID = WOBdetail.WOID
+		and WOSdetail.BookingID = WOBdetail.BookingID
+		where WOBdetail.WOID = #{wOID}
+		) AS Maxbook on  Maxbook.FlowChartStepID=cells.stepID and Maxbook.Maxbookingrn=1
+		where sfd.workFlowName =#{wfName} and sfd.Type in
+		('PROJECTDEFINED','PROJECTDEFINED_EXPERT','CUSTOM')
+		and sfd.FlowchartJSON is not
+		NULL and sfd.SubActivityFlowChartDefID =
+		#{expertDefId}
+		order by
+		sfd.SubActivityFlowChartDefID desc
+	</select>
+	
+	<select id='getWOWorkFlowWithWFNoAndWOID'
+		resultMap="WorkFlowModelMap">
+
+		select  cells.StepType, cells.StepID ,cells.StepName, cells.AttributesTaskID, cells.AttributesLabel, cells.AttributesText,
+		 cells.SourceID,cells.TargetID, cells.AttributesExecutionType, cells.Labels,Maxbook.*
+		 from
+		transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF sfd
+		inner join transactionalData.TBL_WORK_ORDER wo on wo.SubActivityID = sfd.SubActivityID and wo.flowchartdefid=sfd.SubActivityFlowChartDefID
+		CROSS APPLY OPENJSON(sfd.FlowChartJSON)
+		WITH(
+		cells nvarchar(max) as json
+		)as FlowChart
+		 CROSS APPLY OPENJSON (FlowChart.cells) WITH (
+		StepType NVARCHAR(30) '$.type',
+		StepID NVARCHAR(600) '$.id',
+		StepName NVARCHAR(600) '$.name',
+		AttributesTaskID  int '$.attrs.task.taskID',
+		AttributesLabel  NVARCHAR(MAX) '$.attrs.label'  AS JSON,
+		AttributesText  NVARCHAR(100) '$.attrs.text.text',
+		SourceID  NVARCHAR(600) '$.source.id',
+		TargetID NVARCHAR(600) '$.target.id',
+		Labels  NVARCHAR(MAX) '$.labels' AS JSON,
+		AttributesExecutionType  NVARCHAR(30) '$.attrs.task.executionType'
+		) as cells
+		left join (
+			Select  WOBdetail.WOID, WOBdetail.StartDate as StartDate, WOBdetail.EndDate as EndDate
+        , WOBdetail.TaskID, WOBdetail.Status, WOBdetail.Type
+    	, WOSdetail.FlowChartStepID, WOSdetail.ExecutionType
+    	, WOSdetail.decisionvalue, WOBdetail.BookingID
+    	, row_number() over (partition by WOSdetail.FlowChartStepID order by WOBdetail.StartDate desc ) Maxbookingrn
+		from transactionalData.TBL_WORK_ORDER_BOOKING_DETAILS WOBdetail
+		Inner join transactionalData.TBL_WORK_ORDER_FLOWCHART_STEP_DETAILS WOSdetail
+		On WOSdetail.WOID = WOBdetail.WOID
+		and WOSdetail.BookingID = WOBdetail.BookingID
+		where WOBdetail.WOID = #{wOID}
+		) AS Maxbook on Maxbook.WOID=wo.WOID and Maxbook.FlowChartStepID=cells.stepID and Maxbook.Maxbookingrn=1
+		where 
+		sfd.Type in
+		('PROJECTDEFINED','PROJECTDEFINED_EXPERT','CUSTOM')
+		<if test="wfVersion != 0">	
+			and sfd.versionNumber =#{wfVersion} 
+		</if>
+		and
+		wo.WOID = #{wOID} and
+		sfd.FlowchartJSON is not NULL 
+		order by sfd.SubActivityFlowChartDefID
+		desc
+	</select>
+
+	<select id='isHeaderSignumExist' resultType="java.lang.Boolean">
+	   IF EXISTS(SELECT 1 from transactionalData.TBL_WORK_ORDER
+	   WHERE woid=#{wOID} and  SignumID=#{signum} )
+	   begin
+	   select 1 as result
+	   end
+	   else
+	   begin
+	   select 0 as result
+	   end
+	   
+	</select>
+	
+	<resultMap type="com.ericsson.isf.iva.model.WorkFlowModel" id="WorkFlowModelMap">
+		<result property="stepType" column="stepType" />
+		<result property="stepID" column="StepID" />
+		<result property="stepName" column="StepName" />
+        <result property="stepID" column="FlowChartStepID" />
+        <result property="labels" column="Labels" />
+        <association property="attributes" resultMap="attributesResultMap"/>
+        <association property="source" javaType="com.ericsson.isf.iva.model.Source">
+			<result property="id" column="SourceID" />
+		</association>
+		 <association property="target" javaType="com.ericsson.isf.iva.model.Target">
+			<result property="id" column="TargetID" />
+		</association>
+    </resultMap>
+    
+    <resultMap type="com.ericsson.isf.iva.model.Attributes" id="attributesResultMap">
+		<association property="task" resultMap="taskResultMap"/>
+		<association property="label" javaType="com.ericsson.isf.iva.model.Label">
+			<result property="text" column="AttributesLabel" />
+		</association>
+		<association property="text" javaType="com.ericsson.isf.iva.model.Text">
+			<result property="text" column="AttributesText" />
+		</association>    
+    </resultMap>
+    
+    <resultMap type="com.ericsson.isf.iva.model.Task" id="taskResultMap">
+    	<result property="bookingID" column="BookingID" />
+        <result property="bookingType" column="Type" />
+        <result property="status" column="Status" />
+        <result property="executionType" column="AttributesExecutionType" />
+        <result property="startDate" column="StartDate" />
+        <result property="endDate" column="EndDate" />
+        <result property="taskID" column="AttributesTaskID" />
+    </resultMap>
+
+	<select id='getStepDetails' resultMap="WorkFlowModelMap">
+
+		Drop TABLE IF Exists #Maxbook
+		Select  WOBdetail.WOID, WOBdetail.StartDate as StartDate, WOBdetail.EndDate as EndDate
+        , WOBdetail.TaskID, WOBdetail.Status, WOBdetail.Type
+    	, WOSdetail.FlowChartStepID, WOSdetail.ExecutionType
+    	, WOSdetail.decisionvalue, WOBdetail.BookingID
+    	, row_number() over (partition by WOSdetail.FlowChartStepID order by WOBdetail.StartDate desc ) Maxbookingrn
+    	into #Maxbook
+		from transactionalData.TBL_WORK_ORDER_BOOKING_DETAILS WOBdetail
+		Inner join transactionalData.TBL_WORK_ORDER_FLOWCHART_STEP_DETAILS WOSdetail
+		On WOSdetail.WOID = WOBdetail.WOID
+		and WOSdetail.BookingID = WOBdetail.BookingID
+		where WOBdetail.WOID = #{wOID}
+
+		Select  WOID, StartDate, EndDate, TaskID, Status, Type
+		, FlowChartStepID, ExecutionType, decisionvalue, BookingID from #Maxbook
+		where Maxbookingrn = 1
+	</select>
+
+	
+	<select id = 'getStepIdAndExecutionType' resultMap="ServerBotModelResult">
+        select top 1 VersionNumber,ExecutionType ,TaskID
+		from transactionalData.TBL_FLOWCHART_STEP_DETAILS 
+		where subActivityFlowChartDefID=#{subActivityFlowChartDefID} 
+		and StepID=#{stepID}
+    </select>
+    
+    <select id="validateSignumProficientforWO" resultType='boolean'>
+    	 IF EXISTS(select top 1 SystemID  from transactionalData.TBL_WORK_FLOW_USER_PROFICIENCY 
+    	 where SubActivityID=#{subActivityID} AND SignumID =#{signum} AND WFID=#{wFID})
+	   begin
+	   select 1 as result
+	   end
+	   else
+	   begin
+	   select 0 as result
+	   end
+    </select>
+    
+    
+    <select id="getSignumForBookingId" resultType="String">
+    select isNULL(wo.SignumID,'signum') from transactionalData.TBL_WORK_ORDER_BOOKING_DETAILS tbd
+		left join transactionalData.TBL_WORK_ORDER wo
+		on wo.WOID=tbd.WOID
+		where BookingID=#{bookingId}
+		</select>
+		
+		<select id="getValidateJsonForApi" resultType="String" useCache="true">
+		select ValidateJSON from Refdata.TBL_SourceApiValidateJson validate
+		inner join refData.TBL_IntegrationSources sources on sources.sourceId=validate.sourceid
+		where SourceAPI='/ivaManagement/checkParallelWorkOrderDetails'
+		</select>
+</mapper>

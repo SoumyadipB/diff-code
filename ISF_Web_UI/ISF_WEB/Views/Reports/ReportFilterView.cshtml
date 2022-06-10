@@ -1,0 +1,30 @@
+﻿@Scripts.Render("~/bundles/Reports")
+
+<script>
+    $(document).ready(function () {
+        getServiceAreas();
+        getDomains();
+        getTechnologies();
+        getProjects();
+        getActivitySubActivity();
+        $(function () {
+            $("[id$=start_date_reports]").datepicker({ minDate: 0 });
+        });
+        $(function () {
+            $("[id$=end_date_reports]").datepicker({ minDate: 0 });
+        });
+        $(function () {
+            $("[id$=end_date_reports]").datepicker({
+                startDate: $("[id$=start_date_reports]").val(),
+                autoClose: true,
+                viewStart: 0,
+                weekStart: 1
+            });
+        });
+
+    });
+</script>
+
+<div id="reportsFilter">
+   
+</div>

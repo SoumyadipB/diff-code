@@ -1,0 +1,2142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ericsson.isf.mapper.AccessManagementMapper">
+
+	<resultMap type="CapabilityPageGroupModel" id="CapabilityPageGroupModelResult">
+        <result property="id" column="CapabilityPageGroup" />
+        <result property="groupTitle" column="GroupTitle" />
+        <result property="groupIcon" column="GroupIcon" />
+        <result property="groupHref" column="GroupHref" />
+        <result property="groupOnClick" column="GroupOnClick" />
+        <collection property='submenu' ofType='CapabilityPageNameModel'>
+            <result property='id' column='CapabilityPageName'/>
+            <result property="subMenuTitle" column="SubMenuTitle" />
+            <result property="subMenuHref" column="SubMenuHref" />
+            <result property="onClick" column="OnClick" />
+        </collection>  
+    </resultMap>
+	
+	<resultMap type="com.ericsson.isf.model.EricssonOrganizationModel" id="EricssonOrganizationModelResult">
+        <result property="text" column="MARKETAREAS" />
+        <result property="id" column="MARKETAREAS" />
+        <collection property='children' ofType='com.ericsson.isf.model.EricssonSecondLevelUnitModel'>
+            <result property="text" column="SECONDLEVELUNIT" />
+            <result property="id" column="SECONDLEVELUNIT" />
+            <result property="active" column="ACTIVE" />
+        </collection>  
+   </resultMap>
+    
+    <resultMap type='OrganizationModel' id="OrganizationModelResult">
+        <id property="organisationID" column="OrganisationID" />
+        <result property="organisation" column="Organisation" />
+        <result property="active" column="Active" />
+        
+    </resultMap>
+    
+    <resultMap type='RoleModel' id="RoleModelResult">
+        <id property="accessRoleID" column="AccessRoleID" />
+        <result property="role" column="Role" />
+        <result property="alias" column="Alias" />
+        <result property="active" column="Active" />
+    </resultMap>
+
+    
+     <resultMap type='AccessProfileModel' id="AccessProfileModelResult">
+        <id property="accessProfileID" column="AccessProfileID" />
+        <result property="accessProfileName" column="AccessProfileName" />
+        <result property="roleID" column="AccessRoleID" />
+        <result property="role" column="Role" />
+        <result property="organisationID" column="OrganisationID" />
+        <result property="organisation" column="Organisation" />
+        <result property="active" column="Active" />
+        
+    </resultMap>
+    
+    <resultMap type='UserAccessProfileModel' id="UserAccessProfileModelResult">
+        <id property="userAccessProfileID" column="UserAccessProfileID" />
+        <result property="signumID" column="SignumID" />
+        <result property="accessProfileID" column="AccessProfileID" />
+        <result property="approvalStatus" column="ApprovalStatus" />
+        <result property="approvedBy" column="ApprovedBy" />
+        <result property="approvedDate" column="ApprovedDate" />
+        <result property="lastModifiedBy" column="LastModifiedBy" />
+        <result property="lastModifiedDate" column="LastModifiedDate" />
+        <result property="accessProfileName" column="AccessProfileName" />
+        <result property="organisation" column="Organisation" />
+        <result property="role" column="Role" />
+        <result property="managerSignum" column="ManagerSignum" />
+        <result property="totalCounts" column="TOTALCNT"/>
+    </resultMap>
+    
+    <resultMap type='AccessProfileRequestModel' id="AccessProfileRequestModelResult">
+        <id property="id" column="id" />
+        <result property="signum" column="Signum" />
+        <result property="accessProfileID" column="AccessProfileID" />
+        <result property="approver" column="Approver" />
+        <result property="status" column="Approval Status" />
+        <result property="remark" column="Remark" />
+        <result property="createdOn" column="CreatedOn" />
+        <result property="lastModifiedOn" column="LastModifiedOn" />
+    </resultMap>
+    
+    <resultMap type='ApiManagerUserModel' id="ApiManagerUserModelResult">
+		<id property="signum" column="Signum"/>
+        <result property="firstName" column="FirstName" />
+        <result property="lastName" column="LastName" />
+        <result property="email" column="UserEmailId" />
+        <collection property='identities' ofType='ApiManagerIdentity' >
+        		<result property="id" column="EmployeeObjectID" />
+        </collection>
+    </resultMap>
+    
+    <select id='getUserMenu' resultMap='CapabilityPageGroupModelResult'>
+        select CapabilityPageID,CapabilityPageGroup,CapabilityPageName,Active,GroupTitle,SubMenuTitle,
+		        GroupIcon,SubMenuHref,OnClick,GroupHref,Priority,GroupOnClick
+        from refData.TBL_CAPABILITY where active = 1  order by priority
+    </select>
+    
+    <select id='getEricssonOrgDetails' resultMap='EricssonOrganizationModelResult'>
+       <!--  select * from refData.[TBL_ERICSSON_ORG]-->
+       select MARKETAREAS,SECONDLEVELUNIT,Active,ID from refData.[TBL_ERICSSON_ORG]
+    </select>
+    
+    <select id='getSiteStatus' resultType="java.util.LinkedHashMap">
+     	SELECT isDown, convert(nvarchar(MAX), StartDate, 20) as StartDate, convert(nvarchar(MAX), EndDate, 20) as EndDate, Message,Color FROM [refData].[TBL_DownTime]
+	</select> 
+    
+    <select id='getOrganizationList' resultMap="OrganizationModelResult">
+        SELECT OrganisationID,Organisation,Active FROM REFDATA.TBL_ORGANISATION WHERE ACTIVE=1
+    </select>
+    
+    <select id='getRoleList' resultMap="RoleModelResult">
+		<!--  SELECT * FROM refData.TBL_ACCESS_ROLE WHERE ACTIVE=1 and Role != 'Application Admin' -->
+		select AccessRoleID,Role,Alias,Active from refData.TBL_ACCESS_ROLE  WHERE ACTIVE=1 and Role != 'Application Admin'
+    </select>
+    
+    <select id="getRoleListByType" resultMap="RoleModelResult">
+    	<!-- SELECT * FROM refData.TBL_ACCESS_ROLE WHERE ACTIVE=1 and VisibleTo = #{userType} and Role != 'Application Admin'-->
+    	SELECT AccessRoleID,Role,Alias,Active FROM refData.TBL_ACCESS_ROLE WHERE ACTIVE=1 and VisibleTo = #{userType} and Role != 'Application Admin'
+    </select>
+    
+    <select id='getAccessProfiles' resultMap="AccessProfileModelResult">
+        SELECT AccessProfileID,AccessProfileName,ap.AccessRoleID,ro.Role,ap.OrganisationID,org.Organisation,ap.Active from refData.TBL_ACCESS_PROFILE ap
+            INNER JOIN REFDATA.TBL_ORGANISATION org on ap.OrganisationID= org.OrganisationID and org.Active=1
+            INNER JOIN REFDATA.TBL_ACCESS_ROLE ro ON ro.AccessRoleID=ap.AccessRoleID and ro.Active=1
+        WHERE ap.ACTIVE=1
+    </select>
+    
+    
+    <select id='assignAccessToUser' parameterType="UserAccessProfileModel" statementType="CALLABLE" resultType="String">
+		<!--  
+        INSERT INTO TRANSACTIONALDATA.TBL_USER_ACCESS_PROFILE(SignumID,AccessProfileID,ApprovedBy,ApprovedDate,LastModifiedBy,Active,
+        ApprovalStatus,LastModifiedDate, startDate, endDate ,CreatedBy , CreatedDate)
+        VALUES(#{empSignumID},#{accessProfileID},null,dbo.GetDateIST(),#{loggedInUser},1,null,dbo.GetDateIST(), dbo.GetDateIST(), DateAdd(day, #{dDays}, dbo.GetDateIST()) , #{loggedInUser} , dbo.GetDateIST())
+         -->
+
+        {call [dbo].[usp_AssignedUserRole] (
+        #{empSignumID, mode=IN, jdbcType=VARCHAR},
+        #{roleID, mode=IN, jdbcType=INTEGER},
+        #{accessProfileID, mode=IN, jdbcType=INTEGER},
+        #{loggedInUser, mode=IN, jdbcType=VARCHAR},
+        #{expiryDate, mode=IN, jdbcType=DATE})} 
+    </select>
+    
+    <insert id='insertAccessProfileStatus' >
+        INSERT INTO TRANSACTIONALDATA.TBL_USER_ACCESS_PROFILE(SignumID,AccessProfileID,ApprovedBy,ApprovedDate,LastModifiedBy,Active,ApprovalStatus,LastModifiedDate,
+         CreatedDate , CreatedBy)
+        VALUES(#{profileRequest.signum},
+        #{profileRequest.accessProfileID},
+        #{profileRequest.approver},
+        dbo.GetDateIST(),
+        #{profileRequest.signum},
+        1,
+        'APPROVED',
+        dbo.GetDateIST(),
+        
+         dbo.GetDateIST(),
+         #{profileRequest.signum})
+        
+    </insert>
+    
+    <select id='checkIFAccessDetailsExists' resultType="Boolean">
+        IF EXISTS(SELECT 1 FROM TRANSACTIONALDATA.TBL_USER_ACCESS_PROFILE WHERE ACCESSPROFILEID=#{accessProfileID} AND SIGNUMID=#{signumID} AND ACTIVE=1)
+            BEGIN
+                SELECT 1 AS 'RESULT'
+            END
+        ELSE
+            BEGIN
+                SELECT 0 AS 'RESULT'
+            END
+        
+    </select>
+    
+    <select id='getAccessProfileName' resultType="String">
+            SELECT top 1 AccessProfileName FROM REFDATA.TBL_ACCESS_PROFILE WHERE 
+            <if test="roleID != 0">
+            	AccessROLEID=#{roleID} AND 
+            </if>
+            ACCESSPROFILEID=#{accessProfileID} and ACTIVE=1
+</select>    <select id='checkIFRoleExists' resultType="Boolean">
+            IF EXISTS(SELECT 1 FROM REFDATA.TBL_ACCESS_PROFILE WHERE AccessROLEID=#{roleID} AND ACCESSPROFILEID=#{accessProfileID} and ACTIVE=1)
+            BEGIN
+                SELECT 1 AS 'RESULT'
+            END
+        ELSE
+            BEGIN
+                SELECT 0 AS 'RESULT'
+            END
+    </select>
+    
+       
+    <update id='disableAccessToUser'>
+        UPDATE TRANSACTIONALDATA.TBL_USER_ACCESS_PROFILE SET ACTIVE=0,LastModifiedBy = #{modifiedBy},LASTMODIFIEDDATE=dbo.GetDateIST() WHERE USERACCESSPROFILEID=#{userAccessProfID} AND ACCESSPROFILEID=#{accessProfileID}
+            AND SIGNUMID=#{signumID}
+    </update>
+    
+    <update id='updateApprovalStatus'>
+        UPDATE TRANSACTIONALDATA.TBL_USER_ACCESS_PROFILE 
+        SET APPROVALSTATUS=#{approvalStatus}, 
+        APPROVEDDATE=dbo.GetDateIST(), 
+        ApprovedBy=#{approvedBy},
+        LastModifiedBy = #{approvedBy}, 
+        LastModifiedDate = dbo.GetDateIST()
+        WHERE  USERACCESSPROFILEID=#{userAccessProfID} AND SIGNUMID=#{signumID} 
+    </update>
+    
+
+    <select id='checkIFProfileExists' resultType="Boolean">
+            IF EXISTS(select 1 from refData.TBL_ACCESS_PROFILE where AccessProfileName = #{profileName} and ACTIVE=1)
+                BEGIN
+                    SELECT 1 AS 'RESULT'
+                END
+            ELSE
+                BEGIN
+                    SELECT 0 AS 'RESULT'
+                END
+    </select>
+    
+    <insert id='createNewAccessProfile'>
+        insert into refData.TBL_ACCESS_PROFILE (AccessProfileName, AccessRoleID, OrganisationID, Active) 
+	values (#{profileName}, #{roleID}, #{organizationID}, 1)
+    </insert>
+    
+   <insert id='insertCpmDetails'>
+        insert into refData.TBL_CPMDetails 
+	values (#{signum}, #{name}, #{mailID})
+    </insert>
+    
+    <select id='getAccessProfilesByRole' resultMap="AccessProfileModelResult">
+        SELECT ap.AccessProfileID,ap.AccessProfileName,ap.AccessRoleID,ro.Role,ap.OrganisationID,org.Organisation,ap.Active from refData.TBL_ACCESS_PROFILE ap
+            INNER JOIN REFDATA.TBL_ORGANISATION org on ap.OrganisationID= org.OrganisationID and org.Active=1
+            INNER JOIN REFDATA.TBL_ACCESS_ROLE ro ON ro.AccessRoleID=ap.AccessRoleID and ro.Active=1
+            WHERE ap.ACTIVE=1 and ro.AccessRoleID=#{roleID}
+    </select>
+    
+    <select id='IsRoleExists' resultType="Boolean">
+            IF EXISTS(select 1 from refData.TBL_ACCESS_ROLE where AccessRoleID = #{roleID} and ACTIVE=1)
+                BEGIN
+                    SELECT 1 AS 'RESULT'
+                END
+            ELSE
+                BEGIN
+                    SELECT 0 AS 'RESULT'
+                END
+    </select>
+    
+    <select id='IsSignumExists' resultType="Boolean" useCache="true">
+		IF EXISTS(select 1 from
+		transactionalData.TBL_USER_ACCESS_PROFILE where
+		SignumID = #{signumID}
+		and Active=1)
+                BEGIN
+                    SELECT 1 AS 'RESULT'
+                END
+            ELSE
+                BEGIN
+                    SELECT 0 AS 'RESULT'
+                END
+    </select>
+     <select id='IsSignumExistsHRMS' resultType="Boolean">
+		IF EXISTS(select 1
+		from [refData].[TBL_Ericsson_Employees] where [Signum ID]= #{signumID})
+                BEGIN
+                    SELECT 1 AS 'RESULT'
+                END
+            ELSE
+                BEGIN
+                    SELECT 0 AS 'RESULT'
+                END
+    </select>
+    
+    <resultMap type='UserAccessProfileBySignumModel' id="UserAccessProfileBySignumModelResult">
+        <id property="employeeName" column="EmployeeName" />
+        <result property="signumID" column="SignumID" />
+        <result property="personnelNumber" column="PersonnelNumber" />
+        <result property="managerSignum" column="ManagerSignum" />
+        <result property="costCenter" column="CostCenter" />
+        <result property="jobStage" column="JobStage" />
+        <collection property='listOfRoles' ofType='RoleModel'>
+            <id property='accessRoleID' column='RoleID'/>
+            <result property='role' column='EmpRole'/>
+        </collection>  
+        <collection property='listOfOrgs' ofType='OrganizationModel'>
+            <id property='organisationID' column='OrganisationID'/>
+            <result property='organisation' column='Organisation'/>
+        </collection>  
+        <collection property='listOfCaps' ofType='CapabilityModel'>
+            <id property='capabilityPageID' column='CapabilityPageID'/>
+            <result property='capabilityPageName' column='CapabilityPageName'/>
+            <result property='capabilityPageGroup' column='CapabilityPageGroup'/>
+        </collection>  
+    </resultMap>
+    
+    <resultMap type='CapabilityModel' id='CapabilityModelResult'>
+            <id property='capabilityPageID' column='CapabilityPageID'/>
+            <result property='capabilityPageName' column='CapabilityPageName'/>
+            <result property='capabilityPageGroup' column='CapabilityPageGroup'/>
+    </resultMap>  
+    
+    <select id='getUserAccessProfile' resultMap="UserDetailsAccessModelResult">
+        select emp.EmployeeName, emp.unit, emp.Signum as SignumID, emp.EmployeeEmailID, 
+          emp.PersonnelNumber, emp.ContactNumber, emp.Gender, emp.Status, uap.ApprovedBy,
+          emp.ManagerSignum, emp.CostCenter, emp.JobStage, emp.IsLineManager as isLineManager, emp.JobRoleFamily, uap.ApprovalStatus,uap.ApprovedDate, 
+          r.AccessRoleID, r.Role, r.Alias, o.OrganisationID, o.Organisation, c.CapabilityPageID, c.CapabilityPageName, c.CapabilityPageGroup,
+        ap.AccessProfileID,ap.AccessProfileName
+       from refData.TBL_Employees emp 
+       inner join transactionalData.TBL_USER_ACCESS_PROFILE uap on emp.Signum=uap.SignumID
+       inner join refData.Tbl_Access_profile ap on ap.AccessProfileID=uap.AccessProfileID
+       inner join refData.TBL_ACCESS_Role r on r.AccessRoleID=ap.AccessRoleID
+       inner join refData.TBL_ORGANISATION o on o.OrganisationID=ap.OrganisationID
+       inner join refData.TBL_ROLE_CAPABILITY rc on rc.RoleID=r.AccessRoleID
+       inner join refData.TBL_CAPABILITY c on c.CapabilityPageID=rc.CapabilityPageID
+        where emp.Signum=#{signumID} and uap.Active =1 and rc.permission in ('write', 'read')
+
+    </select>
+    
+    <select id='checkEmpAsPM' resultType="hashmap">		
+		select 
+		emp.Signum, r.Role
+		from refData.TBL_Employees emp 
+		inner join transactionalData.TBL_USER_ACCESS_PROFILE uap on emp.Signum=uap.SignumID
+		inner join refData.TBL_ACCESS_PROFILE ap on ap.AccessProfileID=uap.AccessProfileID
+		inner join refData.TBL_ORGANISATION o on ap.OrganisationID = o.OrganisationID
+		inner join refData.TBL_ACCESS_ROLE r on r.AccessRoleID=ap.AccessRoleID
+		where emp.Signum=#{signumID} 
+		and uap.Active =1 
+		and r.Role = 'Project Manager' 
+		and r.Alias = 'PM'
+		and EXISTS (select ProjectName from transactionalData.TBL_PROJECTS 
+		where ProjectID=#{projectID} and ProjectName LIKE CONCAT('%', o.Organisation, '%'))
+
+    </select>
+     
+     <select id="searchAccessDetailsByFilter" resultMap="UserAccessProfileModelResult">
+     	select	uap.SignumID, UserAccessProfileID,uap.AccessProfileID, ap.AccessProfileName,ap.OrganisationID, org.Organisation,
+			ro.AccessRoleID, ro.role as Role, uap.Active,ep.ManagerSignum as ManagerSignum,uap.endDate,uap.ApprovedDate,uap.ApprovedBy,
+			COUNT(*) OVER() TOTALCNT
+			from TRANSACTIONALDATA.TBL_USER_ACCESS_PROFILE uap
+			INNER JOIN REFDATA.TBL_ACCESS_PROFILE ap on uap.ACCESSPROFILEID= ap.ACCESSPROFILEID and ap.AccessProfileID != 39
+			INNER JOIN REFDATA.TBL_ACCESS_ROLE ro on ap.AccessROLEID= ro.AccessRoleID
+			INNER JOIN REFDATA.TBL_ORGANISATION org on ap.ORGANISATIONID= ORG.ORGANISATIONID
+			JOIN REFDATA.TBL_Employees as ep on uap.SignumID = ep.Signum
+			where uap.Active=1 
+		<if test="signumID != 'All'">
+			and uap.SignumID = #{signumID}
+	    </if>
+		<if test="roleID != 0">
+			and ro.AccessRoleID = #{roleID}
+		</if>
+		<if test="organisationID != 0">
+			and org.organisationID = #{organisationID}
+		</if>
+		<if test="lineManagerSignum != 'All'">
+			and ep.ManagerSignum = #{lineManagerSignum}
+		</if>
+		<if test="dataTableReq != null">
+ 	       <foreach item="column" index="index" collection="dataTableReq.columns">
+	      		 <if test ="column.search != ''"> 
+	              	and ${column.data} like #{column.search}
+	          	 </if> 
+	  		</foreach>
+	  		<if test ="dataTableReq.order != null and dataTableReq.order.sortDir!=null"> 
+				order by ${dataTableReq.order.data} ${dataTableReq.order.sortDir}
+	        </if> 
+			<if test ='dataTableReq.length != -1'>
+				OFFSET ${dataTableReq.start} ROWS
+				FETCH NEXT ${dataTableReq.length} ROWS ONLY
+			</if>
+		</if>
+     </select>
+
+    <resultMap type='CPMModel' id="CPMModelResult">
+        <id property="signum" column="Signum" />
+        <result property="name" column="Name" />
+        <result property="mailID" column="MailID" />
+        
+    </resultMap>
+    
+    <select id = 'getCPMdetails' resultMap = "CPMModelResult">
+    SELECT Signum,Name,MailID from refData.TBL_CPMDetails WHERE Signum = #{signumID}
+    </select>
+    
+    <select id='IsRoleAndOrgExists' resultType="Boolean">
+            IF EXISTS(select 1 from refData.TBL_ACCESS_PROFILE where AccessRoleID=#{roleID} and OrganisationID=#{orgID} and Active=1)
+                BEGIN
+                    SELECT 1 AS 'RESULT'
+                END
+            ELSE
+                BEGIN
+                    SELECT 0 AS 'RESULT'
+                END
+    </select>
+    
+    <select id='IsRoleDetailsExists' resultType="Boolean">
+            IF EXISTS(select 1 from refData.TBL_ACCESS_PROFILE where AccessRoleID in (${roleID}) and Active=1)
+                BEGIN
+                    SELECT 1 AS 'RESULT'
+                END
+            ELSE
+                BEGIN
+                    SELECT 0 AS 'RESULT'
+                END
+    </select>   
+    
+    <select id='getUserDetailsForDR' resultType="String">
+        select distinct emp.Signum + '('+emp.EmployeeName + ')' as UserName	
+	from refData.TBL_Employees emp 
+	inner join transactionalData.TBL_USER_ACCESS_PROFILE uap on emp.Signum=uap.SignumID
+	<if test="projectID != null and projectID != ''">
+	inner join transactionalData.TBL_DELIVERY_ACCEPTANCE tdp on emp.Signum=tdp.SignumID
+	</if>
+	inner join refData.Tbl_Access_profile ap on ap.AccessProfileID=uap.AccessProfileID
+	inner join refData.TBL_ACCESS_ROLE r on r.AccessRoleID=ap.AccessRoleID
+        where r.AccessRoleID in (${roleID}) and uap.Active=1 
+       <if test="projectID != null and projectID != ''">
+         and tdp.ProjectID=${projectID}
+        </if>
+       
+        <if test ="marketArea !='All'"> 
+        and AccessProfileName like '%${marketArea}%'
+        </if>
+    </select>
+    
+    <select id = 'getCapability' resultMap = "CapabilityModelResult">
+       select  CapabilityPageID,CapabilityPageName,CapabilityPageGroup  from refData.TBL_CAPABILITY where Active = 1
+    </select>
+    
+     <select id='getUserByFilter' resultType="String">
+        select emp.Signum + '('+emp.EmployeeName + ')' as UserName	
+	 from refData.TBL_Employees emp 
+	inner join transactionalData.TBL_USER_ACCESS_PROFILE uap on emp.Signum=uap.SignumID
+	inner join refData.Tbl_Access_profile ap on ap.AccessProfileID=uap.AccessProfileID
+	inner join refData.TBL_ACCESS_ROLE r on r.AccessRoleID=ap.AccessRoleID
+	inner join refData.TBL_ORGANISATION o on o.OrganisationID=ap.OrganisationID
+        where uap.Active=1 and r.AccessRoleID =#{roleID} and o.OrganisationID=#{orgID} 
+    </select>
+    
+    <select id='getUsersByAlias' resultType="String">
+        select emp.Signum + '('+emp.EmployeeName + ')' as UserName	
+	 from refData.TBL_Employees emp 
+	inner join transactionalData.TBL_USER_ACCESS_PROFILE uap on emp.Signum=uap.SignumID
+	inner join refData.Tbl_Access_profile ap on ap.AccessProfileID=uap.AccessProfileID
+	inner join refData.TBL_ACCESS_ROLE r on r.AccessRoleID=ap.AccessRoleID
+	inner join refData.TBL_ORGANISATION o on o.OrganisationID=ap.OrganisationID
+        where r.alias =#{alias} and o.OrganisationID=#{orgID}
+    </select>
+    
+    <select id="getRPMByMarket" resultType="String">
+    select emp.Signum + '('+emp.EmployeeName + ')' as UserName	
+	 from refData.TBL_Employees emp 
+	inner join transactionalData.TBL_USER_ACCESS_PROFILE uap on emp.Signum=uap.SignumID
+	inner join refData.Tbl_Access_profile ap on ap.AccessProfileID=uap.AccessProfileID
+	inner join refData.TBL_ACCESS_ROLE r on r.AccessRoleID=ap.AccessRoleID
+        where r.AccessRoleID =11 and uap.Active=1 and ap.AccessProfileName like '%${marketArea}%'
+    </select>
+        
+    <resultMap type='AccessProfileUserDetailModel' id="AccessProfileUserDetailModelResult">
+       <id property="accessProfileID" column="AccessProfileID" />
+            <result property="accessProfileName" column="AccessProfileName" />
+            <result property="roleID" column="AccessRoleID" />
+            <result property="role" column="Role" />
+            <result property="organisationID" column="OrganisationID" />
+            <result property="organisation" column="Organisation" />
+        <collection property='lstAccessUserProfile' ofType="AccessUserProfileModel">
+            <id property="signumID" column="SignumID" />
+            <result property="employeeName" column="EmployeeName" />
+            <result property="unit" column="Unit" />
+            <result property="managerSignum" column="ManagerSignum" />
+            <result property="isLineManager" column="isLineManager" />
+            <result property="jobStage" column="JobStage" />
+            <result property="jobRoleFamily" column="JobRoleFamily" />
+            <result property="employeeEmailID" column="EmployeeEmailID" />
+            <result property="status" column="Status" />
+            <result property="approvalStatus" column="ApprovalStatus" />
+            <result property="approvedDate" column="ApprovedDate" />
+            <result property="approvedBy" column="ApprovedBy" />
+                <collection property='lstRoleModel' ofType='RoleModel'>
+                <id property='accessRoleID' column='AccessRoleID'/>
+                <result property='role' column='Role'/>
+                <result property='alias' column='Alias'/>
+            </collection>  
+            <collection property='lstOrganizationModel' ofType='OrganizationModel'>
+                <id property='organisationID' column='OrganisationID'/>
+                <result property='organisation' column='Organisation'/>
+            </collection>  
+            <collection property='lstCapabilityModel' ofType='CapabilityModel'>
+                <id property='capabilityPageID' column='CapabilityPageID'/>
+                <result property='capabilityPageName' column='CapabilityPageName'/>
+                <result property='capabilityPageGroup' column='CapabilityPageGroup'/>
+            </collection> 
+        </collection>
+    </resultMap>
+    
+    <select id='searchAccessDetails' resultMap="AccessProfileUserDetailModelResult">
+        select up.SignumID,emp.EmployeeName,emp.Unit,emp.ManagerSignum,emp.IsLineManager,emp.JobStage,
+	emp.EmployeeEmailID,emp.JobRoleFamily,emp.Status,
+	ap.AccessProfileID,ap.AccessProfileName,ar.AccessRoleID,ar.Role,ar.Alias,org.OrganisationID,org.Organisation,
+	c.CapabilityPageID,c.CapabilityPageGroup,c.CapabilityPageName,
+	up.ApprovalStatus,up.ApprovedDate,up.ApprovedBy
+        from transactionalData.TBL_USER_ACCESS_PROFILE up
+	Inner Join refData.TBL_ACCESS_PROFILE ap on up.AccessProfileID = ap.AccessProfileID
+	Inner Join refData.TBL_ACCESS_ROLE ar on ar.AccessRoleID = ap.AccessRoleID
+	Inner Join refData.TBL_ORGANISATION org on org.OrganisationID = ap.OrganisationID
+	Inner Join refData.TBL_Employees emp on emp.Signum = up.SignumID
+	inner join refData.TBL_ROLE_CAPABILITY rc on rc.RoleID=ar.AccessRoleID
+	inner join refData.TBL_CAPABILITY c on c.CapabilityPageID=rc.CapabilityPageID
+	 where ap.AccessProfileID=#{accessProfileID} and ar.AccessRoleID =#{roleID}  and org.OrganisationID=#{organisationID}
+    </select>
+    
+    <resultMap type='UserDetailsAccessModel' id="UserDetailsAccessModelResult">
+        <id property="signumID" column="SignumID" />
+        <result property="employeeName" column="EmployeeName" />
+        <result property="unit" column="Unit" />
+        <result property="managerSignum" column="ManagerSignum" />
+        <result property="isLineManager" column="isLineManager" />
+        <result property="jobStage" column="JobStage" />
+        <result property="jobRoleFamily" column="JobRoleFamily" />
+        <result property="employeeEmailID" column="EmployeeEmailID" />
+        <result property="personnelNumber" column="PersonnelNumber"/>
+        <result property="contactNumber" column="ContactNumber"/>
+        <result property="gender" column="Gender"/>
+        <result property="costCenter" column="CostCenter"/>
+        <result property="status" column="Status" />
+        <result property="approvalStatus" column="ApprovalStatus" />
+        <result property="approvedDate" column="ApprovedDate" />
+        <result property="approvedBy" column="ApprovedBy" />
+        <result property="sessionId" column="sessionId" />
+        <result property="sessionToken" column="sessionToken" />
+        <result property="userImageUri" column="UserImage" />
+        <result property="employeeGroup" column="EmployeeGroup" />
+        <collection property='lstAccessProfileModel' ofType="AccessProfileModel">
+            <id property="accessProfileID" column="AccessProfileID" />
+            <result property="accessProfileName" column="AccessProfileName" />
+            <result property="roleID" column="AccessRoleID" />
+            <result property="role" column="Role" />
+            <result property="organisationID" column="OrganisationID" />
+            <result property="organisation" column="Organisation" />
+            <collection property='lstCapabilityModel' ofType='CapabilityModel'>
+                <id property='capabilityPageID' column='CapabilityPageID'/>
+                <result property='capabilityPageName' column='CapabilityPageName'/>
+                <result property='capabilityPageGroup' column='CapabilityPageGroup'/>
+            </collection> 
+        </collection>
+        <collection property='lstRoleModel' ofType='RoleModel'>
+            <id property='accessRoleID' column='AccessRoleID'/>
+            <result property='role' column='Role'/>
+            <result property='alias' column='Alias'/>
+        </collection>  
+        <collection property='lstOrganizationModel' ofType='OrganizationModel'>
+            <id property='organisationID' column='OrganisationID'/>
+            <result property='organisation' column='Organisation'/>
+        </collection>  
+    </resultMap>
+    
+    <select id='getUserProfileByFilter' resultMap="UserDetailsAccessModelResult">
+	    select up.SignumID,emp.EmployeeName,emp.Unit,emp.ManagerSignum,emp.IsLineManager,emp.JobStage,
+		emp.EmployeeEmailID,emp.JobRoleFamily,emp.Status,
+		ap.AccessProfileID,ap.AccessProfileName,ar.AccessRoleID,ar.Role,ar.Alias,org.OrganisationID,org.Organisation,
+		c.CapabilityPageID,c.CapabilityPageGroup,c.CapabilityPageName,
+		up.ApprovalStatus,up.ApprovedDate,up.ApprovedBy
+	        from transactionalData.TBL_USER_ACCESS_PROFILE up
+		Inner Join refData.TBL_ACCESS_PROFILE ap on up.AccessProfileID = ap.AccessProfileID
+		Inner Join refData.TBL_ACCESS_ROLE ar on ar.AccessRoleID = ap.AccessRoleID
+		Inner Join refData.TBL_ORGANISATION org on org.OrganisationID = ap.OrganisationID
+		Inner Join refData.TBL_Employees emp on emp.Signum = up.SignumID
+		inner join refData.TBL_ROLE_CAPABILITY rc on rc.RoleID=ar.AccessRoleID
+		inner join refData.TBL_CAPABILITY c on c.CapabilityPageID=rc.CapabilityPageID
+		 where emp.signum=#{signumID} and ar.AccessRoleID =#{roleID}  and org.OrganisationID=#{organisationID}
+    </select>
+    
+    <select id='getUserProfileBySignum' resultMap="UserDetailsAccessModelResult">
+		select distinct up.SignumID,emp.EmployeeName,emp.Unit,emp.ManagerSignum,emp.IsLineManager,emp.JobStage,
+		emp.EmployeeEmailID,emp.JobRoleFamily,emp.Status,
+		ap.AccessProfileID,ap.AccessProfileName,ar.AccessRoleID,ar.Role,ar.Alias,org.OrganisationID,org.Organisation,
+		(select top 1 sessionId from transactionalData.TBL_USER_LOGIN_HISTORY where LogoutTime is null and SignumID=(select Signum from refData.TBL_Employees where EmployeeEmailID=#{emailID}) order by LOGID desc ) sessionId,
+		(select top 1 sessionToken from transactionalData.TBL_USER_LOGIN_HISTORY where LogoutTime is null and SignumID=(select Signum from refData.TBL_Employees where EmployeeEmailID=#{emailID}) order by LOGID desc ) sessionToken
+	        from transactionalData.TBL_USER_ACCESS_PROFILE up
+		Inner Join refData.TBL_ACCESS_PROFILE ap on up.AccessProfileID = ap.AccessProfileID
+		Inner Join refData.TBL_ACCESS_ROLE ar on ar.AccessRoleID = ap.AccessRoleID
+		Inner Join refData.TBL_ORGANISATION org on org.OrganisationID = ap.OrganisationID
+		Inner Join refData.TBL_Employees emp on emp.Signum = up.SignumID
+		inner join refData.TBL_ROLE_CAPABILITY rc on rc.RoleID=ar.AccessRoleID
+		inner join refData.TBL_CAPABILITY c on c.CapabilityPageID=rc.CapabilityPageID
+		where emp.EmployeeEmailID=#{emailID}
+   </select>
+    
+    
+    <update id = 'editAccessProfile' parameterType="AccessProfileModel">
+        update refData.TBL_ACCESS_PROFILE
+        set
+        AccessProfileName = #{accessProfile.accessProfileName},
+        AccessRoleID = #{accessProfile.roleID},
+        OrganisationID = #{accessProfile.organisationID},
+        Active = 1
+        where 
+        AccessProfileID = #{accessProfile.accessProfileID}
+    </update>
+    
+    <select id='checkAccessProfileID' resultType="Boolean">
+            IF EXISTS(select 1 from refData.TBL_ACCESS_PROFILE where AccessProfileID =#{accessProfileID} and Active=1)
+                BEGIN
+                    SELECT 1 AS 'RESULT'
+                END
+            ELSE
+                BEGIN
+                    SELECT 0 AS 'RESULT'
+                END
+    </select>
+    
+    <update id='deleteAccessProfile'>
+        update refData.TBL_ACCESS_PROFILE
+        set
+        Active = 0
+        where
+        AccessProfileID = #{accessProfileID}
+    </update>
+    
+    <select id='checkDeliveryResponsibleID' resultType="Boolean">
+            IF EXISTS(select 1 from transactionalData.TBL_DELIVERY_RESPONSIBLE where DeliveryResponsibleID =#{deliveryResponsibleID} and Active=1)
+                BEGIN
+                    SELECT 1 AS 'RESULT'
+                END
+            ELSE
+                BEGIN
+                    SELECT 0 AS 'RESULT'
+                END
+    </select>
+    
+    <update id='deleteDeliveryResponsible'>
+        update transactionalData.TBL_DELIVERY_RESPONSIBLE
+        set
+        Active = 0,
+        LastModifiedBy = #{signumID},
+        LastModifiedDate = dbo.GetDateIST()
+        where
+        DeliveryResponsibleID = #{deliveryResponsibleID}
+    </update>
+    
+    <select id="getAccessEmployee" resultType="hashmap">
+    select distinct SignumID from transactionalData.TBL_USER_ACCESS_PROFILE 
+    </select>
+    
+     <update id='updateAccessProfileStatus'>
+        update transactionalData.TBL_Access_Profile_Request
+        set
+        Approver = #{profileRequest.approver},
+        [Approval Status] = #{profileRequest.status},
+		Remark = #{profileRequest.remark}      
+        where
+        AccessProfileID = #{profileRequest.accessProfileID} and signum = #{profileRequest.signum}
+    </update>
+    
+    <select id='requestAccessProfile' statementType="CALLABLE" resultType="string" parameterType="com.ericsson.isf.model.RequestRoleAccessModel">
+        {call usp_Access_Profile_Request (
+        #{requestRoleAccess.signum, mode=IN, jdbcType=VARCHAR},
+        #{requestRoleAccess.accessProfileID, mode=IN, jdbcType=INTEGER})} 
+        
+    </select>  
+    <select id='requestNameBySignum' resultType="string">
+        select EmployeeName  FROM [refData].[TBL_Employees] where signum = #{requestRoleAccess.signum}
+        
+    </select>  
+    
+    <select id='requestAccessProfileDetail' resultType="hashmap" >
+        SELECT distinct apr.AccessProfileID,AccessProfileName,apr.Signum, EmployeeName,
+	   	Role,
+	   	Organisation  FROM transactionalData.TBL_Access_Profile_Request apr
+		join refData.TBL_Employees ep on ep.Signum=apr.Signum
+		join [refData].[TBL_ACCESS_PROFILE]  ap on apr.AccessProfileID=ap.AccessProfileID
+		join [refData].[TBL_ACCESS_ROLE] ar on ap.AccessRoleID = ar.AccessRoleID  		
+		join [refData].TBL_ORGANISATION  o on ap.OrganisationID = o.OrganisationID 
+		where  apr.[Approval Status] is null and  (#{requestRoleAccess.signum} = 'EDEEDAN' OR #{requestRoleAccess.signum} = 'ECIDVEN')
+    </select>
+    
+    <resultMap type='UserLoginModel' id="UserLoginModelResult">
+        <id property="logID" column="LogID" />
+        <result property="sigumID" column="SigumID" />
+        <result property="loginTime" column="LoginTime" />
+        <result property="logoutTime" column="LogoutTime" />
+        <result property="sessionToken" column="sessionToken" />
+    </resultMap>  
+    
+    <insert id='saveLoginDetails' parameterType="com.ericsson.isf.model.UserLoginModel" useGeneratedKeys="true" keyProperty="userLogin.logID" keyColumn="logID">
+        INSERT INTO transactionalData.TBL_USER_LOGIN_HISTORY(SIGNUMID,LOGINTIME, sessionId, employeeEmail
+        	,SourceDomain,IPAddress,Device,Browser,sessionToken,CreatedBy,CreatedDate,ModifiedBy,ModifiedDate) 
+        VALUES(#{userLogin.signumID}, dbo.GetDateIST(), #{userLogin.sessionId}, #{userLogin.emailID}
+        	,#{userLogin.sourceDomain},#{userLogin.ipAddress},#{userLogin.device},#{userLogin.browser},
+        	#{userLogin.sessionToken},#{userLogin.signumID} , dbo.GetDateIST() ,#{userLogin.signumID} , dbo.GetDateIST())
+    </insert>
+    
+    <update id='updateLoginDetail'>
+        UPDATE transactionalData.TBL_USER_LOGIN_HISTORY 
+        SET LogoutTime= dbo.GetDateIST(), ModifiedBy =#{userLogin.signumID}, ModifiedDate= dbo.GetDateIST()
+        WHERE employeeEmail = #{userLogin.emailID} and sessionId = #{userLogin.sessionId} 
+        and LOGID = #{userLogin.logID}
+        and LogoutTime is null
+    </update>
+    
+     <insert id='saveUserDetailsHRMS'>
+		INSERT INTO refdata.tbl_employees 
+            (signum, 
+             employeename, 
+             personnelnumber, 
+             positionid, 
+             costcenter, 
+             unit, 
+             managersignum, 
+             islinemanager, 
+             employeegroup, 
+             status, 
+             companyname, 
+             fso, 
+             countryname, 
+             parentunit, 
+             jobname, 
+             domain, 
+             subdomain, 
+             functionalarea, 
+             servicearea, 
+             industryvertical, 
+             employeeemailid, 
+             jobrolefamily, 
+             city, 
+             hrlocation, 
+             officebuilding, 
+             floor, 
+             createdby, 
+             createdon, 
+             lastmodifiedby, 
+             lastmodifiedon) 
+             SELECT DISTINCT [signum id], 
+                [full name], 
+                CONVERT(BIGINT, [personnel no]), 
+                CONVERT(BIGINT, [position no]), 
+                CONVERT(BIGINT, [costcentre no]), 
+                [organization unit name], 
+                [manager signum], 
+                [is line manager], 
+                [emp group name], 
+                'Active', 
+                [company trigram], 
+                [is fso], 
+                [country], 
+                [ma/ba/gf/region], 
+                [job role name], 
+                NULL, 
+                NULL, 
+                NULL, 
+                NULL, 
+                NULL, 
+                employeeemailid, 
+                [job role family name], 
+                [location], 
+                [location], 
+                NULL, 
+                NULL, 
+                'ekuyoge', 
+                dbo.GetDateIST(), 
+                'ekuyoge', 
+                dbo.GetDateIST() 
+                FROM   [refData].[tbl_ericsson_employees] 
+                WHERE  [signum id] = #{signumID} 
+    </insert>
+    <insert id='saveUserAccessProfileHRMS'>
+       insert into transactionalData.TBL_USER_ACCESS_PROFILE (SignumID,AccessProfileID,ApprovedBy,ApprovedDate,LastModifiedBy,Active,ApprovalStatus,LastModifiedDate,startDate,endDate,
+        CreatedBy , CreatedDate) 
+       values (#{signumID},39,NULL,dbo.GetDateIST(),#{signumID},1,'APPROVED',dbo.GetDateIST(),NULL,NULL,#{signumID},dbo.GetDateIST())
+    </insert>
+    <update id='updateLoginHistory'>
+        UPDATE TRANSACTIONALDATA.TBL_USER_LOGIN_HISTORY SET LOGOUTTIME= #{logOutdate},ModifiedBy =#{signumID},ModifiedDate= dbo.GetDateIST()
+        WHERE LOGID=#{logID} AND SIGNUMID=#{signumID}
+    </update>
+    
+    <select id='getLoginHistory' resultMap="UserLoginModelResult">
+        
+         SELECT MAX(LOGID)as LogID, SignumID FROM TRANSACTIONALDATA.TBL_USER_LOGIN_HISTORY
+            WHERE SIGNUMID= #{signumID}
+            group by SignumID
+        <!--SELECT MAX(LOGID),SignumID,LoginTime FROM TRANSACTIONALDATA.TBL_USER_LOGIN_HISTORY WHERE SIGNUMID= #{signumID}-->
+    </select>
+    
+    <select id='getEmployeeWithNoEmail' resultType="String">
+        Select signum from [refData].[TBL_Employees] where EmployeeEmailID = '' or EmployeeEmailID is null
+    </select>
+    
+    <update id='updateEmployeeEmail'>
+       UPDATE [refData].[TBL_Employees] SET EmployeeEmailID= #{cpmModel.mailID} WHERE [Signum ID] =#{cpmModel.signum}
+    </update>
+     <update id='updateAccessRole' parameterType="RoleModel">
+        UPDATE [refData].[TBL_ACCESS_ROLE] SET Role= #{roleModel.role},Alias=#{roleModel.alias},Active=#{roleModel.active} WHERE AccessRoleID=#{roleModel.accessRoleID}
+    </update>
+    <update id='deleteAccessRole'>
+        update [refData].[TBL_ACCESS_ROLE]
+        set
+        Active = 0
+        where
+        AccessRoleID = #{accessRoleID}
+    </update>
+    
+    <select id='updateEmployeeData' statementType="CALLABLE">
+        {call [dbo].[UploadEricssonEmployees] (
+        #{signum, mode=IN, jdbcType=VARCHAR}
+        )} 
+        
+    </select>   
+    
+   <update id="updateEricssonOrg" >
+   		
+   	  update [refData].[TBL_ERICSSON_ORG]
+      set active = 0;	
+      update [refData].[TBL_ERICSSON_ORG]
+      set active = 1
+      WHERE secondlevelunit in
+      <foreach item="newParts" index="index" collection="newParts"
+          open="(" separator="," close=")">
+            #{newParts}
+      </foreach>
+    </update> 
+    
+    <update id="inactiveEricssonOrg" >
+   	  update [refData].[TBL_ERICSSON_ORG]
+      set active = 0;	
+    </update> 
+   
+   <insert id='insertAspEmployee'>
+   		insert into [refData].[TBL_ASP_Employees]([EmployeeName]
+           ,[Signum]
+           ,[EmployeeEmailID]
+           ,[Password]
+           ,[CreatedBy]
+           ,[CreatedOn]
+           ,[VendorCode]
+           ,[City]
+           ,[ContactNumber])
+   		values (CONCAT( #{aspLogin.firstName} ,' ', #{aspLogin.lastName}),#{aspLogin.signum},#{aspLogin.email},#{generateMD5},'ejangua',dbo.GetDateIST(),#{aspLogin.vendorCode},#{aspLogin.city},#{aspLogin.contactNumber})
+    </insert>
+    
+    <insert id='insertAspEricssonEmployee'>
+	update [refData].[TBL_Employees]
+	set
+	EmployeeName = CONCAT( #{aspLogin.firstName} ,' ', #{aspLogin.lastName})
+	,PersonnelNumber = #{aspLogin.contactNumber}
+	,CostCenter = 111111
+	,Unit = #{aspLogin.organization}
+	,ManagerSignum = #{aspLogin.managerName}
+	,IsLineManager = 'N'
+	,EmployeeGroup = 'ASP'
+	,Status = 'INACTIVE'
+	,CountryName = #{aspLogin.country}
+	,EmployeeEmailID = #{aspLogin.email}
+	,CreatedBy = 'ejangua'
+	,CreatedOn = dbo.GetDateIST()
+	,LastModifiedBy = 'ejangua'
+	,LastModifiedOn = dbo.GetDateIST()
+	where signum = #{aspLogin.signum}
+    </insert>
+    
+    <insert id='insertUserAccessProfile'>
+   		insert into [transactionalData].[TBL_USER_ACCESS_PROFILE](SignumID,AccessProfileID,ApprovedBy,ApprovedDate,LastModifiedBy,Active,ApprovalStatus,LastModifiedDate,
+   		CreatedBy,CreatedDate)
+   		values (
+   		#{signum},39,'ekuyoge',dbo.GetDateIST(),'ekuyoge',1,'APPROVED',dbo.GetDateIST(),#{signum},dbo.GetDateIST() 
+   		)
+    </insert>
+    
+    <select id='checkIfAspExists' resultType="HashMap">
+       select [EmployeeName],[Signum],[EmployeeEmailID],[CreatedBy],[CreatedOn] from [refData].[TBL_ASP_Employees] where [EmployeeEmailID] = #{resetLoginAsp.email}
+       <if test="resetLoginAsp.passwordMD5 !=null">
+        and Password=#{resetLoginAsp.passwordMD5}
+       </if>
+    </select>
+   
+    <update id='updateNewPassword'>
+   	  update [refData].[TBL_ASP_Employees]
+      set Password = #{resetLoginAsp.passwordMD5} where [EmployeeEmailID] = #{resetLoginAsp.email} 
+      	<if test="resetLoginAsp.oldPassword !=null">
+        	and Password = #{resetLoginAsp.oldPassword};	
+     	</if>
+    </update>
+   
+    <select id='checkIfAspExistsByEmail' resultType="HashMap">
+       select [EmployeeName],[Signum],[EmployeeEmailID],[CreatedBy],[CreatedOn] from [refData].[TBL_ASP_Employees] where [EmployeeEmailID] = #{email}
+    </select>
+    
+    <select id='checkIfAspExistsBySignum' resultType="HashMap">
+       select [EmployeeName],[Signum],[EmployeeEmailID],[CreatedBy],[CreatedOn] from [refData].[TBL_ASP_Employees] where [Signum] = #{signum}
+    </select>
+    
+    <select id='countToBeAdded' resultType="String">
+      SELECT [signum id] 
+		FROM   [refData].[tbl_ericsson_employees] 
+		WHERE  [signum id] != '' 
+		       AND [costcentre no] != '' 
+		       AND [2nd level unit] IN (SELECT secondlevelunit 
+		                                FROM   [refData].[tbl_ericsson_org] 
+		                                WHERE  active = 1) 
+		EXCEPT 
+		SELECT signum 
+		FROM   refdata.tbl_employees
+    </select>
+    
+    <update id='deleteAccessProfileBySignum' parameterType = "com.ericsson.isf.model.AccessRequestApprovalModel">
+        update transactionalData.TBL_USER_ACCESS_PROFILE
+        set
+        Active = 0,
+         LastModifiedBy = #{signum},
+        LastModifiedDate = dbo.GetDateIST(),
+        ApprovalStatus = 'REVOKED'
+       where
+        SignumID = #{accessRequestApprovalModel.signumId} and AccessProfileID=#{accessRequestApprovalModel.accessProfileId}
+    </update>
+
+    <select id='countToBeDeleted' resultType="String">
+       SELECT signum 
+		FROM   refdata.tbl_employees 
+		WHERE  employeegroup != 'ASP' 
+		       AND status != 'resigned' 
+		EXCEPT
+		select [signum id] from
+		[refData].[TBL_Ericsson_Employees] where [signum id]
+		!= '' and [2nd Level Unit] in (select secondlevelunit from
+		[refData].[TBL_ERICSSON_ORG] where active =1)
+    </select>
+    
+    <delete id='deleteTmpTable' >
+       delete from [refData].[TBL_Ericsson_Employees]
+    </delete>
+    <select id='getDownStatus' resultType="java.util.Map">
+     	SELECT isDown,convert(nvarchar(MAX), StartDate, 20) as StartDate, convert(nvarchar(MAX), EndDate, 20) as EndDate, Message,Color FROM [refData].[TBL_DownTime]
+	</select> 
+   <insert id='insertDownStatus' >
+        INSERT INTO [refData].[TBL_DownTime]
+        (isDown,StartDate,EndDate,Message,Color,CreatedBy,CreatedDate,ModifiedBy,ModifiedDate)
+        VALUES
+        (#{dynamicMessageModel.down},
+        #{dynamicMessageModel.startDate},
+        #{dynamicMessageModel.endDate},
+        #{dynamicMessageModel.message},
+        #{dynamicMessageModel.color},
+        #{signum} ,
+        dbo.GetDateIST(),
+        #{signum} ,
+        dbo.GetDateIST())
+        
+    </insert>
+        <update id='updateDownStatus'>
+       update refData.TBL_DownTime set 
+       isDown=#{dynamicMessageModel.down},
+       StartDate=#{dynamicMessageModel.startDate},
+       EndDate=#{dynamicMessageModel.endDate},
+       Message=#{dynamicMessageModel.message},
+       Color=#{dynamicMessageModel.color},
+       ModifiedBy=#{signum},
+       ModifiedDate=dbo.GetDateIST()
+       where ID= #{dynamicMessageModel.id}
+    </update>
+<select id='getMarketAreaBySignum' resultType="String">
+            Select
+            Case patIndex ('%[ /-]%', LTrim (ParentUnit))
+        When 0 Then LTrim (ParentUnit)
+        Else substring (LTrim (ParentUnit), 1, patIndex ('%[ /-]%', LTrim (ParentUnit)) - 1)
+    End ParentUnit
+from refData.TBL_Employees where Signum=#{signumID}
+    </select>
+    <select id='getUserSignumByEmail' resultMap="UserDetailsAccessModelResult">
+        select EmployeeName,Signum as signumID,PersonnelNumber,PositionId,CostCenter,Unit,ManagerSignum,IsLineManager,EmployeeGroup,Status,CompanyName,FSO,CountryName,ParentUnit,JobName,Domain,SubDomain,FunctionalArea,ServiceArea,IndustryVertical,EmployeeEmailID,JobRoleFamily,City,HRLocation,OfficeBuilding,Floor,CreatedBy,CreatedOn,LastModifiedBy,LastModifiedOn,Gender,JobStage,ContactNumber from refData.TBL_Employees where EmployeeEmailID = #{userDetailsAccessModel.employeeEmailID}
+   </select>
+
+   
+   <select id='validateUserPassword' resultType="java.util.Map">
+        select es.SourceID,es.Type from [refdata].[TBL_External_App_Credentials] eac
+		join [refData].[TBL_External_Sources] es on eac.sourceid = es.sourceid 
+		where  es.sourceName = #{decodedUserName} and eac.Password = #{decodedPassword}
+   </select>
+   
+   <select id="getAccessRequestsBySignum" resultType = "com.ericsson.isf.model.AccessProfileRequestModel">
+   		select ar.Role,apr.id,apr.Signum,ep.EmployeeName,apr.AccessProfileID,ap.AccessProfileName,org.Organisation,apr.CreatedOn,
+   		COUNT(*) OVER() totalCounts 
+		from transactionalData.TBL_Access_Profile_Request apr
+		join refData.TBL_Employees ep on apr.Signum  = ep.Signum
+		join refData.TBL_ACCESS_PROFILE ap on ap.AccessProfileID = apr.AccessProfileID
+		join refData.TBL_ORGANISATION org on org.OrganisationID = ap.OrganisationID
+		join refData.TBL_ACCESS_ROLE ar on ar.AccessRoleID = ap.AccessRoleID
+		where apr.[Approval Status] is null
+		<if test = "role == 'Application Admin'">
+			and ar.Alias in ('AA')
+		</if>
+		<if test = "role == 'ISF Access Manager'">
+			and ar.Alias in ('EU','DS')
+		</if>
+		<if test = "role == 'ASP Project Manager'">
+			and ar.Alias in ('ASP-DR')
+			and ep.ManagerSignum = #{signum}
+		</if>
+		<if test = "role == 'Project Manager'">
+			and ar.Alias in ('PM','DAC','FM','OM','DR','RPM','ASPM','Dev')
+			and ep.ManagerSignum = #{signum}
+		</if>
+		<if test="role != 'Application Admin' and role != 'ISF Access Manager' and role != 'ASP Project Manager' and role != 'Project Manager'">
+			and ar.Alias not in ('AA','EU','DS','ASP-DR')
+			and ar.Alias in ('PM','DAC','FM','OM','DR','DS','RPM','ASPM','Dev')
+			and ep.ManagerSignum = #{signum}
+		</if>
+		
+		<if test="dataTableReq != null">
+ 	       <foreach item="column" index="index" collection="dataTableReq.columns">
+	      		 <if test ="column.search != ''"> 
+	      		 	<if test ="column.data == 'EmployeeName'">
+						and (apr.Signum like #{column.search} or ep.EmployeeName like #{column.search})
+	      		 	</if>
+	      		 	<if test ="column.data == 'createdOn'">
+						and (cast(apr.CreatedOn as date) like #{column.search})
+	      		 	</if>
+	      		 	<if test ="column.data != 'EmployeeName' and column.data != 'createdOn'">
+		              	and ${column.data} like #{column.search}
+	      		 	</if>
+	          	 </if> 
+	  		</foreach>
+	  		<if test ="dataTableReq.order != null and dataTableReq.order.sortDir!=null"> 
+				order by ${dataTableReq.order.data} ${dataTableReq.order.sortDir}
+	        </if> 
+			<if test ='dataTableReq.length != -1'>
+				OFFSET ${dataTableReq.start} ROWS
+				FETCH NEXT ${dataTableReq.length} ROWS ONLY
+			</if>
+		</if>		
+   </select>
+      
+   <insert id='insertTokenMappingDetails'>
+   		insert into [transactionalData].[TBL_Token_Mapping_Details](
+   		Token,
+		Type,
+		SourceID,
+		ActivationDate,
+		ExpirationDate,
+		Active,
+		SignumID,
+		EmployeeEmailID,
+		CreatedBy,
+        CreatedDate,
+        ModifiedBy,
+        ModifiedDate)
+   		values (
+   		#{token}, #{type}, #{sourceID}, #{activationDate}, #{expirationDate}, #{active}, #{signum}, #{employeeEmailID},
+   	    #{signum} , dbo.GetDateIST() , #{signum} , dbo.GetDateIST()
+   		)
+    </insert>
+    
+    <update id='updateTokenMappingDetails'>
+      
+    </update>
+    
+    <select id='getAndValidateSource' resultType="java.util.Map">
+		select ApiTokenID from transactionalData.TBL_Token_API_List tpl
+		join refData.TBL_Subscribed_API_List sal on sal.SubscribedAPIID=tpl.SubscribedAPIID
+		where ( concat ('/',Controller,'/',APIEndpoint) = #{path} or concat ('/',Controller,'/',APIEndpoint,'/') = #{path} ) and tpl.OwnerSignum = #{userName} and tpl.Token = #{token} and tpl.active =1
+	</select>
+	
+   <insert id="approveAccessRequest" parameterType = "com.ericsson.isf.model.AccessRequestApprovalModel">
+   		insert into transactionalData.TBL_USER_ACCESS_PROFILE(
+   			SignumID,
+   			AccessProfileID,
+   			ApprovedBy,
+   			ApprovedDate,
+   			<if test="role != 'ISF Access Manager'">
+   				startDate,
+   				endDate,
+   			</if>
+   			LastModifiedBy,
+   			Active,
+   			ApprovalStatus,
+   			LastModifiedDate,
+   			CreatedBy,
+            CreatedDate
+   		)values(
+   			#{accessRequestApprovalModel.signumId},
+   			#{accessRequestApprovalModel.accessProfileId},
+   			#{accessRequestApprovalModel.approvedBy},
+   			dbo.GetDateIST(),
+   			<if test="role != 'ISF Access Manager'">
+   				#{accessRequestApprovalModel.startDate, jdbcType = TIMESTAMP},
+   				#{accessRequestApprovalModel.endDate, jdbcType = TIMESTAMP},
+   			</if>
+   			#{accessRequestApprovalModel.approvedBy},
+   			#{accessRequestApprovalModel.active},
+   			'APPROVED',
+   			dbo.GetDateIST(),
+   			#{accessRequestApprovalModel.signumId},
+            dbo.GetDateIST()
+   		)
+   </insert>
+   
+   <select id='validateEmployeeEmailAndSignum' resultType="Boolean" useCache="true">
+        IF Exists(
+		select 1 from  refdata.TBL_Employees where EmployeeEmailID = #{employeeEmail} and Status in ('Unregistered ASP','ACTIVE','INACTIVE','Resigned','Transferred Outside Optimize','Notice Period','Temporary leave')
+        union 
+        select 1 from  [refData].[TBL_Ericsson_Employees]  where EmployeeEmailID = #{employeeEmail}
+		)
+			BEGIN
+				SELECT 1 AS 'RESULT'
+			END
+        ELSE
+            BEGIN
+                SELECT 0 AS 'RESULT'
+            END
+   </select>
+   
+   <select id='getPageAccessDetailsByRoleOfSignum' resultType="java.util.Map">
+		select distinct ar.Role, rc.permission, cap.CapabilityPageName, cap.CapabilityPageGroup, 
+		case when cap.SubMenuHref is not null then cap.SubMenuHref else cap.GroupHref end as SubMenuHref from transactionalData.TBL_USER_ACCESS_PROFILE uap
+		join [refData].[TBL_ACCESS_PROFILE] ap on ap.AccessProfileID = uap.AccessProfileID
+		join [refData].[TBL_ACCESS_ROLE] ar on ar.AccessRoleID = ap.AccessRoleID
+		join refData.TBL_ROLE_CAPABILITY rc on rc.RoleID = ar.AccessRoleID
+		join [refData].[TBL_CAPABILITY] cap on cap.CapabilityPageID = rc.CapabilityPageID 
+		where uap.signumid = #{signumID}  and  rc.permission = 'Write' and cap.active in (1,2)
+		and ar.Role = #{role}
+   </select>
+   
+   <select id='validateUiToken' resultType="java.util.Map">
+		select top 1 SignumID  from transactionalData.TBL_USER_LOGIN_HISTORY where  SessionId = #{token} and LogoutTime is null and LoginTime &lt; dbo.GetDateIST() order by LoginTime desc
+   </select>
+   
+   <select id="getRenewRequestsBySignum" resultType = "com.ericsson.isf.model.AccessRequestApprovalModel">
+   		select uap.UserAccessProfileID,uap.SignumID,ep.EmployeeName,uap.AccessProfileID,ap.AccessProfileName,
+   		org.Organisation,uap.startDate,uap.endDate
+		from transactionalData.TBL_USER_ACCESS_PROFILE uap
+		join refData.TBL_Employees ep on uap.SignumID  = ep.Signum
+		join refData.TBL_ACCESS_PROFILE ap on ap.AccessProfileID = uap.AccessProfileID
+		join refData.TBL_ORGANISATION org on org.OrganisationID = ap.OrganisationID
+		join refData.TBL_ACCESS_ROLE ar on ap.AccessRoleID = ar.AccessRoleID
+
+		where uap.Active = 1
+		<choose>
+			<when test = "role == 'Application Admin'">
+			and ar.Alias in ('AA')
+			</when>
+			<when test = "role == 'ISF Access Manager'">
+				and ar.Alias in ('EU','DS')
+			</when>
+			<when test = "role == 'ASP Project Manager'">
+				and ar.Alias in ('ASP-DR')
+				and ep.ManagerSignum = #{signum}
+			</when>
+			<otherwise>
+				and ar.Alias in ('PM','DAC','FM','OM','DR','RPM','ASPM','Dev')
+				and ep.ManagerSignum = #{signum}
+			</otherwise>
+		</choose>
+   </select>
+   
+   <update id="updateAccessStatus" parameterType = "com.ericsson.isf.model.AccessRequestApprovalModel">
+   		update transactionalData.TBL_USER_ACCESS_PROFILE
+   		set ApprovalStatus = #{accessRequestApprovalModel.approvalStatus},
+   		ApprovedBy = #{accessRequestApprovalModel.approvedBy},
+   		LastModifiedBy = #{accessRequestApprovalModel.approvedBy},
+   		<if test="accessRequestApprovalModel.endDate !=null">
+        	endDate = #{accessRequestApprovalModel.endDate},		
+     	</if>
+     	<if test="accessRequestApprovalModel.startDate !=null">
+        	startDate = #{accessRequestApprovalModel.startDate},	
+     	</if>
+   		Active = #{accessRequestApprovalModel.active},
+   		LastModifiedDate = dbo.GetDateIST()
+   		where UserAccessProfileID = #{accessRequestApprovalModel.userAccessProfileId}
+   </update>
+   
+   <update id="updateAccessRequestStatus" parameterType = "com.ericsson.isf.model.AccessRequestApprovalModel">
+   		update transactionalData.TBL_Access_Profile_Request
+   		set [Approval Status] = #{accessRequestApprovalModel.active},
+   		Approver = #{accessRequestApprovalModel.approvedBy},
+   		lastModifiedOn = dbo.GetDateIST(),
+   		Remark = #{accessRequestApprovalModel.remark}
+   		where Signum = #{accessRequestApprovalModel.signumId} and accessProfileId = #{accessRequestApprovalModel.accessProfileId} 
+   		and [Approval Status] is NULL and Approver is NULL
+   		
+   </update>
+   
+   <select id= "checkIfRequestExists" parameterType = "com.ericsson.isf.model.RequestRoleAccessModel" resultType = "boolean">
+   		select count(1) 
+   		from transactionalData.TBL_Access_Profile_Request 
+   		where Signum = #{requestRoleAccess.signum} and AccessProfileID = #{requestRoleAccess.accessProfileID} and [Approval Status] is null
+   </select>
+   
+   <select id = "checkIfAlreadyApproved" parameterType = "com.ericsson.isf.model.RequestRoleAccessModel" resultType = "boolean">
+   		select count(1) 
+   		from transactionalData.TBL_USER_ACCESS_PROFILE 
+   		where SignumID = #{requestRoleAccess.signum} and AccessProfileID = #{requestRoleAccess.accessProfileID} and ApprovalStatus not in ('REVOKED')
+   </select>
+   
+   <select id = "getProfileNameById" resultType = "string">
+   		select AccessProfileName from refData.TBL_ACCESS_PROFILE where AccessProfileID = #{accessProfileId}
+   </select>
+   
+   <select id="getAllEmailforRole" resultType = "string">
+   		select ep.EmployeeEmailID from refData.TBL_Employees ep
+		join transactionalData.TBL_USER_ACCESS_PROFILE uap on ep.Signum = uap.SignumID
+		join refData.TBL_ACCESS_PROFILE ap on uap.AccessProfileID = ap.AccessProfileID
+		join refData.TBL_ACCESS_ROLE ar on ap.AccessRoleID = ar.AccessRoleID
+		where ar.Role =#{role} AND uap.Active=1
+   </select>
+	<select id="getAllPaths"
+		resultType="com.ericsson.isf.model.GroupMenuModel" useCache="true">
+		select
+		GroupTitle,SubMenuTitle,SubMenuHref,GroupHref from
+		refData.TBL_CAPABILITY where SubMenuTitle=#{name} or
+		GroupTitle=#{name}
+	</select>
+
+	<select id='getUserSignumByEmailHRMS' resultMap="UserDetailsAccessModelResult">
+	   SELECT [signum id]               AS signumID, 
+       [full name]                      AS EmployeeName, 
+       CONVERT(BIGINT, [personnel no])  AS PersonnelNumber, 
+       CONVERT(BIGINT, [position no])   AS PositionId, 
+       CONVERT(BIGINT, [costcentre no]) AS CostCenter, 
+       [organization unit name]         AS Unit, 
+       [manager signum]                 AS ManagerSignum, 
+       [is line manager]                AS IsLineManager, 
+       [emp group name]                 AS EmployeeGroup, 
+       [company trigram]                AS CompanyName, 
+       [is fso]                         AS FSO, 
+       [country]                        AS CountryName, 
+       [ma/ba/gf/region]                AS ParentUnit, 
+       [job role name], 
+       [job role family name]           AS JobRoleFamily, 
+       [location]                       AS City, 
+       employeeemailid 
+       FROM   [refData].[tbl_ericsson_employees] 
+       WHERE  employeeemailid = #{userDetailsAccessModel.employeeEmailID} 
+   </select>
+   
+   <select id="checkIfAspRegistered" resultType = "boolean">
+   		select count(1) from refData.TBL_ASP_Employees where EmployeeEmailID = #{email}
+   </select>
+        
+   <select id="getEmployeeFromHrms" resultType = "string">
+   		select EmployeeEmailID from refData.TBL_Ericsson_Employees where [Signum ID] = #{signum}
+   </select>
+   
+    <select id='isSignumExistsEmp' resultType="Boolean">
+            IF EXISTS(select 1 from refData.TBL_Employees where Signum= #{signumID})
+                BEGIN
+                    SELECT 1 AS 'RESULT'
+                END
+            ELSE
+                BEGIN
+                    SELECT 0 AS 'RESULT'
+                END
+    </select>
+    
+    <insert id='insertUnregisteredAsp'>
+        insert into refData.TBL_Employees (EmployeeName, Signum, Status, EmployeeEmailID, CreatedOn, PersonnelNumber, CreatedBy, LastModifiedBy, LastModifiedOn, CostCenter ) 
+        values (#{userDetailsAccessModel.employeeName},#{userDetailsAccessModel.signumID},'Unregistered ASP',#{userDetailsAccessModel.employeeEmailID},dbo.GetDateIST(), 111111, 'ejangua', 'ejangua',dbo.GetDateIST(), 111111 )
+    </insert>
+    
+      <select id='getPageAccessDetailsByAccessProfileId' resultType="java.util.LinkedHashMap">
+		select TC.CapabilityPageID,
+		CONCAT(TC.GroupTitle,CASE
+							WHEN TC.SubMenuTitle IS NULL THEN ''
+							ELSE '/' 
+							END
+		,ISNULL(TC.SubMenuTitle,'')) AS SubMenuTitle,
+		CASE
+			WHEN  TC.SubMenuHref IS NOT NULL THEN TC.SubMenuHref
+			ELSE TC.GroupHref
+		END AS SubMenuHref
+			from refData.TBL_ACCESS_PROFILE as AP 
+			inner join refData.TBL_ROLE_CAPABILITY as RC on AP.AccessRoleID= RC.RoleID
+			inner join refData.TBL_CAPABILITY as TC on RC.CapabilityPageID	=	TC.CapabilityPageID
+		where AP.AccessProfileID	= #{accessProfileId}  and TC.Active =1 and RC.permission='write' and TC.CapabilityPageID!=23
+	</select> 
+
+      <select id='getEmployeeWithNoEmailBySignum' resultType="String">
+        Select [Signum ID] from [refData].[TBL_Ericsson_Employees] where (EmployeeEmailID = '' or EmployeeEmailID is null ) and [Signum ID]=#{signumID}
+    </select>
+    
+    <select id='getUserImageURIFromDB' resultType="com.ericsson.isf.model.UserImageURIModel">
+       select UserImage from refData.TBL_User_ImageURI WITH (NOLOCK) where SignumID=#{signumID}
+   </select>
+   
+    <insert id='insertIamgeURI' >
+        insert into refData.TBL_User_ImageURI (SignumID,UserImage)
+        values(#{imgData.signumID},#{imgData.userImage})        
+    </insert>
+    
+    <select id='getEmployeeWithNoEmailHRMS' resultType="String">
+        Select [Signum ID] from [refData].TBL_Ericsson_Employees where EmployeeEmailID = '' or EmployeeEmailID is null
+    </select>
+    
+    <update id='updateEmployeeEmailHRMS'>
+       UPDATE [refData].[TBL_Ericsson_Employees] SET EmployeeEmailID= #{cpmModel.mailID} WHERE [Signum ID] =#{cpmModel.signum}
+    </update>
+    
+    <insert id='insertTokenForExternalSource'>
+		INSERT INTO refData.TBL_Source_Token_Mapping (
+		SourceID,
+		TokenID,
+		Active,
+		CreatedOn,
+		LastModifiedOn,
+		CreatedBy,
+		LastModifiedBy ) values
+		((select SourceID from refData.TBL_External_Sources where SourceName = #{jwtUser.externalSourceName})
+		, #{token}, 1, dbo.GetDateIST(), dbo.GetDateIST(), 'eakinhm', 'eakinhm')
+	</insert>
+	
+	<select id='isRequestedAPIAllowedForSource' resultType="Boolean">
+        IF EXISTS(select * from refData.TBL_Source_API_Mapping where 
+        sourceID = (select SourceID from refData.TBL_External_Sources where SourceName = #{jwtUser.externalSourceName}) 
+		and API = #{requestedAPI})
+            BEGIN
+                SELECT 1 AS 'RESULT'
+            END
+        ELSE
+            BEGIN
+                SELECT 0 AS 'RESULT'
+            END
+        
+    </select>
+    
+    <insert id='insertTokenMappingDetails1' parameterType="com.ericsson.isf.model.TokenMappingModel" useGeneratedKeys="true" keyProperty='tokenMappingModel.tokenID' keyColumn="tokenID">
+   		insert into transactionalData.TBL_Token_Mapping_Details(
+   		Token,
+		Type,
+		SourceID,
+		ActivationDate,
+		ExpirationDate,
+		Active,
+		SignumID,
+		EmployeeEmailID,
+		CreatedBy,
+        CreatedDate,
+        ModifiedBy,
+        ModifiedDate)
+   		values (
+   		#{tokenMappingModel.token}, #{tokenMappingModel.type}, #{tokenMappingModel.sourceID}, #{tokenMappingModel.activationDate},
+   		 #{tokenMappingModel.expirationDate}, #{tokenMappingModel.active}, #{tokenMappingModel.signumID}, #{tokenMappingModel.employeeEmailID},
+   		  #{tokenMappingModel.signumID} , dbo.GetDateIST() ,#{tokenMappingModel.signumID}, dbo.GetDateIST()
+   		)
+    </insert>
+    
+    <insert id='insertHitCountForAPI'>
+
+	   insert into transactionalData.TBL_Source_API_HitCounts (
+	   SourceAPIMappingID,
+	   SourceTokenMappingId,
+	   InsertedOn ) values 
+	   (
+	     (select SourceAPIMappingId from refData.TBL_Source_API_Mapping where	sourceID = (select SourceID from refData.TBL_External_Sources 
+	      where SourceName = #{jwtUser.externalSourceName}) and API = #{requestedAPI}
+	     ), 
+	     ( 
+	      select stm.SourceTokenMappingId from refData.TBL_Source_Token_Mapping stm where smt.Tokenid=#{token} 
+	     ),
+	    dbo.GetDateIST()
+	   )
+    </insert>
+    
+    <select id='getActiveToken' resultType="String">
+    
+    	select TokenID from refData.TBL_Source_Token_Mapping where SourceID=
+		(select SourceID from refData.TBL_External_Sources where SourceName =  #{externalSourceName}) and Active = 1 
+        
+    </select>
+    
+    <update id='updateSourceTokenMappingDetails'>
+        update refData.TBL_Source_Token_Mapping set Active = 0 where TokenID = #{token}
+    </update>
+    
+	<select id='getSubscribedApiList' resultType="java.util.LinkedHashMap">
+		select SubscribedAPIID as apiId,CONCAT('/',Controller,'/',APIEndpoint) as apiName from refData.TBL_Subscribed_API_List;
+	</select>
+
+    <insert id='insertTokenApi' parameterType="com.ericsson.isf.model.TokenApiMappingModel" useGeneratedKeys="true" keyProperty='tokenApiMappingModel.apiTokenID' keyColumn="apiTokenID">
+   		insert into transactionalData.TBL_Token_API_List(
+   		ExternalRefID,
+   		SubscribedAPIID,
+   		Token,
+   		active,
+		CreatedOn,
+		ExpirationDate,
+		OwnerSignum,
+		LastModifiedOn,
+		LastModifiedBy,
+		CreatedBy,
+		CreatedDate)
+   		values (
+   		#{tokenApiMappingModel.externalRefID},
+   		#{tokenApiMappingModel.subscribedApiID},
+   		#{tokenApiMappingModel.token},
+   		#{tokenApiMappingModel.isActive},
+   		#{tokenApiMappingModel.createdOn},
+   		#{tokenApiMappingModel.expirationDate},
+   		#{tokenApiMappingModel.ownerSignum},
+   		#{tokenApiMappingModel.lastModifiedOn},
+   		#{tokenApiMappingModel.lastModifiedBy},
+   		#{tokenApiMappingModel.ownerSignum},
+   		dbo.GetDateIST()
+   		)
+    </insert>
+
+    <select id='getActiveApiToken' resultType="String">
+		select Token from transactionalData.TBL_Token_API_List 
+		where ExternalRefID=#{externalRefID}
+		and 
+		SubscribedAPIID=#{requestedAPI}
+		and
+		active = 1
+		and
+		OwnerSignum=#{ownerSignum};
+    </select>
+    
+    <select id='getApiName' resultType="String">
+    	select CONCAT('/',Controller,'/',APIEndpoint) 
+    	from refData.TBL_Subscribed_API_List 
+    	where SubscribedAPIID=#{requestedAPI};
+    </select>
+
+	<select id="checkTokenForExternalRefId" resultType="String">
+		select DISTINCT(Token) from transactionalData.TBL_Token_API_List 
+		where ExternalRefID=#{externalRefID}
+		and active=1
+		and OwnerSignum=#{ownerSignum};
+	</select>
+	
+	<select id="getUserTokenList" resultType="java.util.LinkedHashMap">
+		select distinct sr.SourceName, Token,API,OwnerSignum,SwaggerLink,APIDocLink,convert(date,tls.ExpirationDate) ExpirationDate,convert(date,tls.CreatedOn) CreatedOn from transactionalData.TBL_Token_API_List tls
+		inner join refData.TBL_Subscribed_API_List ls  on ls.SubscribedAPIID=tls.SubscribedAPIID
+		inner join refData.TBL_External_Sources sr on sr.SourceID=ExternalRefID
+		inner join (select	distinct tls.ExternalRefID,cast(STUFF((SELECT ', ' + API from (select tls.ExternalRefID, '/'+Controller+'/'+APIEndpoint [API] 
+		from transactionalData.TBL_Token_API_List tls 
+		inner join refData.TBL_Subscribed_API_List ls on ls.SubscribedAPIID=tls.SubscribedAPIID and tls.active=1  and tls.OwnerSignum = #{signum}) ls where ls.ExternalRefID=tls.ExternalRefID FOR XML PATH('')), 1, 2, '') as varchar(1000)) as [API] 
+		
+		from (select tls.ExternalRefID, '/'+Controller+'/'+APIEndpoint [API] 
+		from transactionalData.TBL_Token_API_List tls 
+		inner join refData.TBL_Subscribed_API_List ls on ls.SubscribedAPIID=tls.SubscribedAPIID where tls.active 
+		= 1 and tls.OwnerSignum = #{signum})  tls  ) stf on stf.ExternalRefID=tls.ExternalRefID
+		where tls.active = 1
+		and OwnerSignum = #{signum}
+	</select>
+	
+    <update id='disableActiveToken'>
+		update transactionalData.TBL_Token_API_List
+		set active = 0, LastModifiedOn = dbo.GetDateIST(), LastModifiedBy = #{signum}
+		where ExternalRefID = (select SourceID from refData.TBL_External_Sources where SourceName= #{externalSourceName})
+		and active = 1
+		and OwnerSignum = #{signum}
+    </update>
+
+	<select id="getExternalReferenceDetails" resultType="com.ericsson.isf.model.ExternalSourceModel">
+		select SourceName from refData.TBL_External_Sources 
+		where SourceID = #{externalRefId}
+	</select>
+	
+	<update id='testUpdateWOModifiedDate'>
+        update transactionalData.TBL_WORK_ORDER  set LastModifiedDate = dbo.GetDateIST() where SignumID = #{signum}
+    </update>
+    
+    <insert id='saveUserProfileHistory' parameterType="com.ericsson.isf.model.UserProfileHistoryModel">
+       insert into transactionaldata.TBL_USER_ACCESS_PROFILE_HISTORY 
+       (
+        Signum,
+   		AccessTime,
+   		AccessProfileID 
+   	   )
+   	   values
+   	    
+	   ( 
+	     #{userProfileHistoryModel.signum},
+	     dbo.GetDateIST(),
+			 (
+				 (  
+				      select Top 1 uap.AccessProfileID
+					  from transactionalData.TBL_USER_ACCESS_PROFILE uap 
+					  inner join refData.TBL_ACCESS_PROFILE ap on uap.AccessProfileID=ap.AccessProfileID
+					  where uap.SignumID=#{userProfileHistoryModel.signum}  
+					  and ap.AccessProfileName =#{userProfileHistoryModel.accessProfileName}
+					  and uap.Active=1 and ap.Active=1 
+				 )
+			 )
+	   )  
+
+
+    </insert>
+    
+    <insert id='saveUserLocation'
+		parameterType="com.ericsson.isf.model.UserLocationAddressModel">
+		insert into transactionalData.TBL_UserAddress
+		(CountryID,
+		CityID,
+		UserAddress,
+		CreatedBy,
+		CreatedOn,
+		ModifiedBy,
+		ModifiedOn,
+		CurrentLocationOptionID,
+		LocationTypeID
+		<if test="userLocationAddressModel.marketArea !=null"> 
+		
+		,MarketArea
+		</if>
+		<if test="userLocationAddressModel.customerName!=null"> 
+		
+		,CustomerName
+		</if>
+		
+		<if test="userLocationAddressModel.startDate!=null"> 
+		
+		,StartDate
+		</if>
+		
+		<if test="userLocationAddressModel.endDate!=null"> 
+		
+		,EndDate
+		</if>
+		
+	<if test="userLocationAddressModel.countryCode!=null"> 
+		
+		,CountryCode
+		</if>
+		<if test="userLocationAddressModel.contactNumber!=null"> 
+		
+		,ContactNumber
+		</if>
+		)
+		values
+		(#{userLocationAddressModel.countryID},
+		#{userLocationAddressModel.cityID},
+		#{userLocationAddressModel.userAddress},
+		#{Signum},
+		dbo.GetDateIST(),
+		#{Signum},
+		dbo.GetDateIST(),
+		#{userLocationAddressModel.currentLocationOptionID},
+		#{userLocationAddressModel.locationTypeID}
+		
+		<if test="userLocationAddressModel.marketArea !=null"> 
+		
+		,#{userLocationAddressModel.marketArea}
+		</if>
+		
+		<if test="userLocationAddressModel.customerName !=null"> 
+		,#{userLocationAddressModel.customerName}
+		</if>
+		
+		<if test="userLocationAddressModel.startDate!=null"> 
+		,#{userLocationAddressModel.startDate}
+		</if>
+		
+		<if test="userLocationAddressModel.endDate !=null"> 
+		,#{userLocationAddressModel.endDate}
+		</if>
+		
+		<if test="userLocationAddressModel.countryCode !=null"> 
+		,#{userLocationAddressModel.countryCode}
+		</if>
+		<if test="userLocationAddressModel.contactNumber !=null"> 
+		,#{userLocationAddressModel.contactNumber}
+		</if>
+		)
+	</insert>
+	
+    
+      <select id='getRoleIDByRoleName' resultType='java.lang.Integer'>
+       select AccessRoleID from refData.TBL_ACCESS_ROLE where Role=#{role} and Active=1
+    </select>
+    
+     <select id='getUserMenuByRole' resultMap='CapabilityPageGroupModelResult'>
+         select cap.CapabilityPageID,CapabilityPageGroup,CapabilityPageName,
+        cap.Active,GroupTitle,SubMenuTitle,
+		GroupIcon,SubMenuHref,OnClick,GroupHref,Priority,GroupOnClick
+        from refData.TBL_CAPABILITY cap join
+		refData.TBL_ROLE_CAPABILITY rcap on 
+		rcap.CapabilityPageID=cap.CapabilityPageID
+		where cap.active = 1 and rcap.Active=1 and  rcap.RoleID=#{roleID} and rcap.permission = 'Write' order by priority
+    </select>
+    
+     <select id='getUserPreferredRole' resultType='java.lang.Integer'>
+       select DefaultId from transactionalData.TBL_User_Preferences WITH (NOLOCK) where UserSignum=#{signumID} and IsActive=1 and DefaultName='profile'
+    </select>
+    
+     <select id='getRoleIDByAccessProfileId' resultType='java.lang.Integer'>
+	If Exists(select DefaultId from transactionalData.TBL_User_Preferences where UserSignum=#{signumID} and IsActive=1 and DefaultName='profile')
+        Begin
+            select distinct(AccessRoleID) as AccessRoleID from refData.TBL_ACCESS_PROFILE a
+            inner join transactionalData.TBL_User_Preferences b on a.AccessProfileID = b.DefaultId
+            where UserSignum=#{signumID} and IsActive=1 and DefaultName='profile' and a.Active=1
+        End
+    Else
+        Begin
+            select AccessRoleID from refData.TBL_ACCESS_PROFILE where accessprofilename = 'Network Engineer' and Active = 1
+        End		
+    </select>
+    
+     <select id='getUserAccessProfileBySignum' resultType="com.ericsson.isf.model.AccessProfileModel">
+        select distinct ap.AccessProfileID,ap.AccessProfileName,r.AccessRoleID roleID,r.Role,r.Alias,o.OrganisationID,
+	   o.Organisation,uap.Active
+	   from transactionalData.TBL_USER_ACCESS_PROFILE uap
+	   inner join refData.Tbl_Access_profile ap on ap.AccessProfileID=uap.AccessProfileID
+	   inner join refData.TBL_ACCESS_Role r on r.AccessRoleID=ap.AccessRoleID
+	   inner join refData.TBL_ORGANISATION o on o.OrganisationID=ap.OrganisationID
+	   where uap.SignumID=#{signum} and uap.Active =1
+   </select>
+   
+    <select id='getAccessProfileOfUser' resultMap="UserDetailsAccessModelResult" useCache="true">
+        select  emp.EmployeeName, emp.unit, emp.Signum as SignumID, emp.EmployeeEmailID, 
+          emp.PersonnelNumber, emp.ContactNumber, emp.Gender, emp.Status,
+          emp.ManagerSignum, emp.CostCenter, emp.JobStage, emp.IsLineManager as isLineManager, emp.JobRoleFamily, emp.EmployeeGroup
+       from refData.TBL_Employees emp
+       where emp.Signum=#{signumID}
+     </select>
+    
+    <select id='getUserAccessProfileBySignumAndAccProfID' resultType="com.ericsson.isf.model.AccessProfileModel">
+       select distinct ap.AccessProfileID,ap.AccessProfileName,r.AccessRoleID roleID,r.Role,r.Alias,o.OrganisationID,
+	   o.Organisation,uap.Active
+	   from transactionalData.TBL_USER_ACCESS_PROFILE uap
+	   inner join refData.Tbl_Access_profile ap on ap.AccessProfileID=uap.AccessProfileID
+	   inner join refData.TBL_ACCESS_Role r on r.AccessRoleID=ap.AccessRoleID
+	   inner join refData.TBL_ORGANISATION o on o.OrganisationID=ap.OrganisationID
+	   where uap.SignumID=#{signumID} and uap.Active =1 and ap.AccessProfileID=#{accProfId}
+   </select>
+   
+   <select id='ifProfileExistswithsSignum' resultType="boolean">
+   If Exists(
+       select 1
+	   from transactionalData.TBL_USER_ACCESS_PROFILE uap
+	   inner join refData.Tbl_Access_profile ap on ap.AccessProfileID=uap.AccessProfileID
+	   inner join refData.TBL_ACCESS_Role r on r.AccessRoleID=ap.AccessRoleID
+	   inner join refData.TBL_ORGANISATION o on o.OrganisationID=ap.OrganisationID
+	   where uap.SignumID=#{signumID} and uap.Active =1 and ap.AccessProfileID=#{accProfId}
+	   )
+		  BEGIN
+                SELECT 1 AS 'RESULT'
+            END
+        ELSE
+            BEGIN
+                SELECT 0 AS 'RESULT'
+            END
+</select> 
+	   
+
+	
+	   <select id='getCityByCountryID' resultType='com.ericsson.isf.model.CityModel'>	
+	         		 
+		Create table #City
+	   (
+		       ID INT Identity(1,1)
+		       ,CountryID INT
+		       ,CityID INT
+		       ,CityName VARCHAR(50)
+		)
+		INSERT INTO #City
+		select CountryID,CityID,CityName from refData.TBL_City
+		where countryID = #{cityModel.countryID} 
+		  <if test="cityModel.term != null">
+		       and CityName like '%${cityModel.term}%' and CityName not in ('Others')
+		
+		       </if>
+		
+		order by CityName
+		
+		select 0 ID,CountryID,CityID,CityName from refData.TBL_City
+		where CityName='Others' and countryID = #{cityModel.countryID}
+		Union 
+		Select ID,CountryID,CityID,CityName from #City
+
+
+ 
+			
+			 
+			
+ 
+        </select> 
+        
+        <select id="getUserLocationBySignum" resultType="com.ericsson.isf.model.CityModel">
+         select top 1 UA.UserAddress as userAddress
+		,UA.CountryID,
+		UA.CityID,
+		C.CityName,
+		UA.currentlocationOptionID,
+		UA.LocationTypeID,
+		UA.MarketArea,
+		UA.CustomerName,
+		CONVERT(DATE,UA.StartDate) startDate,
+		CONVERT(DATE,UA.EndDate) endDate,
+		UA.CountryCode,
+		UA.ContactNumber from
+		transactionalData.TBL_UserAddress as UA inner join refData.TBL_City as
+		C on
+		UA.CityID=C.CityID where UA.CreatedBy = #{Signum} order by
+		UA.ModifiedOn desc
+			
+	    </select>
+	    
+	    <select id="getCityId" resultType="com.ericsson.isf.model.CityModel">
+			select top 1  cityID,countryID,userAddress  from transactionalData.TBL_UserAddress where CreatedBy = #{signum} order by ModifiedOn desc
+	    </select>
+	    
+	    <select id="getEmployeeGroup" resultType="String">
+			select EmployeeGroup from refData.TBL_Employees WITH (NOLOCK) where Signum=#{signumID}
+	    </select>
+	<select id="getLocationType"
+		resultType="com.ericsson.isf.model.LocationTypeModel">
+		select LocationTypeID, LocationType, IsActive, IsSelected from
+		refData.TBL_Locationtype
+		where isActive= 1
+	</select>
+
+	<insert id='addLocationType'
+		parameterType='com.ericsson.isf.model.LocationTypeModel'>
+		insert into refData.TBL_Locationtype
+		(LocationType,
+		IsSelected,
+		isActive,
+		CreatedBy,
+		CreatedDate,
+		ModifiedBy,
+		ModifiedDate)
+		Values
+		(#{locationTypeModel.locationType},
+		0,
+		#{locationTypeModel.isActive},
+		#{signum},
+		dbo.GetDateIST(),
+		#{signum},
+		dbo.GetDateIST());
+	</insert>
+
+	<select id="getAllLocationTypes"
+		resultType="com.ericsson.isf.model.LocationTypeModel">
+		select locationTypeID,LocationType,IsActive,IsSelected from refData.TBL_Locationtype
+	</select>
+
+	<update id='editLocationType'>
+		UPDATE refData.TBL_Locationtype set
+		LocationType = #{locationTypeModel.locationType}, isActive=#{locationTypeModel.isActive}
+		where LocationTypeID = #{locationTypeModel.locationTypeID}
+	</update>
+	
+	<select id='checkDuplicateLocation' resultType="Boolean">
+		If Exists(select 1 from refData.TBL_Locationtype 
+		where LocationType=#{locationTypeModel.locationType}
+		and isActive=#{locationTypeModel.isActive})
+		Begin
+		select 1 as result
+		end
+		else
+		begin
+		select 0 as result
+		end
+	</select>
+	
+	<select id='fetchLocationTypeForEdit' resultType="com.ericsson.isf.model.LocationTypeModel">
+		select * from refData.TBL_Locationtype where LocationTypeID = #{locationTypeModel.locationTypeID}
+	</select>
+	
+		<update id='changeLocationTypeStatus'>
+		UPDATE refData.TBL_Locationtype set
+		isActive=#{locationTypeModel.isActive}^1,
+		ModifiedBy=#{signum},
+		ModifiedDate= dbo.GetDateIST()
+		where LocationTypeID = #{locationTypeModel.locationTypeID}
+		</update>
+		
+		<update id= 'updatePreviousDefaultLocationType'>
+		update refData.TBL_Locationtype set IsSelected = 0 where
+		 LocationTypeID= #{locationTypeModel.previousDefaultID}
+		</update>
+		
+	<update id= 'updateCurrentDefaultLocationType'>
+		update refData.TBL_Locationtype set IsSelected = 1,
+		ModifiedBy=#{signum},
+		ModifiedDate= dbo.GetDateIST()
+		where
+		 LocationTypeID= #{locationTypeModel.locationTypeID}
+		</update>
+	
+    
+    <select id='getLocationTypeModelData' resultType="com.ericsson.isf.model.UserLocationAddressModel">
+    	select top 1 EndDate from transactionalData.TBL_UserAddress ua 
+		where ua.createdBy=#{signum} and ua.CurrentLocationOptionID IN (2,3) 
+		order by ua.SystemID desc;
+	</select>
+	
+	<select id='isLocationTypeValidForChange' resultType='boolean'>
+	If Exists(select 1 from refData.TBL_Locationtype lt inner join transactionalData.TBL_UserAddress ua on
+		lt.LocationTypeID=ua.LocationTypeID
+		where ua.LocationTypeID=#{locationTypeModel.locationTypeID} and lt.IsActive=1 and
+		ua.CreatedBy=#{signum})
+		Begin
+		select 1 as result
+		end
+		else
+		begin
+		select 0 as result
+		end
+	</select>
+	
+	<select id="getUserCurrentDeviceOpenSessions" parameterType="com.ericsson.isf.model.UserLoginModel" resultType="java.lang.Integer">
+		select LOGID from TRANSACTIONALDATA.TBL_USER_LOGIN_HISTORY where SignumID=#{userLogin.signumID} and LogoutTime IS NULL and Device =#{userLogin.device} and Browser=#{userLogin.browser}
+	</select>
+	
+	<update id="closeSessions">
+		update TRANSACTIONALDATA.TBL_USER_LOGIN_HISTORY SET LogoutTime= dbo.GetDateIST(), ModifiedBy =#{signumID}, ModifiedDate= dbo.GetDateIST()  where LOGID 
+		IN
+		<foreach item="logID" index="index" collection="openLogIDs"
+          open="(" separator="," close=")">
+            #{logID}
+      </foreach>
+	</update>
+	
+	<select id='getActiveSessionForUser' resultType="Boolean">
+        IF EXISTS(SELECT signumID FROM TRANSACTIONALDATA.TBL_USER_LOGIN_HISTORY WHERE signumID=#{signum} and LogoutTime is NULL and Device='Laptop/Desktop')
+            BEGIN
+                SELECT 1 AS 'RESULT'
+            END
+        ELSE
+            BEGIN
+                SELECT 0 AS 'RESULT'
+            END
+        
+    </select>
+	
+	<select id='validateReferer' resultType="boolean" useCache="true">
+        IF EXISTS(	SELECT top 1 ref.refererAPIID FROM transactionalData.TBL_Referer_API_List ref
+						inner join refData.TBL_Subscribed_API_List sub on sub.SubscribedAPIID= ref.SubscribedAPIID
+						WHERE ( concat ('/',sub.Controller,'/',sub.APIEndpoint) = #{apiName} or concat ('/',sub.Controller,'/',sub.APIEndpoint,'/') = #{apiName}) 
+						and  ref.referer = #{referer} and ref.active =1)
+            BEGIN
+                SELECT 1 AS 'RESULT'
+            END
+        ELSE
+            BEGIN
+                SELECT 0 AS 'RESULT'
+            END
+        
+    </select>
+  
+    
+    <insert id="checkAndInsertUserAzureObjectDetails" >
+    	IF NOT EXISTS( select top 1 EmpAzureObjectDetailsID from [refData].[TBL_EMPlOYEE_AZURE_OBJECT_DETAILS] where Signum=#{signumID} and Active=1)
+	BEGIN
+               INSERT INTO [refData].[TBL_EMPlOYEE_AZURE_OBJECT_DETAILS]
+           ([FirstName]
+           ,[LastName]
+           ,[EmployeeObjectID]
+           ,[UserEmailId]
+           ,[Signum]
+           ,[ModifiedBy]
+           ,[CreatedBy]
+           ,[ModifiedOn]
+           ,[CreatedOn]
+           ,Active)
+     VALUES
+           (#{userDetailsAccess.firstName}
+           ,#{userDetailsAccess.lastName}
+           ,#{userDetailsAccess.employeeObjectID}
+           ,#{userDetailsAccess.employeeEmailID}
+           ,#{signumID}
+           ,#{signumID}
+           ,#{signumID}
+           ,dbo.GetDateIST()
+           ,dbo.GetDateIST()
+           ,1)
+    END
+     ELSE
+            BEGIN
+                SELECT 0 AS 'RESULT'
+            END
+    </insert>
+    
+    <select id="getUserAzureObjectDetails" resultMap="ApiManagerUserModelResult">
+    	select FirstName, LastName, EmployeeObjectID, UserEmailId from [refData].[TBL_EMPlOYEE_AZURE_OBJECT_DETAILS] where signum=#{signumID} and Active=1
+    </select>
+	
+	
+	<select id="getExpiredUsersDetails" resultMap="ApiManagerUserModelResult">
+		select empDet.FirstName, empDet.LastName,empDet.EmployeeObjectID,empDet.UserEmailId, empDet.Signum from 
+		[transactionalData].TBL_Bot_Developer_Apim_Revoke_History revHist
+		inner join [refData].[TBL_EMPlOYEE_AZURE_OBJECT_DETAILS]  empDet on revHist.SignumID=empDet.Signum 
+		where empDet.EmployeeObjectID is not null and empDet.Active=1 and revHist.Status='InProgress'
+	</select>
+	
+	<update id="updateRevokedUsers">
+		update [transactionalData].TBL_Bot_Developer_Apim_Revoke_History set Status='Completed' where SignumID IN
+		<foreach collection="revokedSignums" item="signum" index="index" open="(" separator=","  close=")">
+         #{signum}
+         </foreach>
+	</update>
+	<select id='checkIfRequestCountExceedsLimit' statementType="CALLABLE" resultType="string" >
+        {call usp_Access_Profile_Approval (
+        #{signumId, mode=IN, jdbcType=VARCHAR},
+        #{accessProfileId, mode=IN, jdbcType=INTEGER})} 
+    </select> 
+    
+     <select id='getUserAccessProfileOFNetworkEngineer' resultType="com.ericsson.isf.model.AccessProfileModel">
+        select ap.AccessProfileID, ap.AccessProfileName, ap.AccessRoleID roleID, r.role, r.Alias, o.Organisation,o.OrganisationID
+	   , uap.Active from   refData.Tbl_Access_profile  AP
+	   inner join refData.TBL_ACCESS_Role r on r.AccessRoleID=ap.AccessRoleID
+	   inner join refData.TBL_ORGANISATION o on o.OrganisationID= ap.OrganisationID
+	   inner join transactionalData.TBL_USER_ACCESS_PROFILE uap on uap.AccessProfileID=ap.AccessProfileID
+	   where uap.SignumID=#{signumID} and uap.Active=1 and ap.AccessProfileName='Network Engineer'
+   </select> 
+   
+    <select id='getUserAccessProfileOFASP' resultType="com.ericsson.isf.model.AccessProfileModel">
+        select ap.AccessProfileID, ap.AccessProfileName, ap.AccessRoleID roleID, r.role, r.Alias, o.Organisation,o.OrganisationID
+	   , uap.Active from   refData.Tbl_Access_profile  AP
+	   inner join refData.TBL_ACCESS_Role r on r.AccessRoleID=ap.AccessRoleID
+	   inner join refData.TBL_ORGANISATION o on o.OrganisationID= ap.OrganisationID
+	   inner join transactionalData.TBL_USER_ACCESS_PROFILE uap on uap.AccessProfileID=ap.AccessProfileID
+	   where uap.SignumID=#{signumID} and uap.Active=1 and ap.AccessProfileName='ASP'
+   </select>
+	
+	<select id='getMessageTable' resultType="com.ericsson.isf.model.DynamicMessageModel">
+		select Id,message,startDate,endDate,color,isDown as down, ModifiedDate from refdata.TBL_DownTime
+		order by ModifiedDate desc
+	</select>
+	
+	
+	<select id='getRoleByAccessProfileId' resultType="String">
+		select Role from 
+		refData.TBL_ACCESS_ROLE AR
+		left join refData.TBL_ACCESS_PROFILE AP on AR.AccessRoleID=AP.AccessRoleID
+		where AP.AccessProfileID=#{accessProfileId}
+	</select>
+	
+	<select id='checkDuplicateMessage' resultType="Boolean">
+		If Exists(select 1 from refdata.TBL_DownTime
+		where Message= #{dynamicMessageModel.message}
+		)
+		Begin
+		select 1 as result
+		end
+		else
+		begin
+		select 0 as result
+		end
+	</select>
+	
+	<update id= 'enableCurrentMessage'>
+	    update refData.TBL_DownTime set IsDown = 0 
+		where 
+		ID!= #{dynamicMessageModel.id} and IsDown=1
+		
+		update refData.TBL_DownTime set IsDown = 1,
+		ModifiedBy=#{signum},
+		ModifiedDate= dbo.GetDateIST()
+		where
+		ID= #{dynamicMessageModel.id}
+	</update>
+	
+	<update id= 'disableCurrentMessage'>
+		update refData.TBL_DownTime set IsDown = 0,
+		ModifiedBy=#{signum},
+		ModifiedDate= dbo.GetDateIST()
+		where
+		ID= #{dynamicMessageModel.id}
+	</update>
+	
+	<select id='checkDuplicateMessageForEdit' resultType="Boolean">
+		If Exists(select 1 from refdata.TBL_DownTime
+		where Message= #{dynamicMessageModel.message} and ID != #{dynamicMessageModel.id}
+		)
+		Begin
+		select 1 as result
+		end
+		else
+		begin
+		select 0 as result
+		end
+	</select>
+	
+	<select id='getEnabledMessage' resultType="com.ericsson.isf.model.DynamicMessageModel">
+		select Id,message,startDate,endDate,color,isDown as down, ModifiedDate from refdata.TBL_DownTime
+		where isdown=1
+	</select>
+	
+	<update id= 'disablePreviousEnabledMessage'>
+		update refData.TBL_DownTime set IsDown = 0,
+		ModifiedBy=#{signum},
+		ModifiedDate= dbo.GetDateIST()
+		where
+		IsDown=1
+	</update>
+	
+	<select id="getValidateJsonForApi" resultType="String" useCache="true">
+		select top 1 ValidateJSON from Refdata.TBL_SourceApiValidateJson validate
+		inner join refData.TBL_IntegrationSources sources on sources.sourceId=validate.sourceid
+		where SourceAPI=#{apiName} and sourceName='ISFMOBILE'
+	</select>
+	
+	<select id="getUserSignum" resultType="String">
+	  <if test="employeeType=='ericsson'">
+	    select top 1 signum from refData.TBL_Employees where EmployeeEmailID=#{emailID} and Status IN('Notice Period','active')
+	 </if>
+	   <if test="employeeType=='asp'"> 
+	    select top 1 signum from refData.TBL_ASP_Employees where EmployeeEmailID= #{emailID}
+	   </if>
+	</select>
+	
+	<select id="getUserDetails" resultMap="UserDetailsAccessModelResult">
+		SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED
+		
+		select emp.EmployeeName, emp.unit, emp.Signum as SignumID, emp.EmployeeEmailID, 
+          emp.PersonnelNumber, emp.ContactNumber, emp.Gender, emp.Status, uap.ApprovedBy,
+          emp.ManagerSignum, emp.CostCenter, emp.JobStage, emp.IsLineManager as isLineManager, emp.JobRoleFamily, uap.ApprovalStatus,uap.ApprovedDate, 
+          r.AccessRoleID, r.Role, r.Alias,
+        ap.AccessProfileID,ap.AccessProfileName,img.UserImage
+       from refData.TBL_Employees emp
+       left join refData.TBL_User_ImageURI img on img.SignumID=emp.Signum
+       left join transactionalData.TBL_USER_ACCESS_PROFILE uap on emp.Signum=uap.SignumID and uap.Active =1 
+       left join refData.Tbl_Access_profile ap on ap.AccessProfileID=uap.AccessProfileID
+       left join refData.TBL_ACCESS_Role r on r.AccessRoleID=ap.AccessRoleID
+        where emp.Signum=#{signum}
+	</select>
+	
+	<select id='checkifProfileRequestExist' resultType="Boolean">
+        IF EXISTS(Select 1 from TRANSACTIONALDATA.TBL_USER_ACCESS_PROFILE a join transactionalData.TBL_Access_Profile_Request b 
+                 on  a.AccessProfileID= b.AccessProfileID  and a.SignumID=b.Signum where  a.active=1 and b.[Approval Status] is null 
+                 and  a.AccessProfileID = #{accessProfileID} AND SIGNUMID= #{signumID})
+            BEGIN
+                SELECT 1 AS 'RESULT'
+            END
+        ELSE
+            BEGIN
+                SELECT 0 AS 'RESULT'
+            END
+      
+    </select>
+        
+     <update id='updateProfileRequest'>
+        UPDATE transactionalData.TBL_Access_Profile_Request 
+        SET  
+        Approver=#{loggedInUser}, 
+        LastModifiedOn= dbo.GetDateIST(),
+        [Approval Status]=1
+        WHERE  AccessProfileID = #{accessProfileID} AND
+        signum= #{signumID}
+        
+    </update>
+    
+     <insert id='insertDemandType'>
+       INSERT INTO refdata.TBL_Demand_Type 
+            (DemandType,
+            CreatedBy,
+            CreatedOn,
+            ModifiedBy,
+            ModifiedOn,
+            Description,
+            Active
+            ) 
+       VALUES  ( #{demandType},
+                #{createdBy},
+               dbo.GetDateIST(),
+                #{createdBy},
+               dbo.GetDateIST(),
+               #{demandTypeDescription},
+               1
+             ) 
+      </insert>
+	
+	<update id="updateDemandType">
+	UPDATE refdata.TBL_Demand_Type  set DemandType =#{updatedDemandType} ,  ModifiedBy = #{lastModifyBy} , ModifiedOn = dbo.GetDateIST(),
+        Description=#{demandTypeDescription} where DemandTypeID = #{demandTypeId}
+	</update>
+	
+	<update id="inactiveDemandType">
+	UPDATE refdata.TBL_Demand_Type  set Active=0 ,  ModifiedBy = #{lastModifyBy} , ModifiedOn = dbo.GetDateIST()
+        where DemandTypeID = #{demandTypeId}
+	</update>
+	
+	<select id="isValidDemandTypeId" resultType="Boolean">
+	If Exists(select 1 from refdata.TBL_Demand_Type
+		where DemandTypeID= #{demandTypeId} and Active=1
+		)
+		Begin
+		select 1 as result
+		end
+		else
+		begin
+		select 0 as result
+		end
+	</select>
+	
+	 <select id='isSignumExistsEmpAndNotResigned' resultType="Boolean">
+            IF EXISTS(select 1 from refData.TBL_Employees where Signum= #{lastModifyBy} and  Status!='Resigned' )
+                BEGIN
+                    SELECT 1 AS 'RESULT'
+                END
+            ELSE
+                BEGIN
+                    SELECT 0 AS 'RESULT'
+                END
+    </select>
+    
+    <select id='isSameDemandTypeAlreadyExist' resultType="Boolean">
+            IF EXISTS(select 1 from refData.TBL_Demand_Type where DemandType= #{demandType} and Active=1)
+                BEGIN
+                    SELECT 1 AS 'RESULT'
+                END
+            ELSE
+                BEGIN
+                    SELECT 0 AS 'RESULT'
+                END
+    </select>
+
+	<select id='getDemandType'
+		resultType="com.ericsson.isf.model.DemandTypeModel">
+		select DemandTypeID,DemandType,CreatedBy,CreatedOn,ModifiedBy as
+		lastModifyBy,ModifiedOn as lastModifyOn,Description as
+		demandTypeDescription from refData.TBL_Demand_Type where active = 1
+	</select>
+	    
+	    <select id='getEmployeeGroupAndSignum' resultType="com.ericsson.isf.model.EmployeeModel">
+	    select signum,employeegroup from refdata.tbl_employees where signum=#{signum}
+	    </select>
+	    
+		    <select id='getPreviousOneDemandType' resultType="String">
+	    select DemandType from refData.TBL_Demand_Type where DemandTypeID=#{demandTypeId} 
+	    </select>
+	    
+	     <select id='isSameDemandTypeAlreadyExistOtherThanThePresentOne' resultType="Boolean">
+	      IF EXISTS(select 1 from refData.TBL_Demand_Type where DemandTypeID != #{demandTypeId} and Active=1 and DemandType= #{demandType}) 
+                BEGIN
+                    SELECT 1 AS 'RESULT'
+                END
+            ELSE
+                BEGIN
+                    SELECT 0 AS 'RESULT'
+                END
+	    </select>
+
+     <select id='isSignumExistsEmpAndNotInResigned' resultType="Boolean">
+            IF EXISTS(select 1 from refData.TBL_Employees where Signum= #{signumID} and status!= 'Resigned')
+                BEGIN
+                    SELECT 1 AS 'RESULT'
+                END
+            ELSE
+                BEGIN
+                    SELECT 0 AS 'RESULT'
+                END
+    </select>
+    
+</mapper>

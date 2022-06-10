@@ -1,0 +1,122 @@
+<div style="display: flex">
+    <div>
+            <h6 mat-dialog-title>You are updating for competence type:{{enggCompetence.CompetenceType}}</h6>
+    </div>
+    <div align="end">
+            <button mat-icon-button matTooltip="Click to close" class="iconbutton" color="warn" (click)="onNoClick()">
+                   <mat-icon aria-label="Close">close</mat-icon>
+                   </button>
+               </div>
+</div>
+
+
+
+<div mat-dialog-content>
+        <mat-card>
+
+                <form name="form" (ngSubmit)="updateCompetenceForm.form.valid && updateCompetenceToTable(updateCompetenceForm)"
+                    #updateCompetenceForm="ngForm" [formGroup]="updateFormGroup">
+            
+                    <mat-form-field class="formfields" style="display:none">
+                        <input formControlName="id" style="display:none" [value]="" matInput id="id" name="id">
+                    </mat-form-field>
+                    <mat-form-field class="formfields">
+                        <mat-select formControlName="competenceType" placeholder="Competence Type" id="competenceType"
+                            name="competenceType" required  #compType (valueChange)="getDomainByCompTypeId(compType.value, false)">
+                            <!-- <mat-option value="option">A</mat-option>
+                                <mat-option value="option">B</mat-option>
+                                <mat-option value="option">C</mat-option> -->
+                            <mat-option *ngFor="let competence of competenceTypeList" [value]="competence.CompetenceTypeID">
+                                {{competence.CompetenceType}}</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+            
+                    <mat-form-field class="formfields">
+                        <mat-select formControlName="domain" placeholder="Domain/Sub-Domain" id="domain" name="domain" required (valueChange)="getTechnologyByDomainId(compType.value,domainId.value, false)" #domainId>
+                            <!-- <mat-option value="option">Vendor1</mat-option>
+                                <mat-option value="option">Vendor2</mat-option> -->
+                            <mat-option *ngFor='let domain of domainList' [value]='domain.subdomainID'>{{domain.Domain}}</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+            
+                    <mat-form-field class="formfields">
+                        <mat-select formControlName="technology" placeholder="Technology" id="technology" name="technology" required (valueChange)="getVendorByTechnologyId(compType.value,domainId.value, techId.value, false)" #techId>
+                            <!-- <mat-option value="option">JAVA</mat-option>
+                                <mat-option value="option">PHP</mat-option>
+                                <mat-option value="option">NODE JS</mat-option> -->
+                            <mat-option *ngFor='let tech of technologyList' [value]='tech.TechnologyID'>{{tech.Technology}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+            
+                    <mat-form-field class="formfields">
+                        <mat-select formControlName="vendor" placeholder="Vendor" id="vendor" name="vendor" required (valueChange)="getServiceAreaByCompId(compType.value,domainId.value, techId.value, vendorId.value, false)" #vendorId>
+                            <!-- <mat-option value="option">Vendor1</mat-option>
+                                <mat-option value="option">Vendor2</mat-option> -->
+                            <mat-option *ngFor='let vendor of vendorList' [value]='vendor.VendorID'>{{vendor.Vendor}}</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+            
+            
+            
+                    <mat-form-field class="formfields">
+                        <mat-select formControlName="serviceArea" placeholder="Competence Service Area" id="serviceArea"
+                            name="serviceArea" required >
+                            <!-- <mat-option value="option">Area1</mat-option>
+                                <mat-option value="option">Area2</mat-option>
+                                <mat-option value="option">Area3</mat-option> -->
+                            <mat-option *ngFor='let serviceA of serviceAreaList' [value]='serviceA.CompetenceID'>
+                                {{serviceA.Competency_Service_Area}}</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+            
+                    <mat-form-field class="formfields">
+                        <mat-select formControlName="baseline" [(ngModel)]="base_line.value" placeholder="Baseline" id="baseline" name="baseline" required ngModel 
+                        #base_line (selectionChange)="getAmbitionByGradeWeight(base_line.value, false)"> 
+                            <!-- <mat-option value="option">A</mat-option>
+                                <mat-option value="option">B</mat-option>
+                                <mat-option value="option">C</mat-option> -->
+                            <mat-option *ngFor="let competence of competencelist" [value]="competence.CompetenceGRADEID"
+                                (click)="getInnerText(competence.GradeName)">
+                                {{competence.GradeName}}</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+            
+                    <!-- ambitionText.GradeName ? ambitionText.GradeName : '' -->
+                    <!-- <mat-form-field class="formfields ambitioninput">           
+                        <input [disabled]='true' matInput placeholder="Ambition" id="ambition" name="ambition" #ambition [value]="ambitionText" required ngModel>
+                     
+                    </mat-form-field>  -->
+                    <mat-form-field class="formfields ambitioninput">
+                         <input formControlName="ambition" [readonly]='true' matInput placeholder="Ambition" id="ambition"
+                            name="ambition" [(ngModel)]="ambitionText.CompetencyUpgrade" [value]="!ambitionText.CompetencyUpgrade?'':ambitionText.CompetencyUpgrade"
+                            required ngModel>
+                        <input formControlName="ambitionValue" style="display:none" matInput id="ambitionValue" name="ambitionValue"
+                            #ambition [(ngModel)]="ambitionText.CompetenceUpgradeID" ngModel> 
+                           
+                                <!-- <input [readonly]='true' formControlName="ambition" matInput placeholder="Ambition" 
+                                id="ambition" name="ambition" [value]="!ambitionText.CompetencyUpgrade?'':ambitionText.CompetencyUpgrade" [(ngModel)] = "ambitionText.CompetencyUpgrade" required>
+                                <input style="display:none" formControlName="ambitionValue" matInput id="ambitionValue" name="ambitionValue" #ambition [(ngModel)] = "ambitionText.CompetenceUpgradeID" ngModel> --> 
+                       
+                    </mat-form-field>
+                    
+            
+                            <!-- <button mat-button color="primary" (click)="getAmbitionByGradeWeight(event,base_line.value)">Next Level</button>  -->
+                    
+                            <mat-slide-toggle class="ambitionToggle" formControlName="ambitionLevel" name="ambitionLevel" title={{slideTitle}} 
+                            [checked]="responseFlag" (change)="onValChange($event, base_line.value)" [(ngModel)] = "responseFlag"
+                            [disabled]='!isBaselineSelected' >
+                                       {{slideLabel}}   
+                                       <!-- <mat-button-toggle value="same">Same</mat-button-toggle>
+                                           <mat-button-toggle value="nextLevel">Next Level</mat-button-toggle>                         -->
+                       </mat-slide-toggle>
+                <button mat-raised-button [disabled]="!updateCompetenceForm.form.valid" color="accent" type="submit"
+                id="updateCompetenceBtn" >Update Competence</button>
+                </form>
+            
+            </mat-card>
+            
+</div>
+<div mat-dialog-actions align="end">
+        <button mat-raised-button color="warn" (click)="onNoClick()">Close</button>
+</div>

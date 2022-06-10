@@ -1,0 +1,289 @@
+﻿
+@{
+    ViewBag.Title = "Delivery Tracker";
+}
+@Scripts.Render("~/bundles/WorkOrder")
+
+<div id="content">
+    <section>
+        <div class="section-header">
+            <ol class="breadcrumb">
+                <li class="active">Work Order Creation</li>
+            </ol>
+        </div>
+        <div id="page-wrapper">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+
+                </div>
+                <div class="panel-body">
+                    <!-- /.row -->
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="col-lg-3">
+                                *WorkOrder Name:<br />
+                                <input class="form-control" placeholder="" id="WO_name">
+                                <div class="row">
+                                    <label id="WO_name-Required" style="color:red; font-size:10px; text-align:center;"></label>
+                                </div>
+                            </div>
+
+
+
+                            <div class="col-lg-3">
+                                *Project:<br />
+                                <select class="select2able select2-offscreen" id="select_project_name"></select>
+                                <div class="row">
+                                    <label id="project_name-Required" style="color:red; font-size:10px; text-align:center;"></label>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-3">
+                                *Domain / Subdomain:<br />
+                                <select class="select2able select2-offscreen" id="select_domain" onchange="getActivitiesSub();">
+                                    <option value="0"></option>
+                                </select>
+                                <div class="row">
+                                    <label id="select_domain-Required" style="color:red; font-size:10px; text-align:center;"></label>
+                                </div>
+                            </div>
+                            <div class="col-lg-3">
+                                *Service Area / Subservice area:<br />
+                                <select class="select2able select2-offscreen" id="select_product_area" onchange="getActivitiesSub();">
+                                    <option value="0"></option>
+                                </select>
+                                <div class="row">
+                                    <label id="select_product_area-Required" style="color:red; font-size:10px; text-align:center;"></label>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="col-lg-3">
+                                *Technology:<br />
+                                <select class="select2able select2-offscreen" id="select_technology" onchange="getActivitiesSub();">
+                                    <option value="0"></option>
+                                </select>
+                                <div class="row">
+                                    <label id="select_technology-Required" style="color:red; font-size:10px; text-align:center;"></label>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-3">
+                                *SubActivity:<br />
+                                <select class="select2able select2-offscreen" id="select_activitysub">
+                                    <option value="0"></option>
+                                </select>
+                                <div class="row">
+                                    <label id="select_activitysub-Required" style="color:red; font-size:10px; text-align:center;"></label>
+                                </div>
+                            </div>
+                            <div class="col-lg-3">
+                                *Node Type:<br />
+                                <select class="select2able select2-offscreen" id="select_nodeType">
+                                    <option value="0"></option>
+                                </select>
+                                <div class="row">
+                                    <label id="select_nodeType-Required" style="color:red; font-size:10px; text-align:center;"></label>
+                                </div>
+                            </div>
+                            <div class="col-lg-3">
+                                *Node Names:<br />
+                                <select multiple class="select2able select2-offscreen" id="select_nodeName">
+                                    <option value="0"></option>
+                                </select>
+                                <div class="row">
+                                    <label id="select_nodeName-Required" style="color:red; font-size:10px; text-align:center;"></label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="col-lg-3">
+                                *Activity:<br />
+                                <select class="select2able select2-offscreen" id="select_activity">
+                                    <option value="0"></option>
+                                </select>
+                                <div class="row">
+                                    <label id="select_activity-Required" style="color:red; font-size:10px; text-align:center;"></label>
+                                </div>
+                            </div>
+                            <div class="col-lg-3">
+                                *Periodicity:<br />
+                                <select class="select2able select2-offscreen" id="select_periodicity" onchange="openModalperiodicity(this.value);">
+                                    <option value="0"></option>
+                                    <option value="Single">Single</option>
+                                    <option value="Daily">Daily</option>
+                                    <option value="Weekly">Weekly</option>
+                                </select>
+                                <div class="row">
+                                    <label id="select_periodicity-Required" style="color:red; font-size:10px; text-align:center;"></label>
+                                </div>
+                            </div>
+                            <div class="col-lg-3">
+                                *Assign to User:<br />
+                                <select class="select2able select2-offscreen" id="select_assign_to_user">
+                                    <option value="0"></option>
+                                </select>
+                                <div class="row">
+                                    <label id="select_assign_to_user-Required" style="color:red; font-size:10px; text-align:center;"></label>
+                                </div>
+                            </div>
+                            <div class="col-lg-3">
+                                *Priority:<br />
+                                <select class="select2able select2-offscreen" id="select_priority">
+                                    <option value="0"></option>
+                                </select>
+                                <div class="row">
+                                    <label id="select_priority-Required" style="color:red; font-size:10px; text-align:center;"></label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-lg-12">
+
+                            <div class="col-lg-3">
+                                <label><i class="fa fa-calendar"></i> *Start Date</label>
+                                <input type="date" Name="StartDate" Id="Start_Date" class="form-control" data-date-format='yyyy-mm-dd' placeholder="YYYY/MM/DD" />
+                                <div class="row">
+                                    <label id="Start_Date-Required" style="color:red; font-size:10px; text-align:center;"></label>
+                                </div>
+                            </div>
+
+
+                            @*<div class="col-lg-3">
+                                    <i class="fa fa-calendar"></i> &nbsp; <label> Start Date </label>
+                                    <br />
+                                    <input type="date" Name="DateResigned" Id="start_date" />
+                                </div>*@
+                            <div class="col-lg-3">
+                                *Start Time:<br />
+                                <select class="select2able select2-offscreen" id="start_time">
+                                    <option value="0"></option>
+                                    <option value="00:00">00:00</option>
+                                    <option value="01:00">01:00</option>
+                                    <option value="02:00">02:00</option>
+                                    <option value="03:00">03:00</option>
+                                    <option value="04:00">04:00</option>
+                                    <option value="05:00">05:00</option>
+                                    <option value="06:00">06:00</option>
+                                    <option value="07:00">07:00</option>
+                                    <option value="08:00">08:00</option>
+                                    <option value="09:00">09:00</option>
+                                    <option value="10:00">10:00</option>
+                                    <option value="11:00">11:00</option>
+                                    <option value="12:00">12:00</option>
+                                    <option value="13:00">13:00</option>
+                                    <option value="14:00">14:00</option>
+                                    <option value="15:00">15:00</option>
+                                    <option value="16:00">16:00</option>
+                                    <option value="17:00">17:00</option>
+                                    <option value="18:00">18:00</option>
+                                    <option value="19:00">19:00</option>
+                                    <option value="20:00">20:00</option>
+                                    <option value="21:00">21:00</option>
+                                    <option value="22:00">22:00</option>
+                                    <option value="23:00">23:00</option>
+                                </select>
+                                <div class="row">
+                                    <label id="start_time-Required" style="color:red; font-size:10px; text-align:center;"></label>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-3">
+                                <label><i class="fa fa-calendar"></i> End Date</label>
+
+                                <input type="date" Name="EndDate" Id="End_Date" class="form-control" data-date-format='yyyy-mm-dd' placeholder="YYYY/MM/DD" />
+                                <div class="row">
+                                    <label id="End_Date-Required" style="color:red; font-size:10px; text-align:center;"></label>
+                                    @*<label id="End_Date-Is-Required" style="color:red; font-size:10px; text-align:center;"></label>*@
+                                </div>
+                            </div>
+
+
+
+
+
+                            @*<div class="col-lg-3">
+                                    <i class="fa fa-calendar"></i> &nbsp; <label>End Date</label>
+                                    <br />
+                                    <input type="date" Name="DateResigned" Id="end_date" />
+                                </div>*@
+                            <div class="col-lg-3">
+                                <br />
+                                <button class="btn btn-primary" type="submit" onclick="createWorkOrder()">Save</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="woModal1" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title" id="woModal1Title"></h4>
+                    </div>
+                    <div class="modal-body">
+
+                        <div class="form-group">
+                            <div id="woModal1ContentWeekly" style="display:none;">
+                                <label class="checkbox-inline"><input type="radio" name="radio_weekly" id="radio_weekly" value="Sunday" checked>S</label>
+                                <label class="checkbox-inline"><input type="radio" name="radio_weekly" id="radio_weekly" value="Monday">M</label>
+                                <label class="checkbox-inline"><input type="radio" name="radio_weekly" id="radio_weekly" value="Tuesday">T</label>
+                                <label class="checkbox-inline"><input type="radio" name="radio_weekly" id="radio_weekly" value="Wednesday">W</label>
+                                <label class="checkbox-inline"><input type="radio" name="radio_weekly" id="radio_weekly" value="Thursday">T</label>
+                                <label class="checkbox-inline"><input type="radio" name="radio_weekly" id="radio_weekly" value="Friday">F</label>
+                                <label class="checkbox-inline"><input type="radio" name="radio_weekly" id="radio_weekly" value="Saturday">S</label><br />
+                            </div>
+                            <div id="woModal1ContentDaily" style="display:none;">
+                                <label class="checkbox-inline"><input type="checkbox" name="checkbox_daily" id="checkbox_daily" value="Sunday">S</label>
+                                <label class="checkbox-inline"><input type="checkbox" name="checkbox_daily" id="checkbox_daily" value="Monday">M</label>
+                                <label class="checkbox-inline"><input type="checkbox" name="checkbox_daily" id="checkbox_daily" value="Tuesday">T</label>
+                                <label class="checkbox-inline"><input type="checkbox" name="checkbox_daily" id="checkbox_daily" value="Wednesday">W</label>
+                                <label class="checkbox-inline"><input type="checkbox" name="checkbox_daily" id="checkbox_daily" value="Thursday">T</label>
+                                <label class="checkbox-inline"><input type="checkbox" name="checkbox_daily" id="checkbox_daily" value="Friday">F</label>
+                                <label class="checkbox-inline"><input type="checkbox" name="checkbox_daily" id="checkbox_daily" value="Saturday">S</label>
+                            </div>
+                            <label class="control-label col-lg-8" id="modal_text"></label>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Save</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="WOmodal2" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">WO Created</h4>
+                    </div>
+                    <div class="modal-body">
+
+                        <div class="form-group">
+                            <label class="control-label col-lg-8" id="modal_text">Your WO was created successfully.</label>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>

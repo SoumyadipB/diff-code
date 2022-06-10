@@ -1,0 +1,190 @@
+<div style="display: flex">
+    <div>
+        <h6 mat-dialog-title>Edit : {{editData.signumName}} </h6>
+    </div>
+    <div align="end" style="flex:1">
+        <button mat-icon-button matTooltip="Click to close" class="iconbutton"  color="warn"  (click)="close()">
+            <mat-icon aria-label="Close">close</mat-icon>
+        </button>
+    </div>
+</div>
+
+<div>
+    <div fxLayout="row">
+        <div fxFlex="50">
+            <span><strong>Competence Type :</strong> {{!editData.CompetenceType ? '' : editData.CompetenceType}}</span>
+        </div>
+        <div fxFlex="50">
+            <span><strong>Domain/Sub-Domain :</strong> {{!editData.DomainSubDomain ? '' : editData.DomainSubDomain}}</span>
+        </div>
+    </div>
+    <br>
+    <div fxLayout="row">
+        <div fxFlex="50">
+            <span><strong>Technology :</strong> {{!editData.Technology ? '' : editData.Technology}}</span>
+        </div>
+        <div fxFlex="50">
+            <span><strong>Vendor :</strong> {{!editData.Vendor ? '' : editData.Vendor}}</span>
+        </div>
+    </div>
+    <br>
+    <div fxLayout="row">
+        <div fxFlex="50">
+            <span><strong>Competence Service Area :</strong>
+                {{!editData.Competency_Service_Area ? '' : editData.Competency_Service_Area}}</span>
+        </div>
+        <div fxFlex="50">
+            <span><strong>Ambition :</strong> {{!editData.CompetencyUpgrade ? '' : editData.CompetencyUpgrade}}</span>
+        </div>
+    </div>
+    <br>
+    <div fxLayout="row">
+        <div fxFlex="50">
+            <span><strong>Status :</strong> {{!editData.status ? '' : editData.status}}</span>
+        </div>
+        <div fxFlex="50">
+            <span><strong>WBL Hours :</strong> {{!editData.WBL_TOTAL_HRS ? '' : editData.WBL_TOTAL_HRS}}</span>
+        </div>
+    </div>
+    <br>
+    <div fxLayout="row">
+        <div fxFlex="50">
+            <span><strong>ILT Hours :</strong> {{!editData.ILT_TOTAL_HRS ? '' : editData.ILT_TOTAL_HRS}}</span>
+        </div>        
+        <div fxFlex="50">
+            <span><strong>Total Score :</strong> {{!editData.total_score ? '' : editData.total_score}}</span>
+        </div>
+    </div>
+    <br>
+    <div fxLayout="row">
+        <div fxFlex="50">
+            <span><strong>Competence Development Status :</strong> {{!editData.competence_development_status ? '' : editData.competence_development_status}}</span>
+        </div>
+    </div>
+
+</div>
+<br>
+<div>
+    <mat-card>
+
+        <form name="form" (ngSubmit)="editCompetenceProgress.form.valid && editCompProgress(editCompetenceProgress)"
+            #editCompetenceProgress="ngForm" [formGroup]="updateFormGroup">
+
+            <mat-form-field class="formfields" style="display:none">
+                <input formControlName="id" matInput id="id" name="id" ngModel
+                    [(ngModel)]="!editData.id ? '' : editData.id">
+                <input formControlName="requestedBySignum" matInput id="requestedBySignum" name="requestedBySignum"
+                    ngModel [(ngModel)]="!editData.requestedBySignum ? '' : editData.requestedBySignum">
+            </mat-form-field>
+
+            <!-- <mat-form-field class="formfields inputCss">
+
+                <input class="disabled" readonly formControlName="compType" matInput placeholder="Competence Type"
+                    id="compType" name="compType" ngModel
+                    [(ngModel)]="!editData.CompetenceType ? '' : editData.CompetenceType">
+
+            </mat-form-field>
+
+            <mat-form-field class="formfields inputCss">
+                <input class="disabled" readonly formControlName="domainSubDomain" matInput
+                    placeholder="Domain/Sub-Domain" id="ojtHours" name="domainSubDomain" ngModel
+                    [(ngModel)]="!editData.DomainSubDomain ? '' : editData.DomainSubDomain">
+
+            </mat-form-field>
+
+            <mat-form-field class="formfields inputCss">
+                <input class="disabled" readonly formControlName="technology" matInput placeholder="Technology"
+                    id="technology" name="technology" ngModel
+                    [(ngModel)]="!editData.Technology ? '' : editData.Technology">
+
+            </mat-form-field>
+
+            <mat-form-field class="formfields inputCss">
+                <input class="disabled" readonly formControlName="vendor" matInput placeholder="Vendor" id="vendor"
+                    name="vendor" ngModel [(ngModel)]="!editData.Vendor ? '' : editData.Vendor">
+
+            </mat-form-field>
+
+            <mat-form-field class="formfields inputCss">
+                <input class="disabled" readonly formControlName="compServiceArea" matInput
+                    placeholder="Competence Service Area" id="compServiceArea" name="compServiceArea" ngModel
+                    [(ngModel)]="!editData.Competency_Service_Area ? '' : editData.Competency_Service_Area">
+
+            </mat-form-field>
+
+            <mat-form-field class="formfields inputCss">
+                <input class="disabled" readonly formControlName="ambition" matInput placeholder="Ambition"
+                    id="ambition" name="ambition" ngModel
+                    [(ngModel)]="!editData.CompetencyUpgrade ? '' : editData.CompetencyUpgrade">
+
+            </mat-form-field>
+
+            <mat-form-field class="formfields inputCss">
+                <input class="disabled" readonly formControlName="status" matInput placeholder="Status" id="status"
+                    name="status" ngModel [(ngModel)]="!editData.status ? '' : editData.status">
+
+            </mat-form-field> -->
+
+            <mat-form-field class="formfields inputCss">
+                <input formControlName="ojtHours" onlyNumber (blur)="removeLeadingZero(this, 'ojtHours')" matInput placeholder="OJT Hours" id="ojtHours"
+                    name="ojtHours" ngModel required [(ngModel)]="!editData['OJT Hours'] ? '0' : editData['OJT Hours']" #ojtHours>
+                    <mat-error *ngIf="updateFormGroup.controls.ojtHours.invalid">{{getErrorMessage('ojtHours')}}</mat-error>
+                    <mat-hint align="end">OJT Hours should be between 0 to 10000000 with upto two decimal places</mat-hint>
+            </mat-form-field>
+
+            <mat-form-field class="formfields inputCss">
+                <input formControlName="delScore" onlyNumber (blur)="removeLeadingZero(this, 'delScore')" matInput
+                    placeholder="Delivery Score" id="delScore" name="delScore" ngModel required
+                    [(ngModel)]="!editData['Delivery Score'] ? '0' : editData['Delivery Score']" #delScore>
+                    <mat-hint align="end">Delivery Score should be between 0 to 10 with upto two decimal places</mat-hint>
+                    <mat-error *ngIf="updateFormGroup.controls.delScore.invalid">{{getErrorMessage('delScore')}}</mat-error>
+            </mat-form-field>
+            <!-- <div *ngIf="delScore.value < 0 || delScore.value > 10" style="color:red">Delivery Score should be between 0 to 10 with upto two decimal places</div> -->
+
+            <mat-form-field class="formfields inputCss">
+                <input formControlName="scopeComp" onlyNumber (blur)="removeLeadingZero(this, 'scopeComp')" matInput
+                    placeholder="Scope Complexity" id="scopeComp" name="scopeComp" ngModel required
+                    [(ngModel)]="!editData['Scope Complexity'] ? '0' : editData['Scope Complexity']" #scopeComp>
+                    <mat-hint align="end">Scope Complexity should be between 0 to 10 with upto two decimal places</mat-hint>
+                    <mat-error *ngIf="updateFormGroup.controls.scopeComp.invalid">{{getErrorMessage('scopeComp')}}</mat-error>
+            </mat-form-field>
+            <!-- <div *ngIf="scopeComp.value < 0 || scopeComp.value > 10" style="color:red">Score Complexity should be between 0 to 10 with upto two decimal places</div> -->
+
+            <mat-form-field class="formfields inputCss">
+                <input formControlName="assessmentScore" onlyNumber (blur)="removeLeadingZero(this, 'assessmentScore')"
+                    matInput placeholder="Assessment Score" id="assessmentScore" name="assessmentScore" ngModel required
+                    [(ngModel)]="!editData['Assessment Score'] ? '0' : editData['Assessment Score']" #assessmentScore>
+                    <mat-hint align="end">Assessment Score should be between 0 to 10 with upto two decimal places</mat-hint>
+                    <mat-error *ngIf="updateFormGroup.controls.assessmentScore.invalid">{{getErrorMessage('assessmentScore')}}</mat-error>
+            </mat-form-field>
+            <!-- <div *ngIf="assessmentScore.value < 0 || assessmentScore.value > 10" style="color:red">Assessment Score should be between 0 to 10 with upto two decimal places</div> -->
+
+            <!-- <mat-form-field class="formfields inputCss">
+                <input class="disabled" readonly formControlName="totalScore" matInput placeholder="Total Score"
+                    id="totalScore" name="totalScore" ngModel
+                    [(ngModel)]="!editData.totalScore ? '' : editData.totalScore">
+
+            </mat-form-field>
+
+            <mat-form-field class="formfields inputCss">
+                <input class="disabled" readonly formControlName="compDevelopmentStatus" matInput
+                    placeholder="Competence Type" id="compDevelopmentStatus" name="compDevelopmentStatus" ngModel
+                    [(ngModel)]="!editData.compDevelopmentStatus ? '' : editData.compDevelopmentStatus">
+
+            </mat-form-field> -->
+
+
+
+
+            <!-- <button mat-button color="primary" (click)="getAmbitionByGradeWeight(event,base_line.value)">Next Level</button>  -->
+
+            <br />
+            <button mat-raised-button [disabled]="!editCompetenceProgress.form.valid" color="accent" type="submit"
+                id="updateCompetenceBtn">Update</button>
+            <button type="button" id="editCancel" mat-raised-button color="warn" (click)="close()"
+                style="margin-left: 20px;">Cancel</button>
+        </form>
+
+    </mat-card>
+
+</div>

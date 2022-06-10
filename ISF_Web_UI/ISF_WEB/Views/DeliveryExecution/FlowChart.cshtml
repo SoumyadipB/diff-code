@@ -1,0 +1,179 @@
+﻿@{
+    Layout = "";
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Work Flow</title>
+
+    @Styles.Render("~/bundles/css/rappid")
+    @Styles.Render("~/bundles/css/bootstrap")
+    @*<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.8/js/select2.min.js" defer></script>*@
+    <script type="text/javascript" src="~/Scripts/select2/select2.full.min.js" defer></script>
+    @Styles.Render("~/bundles/css/DataTableStyle")
+    @Styles.Render("~/bundles/css/DeliveryExecution")
+    @Scripts.Render("~/bundles/TimeZone")
+    @Styles.Render("~/bundles/css/select2")
+    @*@Scripts.Render("~/bundles/select2")*@
+
+
+    <link rel="stylesheet" type="text/css" href="~/Scripts/lib/commentsjs/jquery-comments.css">
+    <link type="text/css" rel="stylesheet" href="~/Content/CSS/font-awesome.min.css" />
+    <link type="text/css" rel="stylesheet" href="~/Content/CSS/style.css" />
+    <style>
+
+        .filesDiv:hover ul.dropdown-menu {
+            display: block;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .popover {
+            max-width: 100%;
+            /*// Max Width of the popover (depending on the container!)*/
+        }
+
+        .toolbar-container button.joint-widget[data-type="zoomIn"], .toolbar-container button.joint-widget[data-type="zoomOut"] {
+            display: block;
+        }
+
+        .joint-app.joint-theme-material .toolbar-container {
+            overflow-y: inherit;
+        }
+
+        .joint-toolbar.joint-theme-material button {
+            height: 43px;
+        }
+
+        .navigator-container {
+            bottom: 50px;
+        }
+
+        .searchText {
+            width: 200px;
+            font-size: 13px;
+            height: 22px;
+        }
+
+        .btn {
+            margin: 0px;
+        }
+
+        .joint-lightbox.modal {
+            display: block;
+        }
+    </style>
+</head>
+<body style="padding-top: 0px;overflow-y:scroll;">
+    <div class="col-lg-12" id="divWfInfo">
+        <div class="panel panel-default">
+            <div class="panel-heading" style="text-align:center;height:30px;line-height: 2;padding:0px;">
+                <a href="#container" aria-expanded="false" aria-controls="#container" data-toggle="collapse" style="font-size:12px;">WORK FLOW INFO</a>
+                <a class="fa fa-angle-down" href="#container" aria-expanded="false" aria-controls="#container" data-toggle="collapse"></a>
+            </div>
+
+            <div class="panel-body container collapse" id="container">
+                <input type="hidden" id="defID" />
+                <div id="wOdetailForWF"></div>
+
+            </div>
+        </div>
+    </div>
+    
+    <div id="app">
+        <div class="app-header" style="height:43px">
+            <div class="app-title" style="width: 335px;">
+                <h1 style="line-height: 45px;padding-left: 80px;">VIEW WorkFlow</h1>
+            </div>
+            <div class="toolbar-container" style="left: 335px;"></div>
+        </div>
+
+        <div class="app-body">
+
+            <div class="stencil-container">
+                <div class="panel panel-default" style="position:relative;right:100px;width:335px;left: 0px;">
+                    <div class="panel-heading">
+                        Comments
+                    </div>
+                    <div class="panel panel-info">
+
+                        <div class="panel-heading" style="height:43px;">
+
+                            <div>
+                                <a href='#' style="color: #60c560; margin-right: 5px;" class="pull-left" title="Click to download Comments Data." onclick='downloadCommentsData(uniquePageID);'><i class="fa fa-download glyphicon-ring glyphicon-green" style="width:22px;height:22px;" aria-hidden="true"></i></a>
+                                <div id="searchCommentsDiv" class="pull-left"></div>
+                                <div>
+                                    <button class="btn btn-info btn-xs" type="button" id="showHideFlaggedData" title="Click to Filter Flagged Audits">
+                                        <i class="fa fa-flag" aria-hidden="true"></i>
+                                    </button>
+                                    <button class="btn btn-info btn-xs" type="button" id="showHideAuditData" title="Show/Hide Audit Comments">
+                                        <i class="fa fa-eye" aria-hidden="true"></i>
+                                    </button>
+                                    <button class="btn btn-info btn-xs" type="button" id="refreshAudit" title="Refresh Data">
+                                        <i class="fa fa-refresh" aria-hidden="true"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="panel-body">
+                            <div class="row">
+                                @*<select class="form-control" id="selectStepsWO" onchange="onChangeContext(this);">
+                                <option value="0"></option>
+                                </select>*@
+                                <div id="selectContext" class="col-lg-9"></div>
+                                @*<button onclick="downloadCommentsCSV()">Download CSV</button>*@
+                                @*<select class="select2able select2-offscreen" id="selectStepsWO" onchange="onChangeContext(this);"></select>*@
+                                <div>
+                                    <button class="btn btn-info-outline btn-xs" type="button" id="flagStateButton" title="Enable to make an Escalated Comment">
+                                        <i class="fa fa-flag" aria-hidden="true"></i>
+                                    </button>
+                                    <button class="btn btn-info-outline btn-xs" type="button" id="mailStateButton" title="Enable to send an E-mail with Comment">
+                                        <i class="fa fa-envelope" aria-hidden="true"></i>
+                                    </button>
+                                    <button class="btn btn-success btn-xs" type="button" id="normalComment" title="Normal Comment">
+                                        <i class="fa fa-info" aria-hidden="true"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="commentsContainerDT"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="paper-container" style="width: 100%;right: 0px;left: 335px;"></div>
+            <div class="inspector-container"></div>
+            <div class="navigator-container"></div>
+            @*</div>*@
+        </div>
+
+
+        <!-- Rappid/JointJS dependencies: -->
+        @Scripts.Render("~/bundles/rappid")
+        @Scripts.Render("~/bundles/global")
+        @Scripts.Render("~/bundles/GetSessionVars")
+        @Scripts.Render("~/bundles/config")
+        @Scripts.Render("~/bundles/bootstrap")
+        @Scripts.Render("~/bundles/datepicker")
+
+        @Scripts.Render("~/bundles/DeliveryExecution")
+        @Scripts.Render("~/bundles/DataTableScript")
+
+        @Scripts.Render("~/bundles/SessionManagement")
+        @Scripts.Render("~/bundles/ajaxRequest")
+        <script type="text/javascript" src="~/Scripts/lib/commentsjs/jquery-comments.js"></script>
+
+
+        @Scripts.Render("~/bundles/TimeZone")
+        @Scripts.Render("~/bundles/FlowChartScript")
+
+        <!-- Local file warning: -->
+        <div id="message-fs" style="display: none;">
+            <p>The application was open locally using the file protocol. It is recommended to access it trough a <b>Web server</b>.</p>
+            <p>Please see <a href="README.md">instructions</a>.</p>
+        </div>
+
+</body>
+</html>
+

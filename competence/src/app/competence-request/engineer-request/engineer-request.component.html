@@ -1,0 +1,115 @@
+<!-- <button class="close" mat-mini-fab color="warn" (click)="onClose()">X</button> -->
+<div style="display: flex">
+        <div>
+                <h6 mat-dialog-title>You are updating for: {{competenceData.signum}}</h6>
+        </div>
+        <div align="end" style="flex:1"> 
+                <button mat-icon-button matTooltip="Click to close" class="iconbutton" color="warn" (click)="onClose()">
+                       <mat-icon aria-label="Close">close</mat-icon>
+                       </button>
+                   </div>
+    </div>
+
+
+<mat-tab-group (selectedTabChange)="tabClick($event)">
+    <mat-tab label="Manage Competence">
+        <div mat-dialog-content>
+            <mat-form-field>
+                <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Search">
+              </mat-form-field>
+            
+            <table mat-table  matTableExporter hiddenColumns="0,1" #exporterManageComp="matTableExporter" [dataSource]="dataSource" class="mat-elevation-z8">
+                <ng-container matColumnDef="select">
+                    <th mat-header-cell *matHeaderCellDef>
+                      <mat-checkbox (change)="$event ? masterToggle() : null"
+                                    [checked]="selection.hasValue() && isAllSelected()"
+                                    [indeterminate]="selection.hasValue() && !isAllSelected()"
+                                    [aria-label]="checkboxLabel()"
+                                    (change)= "changeCheck($event)" *ngIf= "diasabledSelectAllCheck == true">
+                      </mat-checkbox>
+                    </th>
+                    <td mat-cell *matCellDef="let row">
+                      <mat-checkbox (click)="$event.stopPropagation()"
+                                    (change)="$event ? selection.toggle(row) : null"
+                                    [checked]="selection.isSelected(row)"
+                                    [aria-label]="checkboxLabel(row)"
+                                    (change)= "changeCheck($event)" *ngIf="row.status != 'Approved' && row.status != 'Rejected'">
+                      </mat-checkbox>
+                    </td>
+                  </ng-container>
+                  <ng-container matColumnDef="actions">
+                  <th mat-header-cell *matHeaderCellDef>Actions</th>
+                  <td mat-cell *matCellDef="let row">
+                      <div style="display:flex;"> 
+                    <button mat-icon-button matTooltip="Click to Edit" class="iconbutton" color="primary" (click)="editRecord(row)" *ngIf="row.status != 'Approved' && row.status != 'Rejected'">
+                        <mat-icon aria-label="Edit">edit</mat-icon>
+                        </button>
+                        <button mat-icon-button matTooltip="Click to Delete" class="iconbutton" color="warn" (click)="deleteSingleCompetence(row.id)" *ngIf="row.status != 'Approved' && row.status != 'Rejected'">
+                                <mat-icon aria-label="Delete">delete</mat-icon>
+                                </button>
+                            </div>
+                  </td>
+                </ng-container>
+            <!-- Position Column -->
+            <ng-container matColumnDef="competence_type">
+                <th mat-header-cell *matHeaderCellDef> Competence Type </th>
+                <td mat-cell *matCellDef="let element"> {{element.CompetenceType}} </td>
+            </ng-container>
+        
+            <ng-container matColumnDef="domain">
+                <th mat-header-cell *matHeaderCellDef> Domain/Sub-Domain </th>
+                <td mat-cell *matCellDef="let element"> {{element.DomainSubDomain}} </td>
+            </ng-container>
+        
+            <ng-container matColumnDef="technology">
+                <th mat-header-cell *matHeaderCellDef> Technology </th>
+                <td mat-cell *matCellDef="let element"> {{element.Technology}} </td>
+            </ng-container>
+        
+            <ng-container matColumnDef="vendor">
+                <th mat-header-cell *matHeaderCellDef> Vendor </th>
+                <td mat-cell *matCellDef="let element"> {{element.Vendor}} </td>
+            </ng-container>
+        
+            <ng-container matColumnDef="competence_service_area">
+                <th mat-header-cell *matHeaderCellDef> Competence Service Area </th>
+                <td mat-cell *matCellDef="let element"> {{element.Competency_Service_Area}} </td>
+            </ng-container>
+        
+            <ng-container matColumnDef="baseline">
+                <th mat-header-cell *matHeaderCellDef> Baseline </th>
+                <td mat-cell *matCellDef="let element"> {{element.BaselineName}} </td>
+            </ng-container>
+        
+            <ng-container matColumnDef="ambition">
+                <th mat-header-cell *matHeaderCellDef> Ambition </th>
+                <td mat-cell *matCellDef="let element"> {{element.CompetencyUpgrade}} </td>
+            </ng-container>
+        
+            <ng-container matColumnDef="status">
+                <th mat-header-cell *matHeaderCellDef> Status </th>
+                <td mat-cell *matCellDef="let element"> {{element.status}} </td>
+            </ng-container>
+        
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+        <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>
+        </div>
+      
+    </mat-tab>
+    <mat-tab label="Progress">
+        <app-competence-progress-lm #child (showExport)="exportShowButton($event)"></app-competence-progress-lm>
+    </mat-tab>
+</mat-tab-group>
+<div mat-dialog-actions align="end">
+    <button mat-raised-button style="float: right; margin-right: 10px;" color="primary"  matTooltip="Export to Excel"  class="iconbutton"
+    (click)="hideButtons == false ? (exporterManageComp.exportTable('xlsx', { fileName : 'Manage_Competence_' + competenceData.requestedSignum })) : exportProgress() " [disabled]='!exportShow'>
+    Export
+</button>
+        <button mat-raised-button color="primary" (click)="acceptRequest()" [disabled]="disabledAcceptButton" *ngIf = "!hideButtons" id="approveBtn">Approve</button>
+        <button mat-raised-button color="warn" (click)="rejectRequest()" [disabled]="disabledRejectButton" *ngIf = "!hideButtons" id="rejectBtn">Reject</button>
+        <button mat-raised-button color="warn" (click)="deleteRequest()" [disabled]="deleteButton" *ngIf = "!hideButtons" id="deleteBtn">Delete</button>
+        <button mat-raised-button color="warn" (click)="onClose()" id="closeBtn">Close</button>
+    </div>
+

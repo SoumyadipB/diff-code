@@ -1,0 +1,473 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ericsson.isf.mapper.CompetenceMapper">
+
+	<select id='getDomain' resultType="java.util.LinkedHashMap">
+		select distinct subdomainID, CONCAT(Domain,' / ',SubDomain) as Domain from  [refData].[TBL_DELIVERY_COMPETENCE] dc
+  		join  [refData].TBL_COMPETENCE com ON  com.CompetenceID = dc.CompetenceID
+  		join refData.TBL_DOMAIN d on d.DomainID= dc.SubDomainID 
+  		where  d.Active=1 and 
+  		com.CompetenceTypeID = #{competenceTypeID}
+	</select>
+
+	<select id='getTechnology' resultType="java.util.LinkedHashMap">
+		select distinct dc.TechnologyID, t.Technology from  [refData].[TBL_DELIVERY_COMPETENCE] dc
+ 		join  [refData].TBL_COMPETENCE com ON  com.CompetenceID = dc.CompetenceID
+  		join refData.TBL_TECHNOLOGY t on t.TechnologyID = dc.TechnologyID 
+    	where  t.Active=1 and 
+  		com.CompetenceTypeID = #{competenceTypeID} and dc.SubDomainID = #{subdomainID}
+	</select>
+
+	<select id='getVendor' resultType="java.util.LinkedHashMap">
+		select distinct dc.VendorID, v.Vendor from  [refData].[TBL_DELIVERY_COMPETENCE] dc
+  		join  [refData].TBL_COMPETENCE com ON  com.CompetenceID = dc.CompetenceID
+  		join refData.TBL_VENDOR v on v.VendorID = dc.VendorID 
+    	where  v.Active=1 and 
+  		com.CompetenceTypeID = #{competenceTypeID} and dc.SubDomainID = #{subdomainID} 
+  		and dc.TechnologyID = #{technologyID}
+	</select>
+	<select id='getCompetence' resultType="java.util.LinkedHashMap">
+		select
+		CompetenceTypeID,CONCAT(CompetenceType, '(',description,')')
+		CompetenceType from refData.CompetenceType where Active=1
+	</select>
+	<select id='getServiceArea' resultType="java.util.LinkedHashMap">
+		select distinct com.Competency_Service_Area, dc.CompetenceID from  [refData].[TBL_DELIVERY_COMPETENCE] dc
+  		join  [refData].TBL_COMPETENCE com ON  com.CompetenceID = dc.CompetenceID
+  		where  com.Active=1 and 
+  		com.CompetenceTypeID = #{competenceTypeID} and dc.SubDomainID = #{subdomainID} 
+  		and dc.TechnologyID = #{technologyID} and dc.VendorID = #{vendorID}
+	</select>
+	<select id='getBaseline' resultType="java.util.LinkedHashMap">
+		SELECT [CompetenceGRADEID]
+		,[GradeName]
+		,[GradeWeitage]
+		FROM [refData].[TBL_COMPETENCEGRADE]
+	</select>
+
+	<select id='getAmbition' resultType="java.util.LinkedHashMap">
+		select CompetenceUpgradeID,CompetencyUpgrade,Description from refData.TBL_CompetenceUpgradeCategory
+			where CompetenceGRADEID=#{competenceGradeID} and Description=#{flag}
+	</select>
+
+	<insert id="insertCompetenceData" parameterType="com.ericsson.isf.model.UserCompetenceModel">
+		insert into
+		TRANSACTIONALDATA.TBL_USERCompetenceDETAIL(
+		LoggedInSignum,
+		RequestedBySignum,
+		DeliveryCompetanceID,
+		Baseline,
+		CompetenceUpgradeID,
+		ParentSystemID,
+		LMSignum,
+		SLMSignum,
+		Status,
+		ChangedBY,
+		CreatedOn,
+		CreatedBy,Active,
+		[OJT Hours],
+		[Delivery Score],
+		[Scope Complexity],
+		[Assessment Score])
+		values(
+		#{userCompetence.loggedInSignum},
+		#{userCompetence.requestedBySignum},
+		#{userCompetence.deliveryCompetanceID},
+		#{userCompetence.competenceGradeID},
+		#{userCompetence.competenceUpgradeID},
+		#{userCompetence.parentSystemID},
+		#{userCompetence.lmSignum},
+		#{userCompetence.slmSignum},
+		#{userCompetence.status},
+		#{userCompetence.changedBy},
+		dbo.GetDateIST(),
+		#{userCompetence.loggedInSignum},1,
+		cast(#{userCompetence.ojtHours}  as decimal(10,2))
+        ,cast(#{userCompetence.deliveryScore}  as decimal(10,2)) 
+        ,cast(#{userCompetence.scopeComplexity} as decimal(10,2))
+        ,cast(#{userCompetence.assessmentScore}  as decimal(10,2))
+		)
+		
+	</insert>
+	
+	<update id='inactivateSystemID'>
+        update TRANSACTIONALDATA.TBL_USERCompetenceDETAIL set Active=0 where id=#{parentSystemID}
+    </update>
+	
+	<select id='getManagerSignum' resultType="String">
+		select ManagerSignum
+		from refData.TBL_Employees where Signum=#{signum}
+	</select>
+
+	<select id='getDeliveryCompetanceDetail' resultType="java.util.LinkedHashMap">
+		<!-- select top 1 * from refData.TBL_DELIVERY_COMPETENCE where-->
+		select top 1 CompetenceID,CompetenceGRADEID,TechnologyID,VendorID,SubDomainID,DeliveryCompetanceID from refData.TBL_DELIVERY_COMPETENCE where
+		VendorID=#{userCompetence.vendorID} and
+		CompetenceID=#{userCompetence.competanceID} and
+		TechnologyID=#{userCompetence.technologyID} and
+		SubDomainID=#{userCompetence.domainID} and 
+		CompetenceGRADEID=#{userCompetence.competenceGradeID} order by DeliveryCompetanceID asc
+	</select>
+	
+	<select id='getCompetenceUpgradeDetail' resultType="java.util.LinkedHashMap">
+		select top 1 * from refData.TBL_CompetenceUpgradeCategory where
+		CompetencyUpgrade=#{userCompetence.ambition}
+	</select>
+	<select id='getWBLData' resultType="java.util.LinkedHashMap">
+      select TrainingName,Trainingtype,ExternalTrainingID,InstanceID,TrainingID from RefDATA.TBL_TRAININGCATALOG
+	</select>
+	
+	<select id='getUserCompetenceData' statementType="CALLABLE" resultType="java.util.LinkedHashMap">
+		{call [dbo].[GetUserCompetenceData] (
+        #{userCompetenceModel.loggedInSignum, mode=IN},
+        #{userCompetenceModel.requestedBySignum, mode=IN},
+        #{statusString, mode=IN},
+        #{role, mode=IN},
+        #{userCompetenceModel.isProgress, mode=IN})} 
+	</select>
+	
+	<select id='getUserCompetenceRow' resultType="com.ericsson.isf.model.UserCompetenceModel">
+       select  comp.CompetenceTypeID as competenceTypeID,dc.TechnologyID,SubDomainID as domainID,dc.VendorID,dc.CompetenceID as competanceID,id,userCompetanceID,loggedInSignum,requestedBySignum,
+        cd.deliveryCompetanceID,baseline,cd.competenceUpgradeID,
+        parentSystemID,lmSignum,slmSignum,status,changedBy,createdon,cd.createdBy,cat.CompetencyUpgrade as competencyUpgrade
+		,cg.CompetenceGRADEID competenceGradeID, cat.Description as competanceUpgradeLevel,cd.Active as active
+        from TRANSACTIONALDATA.TBL_USERCompetenceDETAIL  cd
+		join refData.TBL_DELIVERY_COMPETENCE dc  on dc.DeliveryCompetanceID = cd.DeliveryCompetanceID
+		join refData.TBL_COMPETENCE comp on comp.CompetenceID = dc.CompetenceID
+		join refData.TBL_CompetenceUpgradeCategory cat on cat.CompetenceUpgradeID = cd.CompetenceUpgradeID 
+		join refData.TBL_COMPETENCEGRADE cg on cg.CompetenceGRADEID=cd.baseline
+		where  id =#{systemID}
+    </select>
+	
+	<insert id='insertCompetenceServiceArea' parameterType="com.ericsson.isf.model.CompetenceServiceAreaModel" useGeneratedKeys="true" keyProperty="competenceServiceAreaModel.competenceID" keyColumn="competenceID">  
+			insert into RefDATA.TBL_COMPETENCE
+			(
+			Competency_Service_Area,
+			Description,
+			CompetenceTypeID,
+			Active
+			) 
+			values
+			(
+			#{competenceServiceAreaModel.competencyServiceArea},
+			#{competenceServiceAreaModel.description},
+			#{competenceServiceAreaModel.competenceTypeID},
+			1
+			)		           		           
+
+    </insert>
+    
+      <insert id='insertDeliveryCompetenceServiceArea' parameterType="com.ericsson.isf.model.CompetenceServiceAreaModel" useGeneratedKeys="true" >  
+			insert into RefDATA.TBL_DELIVERY_COMPETENCE
+			(
+            CompetenceID,
+            CompetenceGRADEID,
+            TechnologyID,
+            SubDomainID,
+            VendorID
+             )	
+             values
+             (
+             #{competenceServiceAreaModel.competenceID},
+             #{competenceServiceAreaModel.competenceGradeID},
+             #{competenceServiceAreaModel.technologyID},
+             #{competenceServiceAreaModel.domainID},
+             #{competenceServiceAreaModel.vendorID}
+             )
+        </insert>
+    
+    	 <select id='checkCompetenceExists' resultType="Boolean">
+	        IF Exists(select 1 from RefDATA.TBL_COMPETENCE c join RefDATA.TBL_DELIVERY_COMPETENCE dc on dc.CompetenceID=c.CompetenceID where  TechnologyID=#{competenceServiceAreaModel.technologyID} and SubDomainID=#{competenceServiceAreaModel.domainID} and VendorID=#{competenceServiceAreaModel.vendorID} and Competency_Service_Area=#{competenceServiceAreaModel.competencyServiceArea} and Active=1)
+             Begin
+             Select 1 as 'Result'
+             End
+           else
+             Begin
+             Select 0 as 'Result'
+             End
+	     </select>
+	     
+	     <select id='getAllCompetenceServiceArea' resultType="java.util.LinkedHashMap">
+	     
+		   select c.Competency_Service_Area,c.Description,c.CompetenceTypeID,c.Active, c.CompetenceID,dc.VendorID,v.Vendor,t.Technology,Concat(d.Domain,' / ',d.SubDomain) Domain,cg.GradeName,ct.CompetenceType from RefDATA.TBL_COMPETENCE c join RefDATA.TBL_DELIVERY_COMPETENCE 
+           dc on dc.CompetenceID=c.CompetenceID
+           join refData.TBL_VENDOR v on v.VendorID=dc.VendorID
+           join refData.TBL_TECHNOLOGY t on t.TechnologyID=dc.TechnologyID
+           join refData.TBL_DOMAIN d on d.DomainID=dc.SubDomainID
+           join refData.TBL_COMPETENCEGRADE cg on cg.CompetenceGRADEID=dc.CompetenceGRADEID
+		   join refData.CompetenceType ct on ct.CompetenceTypeID=c.CompetenceTypeID
+
+	    </select>
+	    
+	    <select id='getCompetenceUpgrade' resultType="java.util.LinkedHashMap">
+	        select CompetencyUpgrade,Description,CompetenceGRADEID,CompetenceUpgradeID from refData.TBL_CompetenceUpgradeCategory
+	    </select>
+	    
+	    <select id ="insertCompetenceDataBulk" statementType="CALLABLE"  parameterType="com.ericsson.isf.model.BulkUploadModel">
+        {call COMPETENCE_BULK_Upload 
+        (#{bulk.fileTable,mode=IN, jdbcType=VARCHAR},
+        #{bulk.signum,mode=IN, jdbcType=VARCHAR},
+        #{bulk.recordsInserted, mode=OUT,jdbcType=INTEGER})}
+    	</select>
+
+	    
+	    <insert id='insertTrainingCatalog' parameterType="com.ericsson.isf.model.CompetenceTrainingModel" useGeneratedKeys="true" keyProperty="competenceTrainingModel.trainingID" keyColumn="trainingID">  
+		insert into RefDATA.TBL_TRAININGCATALOG
+		          (
+                  TrainingName,
+                  Trainingtype,
+                  ExternalTrainingID
+                   )
+                  values
+                   (
+                   #{competenceTrainingModel.trainingName},
+                   #{competenceTrainingModel.trainingType},
+                   #{competenceTrainingModel.externalTrainingID}
+                   )           		           
+         </insert>
+         
+         <insert id='insertCompetanceTrainingDetail' parameterType="com.ericsson.isf.model.CompetenceTrainingModel" useGeneratedKeys="true" >  
+			     insert into RefDATA.TBL_CompetenceTrainingDetail
+			     (
+			     TrainingID,
+			     DeliveryCompetence,
+			     CompetencyUpgradeID
+			     )
+			     values
+			     (
+			     #{competenceTrainingModel.trainingID},
+			     #{competenceTrainingModel.deliveryCompetence},
+			     #{competenceTrainingModel.competenceUpgradeID}
+			     )
+        </insert>
+        
+         <select id='checkTrainingExists' resultType="Integer">
+	        select TrainingID from RefDATA.TBL_TRAININGCATALOG  where  ExternalTrainingID=#{competenceTrainingModel.externalTrainingID}
+	        
+	     </select>
+	     
+	    <select id='getTrainingData' resultType="java.util.LinkedHashMap">
+	        select tc.TrainingName,tc.Trainingtype,tc.ExternalTrainingID,tc.TrainingID ,ctd.DeliveryCompetence,
+	        ctd.CompetencyUpgradeID,ctd.CompetenceTrainingID ,cmp.Competency_Service_Area,cu.CompetencyUpgrade 
+	        from RefDATA.TBL_TRAININGCATALOG  tc join RefDATA.TBL_CompetenceTrainingDetail ctd on ctd.TrainingID=tc.TrainingID 
+			join refData.TBL_DELIVERY_COMPETENCE dc on dc.DeliveryCompetanceID = ctd.DeliveryCompetence
+			join refData.TBL_COMPETENCE cmp on cmp.CompetenceID=dc.CompetenceID
+            join refData.TBL_CompetenceUpgradeCategory cu on cu.CompetenceUpgradeID=ctd.CompetencyUpgradeID
+            where cmp.CompetenceID=#{competenceID}
+	    </select>
+	
+	     <update id = 'enableDisableCompetence'>
+           update refData.TBL_COMPETENCE set Active=#{active} where CompetenceID=#{competenceID}
+          </update>
+          
+          <select id='enableCompExistence' resultType="Boolean">
+	        IF Exists(select 1 from refData.TBL_COMPETENCE where CompetenceID=#{competenceID} )
+             Begin
+             Select 1 as 'Result'
+             End
+           else
+             Begin
+             Select 0 as 'Result'
+             End
+	        
+	     </select>
+	     
+	      <select id ="insertMasterTrainingDataBulk" statementType="CALLABLE" resultType="String">
+        {call MasterDataBulkUpload 
+        (#{bulk.fileTable,mode=IN, jdbcType=VARCHAR},
+        #{bulk.signum,mode=IN, jdbcType=VARCHAR},
+        #{bulk.recordsInserted, mode=OUT,jdbcType=INTEGER})}
+    	</select>
+    	
+	    <select id ="insertItmTrainingBulk" statementType="CALLABLE" parameterType="com.ericsson.isf.model.BulkUploadModel">
+	        {call ITMTrainingBulkUpload 
+	        (#{bulk.fileTable,mode=IN, jdbcType=VARCHAR},
+        #{bulk.signum,mode=IN, jdbcType=VARCHAR},
+        #{bulk.recordsInserted, mode=OUT,jdbcType=INTEGER})}
+	    </select>
+	    
+	    <select id='getCompetenceGradeById' resultType="String">
+		select GradeName from refData.TBL_COMPETENCEGRADE where CompetenceGRADEID=#{competenceGradeID}
+	    </select>
+	    
+	    <select id='getCompetenceServiceAreaById' resultType="String">
+		select Competency_Service_Area from refData.TBL_COMPETENCE where CompetenceID=#{competanceID}
+	    </select>
+	    
+	    <select id='getCompetenceUpgradeById' resultType="String">
+		select CompetencyUpgrade from refData.TBL_CompetenceUpgradeCategory where CompetenceUpgradeID=#{competenceUpgradeID}
+	    </select>
+	    
+	     <select id='getRequestRaisedCountByCompetanceType' resultType="java.util.LinkedHashMap">
+	        SELECT * FROM   
+	        (
+	                
+				select CompetenceType, COALESCE(ta.requestedBySignum, concat(emp.EmployeeName,'(',emp.Signum,')')) as requestedBySignum
+				, emp.signum, requestRaisedCountBycompetanceType
+				,request_count,raisedAmbitionCount
+				from refData.TBL_Employees emp
+				left join 
+				(
+					select ct.CompetenceType, concat(e.EmployeeName,'(',ucd.requestedBySignum,')') requestedBySignum,e.ManagerSignum,
+					ucd.requestedBySignum signum,count(ucd.status ) requestRaisedCountBycompetanceType,
+					a.request_count,raisedAmbitionCount
+					from TRANSACTIONALDATA.TBL_USERCompetenceDETAIL ucd
+					join refData.TBL_Employees e on e.Signum=ucd.requestedBySignum
+					join RefDATA.TBL_DELIVERY_COMPETENCE dc on ucd.deliveryCompetanceID=dc.DeliveryCompetanceID
+					join RefDATA.TBL_COMPETENCE com on com.CompetenceID=dc.CompetenceID
+					join refData.CompetenceType ct on ct.CompetenceTypeID=com.CompetenceTypeID 
+	                           Left join 
+	                           (select requestedBySignum,count (requestedBySignum) request_count from TRANSACTIONALDATA.TBL_USERCompetenceDETAIL ucd
+	                      join refData.TBL_Employees e on e.Signum = ucd.requestedBySignum
+						  where ucd.status in ('Sent to Manager') and ucd.Active=1 and e.ManagerSignum=#{userCompetenceModel.loggedInSignum}
+	                      group by requestedBySignum)A on a.requestedBySignum = ucd.requestedBySignum
+	                    left join
+	                           (select requestedBySignum,count(distinct ucd.competenceUpgradeID)raisedAmbitionCount from TRANSACTIONALDATA.TBL_USERCompetenceDETAIL ucd
+	                           join refData.TBL_CompetenceUpgradeCategory cu on cu.CompetenceUpgradeID=ucd.competenceUpgradeID
+							    join refData.TBL_Employees e on e.Signum = ucd.requestedBySignum
+	                           where ucd.status in ('Sent to Manager','Approved') and ucd.Active=1 and  e.ManagerSignum=#{userCompetenceModel.loggedInSignum}
+							   and cu.Description!='same'
+	                           group by requestedBySignum) B on B.requestedBySignum = ucd.requestedBySignum
+	
+	               where ucd.status in ('Sent to Manager','Approved') and ucd.Active=1 and  e.ManagerSignum=#{userCompetenceModel.loggedInSignum}
+					group by ucd.requestedBySignum,ct.CompetenceType,e.EmployeeName,e.ManagerSignum
+					,a.request_count,raisedAmbitionCount
+				)ta on
+				ta.signum = emp.Signum
+				where emp.managersignum=#{userCompetenceModel.loggedInSignum} and emp.Status='Active'
+				group by CompetenceType, ta.requestedBySignum, emp.signum, requestRaisedCountBycompetanceType,
+				ta.request_count,ta.raisedAmbitionCount,emp.EmployeeName
+	        ) t 
+	        PIVOT(
+	        sum(requestRaisedCountBycompetanceType) 
+	        FOR CompetenceType IN (
+	                [Domain Competence], 
+	                [Niche Area competence], 
+	                [Tools Competence])
+	        ) AS pivot_table;
+	     </select>
+	     
+	     <select id='isValidRequest' resultType="Boolean">
+	        IF Exists(select 1 from TRANSACTIONALDATA.TBL_USERCompetenceDETAIL where deliveryCompetanceID=#{deliveryCompetanceID} and 
+	         requestedBySignum=#{userCompetenceModel.requestedBySignum} and status in (${statusString}) and Active=1)
+             Begin
+             Select 0 as 'Result'
+             End
+           else
+             Begin
+             Select 1 as 'Result'
+             End
+	     </select>
+	     
+	     <select id="isUniqueCompetence"  resultType="Boolean">
+	      IF Exists(select top 1 usd.id from transactionalData.TBL_USERCompetenceDETAIL usd
+						inner join refData.TBL_DELIVERY_COMPETENCE del on del.DeliveryCompetanceID= usd.deliveryCompetanceID
+						where del.CompetenceID =#{userCompetence.competanceID} and del.SubDomainID= #{userCompetence.domainID} 
+						and del.VendorID= #{userCompetence.vendorID} and del.TechnologyID=#{userCompetence.technologyID} and usd.status IN ('Initiated','Sent To Manager','Approved') and usd.Active=1
+						and usd.requestedBySignum=#{userCompetence.requestedBySignum}
+					)
+             Begin
+             Select 0 as 'Result'
+             End
+           else
+             Begin
+             Select 1 as 'Result'
+             End
+	     </select>
+	    
+	     <select id='getDeployedEnv' resultType="String">
+		  select Value from refData.TBL_Environment_Property where [Key]='CompetenceUrl' and DeployedEnv='ECN'
+	    </select>
+         <select id='downloadCompetenceData' resultType='java.util.LinkedHashMap'>
+    	  select * from refData.TBL_COMPETANCE
+         </select>
+         
+        <select id='getAllDomain' resultType="java.util.LinkedHashMap">
+		select 	DomainID,concat(Domain,' / ',SubDomain) Domain from  refData.TBL_DOMAIN 
+  		where  Active=1 
+  		</select>
+
+	<select id='getAllTechnology' resultType="java.util.LinkedHashMap">
+		select TechnologyID,Technology from refData.TBL_TECHNOLOGY where Active=1
+	</select>
+
+	<select id='getAllVendor' resultType="java.util.LinkedHashMap">
+		select VendorID,Vendor from refData.TBL_VENDOR where Active=1
+	</select>
+	
+	<select id='getAllCompetenceType' resultType="java.util.LinkedHashMap">
+		select CompetenceTypeID,CompetenceType from refData.CompetenceType where Active=1
+	</select>
+	
+	<select id='getCompetenceDetailsBySystemID' resultType="java.util.LinkedHashMap">
+		select comp.CompetenceID,comp.competency_service_area as	competencyServiceArea,
+		tech.TechnologyID,tech.Technology as technology, dm.DomainID,
+			Concat(dm.Domain,' / ',dm.SubDomain) as domain,ven.VendorID,ven.Vendor as vendor
+			,cg.CompetenceGRADEID,cg.gradename as competenceGrade,cat.CompetenceUpgradeID,
+			cat.competencyUpgrade as competenceUpgrade,status from TRANSACTIONALDATA.TBL_USERCompetenceDETAIL cd
+			join refData.TBL_DELIVERY_COMPETENCE dc on dc.DeliveryCompetanceID = cd.DeliveryCompetanceID
+			join refData.TBL_COMPETENCE comp on comp.CompetenceID = dc.CompetenceID
+			join refData.TBL_CompetenceUpgradeCategory cat on cat.CompetenceUpgradeID = cd.CompetenceUpgradeID
+			join refData.TBL_COMPETENCEGRADE cg on cg.CompetenceGRADEID=cd.baseline
+			join refData.TBL_TECHNOLOGY tech on tech.TechnologyID = dc.TechnologyID
+			join refData.TBL_DOMAIN dm on dm.DomainID = dc.SubDomainID
+			join refData.TBL_VENDOR ven on ven.VendorID = dc.VendorID where id =#{systemID}
+	</select>
+
+	<select id='getUserCompetenceDetailsByStatusDeliveryCompetenceID' resultType="com.ericsson.isf.model.UserCompetenceModel">
+		select id,loggedInSignum,requestedBySignum,deliveryCompetanceID,baseline,competenceUpgradeID,parentSystemID,lmSignum,slmSignum
+		,status,Active from TRANSACTIONALDATA.TBL_USERCompetenceDETAIL where deliveryCompetanceID=#{deliveryCompetanceID} and 
+	    requestedBySignum=#{userCompetenceModel.requestedBySignum} and status in (${statusString}) and Active=1
+	</select>
+	
+	<select id="checkCompetenceTrainingMappingExists" resultType="boolean">
+		IF Exists(select cmpTrain.TrainingID from refData.TBL_CompetenceTrainingDetail cmpTrain
+		inner join refData.TBL_TRAININGCATALOG tCat on tCat.TrainingID=cmpTrain.TrainingID
+		inner join refData.TBL_DELIVERY_COMPETENCE del on del.DeliveryCompetanceID= cmpTrain.DeliveryCompetence
+		where del.DeliveryCompetanceID=#{competenceTrainingModel.deliveryCompetence} and tCat.ExternalTrainingID=#{competenceTrainingModel.externalTrainingID} and cmpTrain.CompetencyUpgradeID=#{competenceTrainingModel.competenceUpgradeID})
+             Begin
+             Select 1 as 'Result'
+             End
+           else
+             Begin
+             Select 0 as 'Result'
+             End
+	</select>
+	
+	<!--	<select id="validateInsertCompetenceData" resultType="boolean">
+			if Exists(select top 1 dc.DeliveryCompetanceID from refdata.TBL_DELIVERY_COMPETENCE dc 
+			inner join transactionalData.TBL_USERCompetenceDETAIL ucd on dc.DeliveryCompetanceID=ucd.deliveryCompetanceID 
+			where dc.CompetenceID=#{newUserCompetenceModel.competanceID} and 
+			dc.TechnologyID=#{newUserCompetenceModel.technologyID} and 
+			dc.SubDomainID=#{newUserCompetenceModel.domainID} and 
+			dc.VendorID=#{newUserCompetenceModel.vendorID}
+			and ucd.status in('Initiated','Sent To Manager','Approved')
+			and ucd.loggedInSignum=#{newUserCompetenceModel.loggedInSignum}
+			and ucd.Active=1 order by ucd.systemID desc)
+
+			Begin
+			select 1 as result
+			end
+			else
+			begin
+			select 0 as result
+			end
+		</select> -->
+		<select id="validateInsertCompetenceData" resultType="boolean">
+			 IF Exists(select dc.CompetenceID,dc.TechnologyID,dc.subDomainID,dc.VendorID from refdata.TBL_DELIVERY_COMPETENCE dc  inner join  TRANSACTIONALDATA.TBL_USERCompetenceDETAIL ucd
+			 on ucd.DeliveryCompetanceID=dc.deliveryCompetanceID  where dc.CompetenceID=#{newUserCompetenceModel.competanceID} and
+	         requestedBySignum=#{newUserCompetenceModel.requestedBySignum} and status in ('Initiated','Sent To Manager','Approved') and Active=1)
+             Begin
+             Select 1 as 'Result'
+             End
+           else
+             Begin
+             Select 0 as 'Result'
+             End
+		</select>
+			
+		 <select id="getDeliveryCompetenceID" resultType="int">
+		  select deliveryCompetanceID from transactionalData.TBL_USERCompetenceDETAIL where id=#{newUserCompetenceModel.id}
+		 </select>
+</mapper>
+

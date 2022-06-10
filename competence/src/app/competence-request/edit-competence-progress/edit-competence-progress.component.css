@@ -1,0 +1,8 @@
+.inputCss {
+    width : 100%
+}
+
+.disabled{
+    cursor: not-allowed;
+    color : gray;
+}

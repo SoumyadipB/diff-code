@@ -1,0 +1,116 @@
+@{
+    ViewBag.Title = "Capabilities Table";
+}
+
+<!DOCTYPE html>
+
+ 
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+
+ 
+
+<head>
+
+
+
+    @Scripts.Render("~/bundles/Capabilitiestable");
+
+
+
+    <style>
+
+
+
+
+
+        body {
+            color: #2b323a;
+            font-size: 12px;
+        }
+
+
+
+        #rolecaptable td, #rolecaptable th {
+            border: 1px solid #a6a6a6;
+            padding: 10px;
+        }
+
+        #rolecaptable th {
+            padding-top: 10px;
+            padding-bottom: 10px;
+            text-align: center;
+            background-color: #bfbfbf;
+            color: #2b323a;
+            font-size: 12px;
+        }
+
+
+
+        h1 {
+            font-family: "Ericsson Hilda";
+            font-size: 16px;
+        }
+
+
+
+        #rolecaptable tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+
+
+        #rolecaptable tr:nth-child(odd) {
+            background-color: #d9d9d9;
+        }
+    </style>
+
+
+
+</head>
+
+<body>
+
+    <div class="panel-default">
+
+        <section>
+
+            <div class="panel-heading">
+
+                <ol class="breadcrumb">
+
+                    <li class="active">Roles And Capabilities</li>
+
+                </ol>
+
+            </div>
+
+            <table class="table table-bordered table-striped table-responsive" id="rolecaptable">
+
+                <thead id="capabilityList">
+
+                </thead>
+
+                <tr>
+
+                    <td>
+
+                        <div id="areaRoleCap"></div>
+
+                    </td>
+
+                </tr>
+                <br\>
+
+                    <br\>
+
+                        <br\>
+
+        </section>
+
+    </div>
+</body>
+
+</html>
+
+ 

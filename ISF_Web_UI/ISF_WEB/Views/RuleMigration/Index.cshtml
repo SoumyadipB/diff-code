@@ -1,0 +1,119 @@
+﻿@{
+    ViewBag.Title = "Rule Migration";
+}
+
+
+
+
+@Styles.Render("~/bundles/css/DataTableStyle")
+@Styles.Render("~/bundles/css/select2")
+@Scripts.Render("~/bundles/select2")
+@Scripts.Render("~/bundles/RuleMigration")
+@Scripts.Render("~/bundles/DataTableScript")
+@Scripts.Render("~/bundles/DataTablesAdvancedScript")
+@*<script type="text/javascript" src="~/Scripts\CreateAutosenseRule\autoSense.js"></script>*@
+<script type="text/javascript" src="~/Scripts/CreateAutosenseRule/validation_rule.js"></script>
+<style>
+
+    .glyphicon-ring {
+        width: 22px;
+        height: 21px;
+    }
+    .transferbtn:hover{
+        background: #f5f5f5 !important;
+        color:#35a506 !important;
+    }
+
+    #ruleDeleteIcon:hover {
+        background-color: #ea573fe6 !important;
+    }
+
+    #ruleEditIcon:hover {
+        background-color: #1169b5;
+        border: 1px solid #2e6da4;
+    }
+
+    .fa-plus-circle {
+        color: #256fb3;
+    }
+
+    .panel-default > .panel-heading {
+        color: #333;
+        background-color: #eae9e9;
+        border-color: #ddd;
+        font-weight: bolder;
+    }
+
+    .table thead > tr > th {
+        color: #2049bcdb;
+    }
+
+    .table-bordered {
+        box-shadow: 1px 5px 11px 5px rgba(0, 0, 0, 0.3);
+        position: relative;
+    }
+
+    .checkBoxRow input:checked ~ .autosenseCheckbox {
+        background-color: #2ada4d;
+    }
+
+    a.icon-edit:hover {
+        background-color: #467aaf;
+    }
+    .ruleDescStyling {
+        min-width: 70px;
+        max-width: 200px;
+        width: 26%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+</style>
+
+
+
+<div class="col-lg-12" style="padding-right: 0px;padding-left: 0px;">
+    <div class="panel panel-default" style="margin: 10px;">
+        <div class="panel-heading">
+            
+            <span style="float: left;">MIGRATE/CREATE AUTOSENSE RULE</span>
+            <a href="#" class="pull-right" data-toggle="tooltip" title="Click to add Auto-sense Rules." id="btnAutosenseRuleAdd" name="migratePlus"
+               onclick="openAutoSenseDialog(this,false,isMigrationEdit=true,isUpload = false)"><i class="fa fa-plus-circle fa-2x" style="position: relative;top: -3px;"></i></a>
+        </div>
+
+        <div class="form-group" style="margin-top:inherit;">
+            <label style="text-align:right;clear:both; color:black; float:left; margin-right:15px; font-weight:bolder;" for="oldJsonFile">Upload old rule json file</label>
+            <input type="file" style="float:left;" name="oldJsonFile" id="oldJsonChoose" onchange="checkfileAndUpload(event)" />
+            <span id="jsonFileError" style="color:red;  visibility:hidden;">Only .json files allowed</span>
+            <label style="text-align:right;margin-left:80px; clear:both;color:black;/* float:right; */margin-right:15px;font-weight:bolder;">Recommended Format- <b style="color:darkgreen">MarketArea_TaskID_RuleType_OwnerSignum_Anything.json</b></label>
+        </div>
+
+        <div class="table-responsive" style="overflow-x:auto;overflow-y:auto;">
+            <table id="migrateAutoSenseRuleTable" class="table table-bordered table-striped table-hover"></table>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade modalCheck" id="createAutosenseRule" role="dialog">
+    <div class="modal-dialog modal-lg" style="overflow-y: initial !important;width:100%">
+        <div class="modal-content" style="height:585px; position:relative; bottom:22px;">
+            <div class="modal-header" style="height:43px; background-color:#595674; color:white">
+                <div class="row pull-right" style="margin-top: -13px;">
+
+                    <i class="fa fa-download glyphicon-ring glyphicon-green" id="downloadJsonIcon" title="Download Json" style="position:relative; cursor:pointer; color:darkgray; pointer-events:none;  left:15px;" aria-hidden="true" onclick="downloadJson()"></i>
+                    <button class="btn btn-success btn-sm" id="saveRule" type="button" data-mode="save" style="position:relative; left:25px; font-size: 10px; top:2px" title="Save this rule" onclick="saveRuleJson()">Save this rule</button>
+                    <button class="btn btn-danger btn-sm" type="button" style="position:relative; left:25px; font-size: 10px; top:2px" title="Close this rule" onclick="closeAutosensePopup()">Close</button>
+                </div>
+                <h4 class="modal-title " style="line-height: 0.428571; text-align:center;">Create auto-sense rule</h4>
+            </div>
+            <div class="modal-body" style="height:600px;overflow-y: auto; width:100%; padding:0px;top: -7px;">
+                <input type="hidden" id="autosenseRuleData" data-ruleName="" />
+                <iframe id="iframeAutosenseRule" style="height:100%; width:100%">
+                </iframe>
+
+            </div>
+        </div>
+
+    </div>
+</div>

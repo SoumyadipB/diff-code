@@ -1,0 +1,3617 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+<mapper namespace="com.ericsson.isf.mapper.ActivityMasterMapper">
+<cache type="org.mybatis.caches.ehcache.EhcacheCache"/>
+    <resultMap type="DomainModel" id="DomainModelResult">
+        <id property="domainID" column="DomainID" />
+        <result property="domain" column="Domain" />
+        <result property="subDomain" column="SubDomain" />
+        <result property="active" column="Active" />
+        <result property="createdBy" column="CreatedBy" />
+        <result property="createdDate" column="CreatedDate" />
+        <result property="lastModifiedBy" column="LastModifiedBy" />
+        <result property="lastModifiedDate" column="LastModifiedDate" />
+    </resultMap>
+    <resultMap type="WorkEffortModel" id="WorkEffortModelResult">
+        <id property="workEffortID" column="WorkEffortID" />
+        <result property="resourcePositionID" column="ResourcePositionID" />
+        <result property="startDate" column="StartDate" />
+        <result property="endDate" column="EndDate" />
+        <result property="duration" column="Duration" />
+        <result property="fte_Percent" column="FTE_Percent" />
+        <result property="hours" column="Hours" />
+        <result property="signum" column="Signum" />
+        <result property="workEffortStatus" column="WorkEffortStatus" />
+        <result property="isActive" column="IsActive" />
+        <result property="cRID" column="CRID" />
+        <result property="createdBy" column="CreatedBy" />
+        <result property="createdOn" column="CreatedOn" />
+        <result property="lastModifiedBy" column="LastModifiedBy" />
+        <result property="lastModifiedOn" column="LastModifiedOn" />
+        <result property="allocatedBy" column="AllocatedBy" />
+    </resultMap>
+    <resultMap type="com.ericsson.isf.model.SpocModel" id="SpocModelResult">
+        <id property="domainSpocId" column="domainSpocID" />
+        <result property="marketAreaID" column="marketAreaID" />
+        <result property="domainID" column="DomainID" />
+        <result property="servAreaID" column="servAreaID" />
+        <result property="spoc" column="Spoc" />
+        <result property="active" column="Active" />
+        <result property="createdBy" column="CreatedBy" />
+        <result property="createdDate" column="CreatedDate" />
+        <result property="spocLevel" column="SpocLevel" />
+    </resultMap>
+    
+    <resultMap type="com.ericsson.isf.model.ResourceRequestWorkEffortsModel" id="ResourceRequestWorkEffortsModelResult">
+        <id property="resourceRequestWorkEffortID" column="ResourceRequestWorkEffortID" />
+        <result property="startDate" column="StartDate" />
+        <result property="endDate" column="EndDate" />
+        <result property="duration" column="Duration" />
+        <result property="ftePercent" column="FTEPercent" />
+        <result property="hours" column="Hours" />
+        <result property="createdBy" column="CreatedBy" />
+        <result property="createdOn" column="CreatedOn" />
+        <result property="lastModifiedBy" column="LastModifiedBy" />
+        <result property="lastModifiedOn" column="LastModifiedOn" />
+        <result property="resourceRequestID" column="ResourceRequestID" />
+    </resultMap>
+    
+    <resultMap type="com.ericsson.isf.model.WorkFlowFeedbackModel" id="WorkFlowFeedbackModel">
+        <id property="feedbackDetailID" column="FeedbackDetailID" />
+        <result property="projectID" column="ProjectID" />
+    </resultMap>
+    
+    <resultMap type="ProjectFilterModel" id="ProjectFilterModelResult">
+        <result property="projectID" column="ProjectID" />
+        <result property="projectName" column="ProjectName" />
+    </resultMap>
+     <resultMap type="com.ericsson.isf.model.WorkFlowFilterModel" id="WorkFlowModelResult">
+        <result property="workFlowId" column="wfid" />
+        <result property="workFlowName" column="WorkFlowName" />
+        <result property="workFlowVersion" column="WorkFlowVersion" />
+         <result property="subActivityFlowChartDefID" column="SubActivityFlowChartDefID" />
+        
+    </resultMap>
+    
+   <resultMap type="com.ericsson.isf.model.FeedbackNEPMModel" id="FeedbackNEPMModelResult">
+   <result property="feedbackDetailID" column="FeedbackDetailID" />
+     <result property="createdDate" column="CreatedDate" />
+        <result property="projectID" column="ProjectID" />
+        <result property="stepName" column="StepName" />
+         <result property="feedbackOn" column="FeedbackOn" />
+        <result property="feedbackType" column="FeedbackType" />
+        <result property="sadCount" column="SadCount" />
+        <result property="feedbackComment" column="FeedbackComment" />
+        <result property="replyOnComment" column="ReplyOnComment" />
+         <result property="userRole" column="UserRole" />
+        <result property="feedbackStatus" column="FeedbackStatus" />
+        <result property="workFlowName" column="WorkFlowName" />
+        <result property="totalCount" column="TOTALCNT" />
+        <result property="feedbackActivityID" column="FeedbackActivityID"/>
+         <result property="creatorSignum" column="creatorSignum"/>
+         <result property="createdBy" column="CreatedBy"/>
+         <result property="feedbackText" column="FeedbackText" />
+     </resultMap>
+     <resultMap type='MailModel' id='MailModelResult'>
+        <result property='projectID' column='ProjectID'/>
+        <result property="projectCreatorSignum" column="ProjectCreatorSignum" />
+        <result property="projectCreatorEmailID" column="ProjectCreatorEmailID" />
+        <result property="projectCreatorName" column="ProjectCreator_Name" />
+        <result property='cpmSignum' column='CPM_Signum'/>
+        <result property='cpmName' column='CPM_Name'/>
+        <result property='cpmEmailID' column='CPMEmailID'/>
+        <result property='employeeSignum' column='EmployeeSignum'/>
+        <result property='employeeName' column='Employee_Name'/>
+        <result property='employeeEmailID' column='EmployeeEmailID'/>
+        <result property='createdBy_Signum' column='CreatedBy_Signum'/>
+        <result property='created_EmployeeEmailID' column='Created_EmployeeEmailID'/>
+        <result property='created_EmployeeName' column='Created_EmployeeName'/>
+        <result property='omEmailID' column='OMEmailID'/>
+        <result property='omSignum' column='OMSignum'/>
+        <collection property='dR_Signum' ofType='java.lang.String'>
+            <result column='DR_Signum'></result>
+        </collection>
+        <collection property='dR_EmailID' ofType='java.lang.String'>
+            <result column='DR_EmailID'></result>
+        </collection>
+        <collection property='dR_Name' ofType='java.lang.String'>
+            <result column='DR_Name'></result>
+        </collection>
+         </resultMap>
+	
+    <select id='isDomainExits' resultType="Boolean">
+        IF Exists(select 1 from refData.TBL_DOMAIN where domain =#{domain} and SubDomain = #{subDomain} and Active = 1)
+        Begin
+        Select 1 as 'Result'
+        End
+        else
+        Begin
+        Select 0 as 'Result'
+        End
+    </select>   
+    
+     <select id='getScopeDetailsById' resultType="com.ericsson.isf.model.ScopeDetailsModel">
+
+	 select  distinct SAc.SubActivityID, ps.ScopeName,ps.deliverableUnit, du.deliverableUnitName, ps.requestType,ps.StartDate,ps.EndDate,d.Domain,d.SubDomain,sa.ServiceArea,sa.SubServiceArea,t.technology
+             ,SAc.SubActivity as subActivityName, SAc.Activity as activityName
+             from transactionalData.TBL_PROJECTSCOPEDETAIL psd
+             join transactionalData.TBL_PROJECTSCOPE ps on psd.ProjectScopeID=ps.ProjectScopeID
+             LEFT join refData.TBL_Project_Deliverable_Unit du on ps.deliverableUnit =  du.DeliverableUnitID
+            left join transactionalData.TBL_ACTIVITYSCOPE AcSc on psd.ProjectScopeDetailID=AcSc.ProjectScopeDetailID and AcSC.Active=1 
+           left  join [refData].[TBL_SUBACTIVITY] SAc on AcSc.SubActivityID= SAc.SubActivityID and SAc.Active=1
+             join refData.TBL_Domain d on psd.DomainId=d.DomainID
+             join refData.TBL_ServiceArea sa on sa.ServiceAreaID=psd.ServiceAreaID 
+             join refData.tbl_technology t on psd.TechnologyId=t.technologyid
+             where ps.Active=1 and psd.Active=1 and psd.ProjectScopeDetailID=#{projectScopeDetailID}
+             
+</select>
+    
+    <select id='getProjectIdByRpID' resultType="Integer">
+         select rr.projectid from [transactionalData].[TBL_ResourcePosition] rp
+		 inner join [transactionalData].[TBL_ResourceRequests] rr on rp.ResourceRequestID = rr.ResourceRequestID where rp.ResourcePositionID =#{rpID} 
+    </select>    
+    
+    <select id='getMaxTasksValueByProject' resultType="HashMap">
+        SELECT [MaxManualTask],[MaxAutomaticTask]
+      	FROM [transactionalData].[TBL_PARALLEL_TASK_CONFIG] where ProjectID = #{projectID}
+    </select> 
+    
+    <insert id = 'insertMaxTasksValueByProject' >
+        INSERT into [transactionalData].[TBL_PARALLEL_TASK_CONFIG] 
+        (ProjectID,MaxManualTask,MaxAutomaticTask,LastModifiedDate,SignumID)
+        values( #{projectID}, 1 , 2, dbo.GetDateIST(), #{signum} );
+    </insert>
+    
+    <update id = 'updateMaxTasksValueByProject'>
+        UPDATE [transactionalData].[TBL_PARALLEL_TASK_CONFIG]  set MaxManualTask = #{maxManual} , MaxAutomaticTask = #{maxAutomaic} , SignumID = #{signum}, LastModifiedDate = dbo.GetDateIST()
+        where ProjectID = #{projectID}
+    </update>
+    
+    
+    <select id ="getServiceAreaDetailsBySignum" resultMap="ServiceAreaModelResult">
+         SELECT distinct t1.ServiceAreaID,ServiceArea+'/'+SubServiceArea as ServiceArea,t1.Active,t1.CreatedBy,convert(nvarchar(MAX), t1.CreatedDate, 23) as CreatedDate ,
+        t1.LastModifiedBy,convert(nvarchar(MAX), t1.LastModifiedDate,23) as LastModifiedDate   
+        FROM (select ServiceAreaID, ServiceArea, SubServiceArea,  Active, CreatedBy, CreatedDate, LastModifiedBy, LastModifiedDate, ServAreaID from refData.TBL_SERVICEAREA where active = 1) t1
+                                left  join (select ProjectScopeID,ServiceAreaID, DomainID, ProjectScopeDetailID  from transactionalData.TBL_PROJECTSCOPEDETAIL where active = 1)t2 on(t1.ServiceAreaID=t2.ServiceAreaID) 
+                                left  join (select ProjectScopeID, projectID from transactionalData.TBL_PROJECTSCOPE where active = 1)t3 on(t3.ProjectScopeID=t2.ProjectScopeID) 
+                                left join ( select projectID from transactionalData.TBL_PROJECTS where isDeleted =0) t4 on (t4.ProjectID=t3.ProjectID)
+                    left join refData.TBL_domainSpoc t5 on (t5.DomainID=t2.DomainID)
+                    where t1.active = 1 
+                    <if test="signum !=null">
+        and t5.spoc=#{signum}
+        </if>
+        <if test="ProjectID !=null and ProjectID !=0">
+        and t4.ProjectID=#{ProjectID}
+        </if>
+         <if test="ServAreaID !=null and ServAreaID !=0">
+        and t1.ServAreaID=#{ServAreaID}
+        </if>
+        order by ServiceArea
+    </select>
+
+	<select id ="getWorkEffortsDetailsByRpID" resultMap="WorkEffortModelResult" parameterType="Integer">
+         select ResourcePositionID, PositionStatus, AllocatedBy, WorkEffortID from transactionalData.TBL_WorkEffort where ResourcePositionID = #{rpID}
+         order by WorkEffortID 
+    </select>
+    
+    <select id ="getActiveWorkEffortsByRpid" resultMap="WorkEffortModelResult" parameterType="Integer">
+        select ResourcePositionID, Signum, IsActive, PositionStatus,WorkEffortStatus, WorkEffortID from transactionalData.TBL_WorkEffort where ResourcePositionID = #{rpID}  and isactive = 1
+         order by WorkEffortID
+    </select>
+    
+    <select id ="getWeidWithMinSdate" resultMap="WorkEffortModelResult">
+         select ResourcePositionID, StartDate, EndDate, Duration, Hours, Reason, WorkEffortStatus, IsActive, Signum, WorkEffortID,PositionStatus from transactionalData.TBL_WorkEffort where ResourcePositionID = #{rpID}  
+         and isactive = #{isactive}
+         order by StartDate
+    </select>
+    
+    <select id ="getWeidWithMinSdateAll" resultMap="WorkEffortModelResult">
+           select ResourcePositionID, StartDate, EndDate, Duration, Hours, Reason, WorkEffortStatus, IsActive, Signum, WorkEffortID,PositionStatus from transactionalData.TBL_WorkEffort where ResourcePositionID = #{rpID}  
+         order by StartDate
+    </select>
+    
+    <select id ="getWeidWithMaxEdate" resultMap="WorkEffortModelResult" parameterType="Integer">
+         select ResourcePositionID, StartDate, EndDate, Duration, Hours, Reason, WorkEffortStatus, IsActive, Signum, WorkEffortID,PositionStatus from transactionalData.TBL_WorkEffort where ResourcePositionID = #{rpID}  and isactive = 1
+         order by EndDate desc
+    </select>
+        
+    <insert id = 'saveDomainDetails' parameterType="DomainModel">
+        INSERT into refData.TBL_DOMAIN(Domain,SubDomain,Active,CreatedBy,CreatedDate,LastModifiedBy,LastModifiedDate) 
+        values(#{domainModel.domain,jdbcType=VARCHAR},#{domainModel.subDomain,jdbcType=VARCHAR},1,
+        #{domainModel.createdBy,jdbcType=VARCHAR},dbo.GetDateIST(),#{domainModel.createdBy,jdbcType=VARCHAR},
+        dbo.GetDateIST());
+    </insert>
+        
+    <select id='getDomainDetails' resultMap='DomainModelResult'>
+		 SELECT distinct t1.DomainID,t1.Domain+'/'+t1.SubDomain as Domain
+       from refData.TBL_DOMAIN t1
+        left  join transactionalData.TBL_PROJECTSCOPEDETAIL t2 on t1.DomainID=t2.DomainId and t2.Active = 1 and t1.active = 1
+        left  join transactionalData.TBL_PROJECTSCOPE t3 on t3.ProjectScopeID=t2.ProjectScopeID and t3.Active = 1
+        left join transactionalData.TBL_PROJECTS  t4 on t4.ProjectID=t3.ProjectId and t4.isdeleted = 0
+        where t1.active = 1
+        <if test="ProjectID !=null and ProjectID !=0">
+        and t4.ProjectID=#{ProjectID}
+        </if>
+        <if test="ServiceAreaID !=null and ServiceAreaID !=0">
+        and t2.ServiceAreaID =#{ServiceAreaID}
+        </if>
+    </select>
+    
+	<select id='getDomainDetailsBySignum' resultMap='DomainModelResult'>
+
+		SELECT distinct t1.DomainID,t1.Domain+'/'+t1.SubDomain as Domain,t1.Active,t1.CreatedBy,convert(nvarchar(MAX), t1.CreatedDate, 23) as CreatedDate ,
+        t1.LastModifiedBy,convert(nvarchar(MAX), t1.LastModifiedDate,23) as LastModifiedDate  
+        from (select * from refData.TBL_DOMAIN where active = 1) t1 
+        left join refData.TBL_domainSpoc t5 on t5.DomainID=t1.DomainID
+                                left  join (select * from transactionalData.TBL_PROJECTSCOPEDETAIL where active = 1)t2 on(t1.DomainID=t2.DomainId) 
+                                left  join (select * from transactionalData.TBL_PROJECTSCOPE where active = 1)t3 on(t3.ProjectScopeID=t2.ProjectScopeID) 
+                                left join ( select * from transactionalData.TBL_PROJECTS where isDeleted =0) t4 on (t4.ProjectID=t3.ProjectID)
+                    where t1.active = 1
+                     <if test="signum !=null">
+        and t5.poc=#{signum}
+        </if>
+        <if test="ProjectID !=null and ProjectID !=0">
+        and t4.ProjectID=#{ProjectID}
+        </if>
+        <if test="ServiceAreaID !=null and ServiceAreaID !=0">
+        and t2.ServiceAreaID =#{ServiceAreaID}
+        </if>
+    </select>
+    
+     <select id='getAllProjectsBySignum' resultType='hashmap'>
+     	select distinct t1.ProjectID,ProjectName,ProjectCreator,Status from transactionalData.TBL_PROJECTS t1
+     	join transactionalData.TBL_PROJECTSCOPE t2 on t2.ProjectID = t1.ProjectID
+	 	join transactionalData.TBL_PROJECTSCOPEDETAIL t3 on t3.ProjectScopeID = t2.ProjectScopeID
+	 	join refdata.TBL_domainSpoc t4 on t4.DomainID = t3.DomainID
+  	 	where IsDeleted = 0 and t4.poc = #{signum}
+    </select>
+    
+    <select id='getAllDomainDetailsByService' resultMap='DomainModelResult'>
+		select DISTINCT t1.DomainID,t2.Domain+' / '+t2.SubDomain as Domain  from [refData].[TBL_SUBACTIVITY] t1
+			INNER join refData.TBL_DOMAIN t2 on t1.DomainID = t2.DomainID 
+
+             where  t1.active=1   and t1.ServiceAreaID =#{ServiceAreaID}
+             order by domain
+    </select>
+    
+    <select id='getDomainDetailsByID' resultMap='DomainModelResult'>
+        SELECT DomainID,Domain,SubDomain,Active,CreatedBy,convert(nvarchar(MAX), CreatedDate, 23) as CreatedDate ,
+        LastModifiedBy,convert(nvarchar(MAX), LastModifiedDate,23) as LastModifiedDate  
+        from refData.TBL_DOMAIN where domainID =#{domainID} and  active = 1
+    </select>
+        
+    <update id = 'updateDomainDetails' parameterType="DomainModel">
+        UPDATE refData.TBL_DOMAIN set domain=#{domainModel.domain,jdbcType=VARCHAR}, subDomain=#{domainModel.subDomain,jdbcType=VARCHAR},
+        lastModifiedBy=#{domainModel.lastModifiedBy,jdbcType=VARCHAR}, lastModifiedDate=dbo.GetDateIST()
+        where domainID=#{domainModel.domainID,jdbcType=INTEGER};
+    </update>
+    
+    <resultMap type="AllocatedResourceModel" id="AllocatedResourceModel">
+        <id property="weid" column="WorkEffortID"  />
+        <result property="signum" column="Signum" />
+        <result property="isActive" column="IsActive" />
+        <result property="loggedInUser" column="LastModifiedBy" />
+        <result property="lastModifiedDate" column="LastModifiedOn" />
+       
+    </resultMap>
+    
+    <update id = 'updateWorkEffort' parameterType="AllocatedResourceModel">
+        UPDATE transactionalData.TBL_WorkEffort set signum=#{updateWorkEffort.signum}, 
+        IsActive = #{active}, 
+        LastModifiedBy=#{updateWorkEffort.loggedInUser}, LastModifiedOn = dbo.GetDateIST(),
+        AllocatedBy=#{updateWorkEffort.loggedInUser}
+        
+         
+        <if test ="updateWorkEffort.allocatedStatus != null"> 
+            ,WorkEffortStatus=#{updateWorkEffort.allocatedStatus}
+        </if> 
+        
+        <if test ="updateWorkEffort.startDate != null"> 
+             ,StartDate=#{updateWorkEffort.startDate}
+        </if> 
+        <if test ="updateWorkEffort.endDate != null"> 
+             ,EndDate=#{updateWorkEffort.endDate}
+        </if> 
+        <if test ="updateWorkEffort.positionStatus != null "> 
+             ,PositionStatus=#{updateWorkEffort.positionStatus}
+        </if> 
+        <if test ="updateWorkEffort.hours != null"> 
+             ,Hours=#{updateWorkEffort.hours}
+        </if> 
+        <if test ="updateWorkEffort.duration != null"> 
+             ,duration=#{updateWorkEffort.duration}
+        </if> 
+        WHERE WorkEffortID =#{updateWorkEffort.weid};
+    </update>
+    
+        <update id = 'updateWorkEffortStatus' parameterType="int">
+        UPDATE transactionalData.TBL_WorkEffort set  
+        IsActive = 1 , PositionStatus='Resource Allocated'
+        WHERE WorkEffortID =#{weid} ;
+    </update>
+    
+    <update id = 'updateResourcePosition' parameterType="ResourcePositionModel">
+          UPDATE transactionalData.TBL_ResourcePosition  set transactionalData.TBL_ResourcePosition.PositionStatus=#{updateWorkEffort.allocatedStatus}, transactionalData.TBL_ResourcePosition.IsActivie=1,
+        transactionalData.TBL_ResourcePosition.LastModifiedBy=#{updateWorkEffort.loggedInUser}, transactionalData.TBL_ResourcePosition.LastModifiedOn=dbo.GetDateIST(), transactionalData.TBL_ResourcePosition.comments=concat(Comments,'->',#{updateWorkEffort.comments})
+        where resourcePositionID = #{updateWorkEffort.rpID}
+    </update>
+    
+    <update id = 'appendToPositionComments' parameterType="com.ericsson.isf.model.AllocatedResourceModel">
+        
+        UPDATE transactionalData.TBL_ResourcePosition 
+        set LastModifiedBy = #{signum},
+        LastModifiedOn = dbo.GetDateIST(),
+        commentsByFm=
+		case when commentsByFm is not null then commentsByFm + '->'+#{comments}
+		else
+			#{comments}
+		 end
+		
+		 where resourcePositionID =  #{positionId} 
+    </update>
+    
+    <update id = 'updateWorkEffortByWeIDReject' parameterType="ResourcePositionModel">
+	  update [transactionalData].[TBL_WorkEffort] 
+	  set 
+	  signum = NULL,
+	  PositionStatus='Proposal Pending',
+	  isactive = 1 
+	  where WorkEffortID = #{updateWorkEffort.weid}
+    </update>
+    
+    <select id='getDetails' resultType='hashmap'>
+	    select ProjectID from transactionalData.TBL_ResourceRequests rr
+		left join transactionalData.TBL_ResourcePosition rp on rp.ResourceRequestID= rr.ResourceRequestID
+		where rp.ResourcePositionID = #{rpID}
+    </select>
+    
+    <select id='getProjectDetailsByWeid' resultType='hashmap'>
+	    select  b.ProjectID, a.ResourcePositionID, c.signum, c.WorkEffortID
+		from 
+		transactionalData.TBL_ResourcePosition a,
+		transactionalData.TBL_ResourceRequests b,
+		transactionalData.TBL_WorkEffort c
+		where c.ResourcePositionID = a.ResourcePositionID
+		and a.ResourceRequestID = b.ResourceRequestID
+		and c.WorkEffortID = #{weid}
+		
+    </select>
+    
+    <update id='deleteDomainDetails' parameterType="DomainModel">
+        UPDATE refData.TBL_DOMAIN set active= 0,lastModifiedBy=#{signumID},lastModifiedDate = dbo.GetDateIST()
+        where domainID=#{domainID};
+    </update>
+        
+    <resultMap type='ServiceAreaModel' id='ServiceAreaModelResult'>
+        <id property='serviceAreaID' column='ServiceAreaID'/>
+        <result property='serviceArea' column='ServiceArea'/>
+        <result property='subServiceArea' column='SubServiceArea'/>
+        <result property='active' column='Active'/>
+        <result property='createdBy' column='CreatedBy'/>
+        <result property='createdDate' column='CreatedDate'/>
+        <result property='lastModifiedBy' column='LastModifiedBy'/>
+        <result property='lastModifiedDate' column='LastModifiedDate'/>
+    </resultMap>
+    
+    <select id='isServiceAreaExists' resultType="Boolean">
+        IF Exists(select * from refData.TBL_SERVICEAREA where ServiceArea =#{serviceArea} and SubServiceArea = #{subServiceArea} and Active = 1)
+        Begin
+        Select 1 as 'Result'
+        End
+        else
+        Begin
+        Select 0 as 'Result'
+        End
+      
+    </select>
+    
+    <insert id="saveServiceAreaDetails" parameterType="ServiceAreaModel">
+        INSERT INTO refData.TBL_SERVICEAREA (ServiceArea,SubServiceArea,Active,CreatedBy,CreatedDate,LastModifiedBy,LastModifiedDate)
+        Values(#{serviceAreaModel.serviceArea, jdbcType = VARCHAR},#{serviceAreaModel.subServiceArea, jdbcType = VARCHAR},
+        1,#{serviceAreaModel.createdBy, jdbcType = VARCHAR},dbo.GetDateIST(),#{serviceAreaModel.createdBy, jdbcType = VARCHAR},dbo.GetDateIST())
+    </insert>
+    
+    <insert id="insertProposedWorkEfforts">
+        INSERT INTO transactionaldata.TBL_PROPOSED_WORK_EFFORTS(WorkEffortID,Hours,Duration,StartDate,EndDate)
+        Values(#{workEffortID},#{hours},#{duration},#{startDate},#{endDate})
+    </insert>
+    
+    <update id ="updateServiceAreaDetails" parameterType = "ServiceAreaModel">
+        UPDATE refData.TBL_SERVICEAREA set serviceArea = #{serviceAreaModel.serviceArea, jdbcType = VARCHAR},
+        subServiceArea = #{serviceAreaModel.subServiceArea, jdbcType = VARCHAR},
+        lastModifiedBy = #{serviceAreaModel.lastModifiedBy,jdbcType = VARCHAR},
+        lastModifiedDate = dbo.GetDateIST()
+        where serviceAreaID = #{serviceAreaModel.serviceAreaID,jdbcType=INTEGER}
+        
+    </update>   
+     
+    <update id ="deleteServiceArea" parameterType = "ServiceAreaModel">
+        UPDATE refData.TBL_SERVICEAREA  set active = 0, lastModifiedBy=#{signumID},lastModifiedDate = dbo.GetDateIST()
+        where serviceAreaID = #{serviceAreaID}
+    </update>
+    
+    <update id ="updateWorkEffortByWeIDByProposedWorkEffort">
+        UPDATE transactionalData.TBL_WorkEffort
+        set StartDate = #{wfDetails.StartDate},
+        EndDate = #{wfDetails.EndDate},
+        Duration = #{wfDetails.Duration},
+        Hours = #{wfDetails.Hours}
+        where WorkEffortID = #{wfDetails.WorkEffortID}
+    </update>
+    
+    <update id ="updateWorkEffortPositionStatusById">
+        UPDATE transactionalData.TBL_WorkEffort
+        set PositionStatus =#{positionStatus}
+        where WorkEffortID = #{workEffortID}
+    </update>
+    
+    <select id ="getServiceAreaDetails" resultMap="ServiceAreaModelResult">
+         SELECT distinct t1.ServiceAreaID,ServiceArea+'/'+SubServiceArea as ServiceArea
+          FROM  refData.TBL_SERVICEAREA  t1
+		left  join  transactionalData.TBL_PROJECTSCOPEDETAIL t2 on t1.ServiceAreaID=t2.ServiceAreaID and t2.active=1 and t1.active=1 
+		left  join  transactionalData.TBL_PROJECTSCOPE t3 on t3.ProjectScopeID=t2.ProjectScopeID and t3.active=1
+		left join transactionalData.TBL_PROJECTS  t4 on t4.ProjectID=t3.ProjectID and t4.isdeleted = 0
+	    where t1.active = 1 
+        <if test="ProjectID !=null and ProjectID !=0">
+        and t4.ProjectID=#{ProjectID}
+        </if>
+         <if test="ServAreaID !=null and ServAreaID !=0">
+        and t1.ServAreaID=#{ServAreaID}
+        </if>
+        order by ServiceArea
+    </select>
+    
+    <select id ="getServiceAreaDetailsByID" resultMap="ServiceAreaModelResult">
+        SELECT ServiceAreaID,ServiceArea,SubServiceArea,Active,CreatedBy,convert(nvarchar(MAX), CreatedDate, 23) as CreatedDate ,
+        LastModifiedBy,convert(nvarchar(MAX), LastModifiedDate,23) as LastModifiedDate   
+        FROM refData.TBL_SERVICEAREA where serviceAreaID = #{serviceAreaID} and active = 1
+    </select>
+    
+    <resultMap type='TechnologyModel' id='TechnologyModelResult'>
+        <id property='technologyID' column='TechnologyID'/>
+        <result property='technology' column='Technology'/>
+        <result property='active' column='Active'/>
+        <result property='createdBy' column='CreatedBy'/>
+        <result property='createdDate' column='CreatedDate'/>
+        <result property='lastModifiedBy' column='LastModifiedBy'/>
+        <result property='lastModifiedDate' column='LastModifiedDate'/>
+    </resultMap>
+    
+    <select id='isTechnologyExists' resultType="Boolean">
+        IF Exists(SELECT *FROM refData.TBL_TECHNOLOGY WHERE TECHNOLOGY= #{technology} and Active = 1)
+        Begin
+        Select 1 as 'Result'
+        End
+        else
+        Begin
+        Select 0 as 'Result'
+        End
+        
+    </select>
+    
+    
+    <insert id="saveTechnologyDetails" parameterType="TechnologyModel">
+        INSERT INTO refData.TBL_TECHNOLOGY (Technology,Active,CreatedBy,CreatedDate,LastModifiedBy,LastModifiedDate)
+        Values(#{technologyModel.technology, jdbcType = VARCHAR},1,
+               #{technologyModel.createdBy, jdbcType = VARCHAR},dbo.GetDateIST(),
+               #{technologyModel.createdBy, jdbcType = VARCHAR},dbo.GetDateIST())
+    </insert>
+    
+    <update id ="updateTechnologyDetails" parameterType = "TechnologyModel">
+        UPDATE refData.TBL_TECHNOLOGY set technology = #{technologyModel.technology, jdbcType = VARCHAR},
+                                  lastModifiedBy = #{technologyModel.lastModifiedBy,jdbcType = VARCHAR},
+                                  lastModifiedDate = dbo.GetDateIST()
+                                  where technologyID = #{technologyModel.technologyID,jdbcType=INTEGER}
+        
+    </update>   
+     
+    <update id ="deleteTechnology" parameterType = "TechnologyModel">
+        UPDATE refData.TBL_TECHNOLOGY set active =0, lastModifiedBy=#{signumID},lastModifiedDate = dbo.GetDateIST() 
+        where technologyID = #{technologyID}
+    </update>
+    
+    <select id ="getTechnologyDetails" resultMap="TechnologyModelResult">
+      SELECT distinct t1.TechnologyID,t1.Technology
+		from refData.TBL_TECHNOLOGY  t1 
+ 		left join transactionalData.TBL_PROJECTSCOPEDETAIL  t2 on t2.TechnologyID=t1.TechnologyID and t2.active=1 and t1.active=1 
+		left join transactionalData.TBL_PROJECTSCOPE t3 on t3.ProjectScopeID=t2.ProjectScopeID and t3.active=1
+		left join transactionalData.TBL_PROJECTS  t4 on t4.ProjectID=t3.ProjectID and t4.isdeleted = 0
+        where t1.active='1'
+    	
+          <if test ="domainID != null and domainID != 0"> 
+            and  t2.domainID=#{domainID} 
+          </if> 
+           <if test ="projectID != null and projectID != 0"> 
+             and  t4.projectID=#{projectID}
+          </if>
+        
+    </select>
+    
+    <select id ="getTechnologyDetailsByDomain" resultMap="TechnologyModelResult">
+      select DISTINCT Technology,T1.TechnologyID from refData.TBL_TECHNOLOGY T1 INNER JOIN [refData].[TBL_SUBACTIVITY] T2 
+			ON T1.TechnologyID=T2.TechnologyID
+			WHERE T1.Active=1 AND DomainID=#{domainID} and  ServiceAreaID=#{ServiceAreaID}
+			order by Technology
+    </select>
+    
+    <select id ="getTechnologyDetailsByID" resultMap="TechnologyModelResult">
+        SELECT TechnologyID,Technology,Active,CreatedBy, convert(nvarchar(MAX), CreatedDate, 23) as CreatedDate ,
+        LastModifiedBy,convert(nvarchar(MAX), LastModifiedDate,23) as LastModifiedDate 
+        FROM refData.TBL_TECHNOLOGY where technologyID = #{technologyID}  and active = 1
+    </select>
+    
+    <resultMap type='StandardActivityModel' id='StandardActivityModelResult'>
+        <id property='subActivityID' column='SubActivityID'/>
+        <result property='domainID' column='DomainID'/>
+        <result property='serviceAreaID' column='ServiceAreaID'/>
+        <result property='technologyID' column='TechnologyID'/>
+        <result property='activity' column='Activity'/>
+        <result property='subActivityName' column='SubActivity'/>
+        <result property='avgEstdEffort' column='AvgEstdEffort'/>
+        <result property ='executionType' column ='ExecutionType'/>
+        <result property='active' column='Active'/>
+        <result property='createdBy' column='CreatedBy'/>
+        <result property='createdDate' column='CreatedDate'/>
+        <result property='lastModifiedBy' column='LastModifiedBy'/>
+        <result property='lastModifiedDate' column='LastModifiedDate'/>
+    </resultMap>
+    
+    <select id='isSubActivtyExists' resultType="Boolean">
+        IF Exists(SELECT 1 FROM refData.TBL_SUBACTIVITY WHERE Activity= #{standardActivityModel.activity} and 
+        SubActivity= #{standardActivityModel.subActivityName} and Active = 1
+        and domainID = #{standardActivityModel.domainID} and 	technologyID = #{standardActivityModel.technologyID} and 
+        ServiceareaID =#{standardActivityModel.serviceAreaID} )
+        Begin
+        Select 1 as 'Result'
+        End
+        else
+        Begin
+        Select 0 as 'Result'
+        End
+        
+    </select>
+    
+    
+    <insert id ='saveActivityAndSubActivityDetails' parameterType = "StandardActivityModel" >
+        declare @dtid varchar(100)
+		select top 1 @dtid = dtid from
+		refData.TBL_DomainSubDomain_Technology_Mapping WHERE DomainSubDomainID
+		= #{standardActivityModel.domainID}
+		and TechnologyID =
+		#{standardActivityModel.technologyID} and active = 1
+
+		INSERT INTO
+		refData.TBL_SUBACTIVITY(DomainID,ServiceAreaID,TechnologyID,Activity,SubActivity,AvgEstdEffort,Active,CreatedBy,CreatedDate,LastModifiedBy,LastModifiedDate,DTID)
+		Values(#{standardActivityModel.domainID,jdbcType = INTEGER},
+		#{standardActivityModel.serviceAreaID,jdbcType = INTEGER},
+		#{standardActivityModel.technologyID,jdbcType = INTEGER},
+		#{standardActivityModel.activity,jdbcType = VARCHAR},
+		#{standardActivityModel.subActivityName,jdbcType = VARCHAR},
+		#{standardActivityModel.avgEstdEffort,jdbcType = INTEGER},
+		1,
+		#{standardActivityModel.createdBy,jdbcType = VARCHAR},dbo.GetDateIST(),
+		#{standardActivityModel.createdBy,jdbcType =
+		VARCHAR},dbo.GetDateIST(),
+		@dtid)
+    </insert>
+    
+    <update id ="updateActivityAndSubActivityDetails" parameterType = "StandardActivityModel">
+        UPDATE refData.TBL_SUBACTIVITY set activity =  #{standardActivityModel.activity,jdbcType = VARCHAR},
+        subActivity = #{standardActivityModel.subActivityName,jdbcType = VARCHAR},
+        avgEstdEffort = #{standardActivityModel.avgEstdEffort,jdbcType = VARCHAR},
+        lastModifiedBy = #{standardActivityModel.lastModifiedBy,jdbcType = VARCHAR},
+        lastModifiedDate = dbo.GetDateIST()
+        where subActivityID = #{standardActivityModel.subActivityID,jdbcType=INTEGER};
+        
+    </update>  
+    
+    <update id ="deleteActivityAndSubActivity" parameterType = "StandardActivityModel">
+        UPDATE refData.TBL_SUBACTIVITY set active =0, lastModifiedBy=#{signumID},lastModifiedDate = dbo.GetDateIST() 
+        where subActivityID = #{subActivityID}
+    </update>
+    
+    <select id ="getActivityAndSubActivityDetails" resultMap="StandardActivityModelResult">
+        SELECT sub.SubActivityID,sub.DomainID,sub.ServiceAreaID,sub.TechnologyID,sub.Activity,sub.Activity+'/'+sub.SubActivity as SubActivity,sub.AvgEstdEffort,
+        sub.Active,sub.CreatedBy,convert(nvarchar(MAX), sub.CreatedDate, 23) as CreatedDate ,
+        sub.LastModifiedBy,convert(nvarchar(MAX), sub.LastModifiedDate,23) as LastModifiedDate, 
+        CASE WHEN task.CountManualTask > 0 and task.CountAutomaticTask > 0 then 'Partial'
+        WHEN task.CountManualTask = 0 and task.CountAutomaticTask > 0 then 'Automatic'
+        WHEN task.CountManualTask > 0 and task.CountAutomaticTask = 0 then 'Manual'
+        ELSE 'Manual' END as ExecutionType
+        FROM refData.TBL_SUBACTIVITY sub 
+        left join (select SubActivityID, SUM(case when ExecutionType = 'Manual' then 1 else 0 end) as CountManualTask,
+        SUM(case when ExecutionType = 'Automatic' then 1 else 0 end) as CountAutomaticTask
+        from refData.TBL_TASK
+        where Active = 1
+        group by SubActivityID) task on sub.SubActivityID = task.SubActivityID
+        where sub.DomainID=#{domainID} and sub.ServiceAreaID=#{serviceAreaID} and sub.TechnologyID=#{technologyID} and sub.Active=1
+          
+    </select>
+    
+    <select id ="getActivityAndSubActivityDetailsByID" resultMap="StandardActivityModelResult">
+        SELECT sub.SubActivityID,sub.DomainID,sub.ServiceAreaID,sub.TechnologyID,sub.Activity+'/'+sub.SubActivity as SubActivity,sub.AvgEstdEffort,
+        sub.Active,sub.CreatedBy,convert(nvarchar(MAX), sub.CreatedDate, 23) as CreatedDate ,
+        sub.LastModifiedBy,convert(nvarchar(MAX), sub.LastModifiedDate,23) as LastModifiedDate ,
+        CASE WHEN task.CountManualTask > 0 and task.CountAutomaticTask > 0 then 'Partial'
+        WHEN task.CountManualTask = 0 and task.CountAutomaticTask > 0 then 'Automatic'
+        WHEN task.CountManualTask > 0 and task.CountAutomaticTask = 0 then 'Manual'
+        ELSE 'Manual' END as ExecutionType
+        FROM refData.TBL_SUBACTIVITY sub 
+        left join (select SubActivityID, SUM(case when ExecutionType = 'Manual' then 1 else 0 end) as CountManualTask,
+        SUM(case when ExecutionType = 'Automatic' then 1 else 0 end) as CountAutomaticTask
+        from refData.TBL_TASK
+        where Active = 1
+        group by SubActivityID) task on sub.SubActivityID = task.SubActivityID
+        where sub.subActivityID = #{subActivityID}  and sub.active = 1  
+    </select>
+    
+    <resultMap type="TaskModel" id="TaskModelResult">
+        <id property="taskID" column="TaskID" />
+        <result property="subActivityID" column="SubActivityID" />
+        <result property="task" column="Task" />
+        <result property="executionType" column="ExecutionType" />
+        <result property="avgEstdEffort" column="AvgEstdEffort"/>
+        <result property="active" column="Active" />
+        <result property="createdBy" column="CreatedBy" />
+        <result property="createdDate" column="CreatedDate" />
+        <result property="lastModifiedBy" column="LastModifiedBy" />
+        <result property="lastModifiedDate" column="LastModifiedDate" />
+        <result property="description" column="Description" />
+        <result property="rpaID" column="RPAID"/>
+        <result property="masterTask" column="MasterTask"/>
+        <collection property='tools' ofType='ToolsModel'>
+		<id property="toolID" column="ToolID" />
+                <result property="tool" column="Tool" />
+        </collection> 
+    </resultMap>
+    
+    
+    <resultMap type="WorkFlowFeedbackModel" id="WorkFlowFeedbackModelResult">
+        <id property="taskID" column="TaskID" />
+        <result property="feedbackDetailID" column="FeedbackDetailID" />
+        <result property="projectID" column="ProjectID" />
+        <result property="workOrderID" column="WOID" />
+        <result property="signum" column="CreatorSignum" />
+        <result property="defID" column="flowchartDefID" />
+        <result property="wfName" column="WorkflowName" />
+        <result property="stepID" column="StepID" />
+        <result property="stepName" column="StepName" />
+        <result property="feedbackOn" column="FeedbackOn" />
+        <result property="feedbackType" column="FeedbackType"/>
+        <result property="instantFeedback" column="InstantFeedback"/>
+        <result property="CreatedOn" column="CreatedDate" />
+        <result property="modifiedBy" column="ModifiedBy" />
+        <result property="modifiedON" column="ModifiedDate"/>
+        <result property="isActive" column="IsActive"/>
+        <result property="userRole" column="UserRole"/>
+        <result property="signumAndName" column="SignumAndName"/>
+        <result property="wFID" column="WFID"/>
+        
+        
+               
+        <collection property='workFlowFeedbackActivityModel' ofType='WorkFlowFeedbackActivityModel'>
+		<id property="feedbackActivityID" column="FeedbackActivityID" />
+                <result property="feedbackComment" column="FeedbackComment" />
+                <result property="replyOnComment" column="ReplyOnComment" />
+                <result property="feedbackStatus" column="FeedbackStatus" />
+                <result property="userRole" column="UserRole" />
+                <result property="isActive" column="IsActive" />
+                <result property="signum" column="CreatedBy" />
+                <result property="modifiedBy" column="ModifiedBy" />
+                <result property="modifiedOn" column="ModifiedDate" />
+        </collection> 
+    </resultMap>
+    
+    <select id='isTaskExists' resultType="Boolean">
+        
+        IF Exists(select 1 from refData.TBL_Task where Task =#{task} and SubActivityID=#{subActivityID} and Active = 1)
+        Begin
+        Select 1 as 'Result'
+        End
+        else
+        Begin
+        Select 0 as 'Result'
+        End 
+        
+    </select>
+        
+    <insert id='saveTaskDetails' parameterType="TaskModel" useGeneratedKeys="true" keyProperty='taskModel.taskID' keyColumn="TaskID">
+        insert into refData.TBL_TASK(subActivityID,Task,ExecutionType,Active,CreatedBy,CreatedDate,LastModifiedBy,LastModifiedDate,AvgEstdEffort,Description)
+        values(#{taskModel.subActivityID,jdbcType=INTEGER},
+               #{taskModel.task,jdbcType=VARCHAR},
+               #{taskModel.executionType,jdbcType=VARCHAR},
+               1,
+               #{taskModel.createdBy,jdbcType=VARCHAR},
+               dbo.GetDateIST(),
+               #{taskModel.createdBy,jdbcType=VARCHAR},
+               dbo.GetDateIST(),
+               #{taskModel.avgEstdEffort,jdbcType=INTEGER},
+               #{taskModel.description,jdbcType=VARCHAR});
+    </insert>
+        
+    <select id='getTaskDetails' resultMap="TaskModelResult">
+        SELECT tsk.SubActivityID,tsk.TaskID,tsk.Task,ti.ToolID,ti.Tool,tsk.AvgEstdEffort,tsk.ExecutionType,tsk.Description,
+            convert(nvarchar(MAX), tsk.CreatedDate, 23) as CreatedDate,tsk.LastModifiedBy,convert(nvarchar(MAX),
+            tsk.LastModifiedDate,23) as LastModifiedDate
+            from refData.tbl_task tsk
+            left join refData.TBL_TASK_TOOL tstl on tsk.taskID= tstl.TaskID 
+            left join refData.tbl_tool_inventory ti on tstl.ToolID=ti.ToolID
+           -- left join transactionalData.TBL_SCOPEID_TASK_MAPPING trm on trm.TaskID = tsk.TaskID
+        where tsk.subactivityID=#{subActivityID} and tsk.Active =1
+           
+    </select>
+    
+	<select id='viewTaskDetails' resultMap="TaskModelResult">
+	
+		SELECT
+		tsk.SubActivityID,tsk.TaskID,tsk.Task,ti.ToolID,ti.Tool,tsk.AvgEstdEffort,tsk.ExecutionType,tsk.Description,
+		convert(nvarchar(MAX), tsk.CreatedDate, 23) as
+		CreatedDate,tsk.LastModifiedBy,convert(nvarchar(MAX),
+		tsk.LastModifiedDate,23) as LastModifiedDate, trm.RPAID,tsk.Task as
+		MasterTask
+		from refData.tbl_task tsk
+		left join refData.TBL_TASK_TOOL tstl on tsk.taskID= tstl.TaskID
+		left join refData.tbl_tool_inventory ti on tstl.ToolID=ti.ToolID
+		left join transactionalData.TBL_SCOPEID_TASK_MAPPING trm on trm.TaskID =
+		tsk.TaskID
+		where tsk.subactivityID=#{subActivityID} and tsk.Active =1
+		order by tsk.Task
+	
+	</select>
+
+        
+    <update id='updateTaskDetails' parameterType="TaskModel">
+        UPDATE refData.TBL_TASK set task=#{taskModel.task,jdbcType=VARCHAR},
+        executionType =#{taskModel.executionType,jdbcType=VARCHAR},
+        avgEstdEffort=#{taskModel.avgEstdEffort,jdbcType=VARCHAR},
+        description=#{taskModel.description,jdbcType=VARCHAR},
+        lastModifiedBy=#{taskModel.lastModifiedBy,jdbcType=VARCHAR},lastModifiedDate=dbo.GetDateIST()    
+        where taskID=#{taskModel.taskID,jdbcType=INTEGER}
+        and subActivityID =#{taskModel.subActivityID}
+    </update>
+    
+    <update id='updateTaskToolDetails' parameterType="TaskToolModel">
+        UPDATE refData.TBL_TASK_TOOL set ToolID=#{taskToolModel.toolID,jdbcType=INTEGER},
+        LastModifiedBy =#{taskToolModel.lastModifiedBy,jdbcType=VARCHAR},
+        LastModifiedDate=dbo.GetDateIST()    
+        where taskID=#{taskToolModel.taskID,jdbcType=INTEGER} 
+    </update>
+        
+    <update id='deleteTaskDetails' parameterType="TaskModel">
+        UPDATE refData.TBL_TASK  set active= 0, lastModifiedBy=#{signumID},lastModifiedDate = dbo.GetDateIST()    
+        where taskID=#{taskID};
+    </update>
+        
+        
+    <select id='getTaskRelatedDetails' resultMap="TaskModelResult">
+        SELECT task.TaskID
+        ,task.SubActivityID
+        ,task.Task
+        ,task.ExecutionType
+        ,task.AvgEstdEffort
+        ,task.Active
+        ,toolInv.ToolID
+        ,toolInv.Tool
+        ,toolInv.Active
+        FROM refData.TBL_TASK as task Inner Join refData.TBL_TASK_TOOL as tkTool 
+        on task.TaskID = tkTool.TaskID
+        Inner Join refData.TBL_TOOL_INVENTORY as toolInv on tkTool.ToolID = toolInv.ToolID
+        where task.TaskID = #{taskID} and task.SubActivityID = #{subActivityID} and task.Active = 1;
+    </select>
+    
+    <resultMap type="TaskToolModel" id="TaskToolModelResult">
+        <id property="taskToolID" column="TaskToolID" />
+        <result property="taskID" column="TaskID" />
+        <result property="toolID" column="ToolID" />
+        <result property="taskName" column="Task" />
+        <result property="toolName" column="Tool" />
+        <result property="active" column="Active" />
+        <result property="createdBy" column="CreatedBy" />
+        <result property="createdDate" column="CreatedDate" />
+        <result property="lastModifiedBy" column="LastModifiedBy" />
+        <result property="lastModifiedDate" column="LastModifiedDate" />
+    </resultMap>
+        
+    <insert id='mapTaskAndTool' parameterType="TaskToolModel">
+        insert into refData.TBL_TASK_TOOL(TaskID,ToolID,Active,CreatedBy,CreatedDate,LastModifiedBy,LastModifiedDate)
+        values(#{taskToolModel.taskID,jdbcType=INTEGER},#{taskToolModel.toolID,jdbcType=VARCHAR},
+               1,#{taskToolModel.createdBy,jdbcType=VARCHAR},dbo.GetDateIST(),
+               #{taskToolModel.createdBy,jdbcType=VARCHAR},dbo.GetDateIST());
+    </insert>
+        
+    <select id='getTaskToolDetails' resultMap="TaskToolModelResult">
+        SELECT TaskToolID,TaskID,Task,ToolID,Tool,Active,CreatedBy,convert(nvarchar(MAX), CreatedDate, 23) as CreatedDate ,
+        LastModifiedBy,convert(nvarchar(MAX), LastModifiedDate,23) as LastModifiedDate 
+        From(
+        SELECT tskTool.tasktoolID,tskTool.TaskID,tskTool.ToolID,tsk.Task,tsk.Active,tskTool.CreatedBy,
+        tool.Tool, tskTool.CreatedDate,tskTool.LastModifiedBy,tskTool.LastModifiedDate 
+        FROM refData.TBL_TASK_TOOL tskTool
+        left join refData.TBL_TASK tsk on tsk.TaskID = tskTool.TaskID
+        left join refData.TBL_TOOL_INVENTORY tool on tskTool.ToolID = tool.ToolID
+        and tsk.Active=1 and tool.Active=1 and tskTool.Active=1
+        )as a1
+    </select>
+        
+    <update id='updateTaskToolMapping' parameterType="TaskToolModel">
+        UPDATE refData.TBL_TASK_TOOL set taskID=#{taskToolModel.taskID,jdbcType=INTEGER},
+                                 toolID=#{taskToolModel.toolID,jdbcType=INTEGER},
+                                 lastModifiedBy=#{taskToolModel.lastModifiedBy,jdbcType=VARCHAR},
+                                 lastModifiedDate=dbo.GetDateIST()    
+                                 where taskToolID=#{taskToolModel.taskToolID,jdbcType=INTEGER};
+    </update>
+        
+    <update id='deleteTaskToolMapping' parameterType="TaskToolModel">
+        UPDATE refData.TBL_TASK_TOOL set active= 0, lastModifiedBy=#{signumID},lastModifiedDate = dbo.GetDateIST()    
+        where taskToolID=#{taskToolID};
+    </update>
+        
+    <resultMap type="ActivityMasterModel" id="ActivityMasterModelResult">
+        <id property="domainID" column="DomainID" />
+        <result property="serviceAreaID" column="ServiceAreaID" />
+        <result property="technologyID" column="TechnologyID" />
+        <result property="domain" column="Domain/SubDomain" />
+        <result property="serviceArea" column="ServiceArea/SubServiceArea" />
+        <result property="technology" column="Technology" />
+    </resultMap>
+    
+    <select id = 'getAutoComDetails' resultMap = 'ActivityMasterModelResult'>
+        select  sub.DomainID,dom.Domain+'/'+dom.SubDomain as Domain,
+        sub.ServiceAreaID,ser.ServiceArea+'/'+ ser.SubServiceArea as ServiceArea,
+        sub.TechnologyID,tech.Technology
+        from refData.TBL_SUBACTIVITY sub
+        inner join refData.TBL_DOMAIN  dom on sub.DomainID = dom.DomainID and dom.active=1
+        inner join refData.TBL_SERVICEAREA ser on sub.ServiceAreaID = ser.ServiceAreaID and ser.active=1
+        inner join refData.TBL_TECHNOLOGY  tech on sub.TechnologyID = tech.TechnologyID and tech.active=1
+        where sub.TechnologyID= #{technologyID} or sub.ServiceAreaID =#{serviceAreaID} 
+    </select>
+    
+    <select id='getTaskDetailsByID' resultMap="TaskModelResult">
+            
+        select SubActivityID,TaskID,Task,ExecutionType,Active,CreatedBy,convert(nvarchar(MAX), CreatedDate, 23) as CreatedDate ,
+        LastModifiedBy,convert(nvarchar(MAX), LastModifiedDate,23) as LastModifiedDate 
+        from refData.tbl_task where taskID= #{taskID,jdbcType=INTEGER} and active = 1
+            
+    </select>
+    
+    <select id='getTaskToolDetailsByID' resultMap="TaskToolModelResult">
+            
+        <!--Input Param should be changes to TaskName and Tool Name-->
+        SELECT TaskToolID,TaskID,Task,ToolID,Tool,Active,CreatedBy,convert(nvarchar(MAX), CreatedDate, 23) as CreatedDate ,
+        LastModifiedBy,convert(nvarchar(MAX), LastModifiedDate,23) as LastModifiedDate 
+        From(
+        SELECT tskTool.tasktoolID,tskTool.TaskID,tskTool.ToolID,tskTool.Active,tskTool.CreatedBy,
+        tskTool.CreatedDate,tskTool.LastModifiedBy,tskTool.LastModifiedDate,
+        tsk.Task,tool.Tool
+        FROM refData.TBL_TASK_TOOL tskTool
+        left join refData.TBL_TASK tsk on tsk.TaskID = tskTool.TaskID
+        left join refData.TBL_TOOL_INVENTORY tool on tskTool.ToolID = tool.ToolID
+        where tsk.TaskID = #{taskID}
+        and tsk.Active=1 and tool.Active=1 and tskTool.Active=1
+        )as a1
+            
+    </select>
+	
+    <resultMap type="EmployeeModel" id="EmployeeModelResult">
+        <result property="signum" column="Signum" />
+        <result property="employeeName" column="EmployeeName" />
+        <result property="employeeEmailId" column="EmployeeEmailID" />
+        <result property="personnelNumber" column="PersonnelNumber" />
+        <result property="contactNumber" column="ContactNumber" />
+        <result property="gender" column="Gender" />
+        <result property="status" column="Status" />
+        <result property="managerSignum" column="ManagerSignum" />
+        <result property="managerName" column="managerName" />
+        <result property="costCenter" column="CostCenter" />                     
+        <result property="functionalArea" column="FunctionalArea" />
+        <result property="serviceArea" column="ServiceArea" />
+        <result property="grade" column="Grade" />
+        <result property="jobRoleFamily" column="JobRoleFamily" />
+        <result property="jobRole" column="JobName" />                                
+        <result property="jobStage" column="JobStage" />                
+        <result property="city" column="City" />
+        <result property="hrLocation" column="HRLocation" />
+        <result property="officeBuilding" column="OfficeBuilding" />
+        <result property="floor" column="Floor" />
+        <result property="createdBy" column="CreatedBy" />
+        <result property="createdDate" column="CreatedDate" />
+        <result property="lastModifiedBy" column="LastModifiedBy" />
+        <result property="lastModifiedDate" column="lastModifiedDate" />
+        <result property="positionId" column="positionId" />
+        <result property="OrgUnit" column="unit" />
+        <result property="isLineManager" column="isLineManager" />
+        <result property="employeeGroup" column="employeeGroup" />
+        <result property="companyName" column="companyName" />
+        <result property="parentUnit" column="parentUnit" />
+        <result property="jobName" column="jobName" />
+        <result property="domain" column="domain" />
+        <result property="subDomain" column="subDomain" />
+        <result property="industryVertical" column="industryVertical" />
+    </resultMap>
+    
+    <resultMap type="com.ericsson.isf.model.EmployeeBasicDetails" id="EmployeeBasicDetails">
+        <result property="signum" column="Signum" />
+        <result property="employeeName" column="EmployeeName" />
+        <result property="contactNumber" column="ContactNumber" />
+        <result property="managerSignum" column="ManagerSignum" />
+        <result property="managerName" column="managerName" />
+    </resultMap>
+        
+    <select id='isEmployeeExists' resultType="Boolean">
+        IF Exists(select 1 from refData.TBL_Employees where signum =#{signumID})
+        Begin
+        Select 1 as 'Result'
+        End
+        else
+        Begin
+        Select 0 as 'Result'
+        End
+    </select> 
+    
+	<select id='getNodeTypeByFilter' parameterType="com.ericsson.isf.model.NodeNamesByFilterModel" resultType="String">
+		Declare @CountryCustomerGroupID int 
+
+Select distinct @CountryCustomerGroupID = CountryCustomerGroupID
+from transactionalData.TBL_PROJECTS p WITH (NOLOCK)
+inner join transactionalData.TBL_OPPORTUNITY  O WITH (NOLOCK) on p.OpportunityID=O.OpportunityID and p.ProjectID = #{nodeNamesByFilterModel.projectID}
+inner join refData.TBL_CountryCustomerMapping ccm WITH (NOLOCK)  on ccm.CountryID=o.CountryID and ccm.CustomerID=o.CustomerID
+
+Drop table IF exists #tempProjects
+
+Select distinct projectid
+into #tempProjects
+from transactionaldata.tbl_projects p WITH (NOLOCK)
+inner join transactionalData.TBL_OPPORTUNITY O WITH (NOLOCK)  on p.OpportunityID=O.OpportunityID and p.IsDeleted=0 and p.Status!='Closed' and p.Status!='Rejected'
+inner join refData.TBL_CountryCustomerMapping ccm WITH (NOLOCK) on ccm.CountryID=o.CountryID and ccm.CustomerID=o.CustomerID and ccm.CountryCustomerGroupID = @CountryCustomerGroupID
+
+Select distinct 
+(ne.Type)
+from transactionalData.TBL_Network_element ne WITH (NOLOCK)
+Join #tempProjects p WITH (NOLOCK) on ne.ProjectID = p.ProjectID and ne.ElementType=#{nodeNamesByFilterModel.elementType}
+inner join refData.TBL_DOMAIN  d WITH (NOLOCK) on d.DomainID=ne.DomainSubDomainID and d.Domain=#{nodeNamesByFilterModel.domain} and d.SubDomain=#{nodeNamesByFilterModel.subDomain}
+inner join refData.TBL_TECHNOLOGY t WITH (NOLOCK) on t.TechnologyID=ne.TechnologyID and t.Technology=#{nodeNamesByFilterModel.tech}
+ 
+	</select> 
+		
+        <select id='getEmployeeBySignum' parameterType="java.lang.String"  resultMap='EmployeeModelResult'>
+	        select 
+	        t1.EmployeeName,t1.Signum,t1.PersonnelNumber,t1.PositionId,t1.CostCenter,t1.Unit,
+	         t1.ManagerSignum,t1.IsLineManager,t1.EmployeeGroup,t1.Status,t1.CompanyName,
+	         t1.FSO,t1.CountryName,t1.ParentUnit,t1.JobName,t1.Domain,
+	         t1.SubDomain,t1.FunctionalArea,t1.ServiceArea,t1.IndustryVertical,
+	         t1.EmployeeEmailID,t1.JobRoleFamily,t1.City,t1.HRLocation,
+	         t1.OfficeBuilding,t1.Floor,t1.CreatedBy, convert(nvarchar(MAX), t1.createdOn, 23) as createdOn,t1.LastModifiedBy,
+	          convert(nvarchar(MAX), t1.lastModifiedOn, 23) as lastModifiedOn,t2.employeeName as ManagerName
+	         FROM refData.TBL_EMPLOYEES t1 WITH (INDEX(PK_TBL_Employeeskey))
+			 left join refData.TBL_EMPLOYEES t2 WITH (INDEX(PK_TBL_Employeeskey)) on(t1.ManagerSignum=t2.Signum) where t1.signum=#{signumID,jdbcType=VARCHAR};
+    </select>
+    
+    <select id='getAspDetailsBySignum' resultMap='EmployeeModelResult'>
+    select 
+    t1.EmployeeName,t1.Signum,t1.EmployeeEmailID,t1.City,t1.ContactNumber,t2.VendorName,t2.Country,t2.VendorContactDetails,
+    t2.ManagerSignum from refData.TBL_ASP_Employees t1 inner join refData.TBL_ASPVendor t2 on t1.VendorCode=t2.VendorCode where t1.Signum=#{signum}
+    </select>
+    
+     <select id='getEmployeeByEmail' parameterType="java.lang.String"  resultMap='EmployeeModelResult'>
+	        select 
+	        t1.EmployeeName,t1.Signum,t1.PersonnelNumber,t1.PositionId,t1.CostCenter,t1.Unit,
+	         t1.ManagerSignum,t1.IsLineManager,t1.EmployeeGroup,t1.Status,t1.CompanyName,
+	         t1.FSO,t1.CountryName,t1.ParentUnit,t1.JobName,t1.Domain,
+	         t1.SubDomain,t1.FunctionalArea,t1.ServiceArea,t1.IndustryVertical,
+	         t1.EmployeeEmailID,t1.JobRoleFamily,t1.City,t1.HRLocation,
+	         t1.OfficeBuilding,t1.Floor,t1.CreatedBy, convert(nvarchar(MAX), t1.createdOn, 23) as createdOn,t1.LastModifiedBy,
+	          convert(nvarchar(MAX), t1.lastModifiedOn, 23) as lastModifiedOn,t2.employeeName as ManagerName
+	         FROM refData.TBL_EMPLOYEES t1 WITH (NOLOCK)
+			 left join refData.TBL_EMPLOYEES t2 WITH (NOLOCK) on(t1.ManagerSignum=t2.Signum) where t1.EmployeeEmailID=#{email,jdbcType=VARCHAR};
+    </select>
+        
+    <select id='getAllLineManagers'   resultType='hashmap'>
+        select signum as managerSignum ,employeeName as managerName 
+		FROM refdata.TBL_EMPLOYEES 
+		where signum in ( select distinct ManagerSignum from refdata.TBL_EMPLOYEES )
+            
+    </select>
+        
+    <select id='isEmployeeByManagerExists' resultType="Boolean">
+        IF Exists(select 1 from refData.TBL_Employees where managerSignum=#{managerSignum})
+        Begin
+        Select 1 as 'Result'
+        End
+        else
+        Begin
+        Select 0 as 'Result'
+        End
+    </select> 
+		
+    <select id='getEmployeesByManager' parameterType="java.lang.String"  resultMap='EmployeeModelResult'>
+         
+       select 
+        t1.EmployeeName,t1.Signum,t1.PersonnelNumber,t1.PositionId,t1.CostCenter,t1.Unit,
+         t1.ManagerSignum,t1.IsLineManager,t1.EmployeeGroup,t1.Status,t1.CompanyName,
+         t1.FSO,t1.CountryName,t1.ParentUnit,t1.JobName,t1.Domain,
+         t1.SubDomain,t1.FunctionalArea,t1.ServiceArea,t1.IndustryVertical,
+         t1.EmployeeEmailID,t1.JobRoleFamily,t1.City,t1.HRLocation,
+         t1.OfficeBuilding,t1.Floor,t1.CreatedBy, convert(nvarchar(MAX), t1.createdOn, 23) as createdOn,t1.LastModifiedBy,
+          convert(nvarchar(MAX), t1.lastModifiedOn, 23) as lastModifiedOn,t2.employeeName as ManagerName
+         FROM refData.TBL_EMPLOYEES t1 
+		 left join refData.TBL_EMPLOYEES t2 on(t1.ManagerSignum=t2.Signum)
+		
+		  where t1.managerSignum=#{managerSignum} and t1.Signum like 'e%'
+            
+    </select>
+    
+	<select id='getEmployeeDetails' resultMap='EmployeeBasicDetails' useCache="true">
+	
+		select
+		t1.EmployeeName,t1.Signum,t1.PersonnelNumber,t1.ManagerSignum,t1.EmployeeEmailID,t2.employeeName
+		as ManagerName
+		FROM refData.TBL_EMPLOYEES t1
+		left join refData.TBL_EMPLOYEES t2 on(t1.ManagerSignum=t2.Signum)
+	</select>
+    
+    
+    <select id='getEmployeesByFilter' parameterType="String" resultMap='EmployeeBasicDetails'>
+       select E.employeeName,E.signum FROM refData.TBL_EMPLOYEES E
+		left join refData.TBL_ASP_EMPLOYEES A on E.Signum=A.Signum
+		where (E.signum like #{term} or E.employeeName like #{term}) and A.Signum is null
+		and Status != 'Resigned'
+		order by E.employeeName,E.signum
+    </select>
+        <select id='getEmployeesByFilter1' parameterType="String" resultMap='EmployeeBasicDetails'>
+       select E.employeeName,E.signum FROM refData.TBL_EMPLOYEES E
+		left join refData.TBL_ASP_EMPLOYEES A on E.Signum=A.Signum
+		where (E.signum like #{term} or E.employeeName like #{term}) and A.Signum is null
+		and Status != 'Resigned'
+		order by E.employeeName,E.signum
+    </select>
+    
+    <select id='getEmployeeByProject' resultMap='EmployeeModelResult'>
+    
+    	select distinct t1.EmployeeName,t1.Signum,t1.PersonnelNumber,t1.PositionId,t1.CostCenter,t1.Unit,
+         t1.ManagerSignum,t1.IsLineManager,t1.EmployeeGroup,t1.Status,t1.CompanyName,
+         t1.FSO,t1.CountryName,t1.ParentUnit,t1.JobName,t1.Domain,
+         t1.SubDomain,t1.FunctionalArea,t1.ServiceArea,t1.IndustryVertical,
+         t1.EmployeeEmailID,t1.JobRoleFamily,t1.City,t1.HRLocation,
+         t1.OfficeBuilding,t1.Floor,t1.CreatedBy, convert(nvarchar(MAX), t1.createdOn, 23) as createdOn,t1.LastModifiedBy,
+          convert(nvarchar(MAX), t1.lastModifiedOn, 23) as lastModifiedOn,t2.employeeName as ManagerName
+         FROM refData.TBL_EMPLOYEES t1 
+		 left join refData.TBL_EMPLOYEES t2 on(t1.ManagerSignum=t2.Signum)
+		 
+		 inner join (
+			 select signum from transactionalData.TBL_WorkEffort wrkeft
+			 inner join transactionalData.TBL_ResourcePosition respos on respos.ResourcePositionID = wrkeft.ResourcePositionID
+			 inner join transactionalData.TBL_ResourceRequests resreq on respos.ResourceRequestID = resreq.ResourceRequestID
+			 left join transactionalData.TBL_DELIVERY_RESPONSIBLE dr on dr.SignumID=wrkeft.Signum
+			 where resreq.ProjectID =#{projectID}
+			 and wrkeft.Signum is not null
+	
+			 union
+	
+			 select dr.SignumID
+			 from transactionalData.TBL_DELIVERY_RESPONSIBLE dr
+			 left join refData.TBL_EMPLOYEES t1 on t1.Signum= dr.SignumID
+			 left join refData.TBL_EMPLOYEES t2 on(t1.ManagerSignum=t2.Signum)
+			 where dr.projectid=#{projectID}
+			 
+			 union
+	
+			 select p.ProjectCreator
+			 from transactionalData.TBL_PROJECTS p
+			 
+			 where p.projectid=#{projectID}
+		 ) sig on t1.Signum=sig.Signum
+
+                    
+    </select>
+
+        
+    <resultMap type="ProjectApprovalModel" id="ProjectApprovalModel">
+        <id property="projectApprovalId" column="ProjectApprovalID" />
+        <result property="approverSignum" column="ApproverSignum" />
+        <result property="projectId" column="ProjectID" />
+        <result property="approvedOrRejected" column="ApprovedOrRejected" />
+        <result property="approvedOrRejectedOn" column="ApprovedOrRejectedOn" />
+        <result property="requestedBy" column="RequestedBy" />
+        <result property="requestedOn" column="RequestedOn" />
+        <result property="status" column="Status" />
+                
+    </resultMap>
+	
+    <select id='isProjectApprovalByProjectIdExists' resultType="Boolean">
+        IF Exists(select 1 from transactionalData.TBL_ProjectApprovals where projectId=#{projectID})
+        Begin
+        Select 1 as 'Result'
+        End
+        else
+        Begin
+        Select 0 as 'Result'
+        End
+    </select>
+	
+    <select id='getProjectApprovalDetailsById' parameterType="int"  resultMap='ProjectApprovalModel'>
+        SELECT * FROM transactionalData.TBL_ProjectApprovals where 
+        projectID= #{projectID,jdbcType=INTEGER}
+             		
+            
+    </select>
+        
+		
+    <select id='isProjectApprovalByApproverExists' resultType="Boolean">
+        IF Exists(select 1 from transactionalData.TBL_ProjectApprovals where approverSignum=#{approverSignum})
+        Begin
+        Select 1 as 'Result'
+        End
+        else
+        Begin
+        Select 0 as 'Result'
+        End
+    </select> 
+    <select id='getProjectApprovalsByApprover' parameterType="java.lang.String"  resultMap='ProjectApprovalModel'>
+    
+    SELECT ApproverSignum,t2.ProjectID, ApprovedOrRejected, RequestedBy,ProjectApprovalID, status, OperationalManager,RequestedOn FROM transactionalData.TBL_ProjectApprovals as t1
+     left join transactionalData.TBL_PROJECTS as t2 on t1.ProjectID=t2.ProjectID
+      where approverSignum=#{approverSignum,jdbcType=VARCHAR} 
+      and t2.ProjectName like  +'' +#{marketArea}+ '%'
+      and t2.IsDeleted=0 ;
+        </select>   
+        
+          
+    <update id='updateProjectApprovalDetails' parameterType="ProjectApprovalModel">
+            
+        UPDATE transactionalData.TBL_ProjectApprovals set         		
+        approvedOrRejectedOn=dbo.GetDateIST(),
+        approvedOrRejected=#{projectApprovalModel.approvedOrRejected,jdbcType=BOOLEAN},
+         ModifiedBy=#{Signum},
+        ModifiedDate=dbo.GetDateIST()
+        where projectID=#{projectApprovalModel.projectId,jdbcType=INTEGER};
+    </update>
+    
+    <update id='updateRpPositionStatus'>
+        UPDATE [transactionalData].[TBL_ResourcePosition] set         		
+        PositionStatus = #{status}
+        where ResourcePositionID = #{rpID}
+    </update>
+    
+     <update id='updateProjectByApproval' parameterType="int">
+        update transactionalData.TBL_PROJECTS 
+		set lastmodifiedOn=dbo.GetDateIST(),
+		lastmodifiedBy=(select top 1 approversignum from 
+		transactionalData.TBL_ProjectApprovals where projectId=#{projectID,jdbcType=INTEGER} order by ApprovedOrRejectedOn desc)
+		where projectID=#{projectID,jdbcType=INTEGER} 
+ 	</update>
+
+
+	<update id='activateOpportunity' parameterType="int">
+		update transactionalData.TBL_OPPORTUNITY
+		set active='1'
+		where opportunityID in (select distinct OpportunityID from
+		transactionalData.tbl_projects where
+		ProjectID=#{projectId,jdbcType=INTEGER})
+	</update>
+        
+        
+    <resultMap type="ResourceRequestCompetenceModel" id="ResourceRequestCompetenceModel">
+        <id property="resourceRequestCompetenceId" column="ResourceRequestCompetenceId" />
+        <result property="competenceLevel" column="CompetenceLevel" />
+        <result property="resourceRequestId" column="resourceRequestId" />
+        <result property="createdBy" column="createdBy" />
+        <result property="createdOn" column="createdOn" />
+        <result property="lastModifiedBy" column="lastModifiedBy" />
+        <result property="lastModifiedOn" column="lastModifiedOn" />
+        <result property="active" column="active" />
+        <result property="competenceId" column="competenceId" />
+    </resultMap>
+        
+    <update id='updateResourceRequestCompetence' parameterType="ResourceRequestCompetenceModel">
+  
+        UPDATE transactionalData.TBL_ResourceRequestCompetences set         		
+        lastModifiedOn=dbo.GetDateIST(),
+        lastModifiedBy=#{resourceRequestCompetenceModel.lastModifiedBy,jdbcType=VARCHAR},
+        active=#{resourceRequestCompetenceModel.active,jdbcType=BOOLEAN}
+        where ResourceRequestCompetenceId=#{resourceRequestCompetenceModel.resourceRequestCompetenceId,jdbcType=INTEGER};
+    </update>
+        
+    <resultMap type="ResourceRequestCertificationModel" id="ResourceRequestCertificationModel">
+        <id property="resourceRequestCertificationId" column="resourceRequestCertificationId" />
+        <result property="createdBy" column="createdBy" />
+        <result property="createdOn" column="createdOn" />
+        <result property="lastModifiedBy" column="lastModifiedBy" />
+        <result property="lastModifiedOn" column="lastModifiedOn" />
+        <result property="active" column="active" />
+        <result property="certificateId" column="certificateId" />
+        <result property="resourceRequestId" column="resourceRequestId" />
+    </resultMap>
+            
+    <update id='updateResourceRequestCertification' parameterType="ResourceRequestCertificationModel">
+  
+        UPDATE transactionalData.TBL_ResourceRequestCertifications set         		
+        lastModifiedOn=dbo.GetDateIST(),
+        lastModifiedBy=#{resourceRequestCertificationModel.lastModifiedBy,jdbcType=VARCHAR},
+        active=#{resourceRequestCertificationModel.active,jdbcType=BOOLEAN}
+        where resourceRequestCertificationId=#{resourceRequestCertificationModel.resourceRequestCertificationId,jdbcType=INTEGER};
+    </update>
+        
+    <select id='isCertificateExists' resultType="Boolean">
+        IF Exists(select 1 from refData.TBL_Certificates where certificateId = #{certificateId})
+        Begin
+        Select 1 as 'Result'
+        End
+        else
+        Begin
+        Select 0 as 'Result'
+        End
+    </select>  
+    
+    <select id='isCompetenceExists' resultType="Boolean">
+        IF Exists(select 1 from refData.tbl_competences where competenceId = #{competenceId})
+        Begin
+        Select 1 as 'Result'
+        End
+        else
+        Begin
+        Select 0 as 'Result'
+        End
+    </select>  
+    
+    <select id='isResourceRequestExists' resultType="Boolean">
+        IF Exists(select 1 from transactionalData.tbl_resourceRequests where resourceRequestId = #{resourceRequestId})
+        Begin
+        Select 1 as 'Result'
+        End
+        else
+        Begin
+        Select 0 as 'Result'
+        End
+    </select>  
+    	    
+    <insert id = 'addCertificationByRRID' parameterType="ResourceRequestCertificationModel">
+        INSERT into transactionalData.TBL_ResourceRequestCertifications(CreatedBy,CreatedOn,LastModifiedBy,LastModifiedOn,CertificateID,ResourceRequestID,active) 
+        values(#{resourceRequestCertificationModel.createdBy,jdbcType=VARCHAR},dbo.GetDateIST(),#{resourceRequestCertificationModel.createdBy,jdbcType=VARCHAR},dbo.GetDateIST(),
+        #{resourceRequestCertificationModel.certificateId,jdbcType=INTEGER},#{resourceRequestCertificationModel.resourceRequestId,jdbcType=INTEGER},1
+        );
+    </insert>
+    	
+    <insert id = 'addCompetenceByRRID' parameterType="ResourceRequestCompetenceModel">
+        INSERT into transactionalData.TBL_ResourceRequestCompetences(CompetenceLevel,CreatedBy,CreatedOn,LastModifiedBy,LastModifiedOn,CompetenceID,ResourceRequestID,active) 
+        values(#{resourceRequestCompetenceModel.competenceLevel,jdbcType=VARCHAR},#{resourceRequestCompetenceModel.createdBy,jdbcType=VARCHAR},dbo.GetDateIST(),
+        #{resourceRequestCompetenceModel.createdBy,jdbcType=VARCHAR},dbo.GetDateIST(),
+        #{resourceRequestCompetenceModel.competenceId,jdbcType=INTEGER},#{resourceRequestCompetenceModel.resourceRequestId,jdbcType=INTEGER},1
+        );
+    </insert>
+    <resultMap type="NetworkElementModel" id="NetworkElementModelResult">
+        <id property="networkElementID" column="NetworkElementID" />
+        <result property="projectID" column="ProjectID" />
+        <result property="domainSubDomainID" column="DomainSubDomainID" />
+        <result property="technologyID" column="TechnologyID" />
+        <result property="vendorID" column="VendorID" />
+        <result property="market" column="Market" />
+        <result property="elementType" column="ElementType" />
+        <result property="type" column="Type" />
+        <result property="name" column="Name" />
+        <result property="latitude" column="Latitude" />
+        <result property="longitude" column="Longitude" />
+        <result property="Software_Release" column="Software_Release" />
+        <result property="band" column="Band" />
+        <result property="uploadedON" column="UploadedON" />
+        <result property="uploadedBy" column="UploadedBy" />
+        
+        <collection property="technologyDetails" ofType="TechnologyModel">
+            <id property="technologyID" column="TechnologyID" />
+            <result property="technology" column="Technology" />
+        </collection>
+        <collection property="domainDetails" ofType="DomainModel">
+            <id property="domainID" column="DomainID" />
+            <result property="domain" column="Domain" />
+            <result property="subDomain" column="SubDomain" />
+        </collection>
+        <collection property="vendorDetails" ofType="VendorModel">
+            <id property="vendorID" column="VendorID" />
+            <result property="vendor" column="Vendor" />
+             </collection>
+                  </resultMap>
+        
+    <select id='searchNetworkElementDetails' statementType="CALLABLE" resultMap="NetworkElementModelResult" parameterType="com.ericsson.isf.model.NetworkElementModel">
+        {call user_sp_getNetworkElementDetails(
+        #{networkElementModel.projectID,mode=IN, jdbcType=INTEGER},
+        #{networkElementModel.requestedDomainID,mode=IN, jdbcType=VARCHAR},
+        #{networkElementModel.requestedTechnologyID,mode=IN, jdbcType=VARCHAR},
+        #{networkElementModel.requestedVendorID,mode=IN, jdbcType=VARCHAR},
+        #{networkElementModel.marketType,mode=IN,jdbcType=VARCHAR},
+        #{networkElementModel.elementType,mode=IN, jdbcType=VARCHAR}
+        )};
+            
+    </select>
+        
+    <select id='getNetworkElementDetails' resultMap="NetworkElementModelResult">
+        select ne.Market,ne.NetworkElementID,ne.ProjectID,ne.domainSubDomainID,
+        ne.ElementType,ne.Type,ne.Name,ne.Latitude,ne.Longitude,ne.Software_Release,
+        d.DomainID,CONCAT(d.Domain,+'/'+ d.SubDomain) as Domain,
+        v.VendorID,v.Vendor,t.TechnologyID,t.Technology,ne.UploadedON,ne.UploadedBy,ne.Band 
+        from transactionalData.TBL_NETWORK_ELEMENT ne
+        inner join refData.TBL_DOMAIN d on d.DomainID=ne.DomainSubDomainID
+        inner join refData.TBL_VENDOR v on v.VendorID=ne.VendorID
+        inner join refData.TBL_TECHNOLOGY t on t.TechnologyID=ne.TechnologyID
+        where projectID = #{projectID}
+        <foreach item="column" index="index" collection="dataTableReq.columns">
+      		 <if test ="column.search != ''"> 
+              	and ${column.data} like #{column.search}
+          	 </if> 
+  		</foreach>
+  		<if test ="dataTableReq.order != null and dataTableReq.order.sortDir!=null"> 
+              order by 	${dataTableReq.order.data} ${dataTableReq.order.sortDir}
+        </if> 
+    </select>
+    
+    <select id='getNetworkElementDetailsCount' resultType="Integer">
+        select COUNT(1) 
+        from transactionalData.TBL_NETWORK_ELEMENT ne
+        inner join refData.TBL_DOMAIN d on d.DomainID=ne.DomainSubDomainID
+        inner join refData.TBL_VENDOR v on v.VendorID=ne.VendorID
+        inner join refData.TBL_TECHNOLOGY t on t.TechnologyID=ne.TechnologyID
+        where projectID = #{projectID}
+        
+        <foreach item="column" index="index" collection="dataTableReq.columns">
+      		 <if test ="column.search != ''"> 
+              	and ${column.data} like #{column.search}
+          	 </if> 
+  		</foreach>
+    </select>
+    
+    <select id='downloadNetworkElement' resultType='java.util.LinkedHashMap'>
+    	select ne.market, ne.ElementType, v.Vendor, 
+        ne.Type, ne.name, ne.Latitude, 
+        ne.Longitude, ne.Software_Release, 
+        CONCAT(d.Domain,+'/'+ d.SubDomain) as Domain, t.Technology,ne.UploadedON,ne.UploadedBy,ne.Band
+        from transactionalData.TBL_NETWORK_ELEMENT ne
+        inner join refData.TBL_DOMAIN d on d.DomainID=ne.DomainSubDomainID
+        inner join refData.TBL_VENDOR v on v.VendorID=ne.VendorID
+        inner join refData.TBL_TECHNOLOGY t on t.TechnologyID=ne.TechnologyID
+        where projectID = #{projectID}
+    </select>
+    
+    <update id='deleteNetworkElementDetails' parameterType="NetworkElementModel">
+        update  transactionalData.TBL_NETWORK_ELEMENT
+		Set Active=0,ModifiedOn=dbo.GetDateIST(),ModifiedBy=#{signumID}
+		where NetworkElementID= #{networkElementID}     
+    </update>
+    
+        
+    <delete id='deleteWorkEffortFromProposed'>
+        delete from [transactionalData].[TBL_PROPOSED_WORK_EFFORTS] where WorkEffortID =#{weid}
+    </delete>
+    
+    <delete id='deleteBookedHoursByWeID' parameterType="ResourcePositionModel">
+        
+        delete from transactionalData.TBL_Booked_Resource where WFID = #{updateWorkEffort.weid}
+        
+    </delete>
+    
+    <update id='deleteVendorDetails' parameterType="VendorModel">
+        update refData.TBL_VENDOR set active=0, lastModifiedBy=#{signumID}, lastModifiedDate=dbo.GetDateIST() where vendorID= #{vendorID}
+    </update>
+    
+    <insert id='saveProjectDefinedTasks' parameterType="ProjectDefinedTaskModel">
+        insert into transactionalData.TBL_FLOWCHART_STEP_DETAILS(SubActivityFlowchartDefID,StepID,StepName,TaskID,Task,ExecutionType,AvgEstdEffort,ToolID,Active)
+        values(#{flowChartStepDetailsModel.subActivityFlowChartDefID},#{flowChartStepDetailsModel.stepID},#{flowChartStepDetailsModel.stepName},
+                #{flowChartStepDetailsModel.taskID},#{flowChartStepDetailsModel.task},#{flowChartStepDetailsModel.executionType},
+                #{flowChartStepDetailsModel.avgEstdEffort},#{flowChartStepDetailsModel.toolID},1)
+    </insert>
+    
+    <resultMap type='VendorModel' id='VendorModelResult'>
+        <id property='vendorID' column='VendorID'/>
+        <result property='vendor' column='Vendor'/>
+        <result property='active' column='Active'/>
+        <result property='createdBy' column='CreatedBy'/>
+        <result property='createdDate' column='CreatedDate'/>
+        <result property='lastModifiedBy' column='LastModifiedBy'/>
+        <result property='lastModifiedDate' column='LastModifiedDate'/>
+    </resultMap>
+    
+    <select id='isVendorExists' resultType="Boolean">
+        IF Exists(select 1 from refData.TBL_Vendor where Vendor = #{vendor} and Active = 1)
+        Begin
+        Select 1 as 'Result'
+        End
+        else
+        Begin
+        Select 0 as 'Result'
+        End
+    </select>  
+    
+    <insert id='saveVendorDetails' parameterType='VendorModel'>
+        Insert into refData.TBL_VENDOR(Vendor,Active,CreatedBy,CreatedDate) Values(#{vendorModel.vendor,jdbcType=VARCHAR},1,#{vendorModel.createdBy,jdbcType=VARCHAR},dbo.GetDateIST());        
+    </insert>
+    
+    <select id='getVendorDetailsByID' resultMap="VendorModelResult">
+        SELECT Vendor,VendorID FROM refData.TBL_VENDOR where vendorID=#{vendorID, jdbcType=INTEGER} and Active=1
+    </select>
+
+    <update id = 'updateVendorDetails' parameterType="VendorModel">
+        UPDATE refData.TBL_VENDOR set vendor=#{vendorModel.vendor,jdbcType=VARCHAR},
+        lastModifiedBy=#{vendorModel.lastModifiedBy,jdbcType=VARCHAR}, 
+        lastModifiedDate=dbo.GetDateIST()
+        where vendorID=#{vendorModel.vendorID,jdbcType=INTEGER};
+    </update>
+    
+    <select id='getVendorDetails' resultMap='VendorModelResult'>
+        Select Vendor,VendorID from refData.TBL_VENDOR where active=1;
+    </select>
+    
+    <select id = 'getTaskDetailForSID' resultType="java.util.LinkedHashMap">
+	 select tsk.TaskID,tsk.Task,
+			tsk.AvgEstdEffort
+			from refData.TBL_TASK tsk
+			where tsk.SubActivityID = #{subActivityID} and tsk.Task = #{task}
+			and tsk.Active=1 
+    </select>
+    
+     <select id = 'getToolDetailForWF' resultType="java.util.LinkedHashMap">
+	 select top 1 CAST(ToolID as varchar(12)) as ToolID,Tool as ToolName  
+         from refData.TBL_TOOL_INVENTORY where tool= #{toolName} and Active =1
+         order by toolID desc
+    </select>
+    
+    <select id='getSubActivityForActivity' resultMap="StandardActivityModelResult">
+       SELECT sub.SubActivityID,sub.DomainID,sub.ServiceAreaID,sub.TechnologyID,sub.Activity,sub.Activity+'/'+sub.SubActivity as SubActivity,sub.AvgEstdEffort,
+        sub.Active,sub.CreatedBy,convert(nvarchar(MAX), sub.CreatedDate, 23) as CreatedDate ,
+        sub.LastModifiedBy,convert(nvarchar(MAX), sub.LastModifiedDate,23) as LastModifiedDate, 
+        CASE WHEN task.CountManualTask > 0 and task.CountAutomaticTask > 0 then 'Partial'
+        WHEN task.CountManualTask = 0 and task.CountAutomaticTask > 0 then 'Automatic'
+        WHEN task.CountManualTask > 0 and task.CountAutomaticTask = 0 then 'Manual'
+        ELSE 'Manual' END as ExecutionType
+        FROM refData.TBL_SUBACTIVITY sub 
+        left join (select SubActivityID, SUM(case when ExecutionType = 'Manual' then 1 else 0 end) as CountManualTask,
+        SUM(case when ExecutionType = 'Automatic' then 1 else 0 end) as CountAutomaticTask
+        from refData.TBL_TASK
+        where Active = 1
+        group by SubActivityID) task on sub.SubActivityID = task.SubActivityID
+        where sub.DomainID=#{domainID} and sub.ServiceAreaID=#{serviceAreaID} and sub.TechnologyID=#{technologyID} and sub.Active=1 and
+                                                              sub.activity=#{activityName}
+        
+    </select>
+    <resultMap type="ServeAreaModel" id="ServeAreaModelResult">
+        <id property="servAreaID" column="ServAreaID" />
+        <result property="serviceArea" column="ServiceArea" />
+    </resultMap>
+    
+<select id='getServeArea' resultMap = "ServeAreaModelResult">
+select distinct t1.ServAreaID, t1.ServiceArea
+from refData.TBL_SERVAREA t1
+left join refData.TBL_SERVICEAREA t2 on (t2.ServAreaID=t1.ServAreaID)
+left join transactionalData.TBL_PROJECTSCOPEDETAIL t3 on (t3.ServiceAreaID=t2.ServiceAreaID)
+left join transactionalData.TBL_PROJECTSCOPE t4 on (t4.ProjectScopeID =t3.ProjectScopeID)
+left join transactionalData.TBL_PROJECTS t5 on (t5.ProjectID=t4.ProjectID) and isDeleted='0'
+-- left join transactionalData.TBL_ProjectApprovals t6 on (t6.ProjectID=t5.ProjectID)
+where 1='1' 
+<if test ="projectID != null and projectID != 0"> 
+and t5.ProjectID=#{projectID}
+</if> 
+</select>
+
+        
+<select id='getServiceAreaDetailsByProject' resultType ="hashmap">
+select distinct t1.ServAreaID, t1.ServiceArea+'/'+t2.SubServiceArea as serviceArea ,t2.ServiceAreaID as subServiceAreaID
+from refData.TBL_SERVAREA t1
+left join refData.TBL_SERVICEAREA t2 on t2.ServAreaID=t1.ServAreaID
+left join transactionalData.TBL_PROJECTS t5 on t5.ServAreaID =t1.ServAreaID and t5.isDeleted='0'
+where 1='1' 
+<if test ="projectID != null and projectID != 0"> 
+and t5.ProjectID=#{projectID}
+</if>
+</select>
+
+
+     
+<!-- Old query     
+	<select id='getCustomerDetailsByMA' resultType ="hashmap">
+    select cust.CustomerName,cust.CustomerID,cont.CountryName,cont.CountryID from refData.TBL_COUNTRIES cont inner join
+ [refData].[TBL_CountryCustomerMapping] contMap on cont.CountryID=contMap.countryId inner join refData.TBL_CUSTOMERS
+ cust   on cust.CustomerID =contmap.customerId  inner join refData.TBL_MARKETAREAS ma on ma.MarketAreaID=cont.MarketAreaID
+ <if test ="countryID != null and countryID != 0">
+  where cont.CountryID=#{countryID}
+  </if>
+  <if test ="marketAreaID != null and marketAreaID != 0">
+   and ma.MarketAreaID=#{marketAreaID}
+   </if>
+    order by cust.CustomerName
+    </select>  -->
+    
+  <select id='getCustomerDetailsByMA' resultType ="hashmap">
+	select cust.CustomerName,cust.CustomerID,cont.CountryName,cont.CountryID
+	from refData.TBL_COUNTRIES cont (nolock)
+	inner join [refData].[TBL_CountryCustomerMapping] contMap (nolock) on cont.CountryID=contMap.countryId
+	inner join refData.TBL_CUSTOMERS cust (nolock) on cust.CustomerID =contmap.customerId inner join refData.TBL_MARKETAREAS ma on ma.MarketAreaID=cont.MarketAreaID
+ <if test ="countryID != null and countryID != 0">
+  where cont.CountryID=#{countryID}
+  </if>
+  <if test ="marketAreaID != null and marketAreaID != 0">
+   and ma.MarketAreaID=#{marketAreaID}
+   </if>
+    order by cust.CustomerName
+ </select> 
+    
+    <select id='getActivitySubActivityByProjectId' resultType='hashmap'>
+        select SubActivityId,Activity,SubActivity,pd.ProjectID  from refData.TBL_SUBACTIVITY sa 
+        inner join dbo.completeProjectsdetails pd on pd.domainid=sa.domainid 
+        and pd.TechnologyID=sa.TechnologyID and pd.ServiceAreaID=sa.ServiceAreaID
+        where sa.Active=1
+        <if test="ProjectID !=null and ProjectID !=0">
+			and pd.ProjectID=#{ProjectID}
+		</if>
+    </select>
+    
+    
+    <select id='getActivityByProjectId' resultType='hashmap'>
+        select distinct Activity from refData.TBL_SUBACTIVITY sa 
+        inner join dbo.completeProjectsdetails pd on pd.domainid=sa.domainid 
+        and pd.TechnologyID=sa.TechnologyID and pd.ServiceAreaID=sa.ServiceAreaID
+        where sa.Active=1
+        <if test="ProjectID !=null and ProjectID !=0">
+			and pd.ProjectID=#{ProjectID}
+		</if>
+    </select>
+    
+    
+    <insert id="insertBookedResource" parameterType="BookedResourcesModel">
+        INSERT INTO [transactionalData].[TBL_Booked_Resource]([ProjectID],[Positionid],[WFID],[Signum],[Date],[BlockedHrs])
+        Values(#{map.ProjectID},#{map.ResourcePositionID},#{map.WorkEffortID},#{map.signum},#{map.currentDate},#{map.hrsPerDay})
+    </insert>
+ 
+    <select id='getActivitySubActivityByProject_V2' resultType ='hashmap'>
+        SELECT distinct t2.projectscopeid, sfd.ProjectID, t1.SubActivityID,t1.DomainID,t1.ServiceAreaID,t1.TechnologyID,t1.Activity,t1.subActivity as subActivity,
+        concat(t1.Activity,'/',t1.subActivity) as activitySubActivity,t1.AvgEstdEffort,t1.Active,t1.CreatedBy,
+        convert(nvarchar(MAX), t1.CreatedDate, 23) as CreatedDate,t1.LastModifiedBy,convert(nvarchar(MAX), t1.LastModifiedDate,23) as LastModifiedDate 
+        FROM refData.TBL_SUBACTIVITY t1 
+        LEFT  join (select ProjectScopeID,ServiceAreaID,DomainID,TechnologyID,ProjectScopeDetailID from transactionalData.TBL_PROJECTSCOPEDETAIL where active = 1)t2 on(t1.ServiceAreaID=t2.ServiceAreaID and t1.DomainID=t2.DomainID and t1.TechnologyID=t2.TechnologyID)
+        LEFT JOIN (select ProjectScopeDetailID from [transactionalData].[TBL_ACTIVITYSCOPE] where Active=1) t3 on t3.ProjectScopeDetailID=t2.ProjectScopeDetailID 
+        LEFT  join (select ProjectScopeID,ProjectID from transactionalData.TBL_PROJECTSCOPE where active = 1)t4 on(t4.ProjectScopeID=t2.ProjectScopeID)
+        LEFT join ( select ProjectID from transactionalData.TBL_PROJECTS where isDeleted =0) t5 on (t5.ProjectID=t4.ProjectID)
+        INNER join transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF sfd on t1.subactivityID= sfd.subactivityID 
+        where t1.active = 1 AND t1.DomainID=#{domainID} and t1.ServiceAreaID=#{serviceAreaID} and t1.TechnologyID=#{technologyID}
+        and sfd.flowchartjson is not null and sfd.active=1
+        <if test="ProjectID !=null and ProjectID !=0">
+                                                and sfd.ProjectID=#{ProjectID}
+                                </if>
+    </select>
+    
+    <select id='getActivitySubActivityByProject_V3' resultType='hashmap'>
+        SELECT distinct t2.projectscopeid,t5.ProjectID, t1.SubActivityID,t1.DomainID,t1.ServiceAreaID,t1.TechnologyID,t1.Activity,t1.subActivity as subActivity,
+        concat(t1.Activity,'/',t1.subActivity) as activitySubActivity,t1.AvgEstdEffort,t1.Active,t1.CreatedBy,
+        convert(nvarchar(MAX), t1.CreatedDate, 23) as CreatedDate,t1.LastModifiedBy,convert(nvarchar(MAX), t1.LastModifiedDate,23) as LastModifiedDate 
+        FROM refData.TBL_SUBACTIVITY t1 
+        LEFT  join (select ProjectScopeID,ServiceAreaID,DomainID,TechnologyID,ProjectScopeDetailID  from transactionalData.TBL_PROJECTSCOPEDETAIL where active = 1)t2 on(t1.ServiceAreaID=t2.ServiceAreaID and t1.DomainID=t2.DomainID and t1.TechnologyID=t2.TechnologyID)
+        LEFT JOIN (select ProjectScopeDetailID from [transactionalData].[TBL_ACTIVITYSCOPE] where Active=1) t3 on t3.ProjectScopeDetailID=t2.ProjectScopeDetailID 
+        LEFT  join (select ProjectScopeID,ProjectID from transactionalData.TBL_PROJECTSCOPE where active = 1)t4 on(t4.ProjectScopeID=t2.ProjectScopeID)
+        LEFT join ( select ProjectID from transactionalData.TBL_PROJECTS where isDeleted =0) t5 on (t5.ProjectID=t4.ProjectID)
+        where t1.active = 1 AND t1.DomainID=#{domainID} and t1.ServiceAreaID=#{serviceAreaID} and t1.TechnologyID=#{technologyID}
+        <if test="ProjectID !=null and ProjectID !=0">
+                                                and t5.ProjectID=#{ProjectID}
+                                </if>
+    </select>
+
+    <select id ='getTechnologyDetailsBySignum' resultType="hashmap">
+       SELECT distinct t1.TechnologyID,t1.Technology,t1.Active,t1.CreatedBy, convert(nvarchar(MAX), t1.CreatedDate, 23) as CreatedDate ,
+        t1.LastModifiedBy,convert(nvarchar(MAX), t1.LastModifiedDate,23) as LastModifiedDate  
+        from (select * from refData.TBL_TECHNOLOGY where active='1') t1
+left join (select * from  transactionalData.TBL_PROJECTSCOPEDETAIL where active='1') t2 on(t2.TechnologyID=t1.TechnologyID)
+left join (select * from transactionalData.TBL_PROJECTSCOPE where active='1') t3 on (t3.ProjectScopeID=t2.ProjectScopeID)
+left join (select * from transactionalData.TBL_PROJECTS where isDeleted='0') t4 on (t4.ProjectID=t3.ProjectID)
+left join refData.TBL_domainSpoc t5 on (t5.DomainID=t2.DomainID)
+where t1.active='1' and t5.spoc = #{signum}
+
+    </select>
+    
+    <select id ='getEmployeeDetailsBySignum' resultType="hashmap">
+      select b.* from 
+(select t2.SubDomain from (select distinct DomainID from [ISFUAT].[refData].[TBL_domainSpoc] where poc =#{signum})t1 left join
+refdata.TBL_DOMAIN t2 on(t1.DomainID=t2.DomainID))a
+left join ( select t1.EmployeeName,t1.Signum,t1.PersonnelNumber,t1.PositionId,t1.CostCenter,t1.Unit,
+         t1.ManagerSignum,t1.IsLineManager,t1.EmployeeGroup,t1.Status,t1.CompanyName,
+         t1.FSO,t1.CountryName,t1.ParentUnit,t1.JobName,t1.Domain,
+         t1.SubDomain,t1.FunctionalArea,t1.ServiceArea,t1.IndustryVertical,
+         t1.EmployeeEmailID,t1.JobRoleFamily,t1.City,t1.HRLocation,
+         t1.OfficeBuilding,t1.Floor,t1.CreatedBy, convert(nvarchar(MAX), t1.createdOn, 23) as createdOn,t1.LastModifiedBy,
+          convert(nvarchar(MAX), t1.lastModifiedOn, 23) as lastModifiedOn,t2.employeeName as ManagerName FROM refData.TBL_EMPLOYEES t1 
+             left join refData.TBL_EMPLOYEES t2 on(t1.ManagerSignum=t2.Signum))b on(concat('CD-S-',a.SubDomain)=b.SubDomain)
+    </select>
+    
+    <select id='getSubScopebyScopeID' resultType='hashmap'>
+     
+	   SELECT PSD.[ProjectScopeDetailID],PSD.[ProjectScopeID],PSD.[DomainID],PSD.[ServiceAreaID],PSD.[TechnologyID]
+             ,PSD.[CreatedBy],PSD.[CreatedDate],D.Domain + ' / ' + D.SubDomain as Domain_SubDomain
+          ,SA.ServiceArea + ' / ' + SA.SubServiceArea as ServiceArea
+          ,T.Technology as Technology,ps.StartDate
+       FROM transactionalData.[TBL_PROJECTSCOPEDETAIL] PSD
+       JOIN refData.TBL_DOMAIN D on PSD.DomainID = D.DomainID
+       JOIN refData.TBL_SERVICEAREA SA on PSD.ServiceAreaID = SA.ServiceAreaID
+	   JOIN refData.TBL_TECHNOLOGY T on PSD.TechnologyID = T.TechnologyID
+	   join transactionalData.TBL_PROJECTSCOPE ps on ps.ProjectScopeID=psd.ProjectScopeID
+       where PSD.Active = 1 and ps.ProjectScopeID = #{projectScopeID}
+    </select>
+    
+    <select id='getActivitiesBySubScopeId' resultType='hashmap'>
+     	SELECT [ActivityScopeID],Act.[SubActivityID],Act.[AvgEstdEffort],Act.[ProjectScopeDetailID]
+				,Act.[CreatedBy],Act.[CreatedDate],SA.Activity + ' / ' + SA.SubActivity as SubActivity
+		FROM transactionalData.[TBL_ACTIVITYSCOPE] Act
+        Join refData.TBL_SUBACTIVITY SA On Act.SubActivityID = SA.SubActivityID
+        where Act.Active = 1 and sa.Active = 1 and  Act.ProjectScopeDetailID = #{projectScopeDetailID}
+    </select>
+    
+    
+    
+     <insert id = 'addDomainSpoc' parameterType="com.ericsson.isf.model.SpocModel">
+        INSERT into [refData].[TBL_domainSpoc]([marketAreaID],[DomainID],[servAreaID],[Spoc],[SpocLevel],[Active]
+      ,[CreatedBy],[CreatedDate])
+        values(
+        	 #{spocRequest.marketAreaID}
+        	,#{spocRequest.domainID}
+        	,#{spocRequest.servAreaID}
+        	,#{spocRequest.spoc}
+        	,#{spocRequest.spocLevel}
+        	,1
+        	,#{spocRequest.createdBy}
+        	,dbo.GetDateIST()
+        );
+    </insert>
+    
+    
+    <select id = 'getDomainSpoc' parameterType="com.ericsson.isf.model.SpocModel" resultType='com.ericsson.isf.model.SpocModel'>
+        select MarketAreaID,DomainID,ServAreaID,Spoc,SpocLevel,DomainSpocID,Active  from  [refData].[TBL_domainSpoc]
+        
+        where 
+        	 marketareaid=#{spocRequest.marketAreaID}
+        	and domainid=#{spocRequest.domainID}
+        	and servareaid=#{spocRequest.servAreaID}
+        	and spoc=#{spocRequest.spoc}
+        	
+    </select>
+    
+    
+    
+     <select id='getAllDomainSpoc' resultType='java.util.LinkedHashMap'>
+     	select m.MarketAreaName,dm.Domain,dm.SubDomain,s.ServiceArea,d.Spoc,d.domainSpocID,d.active from [refData].[TBL_domainSpoc] d
+		left join [refData].[TBL_MARKETAREAS] m on d.marketAreaID=m.MarketAreaID
+		left join [refData].[TBL_DOMAIN] dm on d.DomainID = dm.DomainID
+		left join [refData].[TBL_SERVAREA] s on d.servAreaID=s.ServAreaID
+    </select>
+    
+	 <update id = 'updateResourcePositionToProposed' parameterType="ResourcePositionModel">
+        UPDATE transactionalData.TBL_ResourcePosition  set transactionalData.TBL_ResourcePosition.PositionStatus=#{status}, transactionalData.TBL_ResourcePosition.IsActivie=1,
+        transactionalData.TBL_ResourcePosition.LastModifiedBy=#{loggedInUser}, transactionalData.TBL_ResourcePosition.LastModifiedOn=dbo.GetDateIST()
+        from transactionalData.TBL_ResourcePosition
+		JOIN transactionalData.TBL_WorkEffort  ON transactionalData.TBL_WorkEffort.resourcepositionid = transactionalData.TBL_ResourcePosition.resourcepositionid 
+		where transactionalData.TBL_WorkEffort.WorkEffortID = #{weid};
+    </update>
+	
+	<update id = 'updateResourcePositionToRejected' parameterType="ResourcePositionModel">
+        UPDATE transactionalData.TBL_ResourcePosition 
+         set transactionalData.TBL_ResourcePosition.PositionStatus=#{status},
+          transactionalData.TBL_ResourcePosition.IsActivie=0,
+        transactionalData.TBL_ResourcePosition.LastModifiedBy=#{loggedInUser}, 
+        transactionalData.TBL_ResourcePosition.LastModifiedOn=dbo.GetDateIST()
+        from transactionalData.TBL_ResourcePosition
+		JOIN transactionalData.TBL_WorkEffort  ON transactionalData.TBL_WorkEffort.resourcepositionid = transactionalData.TBL_ResourcePosition.resourcepositionid 
+		where transactionalData.TBL_WorkEffort.WorkEffortID = #{weid};
+    </update>
+	
+     <select id='getTaskDetailsFromMaster' resultMap="TaskModelResult">
+       select t.SubActivityID,t.TaskID,t.Task,t.ExecutionType,t.Active,t.CreatedBy,convert(nvarchar(MAX), t.CreatedDate, 23) as CreatedDate ,
+        t.LastModifiedBy,convert(nvarchar(MAX), t.LastModifiedDate,23) as LastModifiedDate,tool.ToolID,tool.Tool
+        from refData.tbl_task t
+	left join refData.TBL_TASK_TOOL tskTool on t.TaskID =tskTool.TaskID and tskTool.Active=1
+	left join refData.TBL_TOOL_INVENTORY tool on tool.ToolID =tskTool.ToolID and tool.Active=1
+        where t.taskID= #{taskID,jdbcType=INTEGER} and t.subactivityID =#{subActivityID} and t.active = 1
+    </select>
+    
+    <select id='getProjectIDForSubActivity' resultType='Integer'>
+        select distinct ProjectID from transactionalData.TBL_SCOPEID_TASK_MAPPING where subActivityID = #{subActivityID}
+    </select>
+    
+    <select id='isTaskExistsInProjConfTable' resultType = 'Boolean'>
+        IF EXISTS(select 1 from transactionalData.TBL_SCOPEID_TASK_MAPPING where TaskID =#{taskID} 
+                                                                           and SubActivityID=#{subActivityID} 
+                                                                           and ProjectID = #{projectID})
+        BEGIN
+             Select 1 as 'Result'
+        END
+        ELSE
+        BEGIN
+             Select 0 as 'Result'
+        END
+    </select>
+    
+    <select id='updateProjConfTable'>
+        update transactionalData.TBL_SCOPEID_TASK_MAPPING set MasterTask = #{taskModel.task}
+        where ProjectID=#{projectID} and SubActivityID =#{taskModel.subActivityID}
+        and TaskID = #{taskModel.taskID}
+    </select>  
+    <resultMap type='CustomerModel' id='CustomerModelResult'>
+        <id property='customerID' column='CustomerID'/>
+        <result property='customerName' column='CustomerName'/>
+        <result property='country' column='Country'/>
+        </resultMap>
+     <select id='getCustomerDetails' resultMap='CustomerModelResult'>
+        Select CustomerID,CustomerName,Country from [refData].[TBL_CUSTOMERS] where isActive=1
+    </select>
+        
+      <update id='editCustomerName' parameterType="com.ericsson.isf.model.CustomerModel">
+      	update refData.TBL_CUSTOMERS 
+      	set CustomerName=#{customerModel.customerName} ,Country=#{customerModel.country}, LastModifiedBy=#{customerModel.signum},LastModifiedOn= dbo.GetDateIST()
+      	where CustomerID=#{customerModel.customerID}
+      </update>
+       
+    <update id='deleteCustomerDetails'>
+    update refData.tbl_customers set isActive=0,LastModifiedBy = #{signum},LastModifiedOn=dbo.GetDateIST() where CustomerID=#{customerID}
+    </update>
+     
+    <insert id='saveCustomerDetails' parameterType="com.ericsson.isf.model.CustomerModel" useGeneratedKeys="true" keyProperty="customerModel.customerID" keyColumn="customerID">  
+				INSERT INTO [refData].[TBL_CUSTOMERS]
+				           ([CustomerName]
+				           ,[Country]
+				           ,[isActive]
+				           ,[CreatedOn]
+                           ,[LastModifiedOn]
+                           ,[CreatedBy]
+                           ,[LastModifiedBy])		          
+           
+                            VALUES
+				           (
+				           #{customerModel.customerName}
+				           ,#{customerModel.country}
+				           ,1
+				           ,dbo.GetDateIST()
+				           ,dbo.GetDateIST()
+				           ,#{customerModel.signum}
+				           ,#{customerModel.signum}
+				            )
+				           		           
+
+    </insert>
+     <insert id='saveCustomerCountryMappimg' parameterType="com.ericsson.isf.model.CustomerModel" useGeneratedKeys="true" >  
+				INSERT INTO refData.TBL_CountryCustomerMapping
+				           ([CustomerID]
+				           ,[CountryID]
+				        
+				         
+				           )
+				     VALUES
+				           (
+				           #{customerModel.customerID}
+				           ,#{customerModel.countryID}
+				         
+				           
+				           )
+
+    </insert>
+     <select id = 'getCustMod' parameterType="com.ericsson.isf.model.CustomerModel" resultType='com.ericsson.isf.model.CustomerModel'>
+        select CustomerID,CustomerName,Country,isActive,Description from  [refData].[TBL_CUSTOMERS]
+        
+        where 
+        	 CustomerName=#{customerModel.customerName}
+        	and Country=#{customerModel.country}
+        	and isActive=1
+        
+        	
+        	
+    </select>
+    <resultMap type='WorkInstructionModel' id='WorkInstructionModel'>
+        <id property='wIID' column='WIID'/>
+        <result property='workInstructionName' column='WorkInstructionName'/>
+        <result property='domainID' column='DomainID'/>
+        <result property='vendorID' column='VendorID'/>
+        <result property='technologyID' column='TechnologyID'/>
+        <result property='sWrelease' column='SWrelease'/>
+        <result property='kPIName' column='KPIName'/>
+        <result property='revNumber' column='RevNumber'/>
+        <result property='flowchartOwner' column='FlowchartOwner'/>
+        <result property='description' column='Description'/>
+        <result property='active' column='Active'/>
+        <result property='createdBy' column='CreatedBy'/>
+        <result property='createdON' column='CreatedON'/>
+        <result property='modifiedBy' column='ModifiedBy'/>
+        <result property='modifiedON' column='ModifiedON'/>
+        <result property='hyperlink' column='Hyperlink'/>
+        <result property='domain' column='Domain'/>
+        <result property='vendor' column='Vendor'/>
+        <result property='fileName' column='FileName'/>
+        <result property='fileType' column='FileType'/>
+        <result property='dataFile' column='DataFile'/>
+        <result property='technology' column='Technology'/>
+        </resultMap>
+    
+    <select id='getWorkInstruction' resultMap='WorkInstructionModel'>
+        select t1.WIID,t1.WorkInstructionName,t1.DomainID,t2.Domain,t1.VendorID,t3.Vendor,t1.TechnologyID,t4.Technology,t1.SWrelease,t1.KPIName,t1.RevNumber,t1.FlowchartOwner,t1.Description,t1.CreatedBy,t1.CreatedON,t1.ModifiedBy,t1.ModifiedON,t1.Hyperlink,t1.Active from refData.TBL_WF_WORK_INSTRUCTION as t1 join
+refData.TBL_DOMAIN as t2 on t1.DomainID=t2.DomainID join
+refData.TBL_VENDOR as t3 on t1.VendorID=t3.VendorID join
+refData.TBL_TECHNOLOGY as t4 on t1.TechnologyID=t4.TechnologyID 
+    </select>
+     <insert id = 'saveWorkInstruction' parameterType="WorkInstructionModel" >
+		insert into refData.TBL_WF_WORK_INSTRUCTION(WorkInstructionName,DomainID,VendorID,TechnologyID,SWrelease,KPIName,RevNumber,FlowchartOwner,Description,Active,CreatedBy,CreatedON,ModifiedBy,ModifiedON,Hyperlink,FileName,FileType,DataFile) 
+                values(#{workInstructionModel.workInstructionName},#{workInstructionModel.domainID},#{workInstructionModel.vendorID},#{workInstructionModel.technologyID},#{workInstructionModel.sWrelease},#{workInstructionModel.kPIName},
+                       #{workInstructionModel.revNumber},#{workInstructionModel.flowchartOwner},#{workInstructionModel.description},#{workInstructionModel.active},#{workInstructionModel.createdBy},dbo.GetDateIST(),#{workInstructionModel.modifiedBy},dbo.GetDateIST(),#{workInstructionModel.hyperlink},#{workInstructionModel.fileName},#{workInstructionModel.fileType},#{workInstructionModel.dataFile})
+
+        </insert>
+         <update id='deleteWorkInstruction' parameterType="WorkInstructionModel">
+        UPDATE refData.TBL_WF_WORK_INSTRUCTION set Active= #{active},ModifiedBy=#{signumID},ModifiedON = dbo.GetDateIST()
+        where WIID=#{wIID};
+    </update> 
+    <update id='editPrevWorkInstruction' parameterType="WorkInstructionModel">
+        UPDATE refData.TBL_WF_WORK_INSTRUCTION set Active= 0,ModifiedBy=#{modifiedBy},ModifiedON = dbo.GetDateIST()
+        where WIID=#{wIID};
+    </update>
+
+	<select id='getActiveWorkInstruction' resultMap='WorkInstructionModel'>
+		select
+		t1.WIID,t1.WorkInstructionName,t1.DomainID,t2.Domain,t1.VendorID,
+		t3.Vendor,t1.TechnologyID,t4.Technology,t1.SWrelease,t1.KPIName,
+		t1.RevNumber,t1.FlowchartOwner,t1.Description,t1.CreatedBy,t1.CreatedON,t1.ModifiedBy,
+		t1.ModifiedON,t1.Hyperlink,t1.Active,t1.FileName,t1.FileType
+		from refData.TBL_WF_WORK_INSTRUCTION as t1 join
+		refData.TBL_DOMAIN as
+		t2 on t1.DomainID=t2.DomainID join
+		refData.TBL_VENDOR as t3 on
+		t1.VendorID=t3.VendorID join
+		refData.TBL_TECHNOLOGY as t4 on
+		t1.TechnologyID=t4.TechnologyID where t1.Active=1
+		<if test="domainID !=null and domainID !=0">
+			and t1.DomainID=#{domainID}
+		</if>
+		<if test="vendorID !=null and vendorID !=0">
+			and t1.VendorID=#{vendorID}
+		</if>
+		<if test="technologyID !=null and technologyID !=0">
+			and t1.technologyID=#{technologyID}
+		</if>
+	</select>
+	<select id='getAdhocBookingForProject'
+	resultType='com.ericsson.isf.model.AdhocBookingProjectModel'>
+	declare @signum varchar(50)=#{signum}
+	if(select isnull(ProjectID,0) from transactionalData.TBL_ADHOC_BOOKING where
+	status='Started' and SignumID=@signum ) != 0
+	Begin
+	select concat(p.ProjectID,'_',p.ProjectName) as actType,ab.ADHOCBOOKINGID as
+	id
+	,abs((datediff(millisecond,dbo.GetDateIST(),ab.StartDate))/1000) as actualDuration
+	 ,aba.name,aba.type,p.ProjectID,p.ProjectName,aba.ADHOCBOOKINGACTIVITYID
+	from transactionalData.TBL_PROJECTS p
+	left join
+	transactionalData.TBL_ADHOC_BOOKING as ab on ab.ProjectID=p.ProjectID
+	inner join  refData.TBL_ADHOC_BOOKING_ACTIVITY aba on ab.ADHOCBOOKINGACTIVITYID=aba.ADHOCBOOKINGACTIVITYID
+	where ab.Status='Started' and ab.SignumID=@signum
+	End
+	Else
+	Begin
+	select (Type+'-'+Activity) as actType,abc.ADHOCBOOKINGID as id,
+	abs((datediff(millisecond,dbo.GetDateIST(),abc.StartDate))/1000) as
+	actualDuration
+	,aba.name,aba.type,aba.ADHOCBOOKINGACTIVITYID
+	from refData.TBL_ADHOC_BOOKING_ACTIVITY aba
+	inner join transactionalData.TBL_ADHOC_BOOKING as abc on
+	abc.ADHOCBOOKINGACTIVITYID=aba.ADHOCBOOKINGACTIVITYID
+	where abc.Status='Started' and abc.SignumID=@signum and
+	LOWER(aba.Status)='active'
+	End
+</select>
+<!-- v1/getAdhocBookingForProject -->
+<select id='getAdhocBookingForProjectV1' resultType='java.util.LinkedHashMap'>
+    	declare @signum varchar(50)=#{signum}
+if(select isnull(ProjectID,0) from transactionalData.TBL_ADHOC_BOOKING where status='Started' and SignumID=@signum ) != 0
+  Begin
+  select concat(p.ProjectID,'_',p.ProjectName)  as actType,ab.BookedDuration,ab.ADHOCBOOKINGID as id
+   ,ab.PlannedDuration as plannedDuration,ab.StartDate,ab.PlannedEndDate 
+    from transactionalData.TBL_PROJECTS p
+      left join
+          transactionalData.TBL_ADHOC_BOOKING as  ab on ab.ProjectID=p.ProjectID 
+		   where ab.Status='Started' and ab.SignumID=@signum
+   End
+    Else
+   Begin
+   select (Type+'-'+Activity) as actType,abc.BookedDuration,abc.ADHOCBOOKINGID as id,abc.PlannedDuration as plannedDuration,abc.StartDate,abc.PlannedEndDate from refData.TBL_ADHOC_BOOKING_ACTIVITY aba 
+   inner join transactionalData.TBL_ADHOC_BOOKING as abc on abc.ADHOCBOOKINGACTIVITYID=aba.ADHOCBOOKINGACTIVITYID
+   where abc.Status='Started' and abc.SignumID=@signum and LOWER(aba.Status)='active'
+    End
+    </select>
+    
+    <insert id='saveLeavePlan' parameterType="com.ericsson.isf.model.LeavePlanModel" useGeneratedKeys="true" keyProperty="leavePlanModel.leavePlanID" keyColumn="leavePlanID">  
+				INSERT INTO [transactionalData].[TBL_Leave_Plan]
+				           ([Signum]
+				          ,[CreatedBy]
+						  ,[StartDate]
+						  ,[EndDate]
+						  ,[isActive]
+						  ,[Type]
+						  ,[Comments],
+						  CreatedOn,
+						   ModifiedBy,
+                          ModifiedDate
+				           )
+				     VALUES
+				           (
+				           #{leavePlanModel.signum},
+						   #{leavePlanModel.createdBy},
+						   #{leavePlanModel.startDate},
+						   DATEADD(minute,23*60+59, #{leavePlanModel.endDate}), 
+						   1,
+						   #{leavePlanModel.type},
+						   #{leavePlanModel.comments},
+						   dbo.GetDateIST(),
+						    #{leavePlanModel.createdBy},
+                             dbo.GetDateIST()
+				          )
+
+    </insert>
+    
+    <resultMap type='LeavePlanModel' id='LeavePlanModel'>
+        <id property='leavePlanID' column='LeavePlanID'/>
+        <result property='signum' column='Signum'/>
+        <result property='createdBy' column='CreatedBy'/>
+        <result property='startDate' column='StartDate'/>
+        <result property='endDate' column='EndDate'/>
+        <result property='isActive' column='isActive'/>
+        <result property='type' column='Type'/>
+        <result property='comments' column='Comments'/>
+        <result property='createdOn' column='CreatedOn'/>
+        <result property='leaveHours' column='LeaveHours'/>
+    </resultMap>
+    
+     <resultMap type='ShiftTimmingModel2' id='ShiftTimmingModel2'>
+        <id property='shiftID' column='ShiftID'/>
+       
+        <result property='signum' column='Signum'/>
+       
+        <result property='createdBy' column='CreatedBy'/>
+        <result property='createdOn' column='Createdon'/>
+        <result property='shiftStartTime' column='ShiftStarttime'/>
+        <result property='shiftEndTime' column='ShiftEndTime'/>
+        <result property='shiftISTStartTime' column='ShiftISTStartTime'/>
+        <result property='shiftISTEndTime' column='ShiftISTEndTime'/>
+        <result property='isActive' column='isActive'/>
+        <result property='status' column='Status'/>
+        <result property='timeZone' column='TimeZone'/>
+        <result property='startDate' column='StartDate'/>
+        <result property='endDate' column='EndDate'/>
+        <result property='shiftISTStartDate' column='ShiftISTStartDate'/>
+        <result property='shiftISTEndDate' column='ShiftISTEndDate'/>
+        <result property='preferredTimeZone' column='PreferredTimeZone'/>
+        <result property='startWeek' column='StartWeek'/>
+    </resultMap>
+    
+    <select id ="getLeavePlanBySignum" resultMap="LeavePlanModel">
+         Select LeavePlanID,Signum,CreatedBy,StartDate,EndDate,isActive,Type,Comments,CreatedOn,PersonnelNumber,LeaveDate,LeaveHours,
+         LeaveEssMssID,LMApprovalStatus,LeaveSource,ModifiedBy,ModifiedDate from transactionalData.[TBL_Leave_Plan] where Signum = #{signum} and isActive = 1
+    </select>
+    
+    <select id ="getShiftTimmingBySignumAndDate" resultMap="ShiftTimmingModel2">
+    Select ShiftID,Signum,st.CreatedBy,st.Createdon,ShiftStarttime,ShiftEndTime,ShiftISTStartTime,ShiftISTEndTime,st.isActive,Status,TimeZone,
+         convert(nvarchar(MAX),StartDate, 23) as StartDate,convert(nvarchar(MAX),EndDate, 23) as EndDate,
+         convert(nvarchar(MAX),ShiftISTStartDate, 23) as ShiftISTStartDate,convert(nvarchar(MAX),ShiftISTEndDate, 23) as ShiftISTEndDate ,up.DefaultValue as PreferredTimeZone,week as StartWeek 
+         from transactionalData.[TBL_Shift_Timmings] st 
+		 left join transactionalData.TBL_User_Preferences up on up.UserSignum=st.Signum and up.DefaultName='timezone' and up.IsActive=1
+		 where st.Signum =#{signum} and st.isActive = 1 and st.StartDate = #{startDate} 
+     </select>
+     
+     <select id ="getShiftTimmingBySignum" resultMap="ShiftTimmingModel2">
+    Select top 1 ShiftID,Signum,st.CreatedBy,st.Createdon,ShiftStarttime,ShiftEndTime,ShiftISTStartTime,ShiftISTEndTime,st.isActive,Status,TimeZone,
+         convert(nvarchar(MAX),StartDate, 23) as StartDate,convert(nvarchar(MAX),EndDate, 23) as EndDate,
+         convert(nvarchar(MAX),ShiftISTStartDate, 23) as ShiftISTStartDate,convert(nvarchar(MAX),ShiftISTEndDate, 23) as ShiftISTEndDate ,up.DefaultValue as PreferredTimeZone,week as StartWeek 
+         from transactionalData.[TBL_Shift_Timmings] st 
+		 left join transactionalData.TBL_User_Preferences up on up.UserSignum=st.Signum and up.DefaultName='timezone' and up.IsActive=1
+		 where st.Signum =#{signum} and st.isActive=1 and st.StartDate &lt;=#{startDate} order by StartDate desc 
+     </select>
+     
+    <update id = 'deleteLeavePlan' parameterType="LeavePlanModel">
+       update transactionalData.[TBL_Leave_Plan]
+			set isActive=0
+		where LeavePlanID=#{leavePlanID} and Signum= #{signum}
+    </update>
+    
+    <resultMap type='TimeZoneModel' id='TimeZoneModel'>
+        <id property='utcOffset' column='UTCOffset'/>
+        <result property='timeZone' column='TimeZone'/>
+        <result property='exampleLocation' column='ExampleLocation'/>
+        <result property='istOffset' column='ISTOffset'/>
+        <result property='isActive' column='isActive'/>
+    </resultMap>
+    
+     <select id ="getTimeZones" resultMap="TimeZoneModel">
+        select UTCOffset,TimeZone,TimeZoneID from refData.TBL_TimeZone where isActive=1
+    </select>
+    
+    <update id = 'deleteShiftTimmingBySignum' >
+       update transactionalData.[TBL_Shift_Timmings]
+			set isActive=0
+		where Signum= #{signum} and isActive=1 and StartDate=#{startDate}
+    </update>
+    
+    <insert id='saveshiftTimming' >  
+				INSERT INTO [transactionalData].[TBL_Shift_Timmings]
+				           ([Signum]
+						      ,[TimeZone]
+						      ,[ShiftStarttime]
+						      ,[ShiftEndTime]
+						      ,[Createdon]
+						      ,[CreatedBy]
+						      ,[ShiftISTStartTime]
+						      ,[ShiftISTEndTime]
+						      ,[isActive]
+						      ,[Status]
+						      ,[StartDate]
+						      ,[EndDate]
+						      ,[Week]
+						      ,[ShiftISTStartDate]
+						      ,[ShiftISTEndDate]
+				           )
+				     VALUES
+				           (
+				           #{signum},
+						   #{shiftTimmingModel.timeZone},
+						   #{shiftTimmingModel.shiftStartTime},
+						   #{shiftTimmingModel.shiftEndTime},
+						   dbo.GetDateIST(),
+						   #{shiftTimmingModel.createdBy},
+						   #{shiftTimmingModel.shiftISTStartTime},
+						   #{shiftTimmingModel.shiftISTEndTime},
+						   1,
+						   #{shiftTimmingModel.status},
+						   #{shiftTimmingModel.startDate},
+						   CONVERT(DATE,nullif(#{shiftTimmingModel.endDate},'NULL'),126) ,
+						   #{shiftTimmingModel.week},
+						   #{shiftTimmingModel.shiftISTStartDate},
+						   CONVERT(DATE,nullif(#{shiftTimmingModel.shiftISTEndDate},'NULL'),126) 
+				          )
+
+    </insert>
+    
+    <select id ="getShiftTimmingByDate" resultMap="ShiftTimmingModel2">
+        
+	 Select ShiftID,Signum,CreatedBy,Createdon,ShiftStarttime,ShiftEndTime,ShiftISTStartTime,ShiftISTEndTime,isActive,Status,TimeZone,
+         convert(nvarchar(MAX),StartDate, 23) as StartDate,convert(nvarchar(MAX),EndDate, 23) as EndDate,
+         convert(nvarchar(MAX),ShiftISTStartDate, 23) as ShiftISTStartDate,convert(nvarchar(MAX),ShiftISTEndDate, 23) as ShiftISTEndDate, 
+		 convert(nvarchar(20),ShiftStarttime) +'/'+ convert(nvarchar(20),ShiftISTStartTime) as start_IstStart_Date,
+		 convert(nvarchar(20),ShiftEndTime) +'/'+ convert(nvarchar(20),ShiftISTEndTime) as end_IstEnd_Date, Week as StartWeek
+         from transactionalData.[TBL_Shift_Timmings] where Signum = #{signum} and isActive = 1
+        		and ((CONVERT(DATE, ShiftISTStartDate) between #{startDate} and #{endDate}) OR 
+					(CONVERT(DATE, ShiftISTEndDate)  between #{startDate} and #{endDate}))
+    </select>
+    <update id = 'deleteShiftTimmingByID' >
+       update transactionalData.[TBL_Shift_Timmings]
+			set isActive=0
+		where 
+		<if test="signum !=null and signum !=''">
+			Signum= #{signum} and 
+		</if>
+		isActive=1 and ShiftID=#{shiftId}
+    </update>
+    
+    <select id='downloadWorkInstructionFile' resultMap='WorkInstructionModel'>
+		select
+		t1.WIID,t1.WorkInstructionName,t1.DomainID,t2.Domain,t1.VendorID,
+		t3.Vendor,t1.TechnologyID,t4.Technology,t1.SWrelease,t1.KPIName,
+		t1.RevNumber,t1.FlowchartOwner,t1.Description,t1.CreatedBy,t1.CreatedON,t1.ModifiedBy,
+		t1.ModifiedON,t1.Hyperlink,t1.Active,t1.FileName,t1.FileType,t1.DataFile
+		from refData.TBL_WF_WORK_INSTRUCTION as t1 join
+		refData.TBL_DOMAIN as
+		t2 on t1.DomainID=t2.DomainID join
+		refData.TBL_VENDOR as t3 on
+		t1.VendorID=t3.VendorID join
+		refData.TBL_TECHNOLOGY as t4 on
+		t1.TechnologyID=t4.TechnologyID where t1.Active=1
+		and t1.WIID=#{wIID}
+			</select>
+		
+		<select id='getUserFeedBack' resultType = 'com.ericsson.isf.model.UserFeedbackModel'>
+			select * from transactionalData.TBL_User_Feedback
+		</select>
+		
+		<select id='getEssLeave' resultType="HashMap">
+			select LeaveType,LeaveId,LeaveEssMssID from refData.TBL_ESS_Leave where active=1 order by LeaveType asc
+		</select>
+		
+		 <select id='getNodeTypeByDeliverableId' resultType="String">
+    		select distinct(Type) from transactionalData.TBL_NETWORK_ELEMENT as ne
+			join transactionalData.TBL_PROJECTSCOPE ps on ps.ProjectID=ne.ProjectID
+			join transactionalData.TBL_PROJECTSCOPEDETAIL psd on psd.ProjectScopeID=ps.ProjectScopeID
+			where NE.ProjectID=#{projectID}  and ElementType=#{elementType} and psd.ProjectScopeID=#{deliverableId}
+    </select> 
+    
+    <select id='getPositionStatusByID' resultType="String">
+			select rp.PositionStatus from transactionalData.TBL_ResourcePosition rp
+        JOIN transactionalData.TBL_WorkEffort  ON transactionalData.TBL_WorkEffort.resourcepositionid = rp.resourcepositionid 
+		where transactionalData.TBL_WorkEffort.WorkEffortID =#{weid}
+		</select>
+		
+	<select id='getNearestNextShiftStartDate' resultType="String">
+			select top 1 StartDate from transactionalData.TBL_Shift_Timmings where StartDate &gt; #{prevShiftStartDate} and Signum=#{signum} and isActive=1 order by StartDate
+	</select>
+		
+	<select id='getNearestPreviousShift' resultMap="ShiftTimmingModel2">
+			select top 1 ShiftID,Signum,CreatedBy, Createdon, ShiftStarttime, ShiftEndTime, ShiftISTStartTime , ShiftISTEndTime ,isActive,Status,TimeZone,
+         convert(nvarchar(MAX),StartDate, 23) as StartDate,convert(nvarchar(MAX),EndDate, 23) as EndDate,
+         convert(nvarchar(MAX),ShiftISTStartDate, 23) as ShiftISTStartDate,week as StartWeek 
+         from transactionalData.[TBL_Shift_Timmings] where Signum=#{signum} and isActive=1 and StartDate &lt;#{endDate} order by StartDate desc 
+	</select>
+
+	<select id='getNodes' resultType="String">
+
+		Select distinct
+		Type
+		from transactionalData.TBL_Network_element WITH (NOLOCK)
+		where countryCustomerGroupID= #{countryCustomerGroupID} and elementType=
+		#{elementType} and active=1
+
+	</select> 
+
+	<select id='getCountries' resultType = 'com.ericsson.isf.model.CountryModel'>
+		Select CountryID,CountryName,MarketAreaID from refData.TBL_COUNTRIES order by CountryName
+	</select>
+
+	<select id='getScopeByScopeId' resultType='com.ericsson.isf.model.ScopeDetailsModel'>
+		SELECT [ProjectScopeID],[ScopeName],[StartDate],[EndDate],[ProjectID],
+		[CreatedBy],[CreatedDate],[deliverableStatus]
+        FROM transactionalData.[TBL_PROJECTSCOPE]
+        where Active = 1
+        And ProjectScopeID = #{projectScopeID}
+	</select>
+
+	<select id="changeEmployeeStatus" statementType="CALLABLE" resultType="String">
+	{call [dbo].[UpdateEmployeeStatus] (
+		#{resourceStatusModel.resourceStatusName},
+		#{resourceStatusModel.resignedOrTransferredDate},
+		#{resourceStatusModel.releaseDate},
+		#{resourceStatusModel.signum},
+		#{resourceStatusModel.reason},
+		#{resourceStatusModel.createdBy}
+	)}
+	</select>
+	
+	<select id="getScopeDetailsByScopeId" resultType="ScopeDetailsModel">
+		select ps.ScopeName,ps.ProjectID,psd.ProjectScopeDetailID
+		,(select Domain from refData.TBL_DOMAIN where DomainID= psd.DomainID) as Domain
+		,(select SubDomain from refData.TBL_DOMAIN where DomainID= psd.DomainID) as SubDomain
+		,(select ServiceArea from refData.TBL_SERVICEAREA where ServiceAreaID= psd.ServiceAreaID) as ServiceArea
+		,(select SubServiceArea from refData.TBL_SERVICEAREA where ServiceAreaID= psd.ServiceAreaID) as SubServiceArea
+		,(select Technology from refData.TBL_TECHNOLOGY where TechnologyID=psd.TechnologyID) as Technology
+		from transactionalData.TBL_PROJECTSCOPE ps
+		left join transactionalData.TBL_PROJECTSCOPEDETAIL psd on ps.ProjectScopeID=psd.ProjectScopeID
+		where ps.projectscopeid = #{projectScopeId}
+		
+	</select>
+	<insert id='saveGlobalUrl' parameterType="com.ericsson.isf.model.GlobalUrlModel">
+	
+			INSERT INTO refData.tbl_global_url_details 
+            (url_name, 
+             url_link, 
+             url_status, 
+             roleID, 
+             createdby, 
+             createdOn, 
+             modifiedby, 
+             modifiedon) 
+VALUES     ( #{globalUrlModel.urlName}, 
+             #{globalUrlModel.urlLink}, 
+             1, 
+             #{globalUrlModel.roleID},
+             #{globalUrlModel.signum},  
+             dbo.GetDateIST(), 
+             NULL, 
+             NULL); 
+	</insert>
+	
+	<update id='updateGlobalUrl' parameterType="com.ericsson.isf.model.GlobalUrlModel">
+	UPDATE refdata.tbl_global_url_details
+	<if test="globalUrlModel.actionType=='update'">
+SET    url_name = #{globalUrlModel.urlName}, 
+       url_link = #{globalUrlModel.urlLink}, 
+       roleid = #{globalUrlModel.roleID}, 
+       modifiedby = #{globalUrlModel.signum}, 
+       modifiedon = dbo.GetDateIST() 
+WHERE  globalurl_id = #{globalUrlModel.globalUrlId} 
+</if>
+<if test="globalUrlModel.actionType=='delete'">
+SET    url_status = 0, 
+       roleid = #{globalUrlModel.roleID}, 
+       modifiedby = #{globalUrlModel.signum}, 
+       modifiedon = dbo.GetDateIST() 
+WHERE  globalurl_id = #{globalUrlModel.globalUrlId} 
+</if>
+	</update>
+	<select id='getAllGlobalUrl' resultType="com.ericsson.isf.model.GlobalUrlModel">
+	   SELECT globalurl_id as globalUrlId, 
+       url_name as urlName, 
+       url_link as urlLink, 
+       url_status as urlStatus, 
+       roleid as roleID 
+FROM   refdata.tbl_global_url_details where url_status=1 ORDER BY createdOn desc
+	</select>
+	 <select id='downloadWoViewFile' resultType="java.util.LinkedHashMap">
+	Drop TABLE IF Exists #nodeDetails
+	Drop TABLE IF Exists #nodeDetailsFinal
+	
+	select wOrder.WOID, wONodes.NodeNames, NE.Market
+	into #nodeDetails
+	from transactionalData.TBL_WORK_ORDER_PLAN (NOLOCK) wOPlan
+	inner join
+	transactionaldata.tbl_work_order (nolock) wOrder on
+	woPlan.WOPlanID =
+	wOrder.WOPlanID
+	left join transactionalData.TBL_WORK_ORDER_NODES
+	(NOLOCK) wONodes on
+	wONodes.WOID = wOrder.WOID
+	left join
+	transactionalData.TBL_NETWORK_ELEMENT (nolock) NE on
+	NE.ProjectID=wOPlan.ProjectID and NE.Name=wONodes.NodeNames
+	where
+	wOPlan.Active=1 and wOrder.Active =1
+	and Status in ('ASSIGNED',
+	'INPROGRESS', 'REOPENED','DEFERRED','ONHOLD')
+	<if test="projectID != 0">
+		and wOPlan.ProjectID = #{projectID}
+	</if>
+	<if test="startDate != null and endDate != null">
+		and PlannedStartDate between #{startDate} and #{endDate}
+	</if>
+
+	<if test="woStatus != null">
+		<if test="woStatus =='Unassigned' ">
+			and wOrder.SignumID is null
+		</if>
+		<if test="woStatus !='Unassigned' and woStatus !='All' ">
+			and Status = #{woStatus}
+		</if>
+	</if>
+
+	select Distinct WOID ,STUFF(( SELECT ',' + NodeNames
+	from #nodeDetails
+	where nn.WOID= WOID
+	FOR XML PATH(''), TYPE).
+	value('.','NVARCHAR(MAX)'),1,1,'') AS NodeNames,
+	STUFF(( SELECT ',' + Market
+	from #nodeDetails
+	where nn.WOID=WOID
+	FOR XML PATH(''), TYPE).
+	value('.','NVARCHAR(MAX)'),1,1,'') AS Market
+	
+	into #nodeDetailsFinal
+	from #nodeDetails nn
+	GROUP BY WOID
+
+	SELECT distinct 
+	 ps.ScopeName as DeliverableName
+	,pdu.DeliverableUnitName as DeliverableUnit
+	, doi.DOID
+	, wOrder.WOID
+	, nd.NodeNames as
+	NetworkElementNames
+	,UPPER(nd.Market) as MarketNames
+	,wOrder.WOName
+	,wOrder.SignumID as WOAssignedTo
+	, subFlowDef.WorkFlowName as WorkFlowVersionName
+	,convert(nvarchar(MAX), ad.dateCreated,121)as PriorityLastModifiedOn
+	, UPPER(wOrder.CreatedBY) AS CreatedBY
+	,UPPER(wOrder.Priority) AS Priority
+	,UPPER(DATEDIFF(HH,wOrder.plannedstartdate, wOrder.plannedenddate)) AS SLA
+	, UPPER(tech.Technology) as Technology
+	, wOrder.PlannedStartDate
+	,wOrder.PlannedEndDate
+	, UPPER(sub.Activity) as Activity
+	,UPPER(sub.SubActivity) as SubActivity
+	, wOrder.ActualStartDate as StartedOn
+	, wOrder.Status
+	, wOPlan.WOPlanID
+	FROM
+	transactionalData.TBL_WORK_ORDER_PLAN (NOLOCK) wOPlan
+	inner join
+	transactionaldata.tbl_work_order (nolock) wOrder on
+	woPlan.WOPlanID =
+	wOrder.WOPlanID
+	inner join
+	transactionalData.TBL_Deliverable_Order_ID(nolock) doi on
+	doi.DOID
+	=wOrder.DOID
+	inner join refData.[TBL_SUBACTIVITY] (NOLOCK) sub on
+	wOrder.SubActivityID =
+	sub.SubActivityID
+	inner join
+	refData.TBL_TECHNOLOGY (NOLOCK) tech on sub.TechnologyID =
+	tech.TechnologyID
+	inner join transactionalData.TBL_PROJECTSCOPE ps on
+	ps.ProjectScopeID =
+	wOPlan.ScopeID
+	inner join
+	refData.TBL_Project_Deliverable_Unit pdu on ps.deliverableUnit =
+	pdu.DeliverableUnitID
+	left join
+	transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF (NOLOCK)
+	subFlowDef on
+	wOPlan.ProjectID = subFlowDef.ProjectID and
+	subflowdef.SubActivityFlowChartDefID=worder.flowchartdefid
+	and
+	wOrder.SubActivityID = subFlowDef.SubActivityID and
+	subFlowDef.VersionNumber= wOrder.WorkFlowVersion and
+	subFlowDef.flowchartJSON is not null
+	left join
+	transactionaldata.tbl_work_order_delivery_acceptance (NOLOCK) da
+	on
+	da.woID= wOrder.woID
+	left join transactionalData.TBL_AuditGroup ag on
+	ag.auditPageId=wOrder.WOID
+	left join
+	(select max(dateCreated)
+	dateCreated,auditgroupid from
+	transactionalData.TBL_AuditDetails where
+	commentCategory in
+	('WO_PRIORITY_EDIT','WO_CREATE_PLAN','CREATE_WORK_ORDER_PLAN') group by
+	auditgroupid) ad on ad.auditgroupid=ag.auditgroupid
+	left join
+	#nodeDetailsFinal nd on nd.WOID= wOrder.WOID
+	where wOPlan.Active=1 and
+	wOrder.Active =1
+	and tech.active=1
+	and Status in ('ASSIGNED',
+	'INPROGRESS', 'REOPENED','DEFERRED','ONHOLD')
+	<if test="projectID != 0">
+		and wOPlan.ProjectID = #{projectID}
+	</if>
+	<if test="startDate != null and endDate != null">
+		and PlannedStartDate between #{startDate} and #{endDate}
+	</if>
+
+	<if test="woStatus != null">
+		<if test="woStatus =='Unassigned' ">
+			and wOrder.SignumID is null
+		</if>
+		<if test="woStatus !='Unassigned' and woStatus !='All' ">
+			and Status = #{woStatus}
+		</if>
+	</if>
+	order by WOID DESC
+    </select>
+	
+	<select id='downloadDoPlanViewFile' resultType="java.util.LinkedHashMap">
+	Drop TABLE IF Exists #nodeDetails
+	Drop TABLE IF Exists #nodeDetailsFinal
+	
+	select wOrder.WOID, wONodes.NodeNames, NE.Market
+	into #nodeDetails
+	from transactionalData.TBL_WORK_ORDER_PLAN (NOLOCK) wOPlan
+	inner join
+	transactionaldata.tbl_work_order (nolock) wOrder on
+	woPlan.WOPlanID =
+	wOrder.WOPlanID
+	left join transactionalData.TBL_WORK_ORDER_NODES
+	(NOLOCK) wONodes on
+	wONodes.WOID = wOrder.WOID
+	left join
+	transactionalData.TBL_NETWORK_ELEMENT (nolock) NE on
+	NE.ProjectID=wOPlan.ProjectID and NE.Name=wONodes.NodeNames
+	where
+	wOPlan.Active=1 and wOrder.Active =1
+	and Status in ('ASSIGNED',
+	'INPROGRESS', 'REOPENED','DEFERRED','ONHOLD')
+	<if test="projectID != 0">
+		and wOPlan.ProjectID = #{projectID}
+	</if>
+	<if test="startDate != null and endDate != null">
+		and PlannedStartDate between #{startDate} and #{endDate}
+	</if>
+
+	<if test="woStatus != null">
+		<if test="woStatus =='Unassigned' ">
+			and wOrder.SignumID is null
+		</if>
+		<if test="woStatus !='Unassigned' and woStatus !='All' ">
+			and Status = #{woStatus}
+		</if>
+	</if>
+
+	select Distinct WOID ,STUFF(( SELECT ',' + NodeNames
+	from #nodeDetails
+	where nn.WOID= WOID
+	FOR XML PATH(''), TYPE).
+	value('.','NVARCHAR(MAX)'),1,1,'') AS NodeNames,
+	STUFF(( SELECT ',' + Market
+	from #nodeDetails
+	where nn.WOID=WOID
+	FOR XML PATH(''), TYPE).
+	value('.','NVARCHAR(MAX)'),1,1,'') AS Market
+	
+	into #nodeDetailsFinal
+	from #nodeDetails nn
+	GROUP BY WOID
+	
+
+	SELECT distinct 
+	ps.scopename AS DeliverableName ,
+	pdu.deliverableunitname AS DeliverableUnit ,
+	wOPlan.WOPlanID As DOPlanID ,
+	woplan.startdate as StartDate ,
+	woplan.enddate as EndDate,
+	woplan.type as Type,
+	nd.NodeNames as NetworkElementNames,
+	UPPER(nd.Market) as MarketNames,
+	doi.doid as DOID,
+	worder.woid as WOID ,
+	worder.signumid AS WOAssignedTo ,
+	subflowdef.workflowname as WorkFlowVersionName,
+	CONVERT(NVARCHAR(max), ad.datecreated,121) AS PriorityLastModifiedOn ,
+	Upper(worder.createdby) AS CreatedBy ,
+	Upper(worder.priority) AS Priority ,
+	worder.plannedstartdate AS PlannedStartDate ,
+	worder.plannedenddate AS PlannedEndDate,
+	worder.woname AS WOName,
+	Upper(Datediff(hh,worder.plannedstartdate, worder.plannedenddate)) AS SLA ,
+	Upper(tech.technology) AS Technology ,
+	Upper(sub.activity) AS Activity ,
+	Upper(sub.subactivity) AS Subactivity ,
+	worder.actualstartdate AS StartedOn,
+	worder.status  AS Status
+	
+	FROM
+	transactionalData.TBL_WORK_ORDER_PLAN (NOLOCK) wOPlan
+	inner join
+	transactionaldata.tbl_work_order (nolock) wOrder on
+	woPlan.WOPlanID =
+	wOrder.WOPlanID
+	inner join
+	transactionalData.TBL_Deliverable_Order_ID(nolock) doi on
+	doi.DOID =wOrder.DOID
+	inner join refData.[TBL_SUBACTIVITY] (NOLOCK) sub on
+	wOrder.SubActivityID =
+	sub.SubActivityID
+	inner join
+	refData.TBL_TECHNOLOGY (NOLOCK) tech on sub.TechnologyID =
+	tech.TechnologyID
+	inner join transactionalData.TBL_PROJECTSCOPE ps on
+	ps.ProjectScopeID =
+	wOPlan.ScopeID
+	inner join
+	refData.TBL_Project_Deliverable_Unit pdu on ps.deliverableUnit =
+	pdu.DeliverableUnitID
+	left join
+	transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF (NOLOCK)
+	subFlowDef on
+	wOPlan.ProjectID = subFlowDef.ProjectID and
+	subflowdef.SubActivityFlowChartDefID=worder.flowchartdefid
+	and
+	wOrder.SubActivityID = subFlowDef.SubActivityID and
+	subFlowDef.VersionNumber= wOrder.WorkFlowVersion and
+	subFlowDef.flowchartJSON is not null
+	left join
+	transactionaldata.tbl_work_order_delivery_acceptance (NOLOCK) da
+	on
+	da.woID= wOrder.woID
+	left join transactionalData.TBL_AuditGroup ag
+	on ag.auditPageId=wOrder.WOID
+	left join
+	(select max(dateCreated)
+	dateCreated,auditgroupid from
+	transactionalData.TBL_AuditDetails where
+	commentCategory in
+	('WO_PRIORITY_EDIT','WO_CREATE_PLAN','CREATE_WORK_ORDER_PLAN') group by
+	auditgroupid) ad on ad.auditgroupid=ag.auditgroupid
+	left join
+	#nodeDetailsFinal nd on nd.WOID= wOrder.WOID
+	where
+	wOPlan.Active=1 and wOrder.Active =1
+	and tech.active=1
+	and Status in
+	('ASSIGNED', 'INPROGRESS', 'REOPENED','DEFERRED','ONHOLD')
+	<if test="projectID != 0">
+		and wOPlan.ProjectID = #{projectID}
+	</if>
+	<if test="startDate != null and endDate != null">
+		and PlannedStartDate between #{startDate} and #{endDate}
+	</if>
+
+	<if test="woStatus != null">
+		<if test="woStatus =='Unassigned' ">
+			and wOrder.SignumID is null
+		</if>
+		<if test="woStatus !='Unassigned' and woStatus !='All' ">
+			and Status = #{woStatus}
+		</if>
+	</if>
+	order by DOPlanID DESC
+    </select>
+	
+	<insert id='saveLocalUrl' parameterType="com.ericsson.isf.model.LocalUrlModel">
+	
+			INSERT INTO transactionalData.tbl_local_url_details 
+            (local_url_name, 
+             local_url_link, 
+             local_url_status, 
+             roleID, 
+             createdby, 
+             createdOn, 
+             modifiedby, 
+             modifiedon,
+             projectID) 
+VALUES     ( #{localUrlModel.localUrlName}, 
+             #{localUrlModel.localUrlLink}, 
+             1, 
+             #{localUrlModel.roleID},
+             #{localUrlModel.signum},  
+             dbo.GetDateIST(), 
+             NULL, 
+             NULL,
+             #{localUrlModel.projectID}); 
+	</insert>
+	<update id='updateLocalUrl' parameterType="com.ericsson.isf.model.LocalUrlModel">
+	UPDATE transactionalData.tbl_local_url_details
+	<if test="localUrlModel.actionType=='update'">
+SET    local_url_name = #{localUrlModel.localUrlName}, 
+       local_url_link = #{localUrlModel.localUrlLink}, 
+       roleid = #{localUrlModel.roleID}, 
+       modifiedby = #{localUrlModel.signum}, 
+       modifiedon = dbo.GetDateIST() 
+WHERE  localurl_id = #{localUrlModel.localUrlId} 
+</if>
+<if test="localUrlModel.actionType=='toggle'">
+SET    local_url_status = #{localUrlModel.localUrlStatus},
+       roleid = #{localUrlModel.roleID}, 
+       modifiedby = #{localUrlModel.signum}, 
+       modifiedon = dbo.GetDateIST() 
+WHERE  localurl_id = #{localUrlModel.localUrlId}
+</if>
+	</update>
+	
+	<select id='getAllLocalUrl' resultType="com.ericsson.isf.model.LocalUrlModel">
+	   SELECT localurl_id as localUrlId, 
+       local_url_name as localUrlName, 
+       local_url_link as localUrlLink, 
+       local_url_status as localUrlStatus, 
+       roleid as roleID 
+       FROM   transactionalData.tbl_local_url_details where projectID= #{projectID} 
+       ORDER BY createdOn desc
+	</select>
+	
+	<select id='getAllActiveLocalUrl' resultType="com.ericsson.isf.model.LocalUrlModel">
+	   SELECT localurl_id as localUrlId, 
+       local_url_name as localUrlName, 
+       local_url_link as localUrlLink, 
+       local_url_status as localUrlStatus, 
+       roleid as roleID 
+       FROM   transactionalData.tbl_local_url_details WITH (NOLOCK) where local_url_status=1 and projectID= #{projectID}
+       ORDER BY createdOn desc
+	</select>
+	<select id='isSignumExist' resultType="java.lang.Boolean">
+	   IF EXISTS(SELECT 1 FROM transactionalData.TBL_ConfigSignumForSignalR
+	   WHERE SignumID=#{signum} and Signum_status=1)
+	   begin
+	   select 1 as result
+	   end
+	   else
+	   begin
+	   select 0 as result
+	   end
+	   
+	</select>
+	
+	<insert id="saveInstantFeedback" parameterType="com.ericsson.isf.model.InstantFeedbackModel">
+	INSERT INTO refdata.tbl_instantfeedback 
+            (feedbacktext, 
+             feedbacktype, 
+             isactive, 
+             createdby, 
+             createdDate, 
+             modifiedby, 
+             modifiedDate) 
+VALUES     ( #{instantFeedbackModel.feedbackText}, 
+             #{instantFeedbackModel.feedbackType}, 
+             #{instantFeedbackModel.isActive}, 
+             #{instantFeedbackModel.createdBy}, 
+             dbo.GetDateIST(), 
+             NULL, 
+             NULL)
+	
+	</insert>
+	<update id="updateInstantFeedback" parameterType="com.ericsson.isf.model.InstantFeedbackModel">
+	UPDATE refdata.tbl_instantfeedback 
+SET    feedbacktext = #{instantFeedbackModel.feedbackText}, 
+       feedbacktype = #{instantFeedbackModel.feedbackType}, 
+       isactive = #{instantFeedbackModel.isActive}, 
+       modifiedby = #{instantFeedbackModel.createdBy}, 
+       modifiedDate = dbo.GetDateIST() 
+WHERE  instantfeedbackid = #{instantFeedbackModel.instantFeedbackID}
+	</update>
+	
+	
+	<select id='getFeedbackHistory' resultType="com.ericsson.isf.model.WorkFlowFeedbackActivityModel">
+	select 
+	FA.FeedbackDetailID,
+	FA.FeedbackComment,
+	IFE.FeedbackText as instantFeedbackText,
+	FA.FeedbackActivityID, 
+	FA.ReplyOnComment,
+	FA.FeedbackStatus,
+    FA.CreatedBy,
+	FA.CreatedDate as createdOn,
+	FA.ModifiedBy,
+	FA.ModifiedDate as modifiedOn, 
+	FA.IsActive,
+	EMP.EmployeeName as creatorName
+    <if test="workFlowFeedbackModel.stepID != null  ">
+     ,FD.stepID
+	 ,FD.stepName
+    </if>
+	
+   ,ROW_NUMBER()over(partition by fa.FeedbackDetailID order by fa.CreatedDate desc) rn
+   into #rn
+   from transactionalData.TBL_FeedbackActivity fa
+   inner join transactionalData.TBL_feedbackDetail  fd on fd.FeedbackDetailID=fa.FeedbackDetailID
+    LEFT JOIN refData.TBL_InstantFeedback IFE on IFE.InstantFeedbackID	=	FD.InstantFeedbackID
+   LEFT JOIN  refdata.tbl_employees EMP on EMP.Signum= FA.CreatedBy
+    where FD.flowchartDefID = #{workFlowFeedbackModel.defID}
+    and FA.IsActive=1
+    <if test="workFlowFeedbackModel.stepID != null ">
+   and FD.stepID= #{workFlowFeedbackModel.stepID}
+    and FD.FeedbackType='ONSTEP_FEEDBACK_FORM'
+    and FD.FeedbackOn='DEL_EXE_ONSTEP'
+
+    </if>
+    <if test="workFlowFeedbackModel.stepID == null ">
+    and FD.StepID  IS NULL
+     and FD.FeedbackType='ONWF_FEEDBACK_FORM'
+    and FD.FeedbackOn='DEL_EXE_WF'
+    </if>
+
+    order by FA.CreatedDate desc
+
+   Select top 10
+   FeedbackDetailID,
+   FeedbackComment,
+   instantFeedbackText,
+   FeedbackActivityID, 
+   ReplyOnComment,
+   FeedbackStatus,
+   CreatedBy,
+   createdOn,
+   ModifiedBy,
+   modifiedOn, 
+   IsActive,
+   creatorName
+   <if test="workFlowFeedbackModel.stepID != null  ">
+    ,stepID
+	,stepName
+   </if>
+  from #rn where rn= 1
+
+  order by createdOn desc
+	
+	</select>
+	
+	
+     <update id='deleteFeedbackActivityComment'>
+        update  transactionalData.TBL_FeedbackActivity set IsActive=0,
+        ModifiedBy=#{workFlowFeedbackModel.modifiedBy},
+        ModifiedDate=dbo.GetDateIST()
+        where FeedbackDetailID=#{workFlowFeedbackModel.feedbackDetailID}
+        
+       
+        </update>
+        
+        <update id='deleteFeedbackDetailComment'>
+        
+        update  transactionalData.TBL_FeedbackDetail set IsActive=0,
+        ModifiedBy=#{workFlowFeedbackModel.modifiedBy},
+        ModifiedDate=dbo.GetDateIST()
+        where FeedbackDetailID=#{workFlowFeedbackModel.feedbackDetailID}	
+	
+	</update>	
+	<insert id="addFeedbackDetail" parameterType="com.ericsson.isf.model.WorkFlowFeedbackModel" useGeneratedKeys="true" keyProperty='workFlowFeedbackModel.feedbackDetailID' keyColumn="FeedbackDetailID">
+	WITH CTE_A AS (
+    select EmployeeName from refData.TBL_Employees where Signum=#{workFlowFeedbackModel.signum}
+       )     
+	INSERT INTO [transactionalData].[TBL_feedbackDetail] 
+            ( 
+                        [ProjectID] ,
+                        [WOID] ,
+                        [CreatorName],
+                        [CreatorSignum] , 
+                        [flowchartDefID] , 
+                        [WorkflowName] , 
+                        [FeedbackOn] , 
+                        [FeedbackType] , 
+                        [CreatedDate] , 
+                        [ModifiedBy] , 
+                        [ModifiedDate] , 
+                        [instantFeedbackID],
+                        [CreatedBy],
+                        [IsActive] <if test="workFlowFeedbackModel.stepID != null "> , 
+                        [StepID] , 
+                        [StepName] </if> 
+            ) 
+            VALUES 
+            ( 
+                        #{workFlowFeedbackModel.projectID} , 
+                        #{workFlowFeedbackModel.workOrderID} , 
+                        (SELECT EmployeeName FROM  CTE_A  with (nolock)),
+                        #{workFlowFeedbackModel.signum} , 
+                        #{workFlowFeedbackModel.defID} , 
+                        #{workFlowFeedbackModel.wfName} , 
+                        #{workFlowFeedbackModel.feedbackOn} , 
+                        #{workFlowFeedbackModel.feedbackType} , 
+                        dbo.GetDateIST(), 
+                        #{workFlowFeedbackModel.signum} , 
+                        dbo.GetDateIST() , 
+                         #{workFlowFeedbackModel.instantFeedbackID} , 
+                         #{workFlowFeedbackModel.signum},
+                        1 <if test="workFlowFeedbackModel.stepID != null "> , 
+                        #{workFlowFeedbackModel.stepID} , 
+                        #{workFlowFeedbackModel.stepName} </if> 
+            )
+	
+	</insert>
+	
+	
+	<select id='isFeedbackExists' resultType="Boolean">
+	   IF EXISTS(SELECT 1 FROM transactionalData.TBL_ConfigSignumForSignalR
+	   WHERE SignumID=#{signum} and Signum_status=1)
+	   begin
+	   select 1 as result
+	   end
+	   else
+	   begin
+	   select 0 as result
+	   end
+	   
+	</select>
+	<insert id="addFeedbackActivity" parameterType="com.ericsson.isf.model.WorkFlowFeedbackActivityModel">
+	INSERT INTO [transactionalData].[TBL_FeedbackActivity]
+           ([FeedbackDetailID]
+           ,[FeedbackComment]
+           ,[FeedbackStatus]
+           ,[IsActive]
+           ,[CreatedBy]
+           ,[CreatedDate]
+           ,[ModifiedBy]
+           ,[ModifiedDate]
+           ,[SadCount]
+           ,[UserRole]
+           )
+     VALUES
+           (#{workFlowFeedbackActivityModel.feedbackDetailID}
+           ,#{workFlowFeedbackActivityModel.feedbackComment}
+           ,#{workFlowFeedbackActivityModel.feedbackStatus}
+           ,1
+           ,#{workFlowFeedbackActivityModel.signum}
+           ,dbo.GetDateIST()
+           ,#{workFlowFeedbackActivityModel.signum}
+           ,dbo.GetDateIST()
+           ,#{workFlowFeedbackActivityModel.sadCount}
+           ,#{workFlowFeedbackActivityModel.userRole}
+           )
+	</insert>
+	
+	<select id="getInstantFeedback"   resultType="com.ericsson.isf.model.InstantFeedbackModel">
+	  SELECT instantfeedbackid, feedbacktext, feedbacktype, isActive FROM   refdata.tbl_instantfeedback 
+    order by instantfeedbackid DESC;
+	</select>
+	
+	<select id="getInstantFeedbackForDropDown"   resultType="com.ericsson.isf.model.InstantFeedbackModel">
+	  select InstantFeedbackID,FeedbackText,FeedbackType from refdata.tbl_instantfeedback where FeedbackType='STEP' and IsActive=1
+	</select>
+	
+	
+	<select id="getProjectList"   resultMap="ProjectFilterModelResult">
+	 select distinct tf.ProjectID,tp.ProjectName from transactionalData.TBL_feedbackDetail tf
+	 inner join transactionalData.TBL_FeedbackActivity b on tf.FeedbackDetailID =
+	 b.FeedbackDetailID and (tf.FeedbackType &lt;&gt; 'ONSTEP_SAD_COUNT' or  b.sadcount &lt;&gt; 0 )
+     inner join transactionalData.TBL_PROJECTS tp
+       on tf.ProjectID=tp.ProjectID
+       <if test="role =='Project Manager' or role =='Operational Manager'">
+       inner join transactionalData.TBL_OPPORTUNITY topp
+	   on topp.opportunityId=tp.opportunityId
+	   inner join refData.TBL_MARKETAREAS tma
+	   on tma.marketAreaId=topp.marketAreaId
+       </if>
+       <if test="role =='Delivery Responsible'">
+       inner join transactionalData.TBL_OPPORTUNITY topp
+	   on topp.opportunityId=tp.opportunityId
+	   inner join refData.TBL_MARKETAREAS tma
+	   on tma.marketAreaId=topp.marketAreaId
+	   inner join  transactionalData.TBL_DELIVERY_RESPONSIBLE dr on dr.ProjectID= tf.ProjectID
+	   and dr.SignumID=tf.CreatorSignum
+       </if>
+	 where isdeleted=0 and status!='Closed' 
+	 <if test="role == 'Network Engineer'">
+	     <if test="signum != null and signum !=''">
+	             and (tf.CreatorSignum  = #{signum})  and tf.IsActive=1
+	             and b.IsActive=1
+		</if></if>
+	<if test="role =='Project Manager'">
+	 <if test="signum != null and signum !=''">
+	    and tp.ProjectCreator= #{signum}
+	    and tma.MarketAreaName=#{marketArea}
+	 </if>
+	</if> 
+	<if test="role =='Operational Manager'">
+	 <if test="signum != null and signum !=''">
+	    and tp.OperationalManager= #{signum}
+	    and tma.MarketAreaName= #{marketArea}
+	 </if>
+	</if> 
+		<if test="role =='Delivery Responsible'">
+	 <if test="signum != null and signum !=''">
+	    and dr.SignumID= #{signum}
+	    and tma.MarketAreaName= #{marketArea}
+		and dr.Active=1
+	 </if>
+	</if> 
+	   
+	</select>		
+	<select id="getInstantFeedbackUpdate"   resultType="com.ericsson.isf.model.InstantFeedbackModel">
+	  SELECT instantfeedbackid, feedbacktext, feedbacktype, isActive FROM   refdata.tbl_instantfeedback 
+	  where instantfeedbackid!= #{instantFeedbackId}
+      order by instantfeedbackid DESC;
+	</select>
+	
+	<select id="getWorkFlowList"   resultMap="WorkFlowModelResult">
+	select distinct
+	CONCAT(wcdef.wfid,'_',wcdef.WorkFlowName,'_',wcdef.VersionNumber) as
+	WorkFlowName,
+	wcdef.wfid,wcdef.VersionNumber,wcdef.SubActivityFlowChartDefID 
+	from 
+	 transactionalData.TBL_feedbackDetail tf
+	  inner join transactionalData.TBL_FeedbackActivity b on tf.FeedbackDetailID =
+	 b.FeedbackDetailID and (tf.FeedbackType &lt;&gt; 'ONSTEP_SAD_COUNT' or  b.sadcount &lt;&gt; 0 )
+	Inner join
+	transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF wcdef on
+	wcdef.ProjectID=tf.ProjectID
+	and wcdef.SubActivityFlowChartDefID=tf.flowchartDefID
+	
+	<if test="role =='Delivery Responsible'">
+	inner join  transactionalData.TBL_DELIVERY_RESPONSIBLE dr on dr.ProjectID= tf.ProjectID
+	and dr.SignumID=tf.CreatorSignum
+	</if>
+	<if test="role =='Operational Manager'">
+	inner join transactionalData.TBL_PROJECTS tp on tf.ProjectID=tp.ProjectID
+	</if>
+	where 
+	<if test="role =='Network Engineer'">
+		tf.CreatedBy = #{signum} and
+	</if>
+	
+	<if test="role =='Delivery Responsible'">
+	tf.createdBy= #{signum} and
+	</if>
+	
+	<if test="role =='Operational Manager'">
+	tp.OperationalManager= #{signum} and
+	</if>
+	 
+	 tf.PROJECTID=#{projectId}
+	 
+	 
+		</select>
+
+		
+<select id="getAllFeedback" resultMap="FeedbackNEPMModelResult">
+
+With
+cte_B As(
+SELECT *
+FROM (
+SELECT b.feedbackdetailid, b.ModifiedDate,
+Cast(b.CreatedDate AS DATE) createddate,
+a.projectid,
+a.stepname ,
+a.feedbackon,
+a.feedbacktype,
+b.feedbackactivityid,
+ISNULL(b.feedbackcomment,'No Comment') as feedbackcomment,
+b.replyoncomment,
+b.userrole,
+ISNULL(NULLIF(b.feedbackstatus, 'NULL'), 'No Comment') as feedbackstatus,
+a.instantfeedbackid,
+a.isactive,
+a.woid,
+a.stepid,
+a.createdby , a.flowchartdefid,
+Sum(CONVERT(INT, b.sadcount)) Over(Partition by a.stepid) AS sadcount,
+b.NEComments,
+Row_number()OVER(partition BY b.feedbackdetailid ORDER BY b.modifieddate DESC) rn
+FROM transactionaldata.tbl_feedbackdetail a
+INNER JOIN transactionaldata.tbl_feedbackactivity b ON a.feedbackdetailid = b.feedbackdetailid
+<if test="role =='Network Engineer' or role =='Delivery Responsible'">
+where a.CreatedBy = #{signum}
+</if>
+)tbl
+WHERE rn=1
+)
+
+
+select *, Count(1) OVER() totalcnt from (
+SELECT c.createddate, c.ModifiedDate,
+c.feedbackdetailid, 
+c.projectid, 
+c.stepname, 
+c.feedbackon, 
+c.feedbacktype, 
+c.sadcount , 
+ins.feedbacktext, 
+c.feedbackactivityid, 
+c.feedbackcomment, 
+c.replyoncomment, 
+c.userrole, 
+c.feedbackstatus, 
+Concat(emp.signum, ' (', emp.employeename, ')') AS createdby,
+Concat(wcdef.wfid, '_', wcdef.workflowname, '_', wcdef.VersionNumber) AS workflowname,
+c.NEComments
+FROM cte_B AS c
+INNER JOIN transactionaldata.tbl_subactivity_flowchart_def wcdef ON wcdef.projectid = c.projectid AND wcdef.subactivityflowchartdefid = c.flowchartdefid 
+LEFT JOIN refdata.tbl_instantfeedback ins ON ins.instantfeedbackid= c.instantfeedbackid 
+LEFT JOIN refdata.tbl_employees EMP ON emp.signum = c.CreatedBy 
+WHERE c.isactive = 1
+AND c.projectid = #{feedbackNePmModel.projectID} 
+<if test=" feedbackNePmModel.listOfFlowchartdefId != null">
+<if test=" feedbackNePmModel.listOfFlowchartdefId.size() > 0 ">
+AND wcdef.subactivityflowchartdefid in 
+<foreach item="item1" index="index" collection="feedbackNePmModel.listOfFlowchartdefId" open="(" separator="," close=")"> 
+#{item1} 
+</foreach>
+</if></if>
+<if test=" feedbackNePmModel.listOfWorkFlowId != null">
+<if test=" feedbackNePmModel.listOfWorkFlowId.size() > 0 ">
+AND wcdef.wfid in 
+<foreach item="item" index="index" collection="feedbackNePmModel.listOfWorkFlowId" open="(" separator="," close=")"> 
+#{item} 
+</foreach>
+</if> </if>
+<if test="feedbackNePmModel.feedbackStatus!= 'All'">
+
+AND c.feedbackstatus = #{feedbackNePmModel.feedbackStatus}
+</if>
+<if test="role =='Network Engineer' or role =='Delivery Responsible'">
+AND c.CreatedBy = #{signum}
+</if>
+AND c.createddate BETWEEN #{feedbackNePmModel.startDate} 
+AND #{feedbackNePmModel.endDate}
+) t
+where
+(FeedbackType &lt;&gt; 'ONSTEP_SAD_COUNT' or sadcount &lt;&gt; 0 ) and
+
+1=1 
+
+<foreach item="column" index="index" collection="dataTableReq.columns">
+
+<if test ="column.search != ''">
+<if test="column.data != 'priority'">
+<choose>
+<when test="column.data == 'sadCount' and column.search == '%0%' ">
+
+and (${column.data} IS NULL or ${column.data} like #{column.search} )
+</when>
+<otherwise>
+and ${column.data} like #{column.search}
+</otherwise>
+</choose>
+</if>
+
+</if>
+</foreach>
+<if test ='dataTableReq.search != null and dataTableReq.search != ""'> 
+and (
+projectid like #{dataTableReq.search}
+or stepname like #{dataTableReq.search}
+or WorkFlowName like #{dataTableReq.search}
+or feedbackon like #{dataTableReq.search} 
+or feedbacktype like #{dataTableReq.search} 
+or sadcount like #{dataTableReq.search} 
+or instantfeedback like #{dataTableReq.search}
+or userrole like #{dataTableReq.search}
+or feedbackstatus like #{dataTableReq.search}
+or Priority like #{dataTableReq.search}
+or DOID like #{dataTableReq.search}
+or necomments like #{dataTableReq.search}
+<foreach item="column" index="index" collection="dataTableReq.columns" >
+or ${column.data} like #{dataTableReq.search} 
+</foreach>
+)
+</if>
+ORDER BY ModifiedDate DESC 
+OFFSET ${dataTableReq.start} ROWS FETCH NEXT ${dataTableReq.length} ROWS ONLY 
+
+</select>
+
+	<select id='getFeedbackActivityIDBySignum' resultType="com.ericsson.isf.model.WorkFlowFeedbackActivityModel">
+	SELECT top 1 feedbackActivityID,fa.CreatedBy as signum FROM transactionalData.TBL_feedbackDetail fd
+	join   transactionalData.TBL_FeedbackActivity fa on  fd.FeedbackDetailID= fa.FeedbackDetailID
+	WHERE fd.CreatedBy=#{signum} and 
+	  fd.IsActive=1 and
+	  ProjectID= #{projectID} and 
+	  StepID= #{stepID} and 
+	  FeedbackOn= #{feedbackOnStep} and 
+	  FeedbackType= #{feedbackTypeWf} and
+	  fa.IsActive=1 
+	  order by fa.CreatedDate DESC
+	</select>
+	
+	<select id='getFeedbackDetail' resultType="com.ericsson.isf.model.WorkFlowFeedbackModel">
+	SELECT top 1 FeedbackDetailID,StepID,ProjectID,WOID,flowchartDefID,WorkflowName,StepName,FeedbackOn,FeedbackType,
+	InstantFeedbackID,isActive FROM transactionalData.TBL_feedbackDetail
+	WHERE IsActive=1 and
+	  ProjectID= #{projectID} and 
+	  StepID= #{stepID} and 
+	  FeedbackOn= #{feedbackOnStep} and 
+	  FeedbackType= #{feedbackTypeStep} and
+	  CreatedBy= #{signum}
+	  order by CreatedDate DESC
+	</select>
+	
+	 <update id='updateSadCount'>
+      update  transactionalData.TBL_FeedbackActivity
+		 set SadCount= #{sadCount},
+		 ModifiedDate= dbo.GetDateIST(),
+		 userrole = #{role}
+      where FeedbackActivityID= #{feedbackActivityID}
+      </update>
+      
+    <update id='updateFeedbackStatus'>
+		With cte As
+		(
+		SELECT top 1 *
+		FROM transactionaldata.tbl_feedbackactivity
+		WHERE isactive = 1
+		AND FeedbackDetailID= #{feedbackStatusUpdateModel.feedbackDetailID}
+		ORDER BY ModifiedDate DESC
+		)
+		UPDATE cte SET FeedbackStatus=#{feedbackStatusUpdateModel.feedbackStatusNew},
+		 				ReplyOnComment=#{feedbackStatusUpdateModel.statusUpdateComment}
+	</update>
+	
+	<select id="getFeedbackByDetailID"   resultMap="WorkFlowFeedbackModelResult">
+	  SELECT fd.FeedbackDetailID,FeedbackActivityID,fd.ProjectID,WOID,flowchartDefID,fd.WorkflowName,StepID,StepName,FeedbackOn,
+	  fd.FeedbackType,fd.InstantFeedbackID,FeedbackComment,ReplyOnComment,FeedbackStatus,SadCount,UserRole,NEComments,FeedbackText,CreatorSignum,fd.ModifiedDate,
+      fd.IsActive,IFD.FeedbackText AS instantFeedback, sfd.WFID
+		FROM   transactionaldata.tbl_feedbackdetail fd 
+		       JOIN transactionaldata.tbl_feedbackactivity fa 
+		         ON fd.feedbackdetailid = fa.feedbackdetailid 
+		       left JOIN refData.TBL_InstantFeedback IFD on fd.InstantFeedbackID = IFD.InstantFeedbackID
+		       left join transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF sfd on sfd.subactivityflowchartdefid=fd.flowchartdefid
+		       
+		WHERE	fd.isactive = 1
+			   AND fd.FeedbackDetailID= #{feedbackDetailID}
+			   AND fa.FeedbackActivityID= #{feedbackActivityID}
+		       AND fa.isactive = 1 
+		ORDER  BY fa.ModifiedDate DESC
+	</select>
+	<select id= 'getFeedbackMailNotificationDetails' resultMap="MailModelResult">
+          select distinct pro.projectid as ProjectID,
+        emp.Signum as EmployeeSignum,pro.ProjectCreator as ProjectCreatorSignum,pro.cpm as CPM_Signum,dr.SignumID as DR_Signum,
+        empProCreator.EmployeeName as ProjectCreator_Name,emp.EmployeeName as Employee_Name,empCPM.EmployeeName as CPM_Name,empDR.EmployeeName as DR_Name,
+        empProCreator.EmployeeEmailID as ProjectCreatorEmailID,emp.EmployeeEmailID as EmployeeEmailID,
+        empDR.EmployeeEmailID as DR_EmailID, empCPM.EmployeeEmailID as CPMEmailID, empOM.EmployeeEmailID as OMEmailID, pro.OperationalManager as OMSignum
+        from transactionalData.TBL_PROJECTS pro
+	    left join transactionalData.TBL_DELIVERY_RESPONSIBLE dr on pro.ProjectID= dr.ProjectID and dr.active=1
+            inner join refData.TBL_Employees emp on emp.signum= pro.ProjectCreator
+            left join refData.TBL_Employees empDR on empDR.Signum= dr.SignumID
+            left join refData.TBL_Employees empCPM on empCPM.Signum=pro.CPM
+            inner join refData.TBL_Employees empProCreator on empProCreator.Signum = pro.ProjectCreator
+            left join refData.TBL_Employees empOM on empOM.Signum = pro.OperationalManager
+        where pro.ProjectID = #{projectID}
+    </select>
+    
+    <insert id="addFeedbackStatusForPM">
+    WITH CTE_A AS (
+    select FeedbackComment from transactionaldata.tbl_feedbackactivity where
+     FeedbackDetailID=#{feedbackStatusUpdateModel.feedbackDetailID} 
+     and FeedbackActivityID=#{feedbackStatusUpdateModel.feedbackActivityID}
+       ) 
+    INSERT INTO transactionaldata.tbl_feedbackactivity 
+            (feedbackdetailid,
+             
+             replyoncomment,
+             
+             feedbackstatus, 
+             createdby, 
+             CreatedDate, 
+             userrole, 
+             isactive,
+             FeedbackComment,
+             ModifiedBy,
+             ModifiedDate
+             
+             ,NEComments
+             
+             ) 
+VALUES      ( #{feedbackStatusUpdateModel.feedbackDetailID},
+               <if test="role =='Project Manager' or role =='Operational Manager'">    
+              #{feedbackStatusUpdateModel.statusUpdateComment},
+              </if> 
+              <if test="role =='Network Engineer' or role =='Delivery Responsible'">    
+              #{feedbackStatusUpdateModel.pmComments},
+              </if> 
+              #{feedbackStatusUpdateModel.feedbackStatusNew}, 
+              #{signum}, 
+              dbo.GetDateIST(), 
+              #{role}, 
+              1,
+              (SELECT FeedbackComment FROM  CTE_A  with (nolock)),
+              #{signum},
+              dbo.GetDateIST()
+              <if test="role =='Network Engineer' or role =='Delivery Responsible'">
+             ,#{feedbackStatusUpdateModel.statusUpdateComment}
+             </if>
+             <if test="role =='Project Manager' or role =='Operational Manager'"> 
+             ,#{feedbackStatusUpdateModel.neComments}
+             </if>
+              ) 
+    </insert>
+	<select id= "getTemplateId" resultType="Integer">
+   
+    select templateId  from transactionalData.TBL_NOTIFICATIONS_CONFIG where templateName=#{notificationTypeFeedbackStatus}
+   
+    </select>
+  
+    <select id="getASPMsByFilter" parameterType="String" resultMap='EmployeeBasicDetails' useCache="true">
+   	select distinct employeeName,signum FROM refData.TBL_EMPLOYEES emp
+		join transactionalData.TBL_USER_ACCESS_PROFILE UAP on emp.Signum=UAP.SignumID
+		join refData.TBL_ACCESS_PROFILE AP on AP.accessProfileID=UAP.AccessProfileID
+		join refData.TBL_ACCESS_ROLE AR on AR.accessRoleID =AP.accessRoleID
+		where (signum like #{term}  or employeeName like #{term})
+		and  emp.Status != 'Resigned' and AR.accessRoleID=13 and UAP.Active=1 and AP.Active=1 and AR.Active=1   
+    </select>
+
+    <select id= "getStatusandSignum" resultType="com.ericsson.isf.model.WorkFlowFeedbackActivityModel">
+   
+    select  top 1 fd.creatorsignum as signum,fa.feedbackstatus from  transactionalData.TBL_feedbackDetail FD
+    inner join transactionalData.TBL_FeedbackActivity FA on fa.feedbackdetailID=fd.feedbackdetailID
+    where fd.feedbackdetailID= #{workFlowFeedbackModel.feedbackDetailID}
+
+    order by fa.feedbackactivityid desc
+   
+    </select>
+    
+<select id="downloadFeedbackFile" resultType="java.util.LinkedHashMap">
+
+With cte_B As(
+SELECT *,
+Count(1) OVER() totalcnt
+FROM (
+SELECT b.feedbackdetailid, b.ModifiedDate,
+Cast(b.CreatedDate AS DATE) createddate,
+a.projectid,
+a.stepname ,
+a.feedbackon,
+a.feedbacktype,
+b.feedbackactivityid,
+ISNULL(b.feedbackcomment,'No Comment') as feedbackcomment,
+b.replyoncomment,
+b.userrole,
+ISNULL(NULLIF(b.feedbackstatus, 'NULL'), 'No Comment') as feedbackstatus,
+a.instantfeedbackid,
+a.isactive,
+a.woid,
+a.stepid,
+a.createdby , a.flowchartdefid,
+Sum(CONVERT(INT, b.sadcount)) Over(Partition by a.stepid) AS sadcount,
+b.neComments,
+Row_number()OVER(partition BY b.feedbackdetailid ORDER BY b.feedbackactivityid DESC) rn
+FROM transactionaldata.tbl_feedbackdetail a
+INNER JOIN transactionaldata.tbl_feedbackactivity b ON a.feedbackdetailid = b.feedbackdetailid
+<if test="role =='Network Engineer' or role =='Delivery Responsible'">
+where a.CreatedBy = #{signum}
+</if>
+)tbl
+WHERE rn=1
+)
+
+
+select * from (
+SELECT 
+convert(nvarchar(MAX), c.createddate, 23) as CreatedDate , 
+c.projectid, 
+c.feedbackstatus,
+Concat(wcdef.wfid, '_', wcdef.workflowname, '_', wcdef.VersionNumber) AS WFID_Name_Version,
+c.stepname,
+c.sadcount as UnsatisfiedCount, 
+ins.feedbacktext as InstantFeedback,
+
+Concat(emp.signum, ' (', emp.employeename, ')') AS createdby,
+
+c.feedbackcomment,
+c.replyoncomment as [PM/OM Comment],
+c.neComments as [NE/DR Comment],
+c.feedbacktype,
+
+c.userrole ,
+c.ModifiedDate
+
+FROM cte_B AS c
+
+INNER JOIN transactionaldata.tbl_subactivity_flowchart_def wcdef ON wcdef.projectid = c.projectid AND wcdef.subactivityflowchartdefid = c.flowchartdefid 
+LEFT JOIN refdata.tbl_instantfeedback ins ON ins.instantfeedbackid= c.instantfeedbackid 
+LEFT JOIN refdata.tbl_employees EMP ON emp.signum = c.CreatedBy 
+WHERE c.isactive = 1 AND c.projectid = #{feedbackNePmModel.projectID} 
+<if test=" feedbackNePmModel.listOfFlowchartdefId != null">
+<if test=" feedbackNePmModel.listOfFlowchartdefId.size() > 0 ">
+AND wcdef.subactivityflowchartdefid in 
+<foreach item="item1" index="index" collection="feedbackNePmModel.listOfFlowchartdefId" open="(" separator="," close=")"> 
+#{item1} 
+</foreach>
+</if></if>
+<if test=" feedbackNePmModel.listOfWorkFlowId != null">
+<if test=" feedbackNePmModel.listOfWorkFlowId.size() > 0 ">
+AND wcdef.wfid in 
+<foreach item="item" index="index" collection="feedbackNePmModel.listOfWorkFlowId" open="(" separator="," close=")"> 
+#{item} 
+</foreach>
+</if> </if>
+<if test="feedbackNePmModel.feedbackStatus!= 'All'">
+AND c.feedbackstatus = #{feedbackNePmModel.feedbackStatus}
+</if>
+<if test="role =='Network Engineer' or role =='Delivery Responsible'">
+AND c.CreatedBy = #{signum}
+</if>
+AND c.createddate BETWEEN #{feedbackNePmModel.startDate} 
+AND #{feedbackNePmModel.endDate}
+) t
+where (FeedbackType &lt;&gt; 'ONSTEP_SAD_COUNT' or UnsatisfiedCount &lt;&gt; 0 )
+and 1=1 
+
+
+ORDER BY ModifiedDate DESC 
+
+
+</select>
+
+    
+    <select id='testGetEmployeesByFilter' parameterType="String" resultMap='EmployeeBasicDetails'>
+       select E.employeeName,E.signum FROM refData.TBL_EMPLOYEES E
+		left join refData.TBL_ASP_EMPLOYEES A on E.Signum=A.Signum
+		where (E.signum like #{term} or E.employeeName like #{term}) and A.Signum is null
+		and Status != 'Resigned'
+		order by E.employeeName,E.signum
+    </select>
+        
+    <insert id = 'saveSignalRNotificationLog' parameterType="com.ericsson.isf.model.NotificationLogModel">
+        INSERT INTO transactionaldata.tbl_signalrnotificationlogs 
+            (Signum, 
+             NotificationPurpose, 
+             NotificationFrom, 
+             NotificationTo, 
+             NotificationSendTime, 
+             ISActive,
+             CreatedBy,
+             ModifiedBy,
+             CreatedDate,
+             ModifiedDate
+             ) 
+        VALUES 
+          ( #{notificationLogModel.signum}, 
+             #{notificationLogModel.notificationPurpose},
+             #{notificationLogModel.notificationFrom},
+             #{notificationLogModel.notificationTo},
+             dbo.Getdateist(), 
+             1, 
+             #{notificationLogModel.signum},
+              #{notificationLogModel.signum}, 
+             dbo.Getdateist(),  
+             dbo.Getdateist()) 
+    </insert>
+    <select id="uploadFileForESSLeaveData" statementType="CALLABLE" resultType="java.util.LinkedHashMap">
+    {call [dbo].[uploadFileForESSLeaveData](
+        #{fileName,mode=IN, jdbcType=VARCHAR},
+        #{uploadedBy,mode=IN, jdbcType=VARCHAR}
+    )};
+    </select>
+    
+    <update id="updateSignalRNotificationLog">
+        UPDATE transactionaldata.tbl_signalrnotificationlogs 
+        SET    notificationrecievetime = dbo.Getdateist() 
+        WHERE  notificationid = #{notificationId} 
+    </update>
+    <select id='getLogLevelByUser'  resultType='com.ericsson.isf.model.LogLevelModel'>
+      IF EXISTS(SELECT 1 
+          		FROM   refdata.tbl_logginglevel ll 
+                INNER JOIN transactionaldata.tbl_userlogginglevel ull 
+                ON ll.loggingid = ull.loggingid 
+          		WHERE  ull.usersignum = #{userSignum} 
+                AND ll.isactive = 1) 
+                	BEGIN 
+      					SELECT ll.loggingid, 
+             			ll.logginglevel 
+      					FROM   refdata.tbl_logginglevel ll 
+             			INNER JOIN transactionaldata.tbl_userlogginglevel ull 
+                    	ON ll.loggingid = ull.loggingid 
+     	 				WHERE  ull.usersignum = #{userSignum} 
+             			AND ll.isactive = 1 
+  					END 
+					ELSE 
+  					BEGIN 
+      					SELECT ll.loggingid, 
+             			ll.logginglevel 
+      					FROM   refdata.tbl_logginglevel ll 
+             			INNER JOIN transactionaldata.tbl_userlogginglevel ull 
+                     	ON ll.loggingid = ull.loggingid 
+      					WHERE  ull.usersignum = 'DEFAULT' 
+             			AND ll.isactive = 1 
+  					END 
+    </select>
+    <select id='getEmployeesOrManager' parameterType="String" resultMap='EmployeeBasicDetails' useCache="true">
+		select E.employeeName,E.signum, E.ManagerSignum, emp.EmployeeName  as ManagerName FROM refData.TBL_EMPLOYEES E
+		left join refData.TBL_ASP_EMPLOYEES A on E.Signum=A.Signum
+		left join refData.TBL_EMPLOYEES emp on E.ManagerSignum = emp.Signum and emp.IsLineManager = 'Y'
+		where A.Signum is null
+		and E.Status != 'Resigned'
+		and (E.signum like #{term} or E.employeeName like #{term})
+		
+		<if test='managerSignum != "" and managerSignum != null'>
+			and (E.ManagerSignum like #{managerSignum} or emp.EmployeeName like #{managerSignum})
+		</if>
+		order by E.employeeName,E.signum
+    </select>
+    <select id='getInstructionURLList' resultType="com.ericsson.isf.model.WFStepInstructionModel">
+       select IU.InstructionID, IU.InstructionName as urlName, IU.InstructionType,IU.InstructionURL as urlLink,
+       IU.CreatedBy,IU.CreatedDate,IU.ModifiedBy,IU.ModifiedDate,IU.StepID,IU.FlowChartDefID,IU.IsActive as active,
+       IU.StepID, IU.Reference,IU.FCStepDetailsID, sfd.type as mode, IU.isWorkFlowUpdated 
+       from transactionalData.TBL_InstructionURL IU
+       inner join transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF sfd on sfd.SubActivityFlowChartDefID=IU.FlowChartDefId
+       where IU.FlowChartDefId=#{wFStepInstructionModel.flowChartDefID}
+       and IU.IsActive=1
+  </select>
+  
+  <select id='getNameandSignum' resultType='String'>
+  
+  select Concat(emp.signum, ' (', emp.employeename, ')') AS SignumAndName 
+  from  refdata.tbl_employees EMP where signum = #{signum}
+  
+  </select>
+    
+    
+    <select id='getLatestFeedbackStatus' resultType="com.ericsson.isf.model.WorkFlowFeedbackActivityModel">
+  
+   select top 1 FeedbackActivityID,FeedbackDetailID,FeedbackComment,ReplyOnComment,FeedbackStatus,SadCount,UserRole,isActive,NEComments
+    from transactionalData.TBL_FeedbackActivity where
+    FeedbackDetailID= #{feedbackDetailID} 
+    order BY ModifiedDate desc
+  
+  </select>
+    
+    <select id='getLineManagersBySearch' parameterType="String" resultType='hashmap' useCache="true">
+		select Signum as managerSignum, EmployeeName as managerName from refData.TBL_Employees where 
+		Status != 'Resigned' 
+		and isLineManager in ( 'Y','YES')
+		and (Signum like #{term} or EmployeeName like #{term})
+    </select>
+    
+    <select id='getReplyONComment' resultType="String">
+    select replyoncomment from transactionalData.TBL_FeedbackActivity
+     where feedbackActivityID= #{feedbackActivityID}
+    </select>
+    
+     <select id='getNEComments' resultType="String">
+    select neComments from transactionalData.TBL_FeedbackActivity
+     where feedbackActivityID= #{feedbackActivityID}
+    </select>
+    
+     <select id='getWfOwnerByWFIDandWFName' resultType="String">
+    declare @workflowname varchar(200) = #{workFlowName}
+
+    select  coalesce(tbl.WFOwner, tbl1.wfowner) as wfOwner from (
+    select distinct WFOwner,wfid from transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF where 
+    projectID= #{projectId}
+    and wfid=  #{workFlowId}
+    and WorkFlowName= @workflowname
+   and SubActivityID= #{subActivityId}
+   and active=1) tbl
+   full join 
+
+  (select top 1  WFOwner,wfid from transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF where 
+    projectID= #{projectId}
+    and wfid=#{workFlowId}
+    and WorkFlowName= @workflowname
+   and SubActivityID= #{subActivityId}
+  and active=0  order by LastModifiedDate desc) tbl1 on tbl.wfid=tbl1.wfid
+    </select>
+    
+     <resultMap type='DacModel' id='DacModelResult'>
+        <result property='projectID' column='ProjectID'/>
+        <collection property='dac_Signum' ofType='java.lang.String'>
+            <result column='Dac_Signum'></result>
+        </collection>
+        <collection property='dac_EmailID' ofType='java.lang.String'>
+            <result column='Dac_EmailID'></result>
+        </collection>
+        <collection property='dac_Name' ofType='java.lang.String'>
+            <result column='Dac_Name'></result>
+        </collection>
+      </resultMap>
+      
+      <select id= 'getDacDetails' resultMap="DacModelResult">
+        select distinct pro.projectid as ProjectID
+			,DAC.SignumID as DAC_Signum, empDAC.EmployeeEmailID as DAC_EmailID
+			,empDAC.EmployeeName as DAC_Name
+	        from transactionalData.TBL_PROJECTS pro
+			left join transactionalData.TBL_DELIVERY_ACCEPTANCE  DAC on pro.ProjectID= DAC.ProjectID and DAC.Active=1
+				inner join refData.TBL_Employees empDAC on empDAC.signum= DAC.SignumID
+ 		where pro.ProjectID = #{projectID}
+    </select>
+    <select id= 'getSubActivityByID' resultType="String">
+        select distinct SubActivity from refData.TBL_SUBACTIVITY where SubActivityID=#{subActivityID}
+    </select>
+    
+    
+     <select id= 'getAllSignumForWoid' resultType="com.ericsson.isf.model.Signum">
+       select distinct SignumID 
+       from TRANSACTIONALDATA.TBL_WORK_ORDER_BOOKING_DETAILS (nolock) where woId=#{woId}
+    </select>
+    
+    <select id= 'getAdhocBookingForSignum' resultType="com.ericsson.isf.model.botstore.TblAdhocBooking">
+      SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED
+      
+       SELECT  adhocbookingid         AS adhocBookingId,
+        active                 AS active,
+        actualenddate          AS actualEndDate,
+        bookedduration         AS bookedDuration,
+        comment                AS comment,
+        createdby              AS createdBy,
+        createdon              AS createdOn,
+        lastmodifiedby         AS lastModifiedBy,
+        lastmodifiedon         AS lastModifiedOn,
+        outlookmeetingid       AS outlookMeetingId,
+        pausedbooking          AS pausedBooking,
+        plannedduration        AS plannedDuration,
+        plannedenddate         AS plannedEndDate,
+        signumid               AS signumID,
+        startdate              AS startDate,
+      status                 AS status,
+      adhocbookingactivityid AS adhocBookingActivityId,
+       projectid              AS projectId
+FROM   transactionaldata.tbl_adhoc_booking  (nolock)
+WHERE   status = #{status}
+       AND  signumid = #{signumID}
+    </select>
+    
+    <select id='downloadErrorDictionaryFile' resultType="java.util.LinkedHashMap">
+    select errorCode ,errorType ,errorMessage ,sourceName as externalReference
+    from  [refData].[TBL_ErrorDictionaryMaster]  ed
+  	INNER JOIN  [refData].[TBL_External_Sources] es on es.sourceID=ed.sourceID 
+  	<if test="sourceID !=null and sourceID !=0">
+  		where ed.sourceID=#{sourceID}
+  	</if>
+    </select>
+    
+    <select id= 'getDesktopInformation' resultType="com.ericsson.isf.model.DesktopInformationModel">
+    	declare @userWiseInstalledVersion varchar(6),@currentDesktopVersion varchar(6)
+		select    top 1   @userWiseInstalledVersion=  version  from transactionalData.TBL_ISFDesktopVersionUserWise
+        where SignumID=#{signumId} order by UpdatedOn desc
+		select top 1 @currentDesktopVersion= Version  from refData.TBL_ISFDesktopUpdates where Active=1 and [UpdateType]='App'
+		SELECT ISNULL(@userWiseInstalledVersion,0.0) 
+        as userWiseInstalledVersion,ISNULL(@currentDesktopVersion,0.0)  as currentDesktopVersion
+    
+    </select>
+    
+    
+    <update id= 'deleteNEList'>
+    <!-- Changes  -->
+         Declare @neid varchar(max) = #{networkElementID}
+         Drop table if exists #neid
+         Create table #neid (neid int)
+         Insert into #neid
+         select value from string_split(@neid,',')
+         Update ne
+         Set Active=0, ModifiedBy = #{signumID}, ModifiedOn= dbo.GetDateIST()
+         from transactionalData.TBL_NETWORK_ELEMENT ne
+         join #neid n on ne.NetworkElementID = n.neid
+    </update>
+
+	<select id='isSubActivityExistsInActive' resultType="Boolean">
+		IF Exists
+		(SELECT 1 FROM refData.TBL_SUBACTIVITY WHERE
+		Activity= #{standardActivityModel.activity}
+		and SubActivity= #{standardActivityModel.subActivityName}
+		and Active = 0
+		and domainID = #{standardActivityModel.domainID}
+		and technologyID = #{standardActivityModel.technologyID}
+		and ServiceareaID = #{standardActivityModel.serviceAreaID}
+		)
+		Begin
+		Select 1 as 'Result'
+		End
+		else
+		Begin
+		Select 0 as 'Result'
+		End
+	</select>
+
+	<update id='updateInActiveValue' parameterType="StandardActivityModel">
+		Begin
+		Update refData.TBL_SUBACTIVITY
+		set active = 1,
+		avgEstdEffort = #{standardActivityModel.avgEstdEffort},
+		LastModifiedBy = #{standardActivityModel.createdBy},
+		LastModifiedDate = dbo.GetDateIST()
+		where DomainID = #{standardActivityModel.domainID}
+		and serviceAreaID= #{standardActivityModel.serviceAreaID}
+		and technologyID = #{standardActivityModel.technologyID}
+		and activity = #{standardActivityModel.activity}
+		and SubActivity = #{standardActivityModel.subActivityName}
+		End
+	</update>  
+   
+    
+    <select id='isDomainTechExist' resultType="Boolean">
+	IF NOT Exists
+	(
+	select top 1 DomainID from refData.TBL_Domain where DomainID =
+	#{standardActivityModel.domainID} and active = 1)
+	OR NOT Exists (
+	select top 1 TechnologyID from refDAta.TBL_TECHNOLOGY where technologyID =
+	#{standardActivityModel.technologyID} and active = 1 )
+	Begin
+	Select 1 as 'Result'
+	End
+	else
+	Begin
+	Select 0 as 'Result'
+	End
+
+</select>
+
+
+	<select id='isDomainTechIDExist' resultType="Boolean">
+		IF Exists(
+		SELECT 1 FROM refData.TBL_DomainSubDomain_Technology_Mapping WHERE
+		DomainSubDomainID = #{standardActivityModel.domainID} and
+		TechnologyID = #{standardActivityModel.technologyID} and active = 1
+		)
+		Begin
+		Select 1 as 'Result'
+		End
+		else
+		Begin
+		Select 0 as 'Result'
+		End
+
+	</select>
+    
+    <select id='isDomainTechIDExistInActive' resultType="Boolean">
+	IF Exists(
+	SELECT 1 FROM refData.TBL_DomainSubDomain_Technology_Mapping WHERE
+	DomainSubDomainID = #{standardActivityModel.domainID}
+	and TechnologyID = #{standardActivityModel.technologyID} and active = 0
+	)
+	Begin
+	Select 1 as 'Result'
+	End
+	else
+	Begin
+	Select 0 as 'Result'
+	End
+
+</select>
+
+	<update id='updatDtIdActive'
+		parameterType="StandardActivityModel">
+
+		update refData.TBL_DomainSubDomain_Technology_Mapping set active = 1,
+		ModifiedBy = #{standardActivityModel.createdBy},
+		ModifiedOn = dbo.GetDateIST()
+		where
+		DomainSubDomainID = #{standardActivityModel.domainID}
+		and TechnologyID = #{standardActivityModel.technologyID}
+
+	</update>
+
+	<insert id="insertDomainTechID"
+		parameterType="StandardActivityModel">
+		INSERT INTO refData.TBL_DomainSubDomain_Technology_Mapping(
+		DomainSubDomainID, TechnologyID, Active, CreatedBy, CreatedOn,
+		ModifiedBy, ModifiedOn)
+		Values(
+		#{standardActivityModel.domainID,jdbcType = INTEGER},
+		#{standardActivityModel.technologyID,jdbcType = INTEGER},
+		1,
+		#{standardActivityModel.createdBy,jdbcType = VARCHAR},
+		dbo.GetDateIST(),
+		#{standardActivityModel.createdBy,jdbcType = VARCHAR},
+		dbo.GetDateIST()
+		)
+	</insert>
+  
+  
+    
+
+</mapper>
+

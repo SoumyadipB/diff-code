@@ -1,0 +1,209 @@
+﻿
+@{
+    Layout = null;
+}
+
+@Scripts.Render("~/Content/theme/isf")
+
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>View1</title>
+    <link href="http://fonts.googleapis.com/css?family=Lato:100,300,400,700" media="all" rel="stylesheet" />
+    <link href="~/Content/theme/application.css" media="all" rel="stylesheet" />
+    <link href="~/Content/theme/isotope.css" media="all" rel="stylesheet" />
+    <link href="~/Content/theme/normalize.css" media="all" rel="stylesheet" />
+    <link href="~/Content/theme/fullcalendar.css" media="all" rel="stylesheet" />
+    <link href="~/Content/theme/datatables.css" media="all" rel="stylesheet" />
+    <link href="~/Content/theme/prettify.css" media="all" rel="stylesheet" />
+    <link href="~/Content/theme/classyscroll.css" media="all" rel="stylesheet" />
+    <link href="~/Content/theme/jquery.fancybox.css" media="all" rel="stylesheet" />
+    <link href="~/Content/theme/select2.css" media="all" rel="stylesheet" />
+    <link href="~/Content/theme/bootstrap.min.css" media="all" rel="stylesheet" />
+    <link href="~/Content/theme/fontawesome.css" media="all" rel="stylesheet" />
+    <link href="~/Content/theme/style.css" media="all" rel="stylesheet" />
+    <link href="~/Content/theme/color/green.css" media="all" rel="alternate stylesheet" title="green-theme" />
+    <link href="~/Content/theme/color/orange.css" media="all" rel="alternate stylesheet" title="orange-theme" />
+    <link href="~/Content/theme/color/magenta.css" media="all" rel="alternate stylesheet" title="magenta-theme" />
+    <link href="~/Content/theme/color/gray.css" media="all" rel="alternate stylesheet" title="gray-theme" />
+    <link href="~/Content/theme/theme-1/libs/DataTables/jquery.dataTables.css" rel="stylesheet" />
+
+    <link type="text/css" rel="stylesheet" href="~/Content/theme/theme-1/materialadmin.css?1425466319" />
+    <link type="text/css" rel="stylesheet" href="~/Content/theme/theme-1/font-awesome.min.css?1422529194" />
+    <link type="text/css" rel="stylesheet" href="~/Content/theme/theme-1/material-design-iconic-font.min.css?1421434286" />
+
+    <link type="text/css" rel="stylesheet" href="~/Content/theme/theme-1/libs/rickshaw/rickshaw.css?1422792967" />
+    <link type="text/css" rel="stylesheet" href="~/Content/theme/theme-1/libs/morris/morris.core.css?1420463396" />
+    <link type="text/css" rel="stylesheet" href="~/Content/theme/theme-1/libs/toastr/toastr.css?1425466569" />
+
+    <!-- Basic Extra -->
+    <script src="assets/js/libs/jquery-ui/jquery-ui.min.js"></script>
+    <script src="assets/js/libs/autosize/jquery.autosize.min.js"></script>
+    <script src="assets/js/libs/select2/select2.min.js"></script>
+    <script src="assets/js/libs/bootstrap-tagsinput/bootstrap-tagsinput.min.js"></script>
+    <script src="assets/js/libs/multi-select/jquery.multi-select.js"></script>
+    <script src="assets/js/libs/inputmask/jquery.inputmask.bundle.min.js"></script>
+    <script src="assets/js/libs/moment/moment.min.js"></script>
+    <script src="assets/js/libs/bootstrap-datepicker/bootstrap-datepicker.js"></script>
+    <script src="assets/js/libs/typeahead/typeahead.bundle.min.js"></script>
+    <script src="assets/js/libs/dropzone/dropzone.min.js"></script>
+    <script src="assets/js/libs/nanoscroller/jquery.nanoscroller.min.js"></script>
+
+
+    <!-- Extra End -->
+
+
+
+
+    <script src="assets/js/libs/moment/moment.min.js"></script>
+    <script src="assets/js/libs/angular-1.6.4/angular.min.js"></script>
+    <script src="assets/js/libs/angular-1.6.4/angular-route.min.js"></script>
+    <script src="assets/js/libs/angular-1.6.4/angular-animate.min.js"></script>
+    <script src="assets/js/libs/angular-1.6.4/angular-resource.min.js"></script>
+    <script src="assets/js/libs/bootstrap/ui-bootstrap-tpls-2.5.0.min.js"></script>
+
+    <script src="assets/js/core/angularjs/app.js"></script>
+    <script src="assets/js/core/angularjs/controller/titleController.js"></script>
+    <script src="assets/js/core/angularjs/services/titleService.js"></script>
+    <script src="assets/js/core/angularjs/services/evaluationService.js"></script>
+    <script src="assets/js/core/angularjs/services/performanceLevelService.js"></script>
+    <script src="assets/js/core/angularjs/services/candidateService.js"></script>
+    <script src="assets/js/core/angularjs/services/candidateEvaluationService.js"></script>
+    <script src="assets/js/core/angularjs/services/loginService.js"></script>
+    <script src="assets/js/core/angularjs/services/jobRoleService.js"></script>
+
+
+
+    <script src="assets/js/core/angularjs/controller/mainController.js"></script>
+    <script src="assets/js/core/angularjs/controller/graduateController.js"></script>
+    <script src="assets/js/core/angularjs/controller/performanceLevelController.js"></script>
+    <script src="assets/js/core/angularjs/controller/dashboardController.js"></script>
+    <script src="assets/js/core/angularjs/controller/expericeController.js"></script>
+    <script src="assets/js/core/angularjs/controller/candidateController.js"></script>
+    <script src="assets/js/core/angularjs/controller/interviewController.js"></script>
+    <script src="assets/js/core/angularjs/controller/loginController.js"></script>
+    <script src="assets/js/core/angularjs/controller/boardController.js"></script>
+
+
+
+    <meta content="width=device-width, initial-scale=1.0" charset="utf-8" name="viewport" />
+</head>
+<body style="background: #dadada;">
+
+    <div class="container">
+        <div class="row">
+            <div class="loginPage">
+                <div class="col-md-7">
+                    <h2 id="lblLogin" value="" style="color:red"></h2>
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <span class="glyphicon glyphicon-lock"></span> Login ISF <img src="~/Content/images/logo2.png" width="35px" height="30px">
+                        </div>
+                        <div class="panel-body">
+                            <form class="form-horizontal" role="form">
+                                <div class="form-group">
+                                    <label for="inputEmail3" class="col-sm-3 control-label">
+                                        Signum
+                                    </label>
+                                    <div class="col-sm-9">
+                                        <input type="text" class="form-control" id="inputEmail3" placeholder="Signum" required>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="inputPassword3" class="col-sm-3 control-label">
+                                        Password
+                                    </label>
+                                    <div class="col-sm-9">
+                                        <input type="password" class="form-control" id="inputPassword3" placeholder="Password" required>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="col-sm-offset-3 col-sm-9">
+                                        <div class="checkbox">
+                                            <label>
+                                                <input type="checkbox" />
+                                                Remember me
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group last">
+                                    <div class="col-sm-offset-3 col-sm-9">
+                                        <button type="submit" class="btn btn-success btn-sm">
+                                            Sign in
+                                        </button>
+                                        <button type="reset" class="btn btn-default btn-sm">
+                                            Reset
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="panel-footer">
+                        </div>
+                    </div>
+                </div>
+            
+        </div>
+        </div>
+    </div>
+
+
+    <script src="~/Scripts/jquery-1.10.2.min.js"></script>
+    <script src="~/Scripts/theme/jquery.dataTables.min.js"></script>
+    <script src="~/Scripts/theme/assets/js/libs/DataTables/datetime.js"></script>
+
+
+
+    <script src="~/Scripts/theme/modernizr.custom.js"></script>
+    <script src="~/Scripts/theme/bootstrap.min.js"></script>
+    <script src="~/Scripts/theme/jquery.mousewheel.js"></script>
+    <script src="~/Scripts/theme/jquery.classyscroll.js"></script>
+    <script src="~/Scripts/theme/jquery.vmap.min.js"></script>
+    <script src="~/Scripts/theme/jquery.vmap.sampledata.js"></script>
+    <script src="~/Scripts/theme/jquery.vmap.world.js"></script>
+    <script src="~/Scripts/theme/fullcalendar.min.js"></script>
+    <script src="~/Scripts/theme/gcal.js"></script>
+    <script src="~/Scripts/theme/prettify.js"></script>
+
+
+
+
+
+    <script src="~/Scripts/theme/jquery.fancybox.pack.js"></script>
+    <script src="~/Scripts/theme/jquery.sparkline.min.js"></script>
+    <script src="~/Scripts/theme/jquery.easy-pie-chart.js"></script>
+    <script src="~/Scripts/theme/excanvas.min.js"></script>
+    <script src="~/Scripts/theme/jquery.isotope.min.js"></script>
+    <script src="~/Scripts/theme/select2.js"></script>
+    <script src="~/Scripts/theme/styleswitcher.js"></script>
+    <script src="~/Scripts/theme/main.js"></script>
+
+
+    <!-- Basic Extra -->
+    <script src="~/Scripts/theme/assets/js/libs/jquery-ui/jquery-ui.min.js"></script>
+    <script src="~/Scripts/theme/assets/js/libs/autosize/jquery.autosize.min.js"></script>
+    <script src="~/Scripts/theme/assets/js/libs/select2/select2.min.js"></script>
+    <script src="~/Scripts/theme/assets/js/libs/bootstrap-tagsinput/bootstrap-tagsinput.min.js"></script>
+    <script src="~/Scripts/theme/assets/js/libs/multi-select/jquery.multi-select.js"></script>
+    <script src="~/Scripts/theme/assets/js/libs/inputmask/jquery.inputmask.bundle.min.js"></script>
+    <script src="~/Scripts/theme/assets/js/libs/moment/moment.min.js"></script>
+    <script src="~/Scripts/theme/assets/js/libs/bootstrap-datepicker/bootstrap-datepicker.js"></script>
+    <script src="~/Scripts/theme/assets/js/libs/typeahead/typeahead.bundle.min.js"></script>
+    <script src="~/Scripts/theme/assets/js/libs/dropzone/dropzone.min.js"></script>
+    <script src="~/Scripts/theme/assets/js/libs/nanoscroller/jquery.nanoscroller.min.js"></script>
+
+
+    <script src="~/Scripts/theme/assets/js/core/source/App.js"></script>
+    <script src="~/Scripts/theme/assets/js/core/source/AppNavigation.js"></script>
+
+    <script src="~/Scripts/theme/assets/js/libs/angular-1.6.4/angular.min.js"></script>
+    <script src="~/Scripts/theme/assets/js/libs/angular-1.6.4/angular-route.min.js"></script>
+    <script src="~/Scripts/theme/assets/js/libs/angular-1.6.4/angular-animate.min.js"></script>
+    <script src="~/Scripts/theme/assets/js/libs/angular-1.6.4/angular-resource.min.js"></script>
+    <script src="~/Scripts/theme/assets/js/libs/bootstrap/ui-bootstrap-tpls-2.5.0.min.js"></script>
+</body>
+</html>

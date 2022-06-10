@@ -1,0 +1,86 @@
+﻿@{
+    ViewBag.Title = "Input Output Global URL";
+}
+
+@Scripts.Render("~/bundles/MDMGlobalURL");
+@Scripts.Render("~/bundles/DataTableScript")
+@Styles.Render("~/bundles/css/DataTableStyle")
+
+<style>
+    .updateBlockCss {
+        border: 1px solid #ccc;
+        background-color: #ecf7ec;
+        border-radius: 4px;
+        margin-bottom: 10px !important;
+    }
+
+    .inputFileClass {
+        width: 100%;
+        padding: 4px;
+        display: inline-block;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+    }
+</style>
+
+<div class="panel panel-default">
+
+    <div class="panel-heading">
+        INPUT OUTPUT GLOBAL URL
+    </div>
+
+    <div class="panel-body">
+
+        <div class="well" id="topDiv" style="padding-bottom: 0px;">
+
+
+            <div class="row">
+
+                <div class="col-lg-5">
+
+                    <label>URL Name : </label>
+                    <input class="inputFileClass" type="text" id="globalURLName" @*maxlength="50"*@ style="width:100%" onkeyup="globalUrlNameEntering()"/>
+                    <div class="col-md-12"><span id="globalUrlNameInput" style="color:darkgray" class="pull-right">Only 50 characters are allowed (50 left)</span></div>
+                    <input type="hidden" id="globalURLId" value="" />
+
+                </div>
+
+                <div class="col-lg-5">
+
+                    <label>URL : </label>
+                    <input class="inputFileClass" type="text" @*maxlength="500"*@ id="globalURL" style="width:100%" onkeyup="globalUrlEntering()"/>
+                    <div class="col-md-12"><span id="globalUrlInput" style="color:darkgray" class="pull-right">Only 500 characters are allowed (500 left)</span></div>
+                </div>
+
+                <div class="col-lg-2" style="padding-top: 15px;margin-bottom: 0px;">
+
+                    <div class="row">
+
+                        <div class="col-lg-8">
+                            <button type="submit" class="btn btn-primary btn-sm" id="submitGlobalURL">Add Global URL</button>
+                        </div>
+
+                        <div class="col-lg-4">
+                            <button type="button" class="btn btn-success btn-sm" id="resetGlobalURL">Reset</button>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+        <div class="table-responsive" id="globalURLTableArea" style="width:100%; overflow:auto">
+
+            <table class="table table-bordered table-striped table-hover" id="globalURLTable">
+            </table>
+
+        </div>
+
+    </div>
+
+</div>

@@ -1,0 +1,521 @@
+﻿@{
+    ViewBag.Title = "Delivery Scope";
+}
+@Scripts.Render("~/bundles/WorkOrderCreatePopUp")
+@Scripts.Render("~/bundles/DataTableScript")
+@Styles.Render("~/bundles/css/DataTableStyle")
+<style>
+    .disabledbutton {
+        pointer-events: none;
+        opacity: 0.4;
+    }
+    #view_Task_filter{
+        display:none;
+    } 
+    .select2-hidden-accessible {
+        display: none !important;
+    }
+
+    tfoot {
+        display: table-header-group;
+    }
+
+    .glyphicon-ring {
+        width: 25px;
+        height: 25px;
+        border-radius: 50%;
+        padding-top: 5px;
+        color: white;
+        display: inline-table;
+        text-align: center;
+    }
+
+    .glyphicon-mediumorchid {
+        background: mediumorchid;
+    }
+
+    .glyphicon-blue {
+        background: blue;
+    }
+    .glyphicon-orangered {
+        background: orangered;
+    }
+
+    .glyphicon-green {
+        background: forestgreen;
+    }
+</style>
+@*<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>*@
+<script>
+    var projectID = localStorage.getItem("views_project_id");
+    var signum = signumGlobal;
+    var scopeID = 3;
+    var priority = '';
+    var daily = [];
+    var weekly = '';
+    var recurr = '';
+    $(document).ready(function () {
+
+        $.fn.modal.Constructor.prototype.enforceFocus = function () { }; //Select2 search was not working in mozilla (on work order creation)
+
+        $('#myFileWOUpload').change(function (e) {
+            fl = e.target.files[0];
+            var filename = $('#myFileWOUpload').val().split('\\').pop();
+            $("lbltxtwo").text = fl.name;
+            pwIsf.alert({ msg: 'The file "' + filename + '" has been selected.', type: 'info', autoClose: 1 });
+            var ext = filename.split('.').pop();
+            //console.log('extension ' + ext);
+            if (ext == 'xlsx') {
+                //console.log("correct file type selected");
+               
+                $("#btnUpload").prop("disabled", false);
+            }
+            else {
+                alert("Wrong file type selected,Please select only xlsx file");
+              
+                $("#btnUpload").prop("disabled", true);
+            }
+        });
+        
+        //$("#Start_Date").datepicker();
+        //$("#End_Date").datepicker();
+        
+        var today = new Date();
+        var dd = today.getDate();
+        var mm = today.getMonth() + 1; //January is 0!
+        var yyyy = today.getFullYear();
+        if (dd < 10) {
+            dd = '0' + dd
+        }
+        if (mm < 10) {
+            mm = '0' + mm
+        }
+
+        today = yyyy + '-' + mm + '-' + dd;
+        document.getElementById("Start_Date").setAttribute("min", today);
+        document.getElementById("End_Date").setAttribute("min", today);
+        //getDomains();
+        //getServiceAreas();
+        //getTechnologiesWF();
+        //$('#cbxActivity').append('<option value="0"></option>');
+        //$('#cbxSubActivity').append('<option value="0"></option>');
+       // searchWfAvail();
+        // var data = [{ id: 0, text: 'enhancement' }, { id: 1, text: 'bug' }, { id: 2, text: 'duplicate' }, { id: 3, text: 'invalid' }, { id: 4, text: 'wontfix' }];
+
+        //var placeholder = "select";
+        // $(".woc_select_nodeName").select2({
+        //     tokenSeparators: [','],
+        //     data: data,
+        //     placeholder: placeholder,
+        //     allowClear: false,
+        //     minimumResultsForSearch: 5
+        // });
+
+        
+        $(document).on('click', '.cssOnProjectDeleteWF', function (e) {
+            e.preventDefault();
+            onProjectDeleteWF(this);
+        });
+
+        //$('.cssOnProjectDeleteWF').on('click', function (e) {
+        //    e.preventDefault();
+        //    onProjectDeleteWF(this);
+
+        //});
+
+     
+    });
+
+    (function () {
+        var fs = (document.location.protocol === 'file:');
+        var ff = (navigator.userAgent.toLowerCase().indexOf('firefox') !== -1);
+        if (fs && !ff) {
+            (new joint.ui.Dialog({
+                width: 300,
+                type: 'alert',
+                title: 'Local File',
+                content: $('#message-fs').show()
+            })).open();
+        }
+    })();
+</script>
+
+<div class="col-lg-12">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <a class="pull-right fa fa-angle-down" href="#WFCreationPanel" aria-expanded="false" aria-controls="WFCreationPanel" data-toggle="collapse"></a>
+            <a href="#Download" class="pull-right" data-toggle="tooltip" title="Click to Download Work Flow Template" onclick="downloadTemplateFile({thisObj:this,fileName:'WFSampleTemplate'});"><i class="fa fa-download glyphicon-ring glyphicon-green"></i></a>
+            Work Flow
+        </div>
+        <div class="panel-body" id="WFCreationPanel">
+            <div id="page-wrapper">
+                <div class="row">
+                    <div class="col-lg-12">
+                       
+                    </div>
+                </div>
+
+                <div class="col-md-16 ">
+                    <div class="table-responsive" style="overflow-x: auto; ">
+                        <table id="wfSearchTable" class="table table-striped table-bordered table-hover"></table>
+                    </div>
+
+
+                </div>
+
+            </div>
+
+            <!--view task modal-->
+            <div class="modal fade" id="viewTask" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                <div class="modal-dialog2 modal-lg" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                            <h4 class="modal-title text-center" id="myModalLabel">View Task</h4>
+                        </div>
+                        <div class="modal-body" style="max-height: calc(100vh - 210px);overflow-y: auto;">
+                            <div class="row">
+
+
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        <div class="dataTable_wrapper">
+                                            <div class="table-responsive" style="overflow-x:auto">
+                                                <table class="table table-striped table-bordered table-hover" id="view_Task">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Task</th>
+                                                            <th>Execution Type</th>
+                                                            <th>Description</th>
+                                                            <th>RPA Id</th>
+                                                            <th>Tool Name</th>
+                                                            <th>Avg Estd Hrs</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody id="view_Task_tBody">
+                                                        <tr><td colspan="10" align="center"><img src="~/Content/images/loading.gif"></td></tr>
+                                                    </tbody>
+                                                    <tfoot>
+                                                        <tr>
+                                                            <th>Task</th>
+                                                            <th>Execution Type</th>
+                                                            <th>Description</th>
+                                                            <th>RPA Id</th>
+                                                            <th>Tool Name</th>
+                                                            <th>Avg Estd Hrs</th>
+                                                        </tr>
+                                                    </tfoot>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div> <!--//Body -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--view task modal end-->
+
+            <div class="modal fade" id="openModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                            <h4 class="modal-title" id="myModalLabel">Import existing WF</h4>
+                        </div>
+                        <div class="modal-body" >
+                            <div class="row">
+
+                                <div class="col-lg-4">
+                                    <label>Project ID</label>
+                                    <select id="cbxProject" class="select2able"></select>
+                                </div>
+                                <div class="col-lg-4">
+                                    <label>Project Name</label>
+                                    <select id="cbxProjectName" class="select2able"></select>
+                                </div>
+                                <div class="col-lg-4">
+                                    <label>Customer Name</label>
+                                    <select id="cbxCustomer" class="select2able"></select>
+                                </div>
+                                <div class="col-lg-4">
+                                    <label>Market Area</label>
+                                    <select id="cbxMarket" class="select2able"></select>
+                                </div>
+                                <div class="col-lg-4">
+                                    <label>Country</label>
+                                    <select id="cbxCountry" class="select2able"></select>
+                                </div>
+                                <div class="col-lg-3">
+                                    <button class="btn btn-primary" type="submit" onclick="searchProjects();">Search</button>
+                                    <button class="btn btn-primary" type="submit" onclick="addScope();">Add Deliverable</button>
+                                </div>
+
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <div class="dataTable_wrapper">
+                                        <table class="table table-striped table-bordered table-hover" id="table_project">
+                                            <thead>
+                                                <tr>
+                                                    <th>Select</th>
+                                                    <th>Project Name</th>
+                                                    <th>Customer Name</th>
+                                                    <th>Market Area</th>
+                                                    <th>Country</th>
+                                                    <th>Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="project_tBody"></tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div> <!--//Body -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!--Work Order Create Modal-->
+
+
+
+<div class="modal fade" id="woModal1" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title" id="woModal1Title"></h4>
+            </div>
+            <div class="modal-body">
+
+                <div class="form-group">
+                    <div id="woModal1ContentWeekly" style="display:none;">
+                        <label class="checkbox-inline"><input type="radio" name="radio_weekly" id="sun" value="Sunday">S</label>
+                        <label class="checkbox-inline"><input type="radio" name="radio_weekly" id="mon" value="Monday">M</label>
+                        <label class="checkbox-inline"><input type="radio" name="radio_weekly" id="tue" value="Tuesday">T</label>
+                        <label class="checkbox-inline"><input type="radio" name="radio_weekly" id="wed" value="Wednesday">W</label>
+                        <label class="checkbox-inline"><input type="radio" name="radio_weekly" id="thu" value="Thursday">T</label>
+                        <label class="checkbox-inline"><input type="radio" name="radio_weekly" id="fri" value="Friday">F</label>
+                        <label class="checkbox-inline"><input type="radio" name="radio_weekly" id="sat" value="Saturday">S</label><br />
+                    </div>
+                    <div id="woModal1ContentDaily" style="display:none;">
+                        <label class="checkbox-inline"><input type="checkbox" name="checkbox_daily" id="checkbox_daily" value="Sunday">S</label>
+                        <label class="checkbox-inline"><input type="checkbox" name="checkbox_daily" id="checkbox_daily" value="Monday">M</label>
+                        <label class="checkbox-inline"><input type="checkbox" name="checkbox_daily" id="checkbox_daily" value="Tuesday">T</label>
+                        <label class="checkbox-inline"><input type="checkbox" name="checkbox_daily" id="checkbox_daily" value="Wednesday">W</label>
+                        <label class="checkbox-inline"><input type="checkbox" name="checkbox_daily" id="checkbox_daily" value="Thursday">T</label>
+                        <label class="checkbox-inline"><input type="checkbox" name="checkbox_daily" id="checkbox_daily" value="Friday">F</label>
+                        <label class="checkbox-inline"><input type="checkbox" name="checkbox_daily" id="checkbox_daily" value="Saturday">S</label>
+                    </div>
+                    <label class="control-label col-lg-8" id="modal_text"></label>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" onclick="$('#woModal1').modal('hide');">Save</button>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@*Accept Reject WF*@
+<div class="col-lg-12">
+
+    <div class="panel panel-default">
+
+        <div class="panel-heading">
+           Work Flow Approval
+            <a class="pull-right fa fa-angle-down" href="#WFApprovalPanel" aria-expanded="false" aria-controls="WFApprovalPanel" data-toggle="collapse"></a>
+        </div>
+
+
+        <div class="panel-body collapse" id="WFApprovalPanel">
+            @*<div>*@
+            <div id="loaderDivWFA"><img src="../Content/images/loading-1.gif" style=" width:50px; height:50px;margin-left:50%"></div>
+            <div class="col-md-16 ">
+                <div class="table-responsive" style="overflow-x: auto; ">
+                    <table id="table_wf_creation_approval" class="table table-striped table-bordered table-hover"></table>
+                </div>
+
+
+            </div>
+
+            @*</div>*@
+
+
+        </div>
+    </div>
+</div>
+
+    
+
+<div class="modal fade" id="acceptApprovalModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="">Work Flow Approval Confirmation</h4>
+            </div>
+            <div class="modal-body" id="">
+
+                <label>Are you sure you want to approve Work Flow?</label>
+                <input class="form-control" id="projID-approval" type="hidden" />
+                <input class="form-control" id="SubActID-approval" type="hidden" />
+                <input class="form-control" id="flowchartDefID-approval" type="hidden" />
+                <input class="form-control" id="employeeSignum-approval" type="hidden" />
+                <input class="form-control" id="wfVersion-approval" type="hidden" />
+                <input class="form-control" id="wfName-approval" type="hidden" />
+                <input class="form-control" id="wfid-approval" type="hidden" />
+            </div>
+
+            <div class="modal-footer">
+                <a id="" class="btn btn-primary" data-dismiss="modal" data-toggle="modal" data-target="#newVersionWFName">Create New</a>
+                <button id="" type="button" class="btn btn-default" data-dismiss="modal" onclick="updateExisting($('#projID-approval').val(), $('#SubActID-approval').val(), $('#flowchartDefID-approval').val(), $('#employeeSignum-approval').val(), $('#wfVersion-approval').val(), $('#wfName-approval').val(), false, $('#wfid-approval').val())">Update Existing</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="newVersionWFName" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="">Name Work Flow</h4>
+            </div>
+            <div class="modal-body" id="versionContentModal">
+
+                <label>Work Flow Name:</label>&nbsp;&nbsp;<input id="workflowName" type="text" />
+
+
+            </div>
+            <div class="modal-footer">
+
+                <button id="enterNewWFName" type="button" class="btn btn-default" data-dismiss="modal" onclick="createNew($('#projID-approval').val(), $('#SubActID-approval').val(), $('#flowchartDefID-approval').val(), $('#employeeSignum-approval').val(), $('#wfVersion-approval').val(), $('#wfName-approval').val(), true, $('#workflowName').val(),$('#wfid-approval').val())">OK</button>
+                <button id="" type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="customWFApprovalReasonModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body" id="versionContentModal">
+                <div class="col-md-3 input-group" id="editReasonDiv">
+                    <label class="input-group-addon" id="basic-addon3">Reason: </label>
+                    <select id="editReasonDDApproval" style="height:34px; width:175px"></select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                @*updateExisting(projID, subActId, flowchartDefId, employeeSignum, wfVersion, wfName, false, wfid)*@
+                <button id="enterEditReason" type="button" class="btn btn-default" data-dismiss="modal" onclick="updateExisting($('#projID-approval').val(), $('#SubActID-approval').val(), $('#flowchartDefID-approval').val(), $('#employeeSignum-approval').val(), $('#wfVersion-approval').val(), $('#wfName-approval').val(),false, $('#wfid-approval').val(),$('#editReasonDDApproval').val())">OK</button>
+                <button id="" type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="rejectApprovalModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="">Reject Work Flow</h4>
+            </div>
+            <div class="modal-body" id="">
+                <label>Reason for Rejection:</label><select id="rejectWF" class="select2able"></select>
+                <input class="form-control" id="projID" type="hidden" />
+                <input class="form-control" id="SubActID" type="hidden" />
+                <input class="form-control" id="flowchartDefID" type="hidden" />
+                <input class="form-control" id="employeeSignum" type="hidden" />
+                <input class="form-control" id="versionNo" type="hidden" />
+                <input class="form-control" id="wfid" type="hidden" />
+            </div>
+            <div class="modal-footer">
+                <a id="submitModal" class="btn btn-primary" data-dismiss="modal" onclick="onRejectWorkFlow($('#projID').val(), $('#SubActID').val(), $('#flowchartDefID').val(), $('#employeeSignum').val(), $('#versionNo').val(), $('#rejectWF').val(), $('#wfid').val())">Yes</a>
+                <button id="cancelModal" type="button" class="btn btn-default" data-dismiss="modal">No</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@*Bulk WOCreate*@
+@*Accept Reject WF*@
+<div class="col-lg-12">
+
+    <div class="panel panel-default">
+
+        <div class="panel-heading">
+            Bulk Deliverable Order Create
+            <a class="pull-right fa fa-angle-down" href="#BulkWOCreatePanel" aria-expanded="false" aria-controls="BulkWOCreatePanel" data-toggle="collapse"></a>
+        </div>
+
+
+        <div class="panel-body collapse" id="BulkWOCreatePanel">
+            @*<div>*@           
+            <div class="col-md-16 ">
+                
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h4>Import File</h4>
+                            <form method="POST" enctype="multipart/form-data" id="uploadFile">
+                                <div class="col-md-4"><input type="file" id="myFileWOUpload" class="form-control" name="Choose File" required /></div>
+                                <label id="lbltxtwo"></label>
+
+                            </form>
+                            <div class="col-md-1"><input type="submit" class="btn btn-primary"  value="Upload" id="btnUpload" onclick="uploadWOFile()" disabled /></div>
+                            @*<div class="col-md-2">
+                                <a href="#Download" onclick="downloadTemplateFile({thisObj:this,fileName:'WOCreationTemplate'});" class="btn btn-primary">Download Template</a>
+                            </div>*@
+                                @*<button id="btnTemplate" type="button" class="btn btn-primary" onclick="downloadWOTemplate()">Download Template</button></div>*@
+                            <div class="col-md-3" style="color:red;"><label>Note:Please upload only .xlsx file</label></div>
+                            </div>
+                        
+                     
+                    </div>
+
+
+                     <div class="row" style="margin-top: 36px;">
+                          <div class="col-md-4">
+                        <h4>Bulk Deliverable Order creation through Email/UI</h4>
+                         </div>
+                    </div>          
+                   <!-- <table id="table_wf_creation_approval" class="table table-striped table-bordered table-hover"></table>-->
+               
+
+
+                    <div class="row">
+                        <div class="col-md-4">
+                                    <a href="#Download" class="btn btn-primary fa fa-envelope" onclick="downloadTemplateFile({thisObj:this,fileName:'DOCreationTemplate'});">  Download Email/Bulk UI Template File</a>
+                        </div>
+                    </div>          
+                   <!-- <table id="table_wf_creation_approval" class="table table-striped table-bordered table-hover"></table>-->
+               
+
+
+            </div>
+
+            @*</div>*@
+
+
+        </div>
+    </div>
+</div>
+

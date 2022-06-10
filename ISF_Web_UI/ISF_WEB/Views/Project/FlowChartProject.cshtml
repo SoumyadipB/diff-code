@@ -1,0 +1,114 @@
+﻿@{
+    Layout = "";
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Work Flow</title>
+    @Styles.Render("~/bundles/css/rappid")
+    @Styles.Render("~/bundles/css/bootstrap")
+    @Scripts.Render("~/bundles/SessionManagement")
+    @Styles.Render("~/bundles/css/DataTableStyle")
+    @Styles.Render("~/bundles/css/DeliveryExecution")
+    <link type="text/css" rel="stylesheet" href="~/Content/CSS/font-awesome.min.css" />
+    <style>
+        .popover {
+            max-width: 100%;
+            // Max Width of the popover (depending on the container!)
+        }
+
+        .joint-lightbox.modal {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+
+        <div id="wOdetailForWF"></div>
+        <hr />
+        <div class="row">
+            <div class="col-md-2">Started<span style="margin-left: 5px ;padding: 3px 10px 3px 10px;background-color:#6e88ff;"></span></div>
+            <div class="col-md-2">Completed<span style=" margin-left: 5px ;padding: 3px 10px 3px 10px;background-color:#00983b;"></span></div>
+            <div class="col-md-2">On Hold<span style="margin-left: 5px ;padding: 3px 10px 3px 10px;background-color:#E5E500;"></span></div>
+            <div class="col-md-2">Skipped<span style=" margin-left: 5px ;padding: 3px 10px 3px 10px;background-color:#FFAB73 ;"></span></div>
+            <div class="col-md-2">Manual<span style=" margin-left: 5px ;padding: 3px 17px 3px 17px;background-color:#dcd7d7;border: 1px solid #31d0c6 ;"></span></div>
+            <div class="col-md-2" style="width:155px">Automatic<span style="margin-left: 5px;padding: 3px 4px 4px 4px;background-color:#ffffff;border: 1px solid red;"><span style=" margin-left: 0px ;padding: 1px 15px 1px 15px;background-color:#31d0c6;border: 1px solid red"></span></span></div>
+            <a href="#" onclick="location.reload();"><span class="fa fa-refresh" style="color:blue;" data-placement="bottom" data-toggle="tooltip" title="Refresh"></span></a>
+        </div>
+        <br />
+    </div>
+    <div class="container" id="app">
+        <div class="app-header">
+            <div class="app-title">
+                <h1>VIEW WorkFlow</h1>
+            </div>
+            <div class="toolbar-container"></div>
+        </div>
+        <div class="app-body">
+            <div class="stencil-container"></div>
+            <div class="paper-container"></div>
+            <div class="inspector-container"></div>
+            <div class="navigator-container"></div>
+        </div>
+    </div>
+    <!-- Rappid/JointJS dependencies: -->
+    @Scripts.Render("~/bundles/rappid")
+    @Scripts.Render("~/bundles/GetSessionVars")
+    @Scripts.Render("~/bundles/config")
+    @Scripts.Render("~/bundles/bootstrap")
+    @Scripts.Render("~/bundles/datepicker")
+
+    @Scripts.Render("~/bundles/DeliveryExecution")
+    @Scripts.Render("~/bundles/DataTableScript")
+
+
+    <script>
+
+        var urlParams = new URLSearchParams(window.location.search);
+        var woID = urlParams.get("woID");
+        $(document).ready(function () {
+            getWODetailsForWF(woID);
+        });
+
+        joint.setTheme('material');
+        app = new App.MainView({ el: '#app' });
+        themePicker = new App.ThemePicker({ mainView: app });
+        themePicker.render().$el.appendTo(document.body);
+        window.addEventListener('load', function () {
+
+        });
+
+        var href = $("#btn_exec").attr("href");
+        var href1 = href + "&woID=" + woID;
+        $("#btn_exec").prop("href", href1);
+
+        $("#btn-exec").css("border", "2px solid");
+        $("#btn-edit").css("border", "2px solid");
+
+
+    </script>
+    <!-- Local file warning: -->
+    <div id="message-fs" style="display: none;">
+        <p>The application was open locally using the file protocol. It is recommended to access it trough a <b>Web server</b>.</p>
+        <p>Please see <a href="README.md">instructions</a>.</p>
+    </div>
+    <script>
+        (function () {
+            var fs = (document.location.protocol === 'file:');
+            var ff = (navigator.userAgent.toLowerCase().indexOf('firefox') !== -1);
+            if (fs && !ff) {
+                (new joint.ui.Dialog({
+                    width: 300,
+                    type: 'alert',
+                    title: 'Local File',
+                    content: $('#message-fs').show()
+                })).open();
+            }
+        })();
+    </script>
+
+</body>
+</html>
+

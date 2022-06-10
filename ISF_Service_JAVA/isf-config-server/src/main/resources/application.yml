@@ -1,0 +1,6 @@
+spring:
+  profiles:
+    active:
+    - native
+  cloud:    config:      server:        native:          search-locations:          - D:/home/configs/
+          search-paths: '*' 

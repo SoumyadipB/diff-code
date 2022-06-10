@@ -1,0 +1,378 @@
+﻿<script type="text/javascript" src="~/Scripts/Login/RegisterASP.js"></script>
+@Scripts.Render("~/bundles/global")
+
+<body>
+
+    <style>
+        .rTabs {
+            color: black;
+            border: 1px solid #ddd;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            background: linear-gradient(40deg,#ffffff,#31afc3) !important;
+        }
+
+        .nav > li > a:hover, .nav > li > a:focus {
+            text-decoration: none;
+            background-color: hsla(0, 100%, 97%, 0) !important;
+        }
+
+        a {
+            opacity: 1;
+        }
+
+        .input-group-addon {
+            padding-left: 10px !important;
+            color: white;
+            background-color: #3871c1;
+            padding: 6px 12px;
+            font-size: 14px;
+            font-weight: normal;
+            line-height: 1;
+            text-align: center;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+        }
+
+        .input-group-addon, .input-group-btn {
+            width: 1%;
+            white-space: nowrap;
+            vertical-align: middle;
+        }
+
+        .input-group-addon, .input-group-btn, .input-group .form-control {
+            display: table-cell;
+        }
+
+        .margin-bottom-sm {
+            margin-bottom: 5px !important;
+        }
+
+        .input-group {
+            position: relative;
+            display: table;
+            border-collapse: separate;
+        }
+
+        .form-control {
+            display: block;
+            width: 100%;
+            height: 34px;
+            padding: 6px 12px;
+            font-size: 14px;
+            line-height: 1.42857143;
+            color: #555;
+            background-color: #fff;
+            background-image: none;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,0.075);
+            box-shadow: inset 0 1px 1px rgba(0,0,0,0.075);
+            -webkit-transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+            -o-transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+            transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+        }
+
+        input:focus ~ .floating-label,
+        input:not(:focus):valid ~ .floating-label {
+            color: black;
+            top: -18px;
+            bottom: 20px;
+            left: 12px;
+            font-size: 10px;
+            opacity: 1;
+        }
+
+        .readOnly-floating-label {
+            position: absolute;
+            color: black;
+            top: -18px;
+            bottom: 20px;
+            left: 12px;
+            font-size: 10px;
+            opacity: 1;
+        }
+
+        .inputText {
+            border-radius: 4px;
+            font-size: 14px;
+            width: 200px;
+            height: 35px;
+        }
+
+        .floating-label {
+            opacity: 0.6;
+            position: absolute;
+            pointer-events: none;
+            left: 22%;
+            top: 8px;
+            transition: 0.2s ease all;
+        }
+
+        .noteLabel {
+            opacity: 0.6;
+            font-size: 11px;
+        }
+
+        .btn:hover {
+            color: white;
+        }
+
+        a:hover {
+            box-shadow: 0 5px 11px 0 rgba(85, 182, 255, 0.28), 0 4px 15px 0 rgba(36, 133, 255, 0.15);
+            color: white;
+        }
+
+        .gradient {
+            background: linear-gradient(40deg,#45cafc,#303f9f) !important;
+            width: 100%;
+            text-align: center;
+        }
+
+        tfoot {
+            display: table-header-group;
+        }
+
+        .round {
+            background-color: #eeeeee;
+            border-radius: 5px;
+        }
+
+        .icon_black {
+            color: black;
+        }
+
+        .tabmenu {
+            list-style: none;
+            float: left;
+            position: relative;
+            margin: 0 .2em 1px 0;
+            padding: 0;
+            white-space: nowrap;
+            display: block;
+            border-bottom: 0;
+            top: 1px;
+        }
+
+        .icon_white {
+            color: white;
+        }
+
+        .tabs {
+            height: 36px;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+            border: 1px solid #ddd;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .a:after {
+            font-family: FontAwesome;
+            content: "\f107";
+        }
+
+        .a.collapsed:after {
+            content: "\f108";
+        }
+
+        .header {
+            color: #ffffff;
+            background: #428bca;
+            text-align: center;
+            padding: 10px;
+            border-radius: 3px;
+        }
+    </style>
+
+
+    <div class="modal fade" id="registerASPModal" data-backdrop="static" data-keyboard="false" role="dialog">
+        <div class="modal-dialog" style="width:25%">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div>
+                    @*<button type="button" class="close" data-dismiss="modal">&times;</button>*@
+                    <h4 class="modal-title header">ASP Registration</h4>
+                </div>
+                <div class="modal-body">
+                    <br />
+                    <div class="row">
+                        <div class="input-group margin-bottom-sm col-lg-6">
+                            <input type="text" id="firstNameAsp" class="form-control inputText" style="width:100%" required readonly />
+                            <span class="readOnly-floating-label">First Name*</span>
+                        </div>
+                        <div class="input-group margin-bottom-sm col-lg-6">
+                            <input type="text" id="lastNameAsp" class="form-control inputText" style="width:100%" required readonly />
+                            <span class="readOnly-floating-label">Last Name*</span>
+                        </div>
+                    </div>
+                    <br />
+
+                    <div class="row">
+                        <div class="input-group margin-bottom-sm col-lg-12">
+                            <input type="email" id="emailIdAsp" class="form-control inputText" style="width:100%" required />
+                            <span class="floating-label">UserName (Email ID)*</span>
+                        </div>
+                    </div>
+                    <br />
+
+                    <div class="row">
+                        <div class="input-group margin-bottom-sm col-lg-12">
+                            <input type="text" id="signumASP" class="form-control inputText" style="width:100%;" required />
+                            <span class="floating-label">iSignum</span>
+                        </div>
+                    </div>
+                    <br />
+
+                    <div class="row">
+                        <div class="input-group margin-bottom-sm col-lg-12">
+                            <input type="text" id="phoneAsp" class="form-control inputText" style="width:100%" required />
+                            <span class="floating-label">Phone Number*</span>
+                        </div>
+                    </div>
+                    <br />
+                    <div class="row">
+                        <div class="input-group margin-bottom-sm col-lg-6">
+                            <input type="text" id="vendorCodeAsp" class="form-control inputText" style="width:100%" required />
+                            <span class="floating-label">Vendor Code*</span>
+                        </div>
+                        <div class="input-group margin-bottom-sm col-lg-6">
+                            <input type="text" id="vendorNameAsp" class="form-control inputText" style="width:100%" required readonly />
+                            <span class="readOnly-floating-label">Vendor Name</span>
+                        </div>
+                    </div>
+                    <br />
+                    <div class="row">
+                        <div class="input-group margin-bottom-sm col-lg-12">
+                            <input type="text" id="countryAspNew" class="form-control inputText" style="width:100%" required readonly />
+                            <span class="readOnly-floating-label">Country</span>
+                        </div>
+                    </div>
+
+                    <br />
+                    <div class="row">
+                        <div class="input-group margin-bottom-sm col-lg-6" style="width:100%">
+                            <input type="text" id="cityAsp" class="form-control inputText" style="width:100%" required />
+                            <span class="floating-label">City</span>
+                        </div>
+                    </div>
+                    <br />
+                    <div id="requiredAspFields" class="col-md-12 col-md-offset-2"></div>
+
+
+                    <div class="modal-footer" style="text-align:center;">
+                        <div class="col-lg-12">
+                            <button type="button" class="btn btn-primary" onclick="validateAspFields()">Submit</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="approvalPendingASPModal" data-backdrop="static" data-keyboard="false" role="dialog">
+        <div class="modal-dialog" style="width:25%">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div>
+                    @*<button type="button" class="close" data-dismiss="modal">&times;</button>*@
+                    <h4 class="modal-title header">Approval Pending</h4>
+                </div>
+                <div class="modal-body">
+                    You are successfully Registered with ISF. Please wait for Approval!
+                    <div class="modal-footer" style="text-align:center;">
+                        <div class="col-lg-12">
+                            @*<a class="btn btn-primary" href="javascript:document.getElementById('logoutForm').submit()">Log off</a>*@
+                            <button type="button" class="btn btn-primary" onclick="logoutUser()">OK</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="resetASPPasswordModal" role="dialog">
+        <div class="modal-dialog" style="width:25%">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title header">ASP Password Reset</h4>
+                </div>
+                <div class="modal-body">
+                    <br />
+                    <div class="row">
+                        <div class="input-group margin-bottom-sm col-lg-12">
+                            <input type="text" id="emailAspReset" class="form-control inputText" style="width:100%" required />
+                            <span class="floating-label">UserName (Email ID)*</span>
+                        </div>
+                    </div>
+                    <br />
+                    <div class="row">
+                        <div class="input-group margin-bottom-sm col-lg-12">
+                            <input type="password" id="oldPswdReset" class="form-control inputText" style="width:100%" required />
+                            <span class="floating-label">Old Password*</span>
+                        </div>
+                    </div>
+                    <br />
+                    <div class="row">
+                        <div class="input-group margin-bottom-sm col-lg-12">
+                            <input type="password" id="newPswdReset" class="form-control inputText" style="width:100%" required />
+                            <span class="floating-label">New Password*</span>
+                        </div>
+                    </div>
+                    <br />
+                    <div class="row">
+                        <div class="input-group margin-bottom-sm col-lg-12">
+                            <input type="password" id="confirmPswdReset" class="form-control inputText" style="width:100%" required />
+                            <span class="floating-label">Confirm New Password*</span>
+                        </div>
+                    </div>
+                    <div id="requiredResetAspFields" class="col-md-12 col-md-offset-2"></div>
+                    <br />
+                    <div>
+                        <label class="noteLabel"><b>**Note:</b> Please chose a memorable password that contains atleast 8 characters (Atleast 1 uppercase, Alphanumerics, Special Characters)</label>
+                    </div>
+                    <div class="modal-footer" style="text-align:center;">
+                        <div class="col-lg-12">
+                            <button type="button" class="btn btn-primary" onclick="validateAspResetFields()">Submit</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="forgotASPPasswordModal" role="dialog">
+        <div class="modal-dialog" style="width:25%">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title header">Forgot Password</h4>
+                </div>
+                <div class="modal-body">
+                    <br />
+                    <div class="row">
+                        <div class="input-group margin-bottom-sm col-lg-12">
+                            <input type="text" id="emailAspForgot" class="form-control inputText" style="width:100%" required />
+                            <span class="floating-label">Enter Your UserName (Email ID)*</span>
+                        </div>
+                        <br />
+                        <div class="col-md-12">
+                            <label class="noteLabel"><b>*Note:</b> New Password will be sent to the above Email ID</label>
+                        </div>
+                    </div>
+                    <br />
+                    <div id="requiredForgotAspFields" class="col-md-12 col-md-offset-2"></div>
+                    <br />
+
+                    <div class="modal-footer" style="text-align:center;">
+                        <div class="col-lg-12">
+                            <button type="button" class="btn btn-primary" onclick="validateAspForgotPasswordFields()">Submit</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>

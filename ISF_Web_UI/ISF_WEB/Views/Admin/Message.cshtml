@@ -1,0 +1,313 @@
+﻿@{
+	ViewBag.Title = "Login Message";
+}
+<!DOCTYPE html>
+<html>
+<head>
+	@Scripts.Render("~/bundles/constants")
+	@Scripts.Render("~/bundles/Message")
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	@Scripts.Render("~/bundles/jqueryui")
+	@Scripts.Render("~/bundles/DataTableScript")
+	@Styles.Render("~/bundles/css/jqueryui")
+	@Styles.Render("~/bundles/css/DataTableStyle")
+	@Scripts.Render("~/bundles/DataTablesAdvancedScript")
+
+	<style>
+		.x {
+			margin: 0 0 40px 0;
+		}
+
+
+
+
+		h1 {
+			text-align: center;
+		}
+
+		p {
+			font-family: verdana;
+			font-size: 20px;
+		}
+
+		.text-wrap {
+			white-space: normal;
+		}
+
+		.width-200 {
+			width: 200px;
+			white-space: normal;
+			word-wrap: break-word;
+			text-overflow: ellipsis;
+		}
+
+		.width-300 {
+			width: 350px;
+			white-space: normal;
+			word-wrap: break-word;
+			text-overflow: ellipsis;
+		}
+
+		.width-100 {
+			width: 130px;
+		}
+
+
+		#tooltip {
+			position: absolute;
+			z-index: 100112333;
+			display: none;
+			border: 2px solid #ebebeb;
+			border-radius: 5px;
+			padding: 10px;
+			background-color: #fff;
+		}
+
+		.well {
+			background: white;
+			box-shadow: inset 0 1px 1px rgba(0,0,0,.05)
+		}
+
+		tfoot {
+			display: table-header-group;
+		}
+
+		.ruleDesc {
+			border: 1px solid #cccccc;
+			font-size: 12px;
+			max-height: 80px;
+			max-width: 100%;
+		}
+
+		.sdate {
+			border: 1px solid #cccccc;
+			font-size: 12px;
+		}
+
+		.teal-color {
+			color: #102db9;
+			font-size: 22px;
+		}
+	</style>
+
+</head>
+<body>
+
+	<div class="y">
+		<div class="panel-heading">
+			<ol class="breadcrumb">
+				<li class="active" style="color:#0A1742">ISF Login Page Message</li>
+			</ol>
+		</div>
+	</div>
+	<div class="panel panel-default">
+		@*<div class="container">*@
+		
+			<div class="panel-group">
+				<div class="panel panel-primary">
+					@*<div class="panel-heading">Message</div>*@
+					<div class="panel-body" style="min-height:400px">
+						<div class="well">
+							<div class="form-horizontal row">
+								<div class="col-md-1" style="width:60px">
+									<label for="message">Message<span style="color: red">*</span>:</label>
+								</div>
+								<div class="col-md-10">									
+									<textarea class="form-control ruleDesc" rows="1"  placeholder="Kindly Enter Message" id="msgBox" style="height: 217px;padding-top:3px;" ></textarea>
+								</div>
+							</div>
+							<br />
+                            <div class="row">
+                                <div >
+                                    <div class="col-md-3" style="display:flex;">
+                                        <div style=" margin-top: 10px; display: flex; margin-right: 10px">
+                                            <em class="fa fa-calendar" style="margin-right: 5px;"></em>
+                                            <label for="startdate">Start&nbsp;Date<span style="color: red">*</span>  </label>
+                                        </div>
+                                        <input type='text' id='startDate'  class="form-control" placeholder="YYYY-MM-DD" />
+                                        <span id="sSpan" style="color: red;display: none;position: relative;right: 125px;bottom: 8px;">invalid&nbsp;date</span>
+                                    </div>
+
+                                    <div class="col-md-3" style="display:flex;">
+                                        <div style=" margin-top: 10px; display: flex; margin-right: 10px;">
+                                            <label for="startTime" style="margin-bottom: 20px;">
+                                                Start&nbsp;Time<span style="color: red">*</span>
+                                            </label>
+                                        </div>
+                                        <div style="margin-top:5px; width:150px">
+                                            <select class="select2able" id="startTime">
+                                                <option value="0"></option>
+                                                <option value="00:00:00">00:00:00</option>
+                                                <option value="00:30:00">00:30:00</option>
+                                                <option value="01:00:00">01:00:00</option>
+                                                <option value="01:30:00">01:30:00</option>
+                                                <option value="02:00:00">02:00:00</option>
+                                                <option value="02:30:00">02:30:00</option>
+                                                <option value="03:00:00">03:00:00</option>
+                                                <option value="03:30:00">03:30:00</option>
+                                                <option value="04:00:00">04:00:00</option>
+                                                <option value="04:30:00">04:30:00</option>
+                                                <option value="05:00:00">05:00:00</option>
+                                                <option value="05:30:00">05:30:00</option>
+                                                <option value="06:00:00">06:00:00</option>
+                                                <option value="06:30:00">06:30:00</option>
+                                                <option value="07:00:00">07:00:00</option>
+                                                <option value="07:30:00">07:30:00</option>
+                                                <option value="08:00:00">08:00:00</option>
+                                                <option value="08:30:00">08:30:00</option>
+                                                <option value="09:00:00">09:00:00</option>
+                                                <option value="09:30:00">09:30:00</option>
+                                                <option value="10:00:00">10:00:00</option>
+                                                <option value="10:30:00">10:30:00</option>
+                                                <option value="11:00:00">11:00:00</option>
+                                                <option value="11:30:00">11:30:00</option>
+                                                <option value="12:00:00">12:00:00</option>
+                                                <option value="12:30:00">12:30:00</option>
+                                                <option value="13:00:00">13:00:00</option>
+                                                <option value="13:30:00">13:30:00</option>
+                                                <option value="14:00:00">14:00:00</option>
+                                                <option value="14:30:00">14:30:00</option>
+                                                <option value="15:00:00">15:00:00</option>
+                                                <option value="15:30:00">15:30:00</option>
+                                                <option value="16:00:00">16:00:00</option>
+                                                <option value="16:30:00">16:30:00</option>
+                                                <option value="17:00:00">17:00:00</option>
+                                                <option value="17:30:00">17:30:00</option>
+                                                <option value="18:00:00">18:00:00</option>
+                                                <option value="18:30:00">18:30:00</option>
+                                                <option value="19:00:00">19:00:00</option>
+                                                <option value="19:30:00">19:30:00</option>
+                                                <option value="20:00:00">20:00:00</option>
+                                                <option value="20:30:00">20:30:00</option>
+                                                <option value="21:00:00">21:00:00</option>
+                                                <option value="21:30:00">21:30:00</option>
+                                                <option value="22:00:00">22:00:00</option>
+                                                <option value="22:30:00">22:30:00</option>
+                                                <option value="23:00:00">23:00:00</option>
+                                                <option value="23:30:00">23:30:00</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div >
+                                    <div class="col-md-3" style="display:flex;">
+                                        <div style=" margin-top: 10px; display: flex; margin-right: 10px;">
+                                            <em class="fa fa-calendar" style="margin-right: 5px;"></em>
+                                            <label for="startdate">
+                                                End&nbsp;Date<span style="color: red">*</span>
+                                            </label>
+                                        </div>
+                                        <input type='text' id='endDate' class="form-control" placeholder="YYYY-MM-DD" />
+                                        <span id="eSpan" style="color: red;display: none;margin-top: 8px;position: relative;right: 130px;bottom: 15px;">invalid&nbsp;date</span>
+                                    </div>
+
+                                    <div class="col-md-3" style="display:flex;">
+                                        <div style=" margin-top: 10px; display: flex; margin-right: 10px;">
+                                            <label for="endTime" style="margin-bottom: 20px;">
+                                                End&nbsp;Time<span style="color: red">*</span>
+                                            </label>
+                                        </div>
+                                        <div style="margin-top:5px; width:150px;">
+                                            <select class="select2able" id="endTime">
+                                                <option value="0"></option>
+                                                <option value="00:00:00">00:00:00</option>
+                                                <option value="00:30:00">00:30:00</option>
+                                                <option value="01:00:00">01:00:00</option>
+                                                <option value="01:30:00">01:30:00</option>
+                                                <option value="02:00:00">02:00:00</option>
+                                                <option value="02:30:00">02:30:00</option>
+                                                <option value="03:00:00">03:00:00</option>
+                                                <option value="03:30:00">03:30:00</option>
+                                                <option value="04:00:00">04:00:00</option>
+                                                <option value="04:30:00">04:30:00</option>
+                                                <option value="05:00:00">05:00:00</option>
+                                                <option value="05:30:00">05:30:00</option>
+                                                <option value="06:00:00">06:00:00</option>
+                                                <option value="06:30:00">06:30:00</option>
+                                                <option value="07:00:00">07:00:00</option>
+                                                <option value="07:30:00">07:30:00</option>
+                                                <option value="08:00:00">08:00:00</option>
+                                                <option value="08:30:00">08:30:00</option>
+                                                <option value="09:00:00">09:00:00</option>
+                                                <option value="09:30:00">09:30:00</option>
+                                                <option value="10:00:00">10:00:00</option>
+                                                <option value="10:30:00">10:30:00</option>
+                                                <option value="11:00:00">11:00:00</option>
+                                                <option value="11:30:00">11:30:00</option>
+                                                <option value="12:00:00">12:00:00</option>
+                                                <option value="12:30:00">12:30:00</option>
+                                                <option value="13:00:00">13:00:00</option>
+                                                <option value="13:30:00">13:30:00</option>
+                                                <option value="14:00:00">14:00:00</option>
+                                                <option value="14:30:00">14:30:00</option>
+                                                <option value="15:00:00">15:00:00</option>
+                                                <option value="15:30:00">15:30:00</option>
+                                                <option value="16:00:00">16:00:00</option>
+                                                <option value="16:30:00">16:30:00</option>
+                                                <option value="17:00:00">17:00:00</option>
+                                                <option value="17:30:00">17:30:00</option>
+                                                <option value="18:00:00">18:00:00</option>
+                                                <option value="18:30:00">18:30:00</option>
+                                                <option value="19:00:00">19:00:00</option>
+                                                <option value="19:30:00">19:30:00</option>
+                                                <option value="20:00:00">20:00:00</option>
+                                                <option value="20:30:00">20:30:00</option>
+                                                <option value="21:00:00">21:00:00</option>
+                                                <option value="21:30:00">21:30:00</option>
+                                                <option value="22:00:00">22:00:00</option>
+                                                <option value="22:30:00">22:30:00</option>
+                                                <option value="23:00:00">23:00:00</option>
+                                                <option value="23:30:00">23:30:00</option>
+                                            </select>
+
+                                        </div>
+
+                                    </div>
+                                    </div>
+                                </div>
+                                <br />
+
+                                <div class="row">
+                                    <div class="col-md-2" style="width: 120px;padding-top:6px">
+                                        <label for="startdate">Message Color<span style="color: red">*</span>:</label>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <input id="msgColor2" type="color" name="favcolor" onchange="changeColor(this); event.stopPropagation();" value="#000000" />
+                                    </div>
+                                    <div class="col-md-2" style="width: 120px;">
+                                        <input id="isDownMsg" type="checkbox" /> Is Down
+                                    </div>
+                                    <div class="col-md-3">
+                                        <input type="button" id="submitMessage" class="btn btn-warning" style="text-align:center" value="Submit" onclick="updateMessage()" />
+                                    </div>
+                                </div>
+                                <br />
+                            </div>
+							<div id="tooltip"></div>
+							
+								<div class="table-responsive" style="overflow-x: auto; ">
+									<table class="table table-striped table-bordered table-hover" id="table_login_message">
+										<thead>
+
+											<tr>
+												<th class="col-sm-2">Action</th>
+
+												<th class="col-sm-4">Message</th>
+												<th class="col-sm-2">Start Date</th>
+												<th class="col-sm-2">End Date</th>
+												<th class="col-sm-2">Status</th>
+											</tr>
+
+										</thead>
+										<tbody id="table_login_message_body" style="height:400px;overflow-y:auto;overflow-x:auto">
+										</tbody>
+
+									</table>
+								</div>
+					</div>
+				</div>
+			</div>
+		</div>
+</body>
+</html>

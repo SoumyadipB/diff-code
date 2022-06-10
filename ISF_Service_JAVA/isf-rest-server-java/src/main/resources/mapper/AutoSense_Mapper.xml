@@ -1,0 +1,955 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ericsson.isf.mapper.AutoSenseMapper">
+
+	<resultMap type='com.ericsson.isf.model.AutoSenseRuleModel' id='AutoSenseRuleModelResult'>
+		<result property='ruleId' column='RuleID' />
+		<result property='ruleName' column='RuleName' />
+		<result property='ruleDescription' column='RuleDescription' />
+		<result property='ruleType' column='RuleType' />
+		<result property='ruleJson' column='ParsedRuleJson' />
+	</resultMap>
+	
+	
+	<resultMap type='com.ericsson.isf.model.AutoSenseRuleModel' id='AutoSenseRuleNewModelResult'>
+		<result property='ruleId' column='RuleID' />
+		<result property='ruleName' column='RuleName' />
+		<result property='ruleDescription' column='RuleDescription' />
+		<result property='ruleType' column='RuleType' />
+		<result property='ruleJson' column='ParsedRuleJson' />
+		<result property='nameAndCreatedBy' column='NameAndCreatedBy' />
+	</resultMap>
+	
+	<select id='getRulesForTaskID' resultMap='AutoSenseRuleNewModelResult'>
+		SELECT
+		trms.RuleID ,trms.RuleName ,trms.RuleDescription ,trms.RuleType, trms.ParsedRuleJson,CONCAT(te.EmployeeName,' / ',trms.CreatedBy) as NameAndCreatedBy
+		FROM
+		transactionaldata.tbl_autosenserulemaster trms
+		inner join refData.TBL_Employees te
+		on te.Signum=trms.CreatedBy
+		where
+		trms.taskid = #{taskId}
+		AND trms.IsActive=1
+		AND trms.RuleType=#{ruleType} GROUP BY trms.RuleID ,trms.RuleName ,trms.RuleDescription,trms.RuleType, trms.ParsedRuleJson
+	    ,trms.CreatedBy,te.EmployeeName
+	</select>
+	
+	<insert id="saveAutoSenseRule" parameterType="com.ericsson.isf.model.AutoSenseRuleModel"
+	useGeneratedKeys="true" keyProperty="ruleModel.ruleId"
+	keyColumn="ruleId">
+		Insert Into transactionalData.TBL_AutoSenseRuleMaster
+		(RuleName,
+		RuleDescription,
+		RuleType,
+		RuleJson,
+		DomainID,
+		SubActivityID,
+		TechnologyID,
+		TaskID,
+		isActive,
+		CreatedBy,
+		ModifiedBy,
+		CreatedOn,
+		ModifiedOn,
+		IsDelete,
+		ServiceareaID,
+		ParsedRuleJson,
+		JsonManualValidation
+		)
+		Values
+		(#{ruleModel.ruleName},
+		#{ruleModel.ruleDescription},
+		#{ruleModel.ruleType},
+		#{ruleModel.ruleJson},
+		#{ruleModel.domainID},
+		#{ruleModel.subactivityID},
+		#{ruleModel.technologyID},
+		#{ruleModel.taskID},
+		#{ruleModel.active},
+		#{ruleModel.createdBy},
+		#{ruleModel.modifiedBy},
+		dbo.GetDateIST(),
+		dbo.GetDateIST(),
+		0,
+		#{ruleModel.serviceAreaID},
+		#{ruleModel.parsedRuleJson},
+		#{ruleModel.jsonManualValidation}
+	    )
+
+	</insert>
+	
+	<select id='getAutosenseRuleName' resultMap='AutoSenseRuleModelResult'>
+		select RuleID ,
+		RuleName,
+		RuleDescription
+		from transactionalData.TBL_AutoSenseRuleMaster
+		where 
+		ruleName=#{ruleName} and IsDelete=0
+	</select>
+	
+	<resultMap type='com.ericsson.isf.model.AutoSenseRuleFlowchartModel' id='AutoSenseRuleFlowchartModelResult'>
+		<result property='flowchartDefID' column='flowchartdefid' />
+		<result property='woID' column='woid' />
+		<result property='stepID' column='StepID' />
+		<result property='taskID' column='TaskID' />
+		<result property='signumID' column='signumID' />
+		<result property='overrideAction' column='taskActionName' />
+		<result property='parsedRuleJson' column='ParsedRuleJson' />
+	</resultMap>
+	
+	<select id="getAllRulesForFlowchart" resultMap="AutoSenseRuleFlowchartModelResult">
+        select
+        wo.woid,
+        wo.flowchartdefid,
+        fcsd.StepID,
+        fcsd.TaskID,
+        wo.signumID,
+        wfsr.taskActionName,
+        wfsr.ParsedRuleJson
+        from transactionalData.TBL_WORK_ORDER wo
+        inner join transactionalData.TBL_WorkflowStepAutoSenseRule wfsr on wo.flowchartdefid = wfsr.SubactivityFlowchartDefID
+        inner join transactionalData.TBL_FLOWCHART_STEP_DETAILS fcsd on wfsr.FCStepDetailsID = fcsd.FCStepDetailsID
+        where wo.flowchartdefid = #{flowchartDefID}
+        and wo.woid = #{woID}
+    </select>
+		
+	<select id="getAllQueuedTask" resultType="hashmap">
+		;with CTE_DS as
+		(Select
+		row_number() Over(Partition by sasrs.WOID,sasrs.FCStepDetailsID,sasrs.TaskActionName order by CreatedOn desc) rnum,
+		sasrs.WOID,
+        ScanningStatus,
+        sasrs.TaskActionName,
+        StepName,
+        CreatedOn
+        from transactionalData.TBL_StepAutoSenseRuleScanner sasrs
+        inner join transactionalData.TBL_WorkflowStepAutoSenseRule wfsasr
+        on sasrs.FCStepDetailsID = wfsasr.FCStepDetailsID and sasrs.TaskActionName = wfsasr.taskActionName
+        inner join transactionalData.TBL_FLOWCHART_STEP_DETAILS fcsd on wfsasr.FCStepDetailsID = fcsd.FCStepDetailsID
+        where sasrs.CreatedBy = #{Signum})
+        Select WOID,ScanningStatus,TaskActionName,StepName,CreatedOn 
+        from CTE_DS where rnum = 1 and ScanningStatus = 'Started'
+        Order by Createdon desc
+	</select>
+	
+	<select id="getAllRulesInMasterData" resultType="com.ericsson.isf.model.AutoSenseRuleModel">
+       With cte_A As (
+		select distinct
+		a.RuleID,a.RuleName,a.RuleDescription,a.DomainID,a.SubActivityID,a.TechnologyID,a.TaskID,
+		w.RuleStatus,a.RuleType,a.CreatedBy,a.ModifiedOn,a.IsActive
+		as active,
+		CONCAT(d.Domain,'/',d.SubDomain) as Domain,ty.Technology,t.Task,CONCAT(s.Activity,'/',s.SubActivity) as Activity,a.ServiceAreaID,CONCAT(sa.ServiceArea,'/',sa.SubServiceArea) as ServiceArea
+		
+		from transactionalData.TBL_AutoSenseRuleMaster a
+		left join transactionalData.TBL_WorkFlowStepAutoSenseRule w on
+		w.ruleID=a.ruleID
+		inner join refData.TBL_DOMAIN d on d.DomainID=a.DomainID
+		inner join refData.TBL_TECHNOLOGY ty on ty.TechnologyID=a.TechnologyID
+		inner join refData.TBL_TASK t on t.TaskID=a.TaskID
+		inner join refData.TBL_SUBACTIVITY s on s.SubActivityID=a.SubActivityID
+		inner join refData.TBL_SERVICEAREA sa on
+		sa.ServiceAreaID=a.ServiceareaID
+		where a.IsDelete=0
+		<foreach item="column" index="index" collection="dataTableRequset.columns">
+			 <if test ="column.search != ''">
+			 	<if test="column.data != 'priority'">
+			 	<choose>
+			 	<when test="column.data == 'createdBy' ">
+                  and a.${column.data} like #{column.search}
+                </when>
+                <when test="column.data == 'activity' ">
+                  and (s.activity like #{column.search} or s.subActivity like #{column.search})
+                </when>
+                 <when test="column.data == 'serviceArea' ">
+                  and (sa.serviceArea like #{column.search} or sa.subserviceArea like #{column.search})
+                </when>
+                 <when test="column.data == 'domain' ">
+                  and (d.domain like #{column.search} or d.subdomain like #{column.search})
+                </when>
+                <otherwise>
+                 and ${column.data} like #{column.search}
+               </otherwise>
+			 	</choose>
+			 	
+			 	</if>
+              	
+             </if>
+  		</foreach>
+  		<if test ='dataTableRequset.search != null and dataTableRequset.search != ""'> 
+  			and (
+  			   RuleName like #{dataTableRequset.search}
+        	or RuleDescription like #{dataTableRequset.search}
+        	or RuleType like #{dataTableRequset.search}
+        	or ServiceArea like #{dataTableRequset.search}
+        	or Domain like #{dataTableRequset.search}
+        	or SubActivity like #{dataTableRequset.search} 
+			or Technology like #{dataTableRequset.search}        	
+        	or Task like #{dataTableRequset.search} 
+			or a.CreatedBy like #{dataTableRequset.search}
+          <foreach item="column" index="index" collection="dataTableRequset.columns" >
+          <choose>
+			 	<when test="column.data == 'createdBy' ">
+                  or a.${column.data} like #{dataTableRequset.search}
+                </when>
+                 <when test="column.data == 'activity' ">
+                  or (s.activity like #{dataTableRequset.search} or s.subActivity like #{dataTableRequset.search})
+                </when>
+                 <when test="column.data == 'serviceArea' ">
+                  or (sa.serviceArea like #{dataTableRequset.search} or sa.subserviceArea like #{dataTableRequset.search})
+                </when>
+                 <when test="column.data == 'domain' ">
+                  or (d.domain like #{dataTableRequset.search} or d.subdomain like #{dataTableRequset.search})
+                </when>
+                <otherwise>
+                 or  ${column.data} like #{column.search}
+               </otherwise>
+			 	</choose>
+		
+  		 </foreach>
+  		 )
+  		</if>
+  		)
+  		
+		
+		select RuleID,RuleName,RuleDescription, DomainID, SubActivityID,TechnologyID,TaskID,RuleStatus,RuleType,
+		 CreatedBy, ModifiedOn, active, Domain,Technology, Task, Activity, ServiceAreaID, ServiceArea ,  Count(*) OVER() recordsTotal from cte_A
+  order By ModifiedOn desc
+		<if test ='dataTableRequset.length != -1'>
+						OFFSET ${dataTableRequset.start} ROWS
+						FETCH NEXT ${dataTableRequset.length} ROWS ONLY
+		</if>
+		
+	</select>
+	
+	
+	<select id='checkAutoSenseRuleID' resultType="Boolean">
+		IF EXISTS(select 1 from transactionalData.TBL_AutoSenseRuleMaster where
+		ruleID = #{ruleId} and isDelete=0)
+		BEGIN
+		SELECT 1 AS 'RESULT'
+		END
+		ELSE
+		BEGIN
+		SELECT 0 AS 'RESULT'
+		END
+	</select>
+    
+     <update id='deleteAutoSenseRule'>
+		update transactionalData.TBL_AutoSenseRuleMaster
+		set
+		IsDelete = #{deleteValue},
+		IsActive = 0,
+		ModifiedBy = #{signum},
+		ModifiedOn = dbo.GetDateIST()
+		where
+		RuleID = #{ruleId}
+	</update>
+    
+   
+	<update id='updateWorkOrderAutoSenseStatus'>
+		update transactionalData.TBL_WORK_ORDER set
+		IsAutoSenseEnable=#{autoSenseFlag},
+		flowchartdefid=#{flowchartDefID},
+		WorkFlowVersion=#{versionNum},
+		LastModifiedBy=#{signum},
+		LastModifiedDate=dbo.GetDateIST()
+		where WOID=#{woID}
+	</update>
+	
+	<insert id="saveStepRuleInAutoSenseTmpTable" parameterType="com.ericsson.isf.model.TmpWorkflowStepAutoSenseRuleModel">
+		INSERT INTO dbo.tbl_tmp_workflowstepautosenserule
+		(RuleID,
+		StepID,
+		TaskID,
+		ProjectIDSubactivityIDLoggedInSignum,
+		ParsedRuleJson,
+		RuleStatus,
+		TaskActionName,
+		CreatedBy,
+		CreatedOn,
+		ModifiedBy,
+		ModifiedOn,
+		ExpertViewNeeded)
+		VALUES ( #{tmpWorkFlowStepAutoSenseRule.ruleId},
+		#{tmpWorkFlowStepAutoSenseRule.stepID},
+		#{tmpWorkFlowStepAutoSenseRule.taskId},
+		#{tmpWorkFlowStepAutoSenseRule.projectIDSubactivityIDLoggedInSignum},
+		#{tmpWorkFlowStepAutoSenseRule.parseRuleJson},
+		1,
+		#{tmpWorkFlowStepAutoSenseRule.taskActionName},
+		#{tmpWorkFlowStepAutoSenseRule.createdBy},
+		dbo.GetDateIST(),
+		#{tmpWorkFlowStepAutoSenseRule.createdBy},
+		dbo.GetDateIST(),
+		#{tmpWorkFlowStepAutoSenseRule.experiencedFlow})
+	</insert>
+	
+	<delete id="deleteStepRuleFromAutoSenseTmpTable">
+		DELETE FROM dbo.TBL_TMP_WorkflowStepAutoSenseRule
+		WHERE StepID = #{tmpWorkFlowStepAutoSenseRule.stepID} AND TaskID=#{tmpWorkFlowStepAutoSenseRule.taskId}
+		AND ProjectIDSubactivityIDLoggedInSignum = #{tmpWorkFlowStepAutoSenseRule.projectIDSubactivityIDLoggedInSignum}
+        AND TaskActionName = #{tmpWorkFlowStepAutoSenseRule.taskActionName}
+		AND ExpertViewNeeded =  #{tmpWorkFlowStepAutoSenseRule.experiencedFlow}
+	
+	</delete>
+
+	<select id='getRuleDescriptionForStep' resultType='hashmap'>
+		  select asr.ruleName,asr.ruleType,asr.ruleDescription from transactionalData.TBL_AutoSenseRuleMaster  asr inner join 
+		  transactionalData.TBL_WorkflowStepAutoSenseRule sa on asr.RuleID=sa.RuleID
+		  inner join
+		  transactionalData.TBL_FLOWCHART_STEP_DETAILS fs on fs.FCStepDetailsID=sa.FCStepDetailsID
+		  where fs.StepID=#{stepID} and sa.SubactivityFlowchartDefID=#{flowChartDefID}
+	</select>
+	
+	<update id='activeInactiveAutoSenseRule'>
+
+		update transactionalData.TBL_AutoSenseRuleMaster
+		set
+		IsActive = #{autoSenseRuleModel.active},
+		ModifiedBy = #{signum},
+		ModifiedOn = dbo.GetDateIST()
+		where
+		RuleID = #{autoSenseRuleModel.ruleId}
+
+	</update>
+     	
+	 <select id='getRuleJsonByID' resultType= "com.ericsson.isf.model.AutoSenseRuleModel">
+           select ruleJson, JsonManualValidation from transactionalData.TBL_AutoSenseRuleMaster where ruleID= #{ruleID}
+    </select>
+    
+   
+     <update id='editAutoSenseRule' parameterType="com.ericsson.isf.model.AutoSenseRuleModel">
+
+		update transactionalData.TBL_AutoSenseRuleMaster
+		set
+		RuleName=#{autoSenseRuleModel.ruleName},
+		RuleDescription=#{autoSenseRuleModel.ruleDescription},
+		RuleType=#{autoSenseRuleModel.ruleType},
+		RuleJson=#{autoSenseRuleModel.ruleJson},
+		ModifiedBy=#{signum},
+		ModifiedOn=dbo.GetDateIST(),
+		IsActive=#{autoSenseRuleModel.active},
+		DomainID=#{autoSenseRuleModel.domainID},
+		TechnologyID=#{autoSenseRuleModel.technologyID},
+		TaskID=#{autoSenseRuleModel.taskID},
+		SubactivityID=#{autoSenseRuleModel.subactivityID},
+		ServiceareaID=#{autoSenseRuleModel.serviceAreaID},
+		ParsedRuleJson=#{autoSenseRuleModel.parsedRuleJson},
+		JsonManualValidation=#{autoSenseRuleModel.jsonManualValidation}
+		where
+		RuleID = #{autoSenseRuleModel.ruleId}
+
+	</update>
+     
+     
+	<select id='getMaxDeletedValue' resultType= "Integer">
+     	IF Exists (select top 1 isDelete from transactionalData.TBL_AutoSenseRuleMaster
+     	where ruleName= #{ruleModel.ruleName} and
+    	domainID = #{ruleModel.domainID} and
+     	technologyID= #{ruleModel.technologyID} and
+     	subactivityID=#{ruleModel.subactivityID} and
+     	taskID=#{ruleModel.taskID} and
+     	serviceAreaID=#{ruleModel.serviceAreaID} and
+     	isDelete!=0
+     	order by ModifiedOn desc)
+      	BEGIN
+     	select top 1 isDelete from transactionalData.TBL_AutoSenseRuleMaster
+      	where ruleName= #{ruleModel.ruleName} and
+      	domainID = #{ruleModel.domainID} and
+      	technologyID= #{ruleModel.technologyID} and
+      	subactivityID=#{ruleModel.subactivityID} and
+      	taskID=#{ruleModel.taskID} and
+      	serviceAreaID=#{ruleModel.serviceAreaID} and
+      	isDelete!=0
+      	order by ModifiedOn desc
+      	END  
+      	ELSE
+      	BEGIN
+       	select 0 as 'isDelete'
+       	END        
+              
+	</select>
+
+    <select id='checkSameRuleWithDeleted' resultType="Boolean">
+		IF EXISTS(select 1 from transactionalData.TBL_AutoSenseRuleMaster
+		where ruleName= #{ruleModel.ruleName} and
+		domainID = #{ruleModel.domainID} and
+		technologyID= #{ruleModel.technologyID} and
+		subactivityID=#{ruleModel.subactivityID} and
+		taskID=#{ruleModel.taskID} and
+		isDelete!=0)
+		BEGIN
+		SELECT 1 AS 'RESULT'
+		END
+		ELSE
+		BEGIN
+		SELECT 0 AS 'RESULT'
+		END
+	</select>
+
+	<select id='getRulesForStepFromTemp'
+		resultMap='AutoSenseRuleModelResult'>
+		SELECT
+		trms.RuleID,trms.RuleName,trms.RuleDescription,trms.RuleType,trms.ParsedRuleJson
+		FROM
+		transactionaldata.tbl_autosenserulemaster trms
+		inner join dbo.TBL_TMP_WorkflowStepAutoSenseRule ttas
+		on ttas.RuleID=trms.RuleID
+		where ttas.StepID=#{tmpWorkFlowStepAutoSenseRule.stepID} and TaskID=#{tmpWorkFlowStepAutoSenseRule.taskId} AND
+		ProjectIDSubactivityIDLoggedInSignum=#{tmpWorkFlowStepAutoSenseRule.projectIDSubactivityIDLoggedInSignum}
+
+	</select>
+	<select id='getRulesForTaskIDProjectID' resultMap='AutoSenseRuleNewModelResult'>
+		select tam.RuleID ,tam.RuleName ,tam.RuleDescription ,tam.RuleType, tam.ParsedRuleJson,CONCAT(te.EmployeeName,' / ',tam.CreatedBy) as NameAndCreatedBy
+		from transactionalData.TBL_AutoSenseRuleMaster tam
+		inner join transactionalData.TBL_WorkflowStepAutoSenseRule twsar
+		on twsar.RuleID=tam.RuleID
+		inner join transactionalData.TBL_FLOWCHART_STEP_DETAILS tfsd
+		on  tfsd.FCStepDetailsID=twsar.FCStepDetailsID
+		inner join transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF tsfd
+		on tsfd.SubActivityFlowChartDefID=tfsd.SubActivityFlowChartDefID
+		and tsfd.SubActivityID=tam.SubActivityID
+		inner join refData.TBL_Employees te
+		on te.Signum=tam.CreatedBy
+		where
+		tam.TaskID=#{taskId} AND  tsfd.ProjectID=#{projectId} 
+		AND tam.IsActive=1
+		AND tam.RuleType=#{ruleType} GROUP BY tam.RuleID  ,tam.RuleName ,tam.RuleDescription,tam.RuleType, tam.ParsedRuleJson,
+	    tam.CreatedBy,te.EmployeeName
+	</select>
+
+ 	<select id='getTaskDetailsBySubactivityID' resultType="com.ericsson.isf.model.TaskDetailModel">
+    	select SubActivityID, Task, TaskID, ExecutionType, Active
+        from refData.TBL_TASK where SubActivityID = #{subActivityID}
+        and Active=1
+   
+    </select>
+    
+	 <select id="getRulesByStepIDNew" resultType='java.util.HashMap'>
+		select
+		taskActionName,
+		ParsedRuleJson
+		from transactionalData.TBL_WorkflowStepAutoSenseRule wfsasr
+		inner join transactionalData.TBL_FLOWCHART_STEP_DETAILS fcsd 
+		on wfsasr.FCStepDetailsID=fcsd.FCStepDetailsID and wfsasr.SubactivityFlowchartDefID=fcsd.SubActivityFlowChartDefID
+		where fcsd.StepID=#{stepID} and fcsd.SubactivityFlowchartDefID=#{flowchartDefID} and wfsasr.RuleStatus=1
+	</select> 
+	
+	<select id="getRulesByStepID" resultType='java.util.HashMap'>
+		select
+		taskActionName,
+		ParsedRuleJson
+		from transactionalData.TBL_WorkflowStepAutoSenseRule wfsasr
+		inner join transactionalData.TBL_FLOWCHART_STEP_DETAILS fcsd 
+		on wfsasr.FCStepDetailsID=fcsd.FCStepDetailsID and wfsasr.SubactivityFlowchartDefID=fcsd.SubActivityFlowChartDefID
+		where fcsd.StepID=#{stepID} and fcsd.SubactivityFlowchartDefID=#{flowchartDefID} and wfsasr.RuleStatus=1
+	</select>
+
+	<update id="saveWfDataAutoSenseTempTable">
+  		DECLARE @RuleID                        INT, 
+        @ParsedRuleJson                VARCHAR(max), 
+        @RuleStatus                    BIT, 
+        @taskActionName                VARCHAR(50),  
+      <!--   @CreatedBy                     VARCHAR(10)=#{signum}, 
+        @ModifiedBy                    VARCHAR(10)=#{signum},
+		@CreatedDate                   VARCHAR(40), 
+        @ModifiedDate                  VARCHAR(40), -->
+        @StepID                        VARCHAR(250), 
+        @TaskID                        INT,
+        @ProjectIDSubactivityIDLoggedInSignum VARCHAR(100),
+        @ExpertViewNeeded              BIT
+  
+
+		DECLARE cur_sources CURSOR static FOR 
+ 		 SELECT RuleID, 
+         ParsedRuleJson, 
+         RuleStatus, 
+         taskActionName, 
+         tfsd.StepID,
+         tfsd.TaskID, 
+         Concat(tsfd.projectid, '_', tsfd.subactivityid, '_', #{signum}) AS 
+         ProjectIDSubactivityIDLoggedInSignum,
+         CASE  WHEN tsfd.MultiView ='0' THEN 0 
+               ELSE 1 
+               END as ExpertViewNeeded
+  		FROM   transactionaldata.tbl_workflowstepautosenserule twsr 
+        INNER JOIN transactionaldata.tbl_flowchart_step_details tfsd 
+                 ON twsr.fcstepdetailsid = tfsd.fcstepdetailsid 
+        INNER JOIN transactionaldata.tbl_subactivity_flowchart_def tsfd 
+                 ON 
+        tsfd.subactivityflowchartdefid = twsr.subactivityflowchartdefid 
+  		WHERE  twsr.subactivityflowchartdefid IN
+  	    <foreach item="item" index="index" collection="subActivityFlowchartDefId" open="(" separator="," close=")">
+    		#{item}
+    	</foreach>
+
+		OPEN cur_sources 
+
+		IF @@CURSOR_ROWS > 0 
+  		BEGIN 
+     	FETCH next FROM cur_sources INTO @RuleID, @ParsedRuleJson, @RuleStatus, 
+      	@taskActionName,
+      	@StepID,@TaskID, @ProjectIDSubactivityIDLoggedInSignum, @ExpertViewNeeded 
+
+      	WHILE @@FETCH_STATUS = 0 
+	
+        BEGIN 
+            INSERT INTO dbo.tbl_tmp_workflowstepautosenserule 
+                        (RuleID, 
+                         StepID,
+                         TaskID, 
+                         ProjectIDSubactivityIDLoggedInSignum, 
+                         ParsedRuleJson, 
+                         RuleStatus, 
+                         taskActionName, 
+                         CreatedBy, 
+                         CreatedOn, 
+                         ModifiedBy, 
+                         ModifiedOn,
+                         ExpertViewNeeded) 
+            VALUES      (@RuleID, 
+                         @StepID,
+                         @TaskID, 
+                         @ProjectIDSubactivityIDLoggedInSignum, 
+                         @ParsedRuleJson, 
+                         @RuleStatus, 
+                         @taskActionName, 
+                         #{signum}, 
+                         dbo.GetDateIST(), 
+                         #{signum}, 
+                         dbo.GetDateIST(),
+                         @ExpertViewNeeded) 
+
+            FETCH next FROM cur_sources INTO @RuleID, @ParsedRuleJson, 
+            @RuleStatus 
+            , 
+            @taskActionName,
+            @StepID,@TaskID, @ProjectIDSubactivityIDLoggedInSignum ,@ExpertViewNeeded
+        END 
+  END 
+
+	CLOSE cur_sources 
+
+	DEALLOCATE cur_sources 
+
+    
+	</update>
+    <select id="getWOColumnMappingJsonFromNE" resultType="hashmap">
+		select n.Market from transactionalData.TBL_NETWORK_ELEMENT n
+		inner join transactionalData.TBL_WORK_ORDER_NODES wonode on n.Name =
+		wonode.NodeNames
+		inner join transactionalData.TBL_WORK_ORDER wo on wonode.WOID = wo.WOID and
+		wo.PROJECTID = n.ProjectID
+		where wo.WOID = #{woID}
+	</select> 
+
+	<select id="isWorkFlowAutoSenseEnabled" resultType='Boolean'>
+		select isAutoSenseEnable from transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF 
+		where SubActivityFlowChartDefID=#{flowchartDefId}
+	</select>
+    
+    <delete id="deleteDataAutoSenseTempTable">
+     	DELETE FROM dbo.TBL_TMP_WorkflowStepAutoSenseRule
+    	WHERE ProjectIDSubactivityIDLoggedInSignum= #{projectIDSubactivityIDLoggedInSignum}
+    </delete>
+    
+    <insert id="saveScannerSensedRule" parameterType="com.ericsson.isf.model.StepAutoSenseRuleScanner">
+		INSERT INTO [transactionalData].[TBL_StepAutoSenseRuleScanner]
+			([WOID]
+			,[FCStepDetailsID]
+			,[ScanningStatus]
+			,[TaskActionName]
+			,[CreatedBy]
+			,[CreatedOn]
+			,[ModifiedBy]
+			,[ModifiedOn]
+			,SourceId
+			,OverrideActionName )
+			VALUES
+			(#{stepAutoSenseRuleScanner.wOID}
+			,#{stepAutoSenseRuleScanner.fCStepDetailsID}
+			,#{stepAutoSenseRuleScanner.scanningStatus}
+			,#{stepAutoSenseRuleScanner.taskActionName}
+			,#{stepAutoSenseRuleScanner.signumId}
+			,dbo.GetDateIST()
+			,#{stepAutoSenseRuleScanner.signumId}
+			,dbo.GetDateIST()
+			,(select sourceId from [refData].[TBL_IntegrationSources] where sourceName=#{stepAutoSenseRuleScanner.source})
+			,#{stepAutoSenseRuleScanner.overrideActionName}
+			)
+	</insert>
+    
+    <resultMap type="com.ericsson.isf.model.WorkOrderColumnMappingModel" id="WorkOrderColumnMappingModelResult">
+    	<result property='projectID' column='ProjectID' />
+    	<result property='wOName' column='WOName' />
+    	<result property='startDate' column='StartDate' />
+    	<result property='subActivityName' column='SubActivity' />
+    	<result property='signumID' column='SignumID' />
+    	<result property='workFlowName' column='WorkFlowName' />
+    	<result property='flowchartdefID' column='flowchartdefid' />
+    	<result property='customerName' column='CustomerName' />
+    	<result property='doID' column='DOID' />
+    </resultMap>
+    
+    <select id="getWOColumnMappingJsonFromWOD1" resultMap="WorkOrderColumnMappingModelResult">
+		IF OBJECT_ID('tempdb..#TempData') IS NOT NULL
+		drop table #TempData
+				
+		select distinct 
+		wrkPln.ProjectID,
+		wrkOrd.WOName,
+		Convert(Varchar(25),wrkOrd.PlannedStartDate,120) as StartDate,
+		sub.SubActivity,
+		wrkOrd.SignumID, 
+		sfd.WorkFlowName,
+		wrkOrd.flowchartdefid,
+		cus.CustomerName,
+		wrkOrd.DOID
+		into #TempData
+		from transactionalData.TBL_WORK_ORDER wrkOrd (nolock)
+		inner join transactionalData.TBL_WORK_ORDER_PLAN wrkPln (nolock) on wrkOrd.WOPlanID = wrkPln.WOPlanID
+		inner join transactionalData.TBL_PROJECTS prj (nolock) on prj.ProjectID = wrkPln.ProjectID
+		inner join refData.TBL_SUBACTIVITY sub (nolock) on sub.SubActivityID = wrkOrd.SubActivityID
+		inner join refData.TBL_DOMAIN dom (nolock) on sub.DomainID = dom.DomainID
+		left join transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF sfd (nolock) on sfd.SubActivityFlowChartDefID=wrkOrd.flowchartdefid
+		left join transactionalData.TBL_OPPORTUNITY op (nolock) on op.OpportunityID=prj.OpportunityID
+		left join refData.TBL_CUSTOMERS cus (nolock) on cus.CustomerID=op.CustomerID
+    	where wrkOrd.WOID = #{woID}
+		
+		SELECT * FROM #TempData;
+    </select>
+
+    <select id="getWOColumnMappingJsonFromWOD2" resultType="hashmap">
+		IF OBJECT_ID('tempdb..#TempData') IS NOT NULL
+		drop table #TempData
+		
+		select wo.projectid, wo.WOID,wond.NodeType, COUNT(distinct NodeNames) as NodeCount, wond.NodeNames, wo.SubActivityID into #TempData
+        from transactionalData.TBL_WORK_ORDER wo
+        inner join transactionalData.TBL_WORK_ORDER_NODES wond on wo.WOID=wond.WOID
+        where wo.WOID = #{woID}
+        group by wo.WOID, NodeType,NodeNames, wo.projectid, wo.SubActivityID
+        create clustered index IX_Project on #TempData(ProjectID, NodeNames)
+
+        select
+   		wo.NodeNames,
+   		NE.Market
+        from #TempData wo
+        inner join refdata.[tbl_subactivity] sub on sub.SubActivityID=wo.SubActivityID
+        left join transactionalData.TBL_NETWORK_ELEMENT (nolock) NE on NE.ProjectID=WO.ProjectID and NE.Name=WO.NodeNames and sub.TechnologyID=NE.TechnologyID
+        and sub.DomainID=NE.DomainSubDomainID
+    </select>
+    
+    <select id="getStepDetailsID" resultType='Integer'>	
+		select top 1 FCStepDetailsID  from transactionalData.TBL_FLOWCHART_STEP_DETAILS where SubActivityFlowChartDefID=#{flowchartdefid} and stepID=#{stepID}
+    </select>
+    
+    <select id="getAllNextStepData" resultType="hashmap">
+		SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED
+		
+		declare @stepID varchar(512) = #{stepID}
+		declare @defID int = #{defID}
+		
+		select distinct
+			CAST(FL.FlowchartTargetID as varchar(50)) as NextStepID, 
+			FS.StepName as NextStepName, 
+			FS.RpaID as nextStepRpaId, 
+			FS.StepType as nextStepType, 
+			isnull(WOFSD.BookingID,0) as bookingID, 
+			isnull(WOFSD.Status,'NA') as bookingStatus, 
+			FS.TaskID as NextTaskID, 
+			FS.ExecutionType as NextExecutionType, 
+			SFD.VersionNumber, 
+			wfasr.RuleStatus, 
+			(
+				select TOP(1)TaskID 
+				from transactionalData.TBL_FLOWCHART_STEP_DETAILS 
+				where StepID = cast(@stepID as varchar(200))
+			) as currentStepTaskId, 
+			FS.CascadeInput, SFD.ProjectID, FS.OutputUpload 
+		from transactionalData.TBL_WORK_ORDER_FLOWCHART_STEP_LINK_DETAILS FL 
+		Inner Join transactionalData.TBL_FLOWCHART_STEP_DETAILS FS on FS.StepID = FL.FlowchartTargetID and FS.SubActivityFlowChartDefID = FL.SubActivityFlowChartDefID
+		left join transactionalData.TBL_WorkflowStepAutoSenseRule wfasr on FS.FCStepDetailsID = wfasr.FCStepDetailsID
+		Left Join transactionalData.TBL_WORK_ORDER_FLOWCHART_STEP_DETAILS WOFSD on FL.FlowchartSourceID= WOFSD.FlowChartStepID and FL.SubActivityFlowChartDefID = WOFSD.FlowChartDefID 
+		left join transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF SFD on WOFSD.FlowChartDefID= SFD.SubActivityFlowChartDefID 
+		where FL.SubActivityFlowChartDefID =@defID and FL.FlowchartSourceID = @stepID and FS.Active=1    
+    </select>
+    
+       <update id='updateMigrationAutoSenseRule' parameterType="com.ericsson.isf.model.MigrationAutoSenseRuleModel">
+       
+        update transactionalData.TBL_rule_migration
+        set
+          
+          RuleName=#{migrationAutoSenseRuleModel.ruleName},
+          RuleDescription=#{migrationAutoSenseRuleModel.ruleDescription},
+          RuleType=#{migrationAutoSenseRuleModel.ruleType},
+          NewRuleJson=#{migrationAutoSenseRuleModel.newRuleJson},
+	      RuleJsonForScanner=#{migrationAutoSenseRuleModel.ruleJsonForScanner},
+	      RuleJsonForValidation=#{migrationAutoSenseRuleModel.ruleJsonForValidation},
+	      ServiceAreaID=#{migrationAutoSenseRuleModel.serviceAreaID},
+	      DomainID=#{migrationAutoSenseRuleModel.domainID},
+	      SubactivityID=#{migrationAutoSenseRuleModel.subactivityID},
+	      TechnologyID=#{migrationAutoSenseRuleModel.technologyID},
+	      TaskID=#{migrationAutoSenseRuleModel.taskID},
+	      VerifiedByISF=1,
+          ModifiedBy=#{signum},
+          ModifiedOn=dbo.GetDateIST(),
+          OwnerSignum= #{migrationAutoSenseRuleModel.ownerSignum}
+         
+          
+          where
+          RuleMigrationID = #{migrationAutoSenseRuleModel.ruleMigrationID}
+   
+     </update>
+     
+     <select id='getAutosenseMigrationRuleName' resultType="com.ericsson.isf.model.MigrationAutoSenseRuleModel">
+		select RuleMigrationID,RuleName,RuleDescription
+		from transactionalData.TBL_rule_migration
+		where
+		RuleName=#{ruleName} and RuleMigrationID!=#{ruleMigrationID}
+	</select>
+         
+     <update id='deleteMigrationAutoSenseRule' parameterType="com.ericsson.isf.model.MigrationAutoSenseRuleModel">
+         delete from transactionalData.TBL_rule_migration
+    
+         where  
+         RuleMigrationID = #{migrationAutoSenseRuleModel.ruleMigrationID}
+    </update>
+    
+     <update id='manualValidationMigrationAutoSenseRule' parameterType="com.ericsson.isf.model.MigrationAutoSenseRuleModel">
+       
+          update transactionalData.TBL_rule_migration
+          set
+          
+          ManualValidated=#{migrationAutoSenseRuleModel.manualValidated},
+          ModifiedBy=#{signum},
+          ModifiedOn=dbo.GetDateIST()
+          
+          where
+          RuleMigrationID = #{migrationAutoSenseRuleModel.ruleMigrationID}
+   
+     </update>
+    <delete id="deleteEditedStepRuleFromAutoSenseTmpTable" parameterType="com.ericsson.isf.model.TmpWorkflowStepAutoSenseRuleModel">
+		DELETE FROM dbo.TBL_TMP_WorkflowStepAutoSenseRule
+		WHERE StepID= #{tmpWorkflowStepAutoSenseRuleModel.stepID} and TaskID= #{tmpWorkflowStepAutoSenseRuleModel.taskId} and
+		ProjectIDSubactivityIDLoggedInSignum= #{tmpWorkflowStepAutoSenseRuleModel.projectIDSubactivityIDLoggedInSignum}
+		and TaskActionName= #{tmpWorkflowStepAutoSenseRuleModel.taskActionName} and ExpertViewNeeded=
+		#{tmpWorkflowStepAutoSenseRuleModel.experiencedFlow}
+	</delete>
+     
+     <select id="getAllRuleMigrationDetails" resultType="com.ericsson.isf.model.MigrationAutoSenseRuleModel">
+   
+		select  rm.RuleMigrationID,rm.RuleName,rm.RuleDescription,rm.RuleType,rm.DomainID,rm.SubActivityID,rm.TechnologyID,rm.TaskID,
+		rm.OldRuleJson,rm.NewRuleJson,rm.CreatedBy,rm.CreatedOn,rm.ModifiedBy,rm.ModifiedOn,
+		d.Domain,ty.Technology,t.Task,s.SubActivity,s.Activity,d.SubDomain,rm.ServiceAreaID,sa.ServiceArea,
+		sa.SubServiceArea, rm.VerifiedByISF, rm.ManualValidated, rm.Transferred, rm.OwnerSignum, rm.migrationFileName
+		 from transactionalData.TBL_Rule_Migration rm 
+		left join refData.TBL_DOMAIN d on d.DomainID=rm.DomainID
+		 left join refData.TBL_TECHNOLOGY ty on ty.TechnologyID=rm.TechnologyID
+		 left join refData.TBL_TASK t on t.TaskID=rm.TaskID
+		 left join refData.TBL_SUBACTIVITY s on s.SubActivityID=rm.SubActivityID
+		 left join refData.TBL_SERVICEAREA sa on sa.ServiceAreaID=rm.ServiceareaID
+		 where rm.createdBy= #{creatorSignum}
+	    order By ModifiedOn desc
+	    		
+	</select>
+	
+	
+	<insert id='insertMigrationData'
+	parameterType="com.ericsson.isf.model.RuleMigrationModel"
+	useGeneratedKeys="true" keyProperty="ruleData.ruleMigrationId"
+	keyColumn="ruleMigrationId">
+	insert into transactionalData.TBL_Rule_Migration
+	(
+	OldRuleJson,
+	NewRuleJson,
+	RuleName,
+	CreatedBy,
+	CreatedOn,
+	ModifiedBy,
+	ModifiedOn,
+	RuleType,
+	ServiceareaID,
+	TechnologyID,
+	DomainID,
+	SubactivityID,
+	TaskID,
+	OwnerSignum,
+	MigrationFileName
+	)
+	values
+	(
+	#{ruleData.oldJson},
+	#{ruleData.newJson},
+	#{ruleData.ruleName},
+	#{ruleData.signum},
+	dbo.GetDateIST(),
+	#{ruleData.signum},
+	dbo.GetDateIST(),
+	#{ruleData.ruleType},
+	#{ruleData.serviceAreaId},
+	#{ruleData.technologyId},
+	#{ruleData.domainId},
+	#{ruleData.subactivityId},
+	#{ruleData.taskId},
+	#{ruleData.ownerSignum},
+	#{ruleData.fileName}
+	)
+   </insert>
+	<select id='getRuleJsonByMigrationID' resultType="com.ericsson.isf.model.MigrationAutoSenseRuleModel">
+    select RuleMigrationID, NewRuleJson, RuleJsonForValidation
+    from transactionalData.TBL_Rule_Migration
+    where RuleMigrationID= #{ruleMigrationID}
+			
+	</select>
+	
+	<select id='getDuplicateAutosenseRuleName' resultMap='AutoSenseRuleModelResult'>
+		select RuleID ,
+		RuleName,
+		RuleDescription
+		from transactionalData.TBL_AutoSenseRuleMaster
+		where 
+		ruleName=#{ruleName} and IsDelete=0 and
+		RuleID != #{ruleId}
+	</select>
+	
+	<update id='updateRuleName'>
+		update transactionalData.TBL_Rule_Migration set RuleName=#{ruleData.ruleName} where RuleMigrationID=#{ruleData.ruleMigrationId}
+	</update>
+	
+	 <select id='getAutosenseMigrationRuleNames' resultType="com.ericsson.isf.model.MigrationAutoSenseRuleModel">
+		select RuleMigrationID,RuleName,RuleDescription
+		from transactionalData.TBL_rule_migration
+		where
+		RuleName=#{ruleName} 
+	</select>
+	
+	<insert id="saveMigrationAutoSenseRule" parameterType="com.ericsson.isf.model.MigrationAutoSenseRuleModel"
+	useGeneratedKeys="true" keyProperty="migrationAutoSenseRuleModel.ruleMigrationID"
+	keyColumn="ruleMigrationID">
+	
+	      
+	     Insert Into transactionalData.TBL_rule_migration
+          (
+          RuleName,
+          RuleDescription,
+          RuleType,
+          NewRuleJson,
+	      RuleJsonForScanner,
+	      RuleJsonForValidation,
+	      ServiceAreaID,
+	      DomainID,
+	      SubactivityID,
+	      TechnologyID,
+	      TaskID,
+	      VerifiedByISF,
+	      CreatedBy,
+          CreatedOn,
+          ModifiedBy,
+          ModifiedOn,
+          OwnerSignum
+          )
+          
+          Values
+		  (
+		   #{migrationAutoSenseRuleModel.ruleName},
+           #{migrationAutoSenseRuleModel.ruleDescription},
+           #{migrationAutoSenseRuleModel.ruleType},
+           #{migrationAutoSenseRuleModel.newRuleJson},
+	       #{migrationAutoSenseRuleModel.ruleJsonForScanner},
+	       #{migrationAutoSenseRuleModel.ruleJsonForValidation},
+	       #{migrationAutoSenseRuleModel.serviceAreaID},
+	       #{migrationAutoSenseRuleModel.domainID},
+	       #{migrationAutoSenseRuleModel.subactivityID},
+	       #{migrationAutoSenseRuleModel.technologyID},
+	       #{migrationAutoSenseRuleModel.taskID},
+	       1,
+           #{signum},
+           dbo.GetDateIST(),
+           #{signum},
+           dbo.GetDateIST(),
+           #{migrationAutoSenseRuleModel.ownerSignum}
+           )
+          
+	</insert>
+	
+	<select id='isTaskValid' resultType="Boolean">
+        
+        IF Exists(select 1 from refData.TBL_Task where TaskID =#{taskId}  and Active = 1)
+        Begin
+        Select 1 as 'Result'
+        End
+        else
+        Begin
+        Select 0 as 'Result'
+        End 
+        
+    </select>
+	
+	<select id="getTaskData" resultType="hashmap">
+	Select def.SubActivityID,sa.DomainID,sa.TechnologyID,sa.ServiceAreaID
+	from refData.TBL_TASK def
+	inner Join refdata.[TBL_SUBACTIVITY] as SA on def.SubActivityID =
+	SA.SubActivityID and sa.Active=1
+	where def.TaskID=#{taskId} and def.Active=1
+    </select>
+    
+    <insert id="completeSensedRules" parameterType="String">
+    	Declare @sourceid int select @sourceid = sourceid from refData.TBL_IntegrationSources  where sourceName=#{source}
+    	;with CTE_INS as
+		(
+		Select
+				row_number() Over(Partition by WOID,FCStepDetailsID,TaskActionName order by CreatedOn desc) rnum
+				,WOID
+		      ,[FCStepDetailsID]
+		      ,[ScanningStatus]
+		      ,[TaskActionName]
+		        from transactionalData.TBL_StepAutoSenseRuleScanner where CreatedBy = #{signum}
+		)
+
+		INSERT INTO [transactionalData].[TBL_StepAutoSenseRuleScanner]
+           ([WOID]
+           ,[FCStepDetailsID]
+           ,[ScanningStatus]
+           ,[TaskActionName]
+           ,[CreatedBy]
+           ,[CreatedOn]
+           ,[ModifiedBy]
+           ,[ModifiedOn]
+           ,SourceId
+			,OverrideActionName)
+           select  [WOID]
+           ,[FCStepDetailsID]
+           ,'COMPLETED'
+           ,[TaskActionName]
+		   ,#{signum}
+		   ,dbo.GetDateIST()
+		   ,#{signum}
+		   ,dbo.GetDateIST()
+		   ,@sourceid
+		   ,#{overrideActionName}
+		   from CTE_INS where rnum = 1 and ScanningStatus = 'Started'
+    
+    </insert>
+    
+    <select id="downloadAutoSenseRuleExcel" resultType="java.util.LinkedHashMap">
+    
+    select distinct
+		a.RuleName,a.RuleDescription
+		,a.RuleType,CONCAT(sa.ServiceArea,'/',sa.SubServiceArea) as ServiceArea,
+		CONCAT(d.Domain,'/',d.SubDomain) as Domain,CONCAT(s.Activity,'/',s.SubActivity) as Activity,ty.Technology,t.Task,a.CreatedBy,a.ModifiedON
+	    from transactionalData.TBL_AutoSenseRuleMaster a
+		left join transactionalData.TBL_WorkFlowStepAutoSenseRule w on
+		w.ruleID=a.ruleID
+		inner join refData.TBL_DOMAIN d on d.DomainID=a.DomainID
+		inner join refData.TBL_TECHNOLOGY ty on ty.TechnologyID=a.TechnologyID
+		inner join refData.TBL_TASK t on t.TaskID=a.TaskID
+		inner join refData.TBL_SUBACTIVITY s on s.SubActivityID=a.SubActivityID
+		inner join refData.TBL_SERVICEAREA sa on
+		sa.ServiceAreaID=a.ServiceareaID
+		where a.IsDelete=0
+		order By ModifiedOn desc
+		
+    
+    </select>
+    
+</mapper>

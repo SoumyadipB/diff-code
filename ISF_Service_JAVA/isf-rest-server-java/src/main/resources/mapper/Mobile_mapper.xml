@@ -1,0 +1,317 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ericsson.isf.mapper.MobileMapper">
+
+<resultMap type='ProjectScopeModel' id='ProjectScopeModel'>
+       <id property='projectScopeID' column='ProjectScopeID'/>
+        <result property='scopeName'  column='ScopeName'/>
+</resultMap>
+
+	<resultMap type='ServiceRequestModel' id='ServiceRequestModelResult'>
+       <id column='SRID' property='srid'/>
+        <result column='DOID'  property='doid'/>
+        <result column='DeliverableID'  property='deliverableID'/>
+        <result column='NodeType'  property='nodeType'/>
+        <result column='NodeName'  property='nodeName'/>
+        <result column='InputURL'  property='inputURL'/>
+        <result column='Comment'  property='comment'/>
+        <result column='SRPriority'  property='srPriority'/>
+        <result column='ScopeName'  property='deliverableName'/>
+        <result column='SrStatus'  property='srStatus'/>
+        <result column='CreatedBy'  property='createdBy'/>
+        <association property="projectDetails" javaType='ProjectModel'>
+			<result column='ProjectID'  property='ProjectID'/>
+        	<result column='ProjectName'  property='ProjectName'/>
+		</association>
+		<collection property="outputURL" ofType='com.ericsson.isf.model.WOOutputFileModel'>
+			<id column='OutputUrl'  property='outputUrl'/>
+		</collection>
+	</resultMap>
+
+	<select id="getNodeNamesByCountryCustomerGroupID" resultType="com.ericsson.isf.model.NodeNameValidationModel"> 
+		Select distinct Name as nodeNames from transactionalData.TBL_NETWORK_ELEMENT With
+		(NOLOCK) where CountryCustomerGroupID = #{ccGroupID}
+		and ElementType = #{type}
+		and Active=1
+		and name like '%${term}%'
+	</select>
+
+	<select id="getNodeTypeByCountryCustomerGroupID" resultType="com.ericsson.isf.model.NodeNameValidationModel">
+		Select Distinct
+		ElementType as Type from transactionalData.TBL_NETWORK_ELEMENT With
+		(NOLOCK) where
+		CountryCustomerGroupID =#{ccGroupID}
+		and Active=1
+	</select>
+
+	<select id="getFUProjectsBySignum"
+		resultType="com.ericsson.isf.model.FieldUtilityResourceMappingModel">
+		select tp.ProjectName,
+		fm.ResourceFUMappingID,fm.ProjectID,fm.VendorCode,fm.VendorName,fm.signum,fm.ResourceType,fm.IsActive
+		as active,fm.CreatedBy,
+		CONVERT(DATE,fm.CreatedDate) CreatedDate,fm.ModifiedBy,
+		CONVERT(DATE,fm.ModifiedDate) ModifiedDate
+		from transactionalData.TBL_Resource_FU_Mapping fm
+		left join
+		transactionalData.TBL_PROJECTS tp on fm.ProjectID=tp.ProjectID
+		where fm.Signum=#{Signum} and fm.IsActive=1 and 
+		CAST(tp.EndDate  as date ) >= CAST (dbo.getDateIst() as date)
+	</select>
+
+<select id="getFUDeliverablesByProject" resultMap='ProjectScopeModel'>
+	select distinct ScopeName,ProjectScopeID from transactionalData.TBL_PROJECTSCOPE 
+	where ProjectID=#{projectID} and Active=1 and deliverableStatus IN('New', 'Active')
+	and (select count(1) from transactionalData.TBL_Deliverable_Plan_Mapping where scopeId = ProjectScopeID and isActive = 1) &gt;=1
+	<if test="term != ''">
+		and ScopeName LIKE '%${term}%'
+	</if>	
+</select>
+
+<insert id="createServiceRequest" parameterType="com.ericsson.isf.model.ServiceRequestModel"
+ useGeneratedKeys="true" keyProperty='serviceRequest.srid' keyColumn="SRID">
+	INSERT INTO [transactionalData].[TBL_Service_Request]
+           ([DOID]
+           ,[ProjectID]
+           ,[DeliverableID]
+           ,[NodeType]
+           ,[NodeName]
+           ,[InputURL]
+           ,[Comment]
+           ,[SRSource]
+           ,[SRPriority]
+           ,[StartTime]
+           ,[DOVolume]
+           ,[WOName]
+           ,[IsActive]
+           ,[CreatedBy]
+           ,[CreatedDate]
+           ,SRCreatedByRole)
+     VALUES
+           (#{serviceRequest.doid}
+           ,#{serviceRequest.projectDetails.projectID}
+           ,#{serviceRequest.deliverableID}
+           ,#{serviceRequest.nodeType}
+           ,#{serviceRequest.nodeName}
+           ,#{serviceRequest.inputURL}
+           ,#{serviceRequest.comment}
+           ,#{serviceRequest.srSource}
+           ,#{serviceRequest.srPriority}
+           ,#{serviceRequest.startTime}
+           ,#{serviceRequest.doVolume}
+           ,#{serviceRequest.woName}
+           ,#{serviceRequest.isActive}
+           ,#{serviceRequest.createdBy}
+           ,dbo.getDateIST()
+           ,(select  top 1 AccessRoleID from refData.TBL_ACCESS_ROLE where Role=#{serviceRequest.srCreatedByProfile}))
+
+</insert>
+
+<select id="getServiceRequestsBySignum" resultMap="ServiceRequestModelResult">
+								
+		DROP TABLE IF EXISTS #srDetailsTemp;
+		DROP TABLE IF EXISTS #srDetailsTemp2;
+			select 	 SR.SRID
+					,SR.DOID
+					,SR.ProjectID
+					,proj.ProjectName
+					,SR.DeliverableID
+					,SR.NodeType
+					,SR.NodeName
+					,SR.InputURL
+					,SR.Comment
+					,SR.SRPriority
+					,SR.CreatedDate
+					,PS.ScopeName
+					,dbo.fn_GetSRStatus(SR.DOID) as SrStatus
+					into #srDetailsTemp
+					from transactionalData.TBL_Service_Request SR
+					inner join transactionalData.TBL_PROJECTSCOPE PS on PS.ProjectScopeID=SR.DeliverableID
+					inner join transactionalData.TBL_PROJECTS proj on proj.ProjectID=SR.ProjectID
+					where SR.CreatedBy=#{signum}
+					and SR.IsActive=1
+					<if test="rangeStartDateTime !=null and rangeEndDateTime !=null">
+						and SR.CreatedDate between #{rangeStartDateTime} and #{rangeEndDateTime}
+					</if>
+
+					select b.* into #srDetailsTemp2 from
+					(select SrDetails.SRID
+						  ,SrDetails.DOID
+						  ,SrDetails.ProjectID
+						  ,SrDetails.ProjectName
+						  ,SrDetails.DeliverableID
+                          ,SrDetails.NodeType
+                          ,SrDetails.NodeName
+                          ,SrDetails.InputURL
+                          ,SrDetails.Comment
+                          ,SrDetails.SRPriority
+                         ,SrDetails.ScopeName
+                         ,CASE WHEN SrDetails.SrStatus='ONHOLD' THEN 'INPROGRESS'
+			              ELSE SrDetails.SrStatus END AS SrStatus
+						 ,wo.LastModifiedDate
+						 ,DENSE_RANK() OVER(PARTITION BY SrDetails.SRID ORDER BY wo.LastModifiedDate DESC) AS rnk 
+                         from #srDetailsTemp
+                         as SrDetails
+                        left join transactionalData.TBL_WORK_ORDER WO on SrDetails.DOID=WO.DOID
+                        <if test="status !='All'">
+							where SrStatus=#{status}
+						</if>
+						) b
+						where rnk=1
+						order by LastModifiedDate  DESC
+						OFFSET ${offset} ROWS
+						FETCH NEXT ${length} ROWS ONLY
+
+	select SrDetailsLimited.*, WOOF.OutputUrl from  #srDetailsTemp2 as SrDetailsLimited
+	left join transactionalData.TBL_WORK_ORDER WO on SrDetailsLimited.DOID=WO.DOID
+	left join transactionalData.TBL_WORK_ORDER_OUTPUT_FILE WOOF on WO.WOID=WOOF.WOID and WOOF.Active=1
+	order by SrDetailsLimited.LastModifiedDate  DESC
+		
+</select>
+
+	<select id='getWoidBySrid' resultType='Integer'>
+		select wo.woid from transactionaldata.tbl_work_order wo
+      inner  join transactionaldata.tbl_service_request  sr on wo.doid=sr.doid
+       where sr.srid= #{srID} and wo.active=1 
+	</select>
+	
+	<select id="getAuditDataForServiceRequest" resultType="com.ericsson.isf.model.AuditDataModel">
+	
+	SELECT a.commentid, a.dateCreated	, a.message,a.auditgroupid,a.type,a.fieldName,a.oldValue,a.newValue,a.actorType,
+		a.createdBy, a.context, a.notification, a.importance, g.auditPageId,REPLACE(a.additionalInfo, '%20', ' ') as additionalInfo, a.commentCategory,g.auditGroupCategory
+        from [transactionalData].[TBL_AuditDetails] a
+        join [transactionalData].[TBL_AuditGroup] g on g.auditGroupId =a.auditGroupId
+        where g.auditPageId IN ${workOrderIds} and a.type!='AUDIT' and a.commentCategory NOT IN('CREATE_SERVICE_REQUEST','SERVICE_REQUEST','WO_CREATE_PLAN')
+	union
+	<if test="addSrComments==true">
+		SELECT max(a.commentid), max(a.dateCreated) as dateCreated, a.message,max(a.auditgroupid),a.type,a.fieldName,a.oldValue,a.newValue,a.actorType,
+			a.createdBy, a.context, a.notification, a.importance, max(g.auditPageId)as auditPageId,REPLACE(a.additionalInfo, '%20', ' ') as additionalInfo, a.commentCategory,max(g.auditGroupCategory) as auditGroupCategory
+	        from [transactionalData].[TBL_AuditDetails] a
+	        join [transactionalData].[TBL_AuditGroup] g on g.auditGroupId =a.auditGroupId
+	        where g.auditPageId IN ${workOrderIds} and a.type!='AUDIT' and a.commentCategory IN('SERVICE_REQUEST','CREATE_SERVICE_REQUEST') 
+	        group by a.message,a.createdBy,CAST(dateCreated as smalldatetime),a.type,a.fieldName,a.oldValue,a.newValue,
+	        a.actorType,a.commentCategory,a.context, a.notification, a.importance,additionalInfo,a.commentCategory
+		order by dateCreated desc
+	</if>
+	<if test="addSrComments==false">
+		SELECT a.commentid, a.dateCreated	, a.message,a.auditgroupid,a.type,a.fieldName,a.oldValue,a.newValue,a.actorType,
+		a.createdBy, a.context, a.notification, a.importance, g.auditPageId,REPLACE(a.additionalInfo, '%20', ' ') as additionalInfo, a.commentCategory,g.auditGroupCategory
+        from [transactionalData].[TBL_AuditDetails] a
+        join [transactionalData].[TBL_AuditGroup] g on g.auditGroupId =a.auditGroupId
+        where g.auditPageId IN ${workOrderIds} and a.type!='AUDIT' and a.commentCategory IN('WO_CREATE_PLAN')
+        order by dateCreated desc
+	</if>
+	
+	</select>
+	
+	
+	<select id="getAllFUDeliverablesByProjectWithoutAnyTerm" resultMap='ProjectScopeModel'>
+	select distinct ScopeName,ProjectScopeID from transactionalData.TBL_PROJECTSCOPE 
+	where ProjectID=#{projectID} and Active=1 and deliverableStatus IN('New', 'Active')
+	and (select count(1) from transactionalData.TBL_Deliverable_Plan_Mapping where scopeId = ProjectScopeID and isActive = 1) &gt;=1
+	</select>
+	
+	<select id="getServiceRequestByWoid" resultMap='ServiceRequestModelResult'>
+	select 
+	SR.SRID
+	,SR.CreatedBy 
+	from
+	transactionalData.TBL_WORK_ORDER WO
+	inner join transactionalData.TBL_Service_Request SR ON WO.DOID=SR.DOID
+	where WO.WOID=#{woid} and WO.Active=1 and SR.IsActive=1
+	</select>
+	
+	<select id="getMobileNotifications" resultType='com.ericsson.isf.model.MobileNotificationModel'>
+  	SELECT MOTO.[NotificationID]
+      ,MOTO.[ReferenceID]
+      ,MOTO.[Module]
+      ,MOTO.[AuditComments]
+      ,MOTO.[ToSignum]
+      ,CONCAT(MOTO.[CreatedBy],' (',EMP.EmployeeName,')') as CreatedBy
+      ,MOTO.[CreatedDate]
+      ,MOTO.[WOID]
+  FROM [transactionalData].[TBL_Mobile_Notification] MOTO
+  inner join refData.TBL_Employees EMP on EMP.Signum=MOTO.CreatedBy
+  where MOTO.ToSignum=#{signum} and [IsActive]=1
+  order by MOTO.CreatedDate DESC
+  OFFSET ${start} ROWS
+  FETCH NEXT ${length} ROWS ONLY
+	</select>
+
+<select id="getSRDetailsBySRID" resultMap="ServiceRequestModelResult">
+           select 	 SR.SRID
+					,SR.DOID
+					,SR.ProjectID
+					,proj.ProjectName
+					,SR.DeliverableID
+					,SR.NodeType
+					,SR.NodeName
+					,SR.InputURL
+					,SR.Comment
+					,SR.SRPriority
+					,SR.CreatedDate
+					,PS.ScopeName
+					,dbo.fn_GetSRStatus(SR.DOID) as SrStatus 
+					,woof.OutputUrl
+				
+					from transactionalData.TBL_Service_Request SR
+					inner join transactionalData.TBL_PROJECTSCOPE PS on PS.ProjectScopeID=SR.DeliverableID
+					inner join transactionalData.TBL_PROJECTS proj on proj.ProjectID=SR.ProjectID
+					left join transactionalData.TBL_WORK_ORDER WO on sr.DOID=WO.DOID
+					left join transactionalData.TBL_WORK_ORDER_OUTPUT_FILE WOOF on WO.WOID=WOOF.WOID and WOOF.Active=1
+					where SR.srid= #{srID}
+					and SR.IsActive=1
+
+</select>
+
+
+	
+	<insert id="saveMobileNotification" parameterType="com.ericsson.isf.model.MobileNotificationModel">
+		INSERT INTO [transactionalData].[TBL_Mobile_Notification]
+           ([ReferenceID]
+           ,[Module]
+           ,[AuditComments]
+           ,[ToSignum]
+           ,[IsActive]
+           ,[CreatedBy]
+           ,[CreatedDate]
+           ,[WOID])
+	     VALUES
+	        (#{mobileNotification.referenceId}
+	        ,#{mobileNotification.module}
+	        ,#{mobileNotification.auditComments}
+	        ,#{mobileNotification.toSignum}
+	        ,1
+	        ,#{mobileNotification.createdBy}
+	        ,dbo.getDateIST()
+	        ,#{mobileNotification.woid})
+	</insert>
+	
+	<select id="getWODetailsBySRID" resultType='com.ericsson.isf.model.WorkOrderDetailsModel'>
+	select wo.woid, wo.WOName, wo.SignumID, wo.Status from transactionaldata.tbl_work_order (NOLOCK) wo
+      inner  join transactionaldata.tbl_service_request (NOLOCK) sr on wo.doid=sr.doid
+       where sr.srid= #{srID} and wo.active=1 
+	</select>
+	
+	<insert id="saveWebNotification" parameterType="com.ericsson.isf.model.WebNotificationModel">
+		INSERT INTO [transactionalData].[TBL_Web_Notification]
+           ([NotificationSource]
+           ,[AuditComments]
+           ,[ToSignum]
+           ,[ReferenceID]
+           ,[Module]
+           ,[WOID]
+           ,[IsActive]
+           ,[CreatedBy]
+           ,[CreatedDate])
+	     VALUES
+	        (#{webNotificationModel.notificationSource}
+	        ,#{webNotificationModel.auditComments}
+	        ,#{webNotificationModel.toSignum}
+	        ,#{webNotificationModel.referenceId}
+	        ,#{webNotificationModel.module}
+	        ,#{webNotificationModel.woid}
+	        ,1
+	        ,#{webNotificationModel.createdBy}
+	        ,dbo.getDateIST())
+	</insert>
+</mapper>

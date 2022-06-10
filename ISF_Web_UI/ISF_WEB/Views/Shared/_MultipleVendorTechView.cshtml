@@ -1,0 +1,36 @@
+﻿ <style>
+     #modalContent {
+         margin-left: 100px;
+         position: fixed;
+         width: 90%;
+         margin-top: 200px;
+     }
+     #tblMultipleVenderTech {
+         border: 1px solid #d0cece;
+     }
+
+     #closeMultiVendorTechPopup {
+         float: right;
+         margin-right: 0px;
+         background-color: #ED0E00;
+         border-color: #ED0E00;
+         border-radius: 2px;
+     }
+ </style>
+
+<!-- Modal content-->
+<div class="modal-content" id="modalContent" style="width:70%;border-radius:0px;">
+    @*<div class="modal-header" style="height:10px;">
+        
+    </div>*@
+    <div class="modal-body" style="padding: 15px;">
+        <h5 class="modal-title" style="padding-left: 1px;margin-top: 0px;padding-bottom:8px;">
+            <span style="font-weight: bold;">Vendor Tech Combinations</span>
+        </h5>
+        <div id="divForVenTech" style="height:125px;overflow-y:auto;">
+            <table id="tblMultipleVenderTech" class="table table-striped table-bordered table-hover"></table>
+        </div>
+        <br />
+        <button type="button" id="closeMultiVendorTechPopup" class="btn btn-primary" onclick="closeVendorTechModal()">Close</button>
+    </div>
+</div>

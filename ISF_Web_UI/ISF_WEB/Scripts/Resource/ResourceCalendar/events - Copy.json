@@ -1,0 +1,2104 @@
+{
+  "data": [
+	{
+		"id": "1820",
+		"start_date": "2018-02-06 14:30:00",
+		"end_date": "2018-02-06 00:00:00",
+		"text": "Arieso SSV_DXL03744",
+		"details": "Arieso SSV_DXL03744"
+	},
+	{
+		"id": "1822",
+		"start_date": "2018-02-06 16:00:00",
+		"end_date": "2018-02-06 00:00:00",
+		"text": "Arieso SSV_DXL05556",
+		"details": "Arieso SSV_DXL05556"
+	},
+	{
+		"id": "1833",
+		"start_date": "2018-02-06 16:00:00",
+		"end_date": "2018-02-06 00:00:00",
+		"text": "Arieso SSV_DXL03744_BWE",
+		"details": "Arieso SSV_DXL03744_BWE"
+	},
+	{
+		"id": "1834",
+		"start_date": "2018-02-06 16:30:00",
+		"end_date": "2018-02-06 00:00:00",
+		"text": "Arieso SSV_DXL05556_BWE",
+		"details": "Arieso SSV_DXL05556_BWE"
+	},
+	{
+		"id": "1923",
+		"start_date": "2018-02-07 23:30:00",
+		"end_date": "2018-02-07 00:00:00",
+		"text": "Arieso SSV_WTL05306",
+		"details": "Arieso SSV_WTL05306"
+	},
+	{
+		"id": "1924",
+		"start_date": "2018-02-07 23:30:00",
+		"end_date": "2018-02-07 00:00:00",
+		"text": "Arieso SSV_WTL05742",
+		"details": "Arieso SSV_WTL05742"
+	},
+	{
+		"id": "1925",
+		"start_date": "2018-02-07 23:30:00",
+		"end_date": "2018-02-07 00:00:00",
+		"text": "Arieso SSV_WTL05742_BWE",
+		"details": "Arieso SSV_WTL05742_BWE"
+	},
+	{
+		"id": "1926",
+		"start_date": "2018-02-07 23:30:00",
+		"end_date": "2018-02-07 00:00:00",
+		"text": "Arieso SSV_DXL00305",
+		"details": "Arieso SSV_DXL00305"
+	},
+	{
+		"id": "1959",
+		"start_date": "2018-02-08 00:00:00",
+		"end_date": "2018-02-08 00:00:00",
+		"text": "DXL03744_4C_5C_5C BWE",
+		"details": "DXL03744_4C_5C_5C BWE"
+	},
+	{
+		"id": "1960",
+		"start_date": "2018-02-08 00:00:00",
+		"end_date": "2018-02-08 00:00:00",
+		"text": "DXL02650_Arieso SSV",
+		"details": "DXL02650_Arieso SSV"
+	},
+	{
+		"id": "1961",
+		"start_date": "2018-02-08 01:30:00",
+		"end_date": "2018-02-08 00:00:00",
+		"text": "DXL00381_Arieso SSV",
+		"details": "DXL00381_Arieso SSV"
+	},
+	{
+		"id": "2583",
+		"start_date": "2018-02-12 00:00:00",
+		"end_date": "2018-02-12 00:00:00",
+		"text": "Audit_DXL02791",
+		"details": "Audit_DXL02791"
+	},
+	{
+		"id": "2585",
+		"start_date": "2018-02-12 00:00:00",
+		"end_date": "2018-02-12 00:00:00",
+		"text": "Audit_WTL01027_2C",
+		"details": "Audit_WTL01027_2C"
+	},
+	{
+		"id": "2586",
+		"start_date": "2018-02-12 00:00:00",
+		"end_date": "2018-02-12 00:00:00",
+		"text": "Audit_WTL01027_2C BWE",
+		"details": "Audit_WTL01027_2C BWE"
+	},
+	{
+		"id": "2588",
+		"start_date": "2018-02-12 00:00:00",
+		"end_date": "2018-02-12 00:00:00",
+		"text": "Audit_WTL05800",
+		"details": "Audit_WTL05800"
+	},
+	{
+		"id": "2590",
+		"start_date": "2018-02-12 00:00:00",
+		"end_date": "2018-02-12 00:00:00",
+		"text": "Audit_DXL02670",
+		"details": "Audit_DXL02670"
+	},
+	{
+		"id": "2591",
+		"start_date": "2018-02-12 00:00:00",
+		"end_date": "2018-02-12 00:00:00",
+		"text": "Audit_DXL02687",
+		"details": "Audit_DXL02687"
+	},
+	{
+		"id": "2584",
+		"start_date": "2018-02-12 00:30:00",
+		"end_date": "2018-02-12 00:00:00",
+		"text": "Audit_WTL01027_1C",
+		"details": "Audit_WTL01027_1C"
+	},
+	{
+		"id": "2601",
+		"start_date": "2018-02-12 00:30:00",
+		"end_date": "2018-02-12 00:00:00",
+		"text": "Arieso_WTL05659",
+		"details": "Arieso_WTL05659"
+	},
+	{
+		"id": "2602",
+		"start_date": "2018-02-12 00:30:00",
+		"end_date": "2018-02-12 00:00:00",
+		"text": "SSD_DXL00760",
+		"details": "SSD_DXL00760"
+	},
+	{
+		"id": "2603",
+		"start_date": "2018-02-12 01:30:00",
+		"end_date": "2018-02-12 00:00:00",
+		"text": "DXL00305",
+		"details": "DXL00305"
+	},
+	{
+		"id": "2643",
+		"start_date": "2018-02-13 00:00:00",
+		"end_date": "2018-02-13 00:00:00",
+		"text": "DXL02791",
+		"details": "DXL02791"
+	},
+	{
+		"id": "2644",
+		"start_date": "2018-02-13 00:00:00",
+		"end_date": "2018-02-13 00:00:00",
+		"text": "WTL05667",
+		"details": "WTL05667"
+	},
+	{
+		"id": "2646",
+		"start_date": "2018-02-13 00:00:00",
+		"end_date": "2018-02-13 00:00:00",
+		"text": "DXL05772",
+		"details": "DXL05772"
+	},
+	{
+		"id": "2647",
+		"start_date": "2018-02-13 00:00:00",
+		"end_date": "2018-02-13 00:00:00",
+		"text": "DXL02210",
+		"details": "DXL02210"
+	},
+	{
+		"id": "2648",
+		"start_date": "2018-02-13 00:00:00",
+		"end_date": "2018-02-13 00:00:00",
+		"text": "DXL02791_PCS BWE",
+		"details": "DXL02791_PCS BWE"
+	},
+	{
+		"id": "2649",
+		"start_date": "2018-02-13 00:00:00",
+		"end_date": "2018-02-13 00:00:00",
+		"text": "DXL02791_cell capacity",
+		"details": "DXL02791_cell capacity"
+	},
+	{
+		"id": "2642",
+		"start_date": "2018-02-13 01:30:00",
+		"end_date": "2018-02-13 00:00:00",
+		"text": "WTL05755",
+		"details": "WTL05755"
+	},
+	{
+		"id": "2650",
+		"start_date": "2018-02-13 01:30:00",
+		"end_date": "2018-02-13 00:00:00",
+		"text": "DXL02687_AWS BWE",
+		"details": "DXL02687_AWS BWE"
+	},
+	{
+		"id": "2645",
+		"start_date": "2018-02-13 02:00:00",
+		"end_date": "2018-02-13 00:00:00",
+		"text": "DXL03158",
+		"details": "DXL03158"
+	},
+	{
+		"id": "2727",
+		"start_date": "2018-02-14 00:00:00",
+		"end_date": "2018-02-14 00:00:00",
+		"text": "DXL02791_capacity ",
+		"details": "DXL02791_capacity "
+	},
+	{
+		"id": "2726",
+		"start_date": "2018-02-14 01:00:00",
+		"end_date": "2018-02-14 00:00:00",
+		"text": "DXL02791_PCS BWE",
+		"details": "DXL02791_PCS BWE"
+	},
+	{
+		"id": "2723",
+		"start_date": "2018-02-14 01:30:00",
+		"end_date": "2018-02-14 00:00:00",
+		"text": "WTL01027_2C",
+		"details": "WTL01027_2C"
+	},
+	{
+		"id": "2733",
+		"start_date": "2018-02-14 01:30:00",
+		"end_date": "2018-02-14 00:00:00",
+		"text": "DXL03073",
+		"details": "DXL03073"
+	},
+	{
+		"id": "2734",
+		"start_date": "2018-02-14 01:30:00",
+		"end_date": "2018-02-14 00:00:00",
+		"text": "DXL03768",
+		"details": "DXL03768"
+	},
+	{
+		"id": "2722",
+		"start_date": "2018-02-14 02:00:00",
+		"end_date": "2018-02-14 00:00:00",
+		"text": "WTL01027_1C",
+		"details": "WTL01027_1C"
+	},
+	{
+		"id": "2724",
+		"start_date": "2018-02-14 02:00:00",
+		"end_date": "2018-02-14 00:00:00",
+		"text": "WTL01027_2C BWE",
+		"details": "WTL01027_2C BWE"
+	},
+	{
+		"id": "2725",
+		"start_date": "2018-02-14 02:00:00",
+		"end_date": "2018-02-14 00:00:00",
+		"text": "WTL05659",
+		"details": "WTL05659"
+	},
+	{
+		"id": "2735",
+		"start_date": "2018-02-14 02:00:00",
+		"end_date": "2018-02-14 00:00:00",
+		"text": "DXL05054",
+		"details": "DXL05054"
+	},
+	{
+		"id": "2761",
+		"start_date": "2018-02-15 01:30:00",
+		"end_date": "2018-02-15 00:00:00",
+		"text": "WTL05667_PCS BWE",
+		"details": "WTL05667_PCS BWE"
+	},
+	{
+		"id": "2774",
+		"start_date": "2018-02-15 01:30:00",
+		"end_date": "2018-02-15 00:00:00",
+		"text": "DXL02186",
+		"details": "DXL02186"
+	},
+	{
+		"id": "2763",
+		"start_date": "2018-02-15 02:00:00",
+		"end_date": "2018-02-15 00:00:00",
+		"text": "WTL05754",
+		"details": "WTL05754"
+	},
+	{
+		"id": "2810",
+		"start_date": "2018-02-16 00:00:00",
+		"end_date": "2018-02-16 00:00:00",
+		"text": "WTL01908",
+		"details": "WTL01908"
+	},
+	{
+		"id": "2813",
+		"start_date": "2018-02-16 00:00:00",
+		"end_date": "2018-02-16 00:00:00",
+		"text": "WTL01973",
+		"details": "WTL01973"
+	},
+	{
+		"id": "2812",
+		"start_date": "2018-02-16 00:30:00",
+		"end_date": "2018-02-16 00:00:00",
+		"text": "WTL01722",
+		"details": "WTL01722"
+	},
+	{
+		"id": "2815",
+		"start_date": "2018-02-16 01:00:00",
+		"end_date": "2018-02-16 00:00:00",
+		"text": "DXL02636_AWS BWE",
+		"details": "DXL02636_AWS BWE"
+	},
+	{
+		"id": "2811",
+		"start_date": "2018-02-16 01:30:00",
+		"end_date": "2018-02-16 00:00:00",
+		"text": "WTL01341",
+		"details": "WTL01341"
+	},
+	{
+		"id": "2814",
+		"start_date": "2018-02-16 01:30:00",
+		"end_date": "2018-02-16 00:00:00",
+		"text": "DXL02636",
+		"details": "DXL02636"
+	},
+	{
+		"id": "2816",
+		"start_date": "2018-02-16 01:30:00",
+		"end_date": "2018-02-16 00:00:00",
+		"text": "DXL02636_AWS 3",
+		"details": "DXL02636_AWS 3"
+	},
+	{
+		"id": "2817",
+		"start_date": "2018-02-16 01:30:00",
+		"end_date": "2018-02-16 00:00:00",
+		"text": "WTL01101_850",
+		"details": "WTL01101_850"
+	},
+	{
+		"id": "2818",
+		"start_date": "2018-02-16 01:30:00",
+		"end_date": "2018-02-16 00:00:00",
+		"text": "WTL01101_AWS3",
+		"details": "WTL01101_AWS3"
+	},
+	{
+		"id": "3459",
+		"start_date": "2018-02-22 01:30:00",
+		"end_date": "2018-02-22 00:00:00",
+		"text": "DXL02277",
+		"details": "DXL02277"
+	},
+	{
+		"id": "3460",
+		"start_date": "2018-02-22 01:30:00",
+		"end_date": "2018-02-22 00:00:00",
+		"text": "DXL03506",
+		"details": "DXL03506"
+	},
+	{
+		"id": "3461",
+		"start_date": "2018-02-22 01:30:00",
+		"end_date": "2018-02-22 00:00:00",
+		"text": "DXL01244",
+		"details": "DXL01244"
+	},
+	{
+		"id": "3462",
+		"start_date": "2018-02-22 01:30:00",
+		"end_date": "2018-02-22 00:00:00",
+		"text": "DXL02447",
+		"details": "DXL02447"
+	},
+	{
+		"id": "3463",
+		"start_date": "2018-02-22 01:30:00",
+		"end_date": "2018-02-22 00:00:00",
+		"text": "Audit_0222",
+		"details": "Audit_0222"
+	},
+	{
+		"id": "3511",
+		"start_date": "2018-02-23 00:00:00",
+		"end_date": "2018-02-23 00:00:00",
+		"text": "DXL06166",
+		"details": "DXL06166"
+	},
+	{
+		"id": "3509",
+		"start_date": "2018-02-23 01:00:00",
+		"end_date": "2018-02-23 00:00:00",
+		"text": "DXL00074",
+		"details": "DXL00074"
+	},
+	{
+		"id": "3512",
+		"start_date": "2018-02-23 01:30:00",
+		"end_date": "2018-02-23 00:00:00",
+		"text": "DXL000075",
+		"details": "DXL000075"
+	},
+	{
+		"id": "3510",
+		"start_date": "2018-02-23 02:00:00",
+		"end_date": "2018-02-23 00:00:00",
+		"text": "DXL00075",
+		"details": "DXL00075"
+	},
+	{
+		"id": "3800",
+		"start_date": "2018-02-27 01:30:00",
+		"end_date": "2018-02-27 00:00:00",
+		"text": "WTL01341",
+		"details": "WTL01341"
+	},
+	{
+		"id": "3801",
+		"start_date": "2018-02-27 10:34:16",
+		"end_date": "2018-02-27 00:00:00",
+		"text": "DXL03315_4C_4C BWE",
+		"details": "DXL03315_4C_4C BWE"
+	},
+	{
+		"id": "3881",
+		"start_date": "2018-02-28 00:30:00",
+		"end_date": "2018-02-28 00:00:00",
+		"text": "DXL00074",
+		"details": "DXL00074"
+	},
+	{
+		"id": "4128",
+		"start_date": "2018-03-05 01:00:00",
+		"end_date": "2018-03-05 00:00:00",
+		"text": "DXL01601",
+		"details": "DXL01601"
+	},
+	{
+		"id": "4129",
+		"start_date": "2018-03-05 01:00:00",
+		"end_date": "2018-03-05 00:00:00",
+		"text": "DXL02162",
+		"details": "DXL02162"
+	},
+	{
+		"id": "4123",
+		"start_date": "2018-03-05 02:00:00",
+		"end_date": "2018-03-05 00:00:00",
+		"text": "WTL01093",
+		"details": "WTL01093"
+	},
+	{
+		"id": "4124",
+		"start_date": "2018-03-05 02:00:00",
+		"end_date": "2018-03-05 00:00:00",
+		"text": "DXL02812",
+		"details": "DXL02812"
+	},
+	{
+		"id": "4125",
+		"start_date": "2018-03-05 02:00:00",
+		"end_date": "2018-03-05 00:00:00",
+		"text": "DXL05371",
+		"details": "DXL05371"
+	},
+	{
+		"id": "4126",
+		"start_date": "2018-03-05 02:00:00",
+		"end_date": "2018-03-05 00:00:00",
+		"text": "DXL05609",
+		"details": "DXL05609"
+	},
+	{
+		"id": "4127",
+		"start_date": "2018-03-05 02:00:00",
+		"end_date": "2018-03-05 00:00:00",
+		"text": "DXL02037",
+		"details": "DXL02037"
+	},
+	{
+		"id": "4130",
+		"start_date": "2018-03-05 02:00:00",
+		"end_date": "2018-03-05 00:00:00",
+		"text": "WTL01101",
+		"details": "WTL01101"
+	},
+	{
+		"id": "4180",
+		"start_date": "2018-03-06 01:30:00",
+		"end_date": "2018-03-06 00:00:00",
+		"text": "DXL00356",
+		"details": "DXL00356"
+	},
+	{
+		"id": "4182",
+		"start_date": "2018-03-06 01:30:00",
+		"end_date": "2018-03-06 00:00:00",
+		"text": "WTL01093",
+		"details": "WTL01093"
+	},
+	{
+		"id": "4177",
+		"start_date": "2018-03-06 02:00:00",
+		"end_date": "2018-03-06 00:00:00",
+		"text": "WTL03434",
+		"details": "WTL03434"
+	},
+	{
+		"id": "4179",
+		"start_date": "2018-03-06 02:00:00",
+		"end_date": "2018-03-06 00:00:00",
+		"text": "DXL01542",
+		"details": "DXL01542"
+	},
+	{
+		"id": "4251",
+		"start_date": "2018-03-07 00:00:00",
+		"end_date": "2018-03-07 00:00:00",
+		"text": "DXL05371",
+		"details": "DXL05371"
+	},
+	{
+		"id": "4250",
+		"start_date": "2018-03-07 01:30:00",
+		"end_date": "2018-03-07 00:00:00",
+		"text": "WTL01093",
+		"details": "WTL01093"
+	},
+	{
+		"id": "4234",
+		"start_date": "2018-03-07 02:00:00",
+		"end_date": "2018-03-07 00:00:00",
+		"text": "DXL05864",
+		"details": "DXL05864"
+	},
+	{
+		"id": "4235",
+		"start_date": "2018-03-07 02:00:00",
+		"end_date": "2018-03-07 00:00:00",
+		"text": "DXL03141",
+		"details": "DXL03141"
+	},
+	{
+		"id": "4280",
+		"start_date": "2018-03-08 00:30:00",
+		"end_date": "2018-03-08 00:00:00",
+		"text": "DXL03141",
+		"details": "DXL03141"
+	},
+	{
+		"id": "4278",
+		"start_date": "2018-03-08 02:00:00",
+		"end_date": "2018-03-08 00:00:00",
+		"text": "DXL05009",
+		"details": "DXL05009"
+	},
+	{
+		"id": "4279",
+		"start_date": "2018-03-08 02:00:00",
+		"end_date": "2018-03-08 00:00:00",
+		"text": "DXL05816",
+		"details": "DXL05816"
+	},
+	{
+		"id": "4293",
+		"start_date": "2018-03-09 01:30:00",
+		"end_date": "2018-03-09 00:00:00",
+		"text": "DXL02797",
+		"details": "DXL02797"
+	},
+	{
+		"id": "4294",
+		"start_date": "2018-03-09 01:30:00",
+		"end_date": "2018-03-09 00:00:00",
+		"text": "WTL01222",
+		"details": "WTL01222"
+	},
+	{
+		"id": "4295",
+		"start_date": "2018-03-09 01:30:00",
+		"end_date": "2018-03-09 00:00:00",
+		"text": "DXL03141_4C_4C BWE",
+		"details": "DXL03141_4C_4C BWE"
+	},
+	{
+		"id": "4296",
+		"start_date": "2018-03-09 02:00:00",
+		"end_date": "2018-03-09 00:00:00",
+		"text": "DXL05816",
+		"details": "DXL05816"
+	},
+	{
+		"id": "4368",
+		"start_date": "2018-03-12 00:00:00",
+		"end_date": "2018-03-12 00:00:00",
+		"text": "DXL00356_AWS",
+		"details": "DXL00356_AWS"
+	},
+	{
+		"id": "4367",
+		"start_date": "2018-03-12 01:00:00",
+		"end_date": "2018-03-12 00:00:00",
+		"text": "DXL00375",
+		"details": "DXL00375"
+	},
+	{
+		"id": "4366",
+		"start_date": "2018-03-12 02:00:00",
+		"end_date": "2018-03-12 00:00:00",
+		"text": "DXL02550",
+		"details": "DXL02550"
+	},
+	{
+		"id": "4369",
+		"start_date": "2018-03-12 02:00:00",
+		"end_date": "2018-03-12 00:00:00",
+		"text": "DXL05009_PCS",
+		"details": "DXL05009_PCS"
+	},
+	{
+		"id": "4370",
+		"start_date": "2018-03-12 02:00:00",
+		"end_date": "2018-03-12 00:00:00",
+		"text": "DXL05832",
+		"details": "DXL05832"
+	},
+	{
+		"id": "4371",
+		"start_date": "2018-03-12 02:00:00",
+		"end_date": "2018-03-12 00:00:00",
+		"text": "WTL01093",
+		"details": "WTL01093"
+	},
+	{
+		"id": "4448",
+		"start_date": "2018-03-13 02:00:00",
+		"end_date": "2018-03-13 00:00:00",
+		"text": "DXL02797_1C",
+		"details": "DXL02797_1C"
+	},
+	{
+		"id": "4449",
+		"start_date": "2018-03-13 02:00:00",
+		"end_date": "2018-03-13 00:00:00",
+		"text": "DXL02797_1C BWE",
+		"details": "DXL02797_1C BWE"
+	},
+	{
+		"id": "4450",
+		"start_date": "2018-03-13 02:00:00",
+		"end_date": "2018-03-13 00:00:00",
+		"text": "DXL02797_2C",
+		"details": "DXL02797_2C"
+	},
+	{
+		"id": "4457",
+		"start_date": "2018-03-13 02:00:00",
+		"end_date": "2018-03-13 00:00:00",
+		"text": "Test_0312",
+		"details": "Test_0312"
+	},
+	{
+		"id": "4451",
+		"start_date": "2018-03-13 02:30:00",
+		"end_date": "2018-03-13 00:00:00",
+		"text": "WTL01303_5C",
+		"details": "WTL01303_5C"
+	},
+	{
+		"id": "4520",
+		"start_date": "2018-03-14 02:00:00",
+		"end_date": "2018-03-14 00:00:00",
+		"text": "DXL02797_1C",
+		"details": "DXL02797_1C"
+	},
+	{
+		"id": "4521",
+		"start_date": "2018-03-14 02:00:00",
+		"end_date": "2018-03-14 00:00:00",
+		"text": "DXL02797_2C",
+		"details": "DXL02797_2C"
+	},
+	{
+		"id": "4522",
+		"start_date": "2018-03-14 02:00:00",
+		"end_date": "2018-03-14 00:00:00",
+		"text": "DXL02797_2C BWE",
+		"details": "DXL02797_2C BWE"
+	},
+	{
+		"id": "4519",
+		"start_date": "2018-03-14 02:30:00",
+		"end_date": "2018-03-14 00:00:00",
+		"text": "Audit_0314",
+		"details": "Audit_0314"
+	},
+	{
+		"id": "4668",
+		"start_date": "2018-03-15 00:00:00",
+		"end_date": "2018-03-15 00:00:00",
+		"text": "WTL01337",
+		"details": "WTL01337"
+	},
+	{
+		"id": "4665",
+		"start_date": "2018-03-15 00:30:00",
+		"end_date": "2018-03-15 00:00:00",
+		"text": "DXL02803_4C BWE",
+		"details": "DXL02803_4C BWE"
+	},
+	{
+		"id": "4667",
+		"start_date": "2018-03-15 00:30:00",
+		"end_date": "2018-03-15 00:00:00",
+		"text": "DXL05864",
+		"details": "DXL05864"
+	},
+	{
+		"id": "4664",
+		"start_date": "2018-03-15 01:30:00",
+		"end_date": "2018-03-15 00:00:00",
+		"text": "DXL02803_4C",
+		"details": "DXL02803_4C"
+	},
+	{
+		"id": "4660",
+		"start_date": "2018-03-15 02:00:00",
+		"end_date": "2018-03-15 00:00:00",
+		"text": "DXL00765",
+		"details": "DXL00765"
+	},
+	{
+		"id": "4662",
+		"start_date": "2018-03-15 02:00:00",
+		"end_date": "2018-03-15 00:00:00",
+		"text": "DXL02543_2C",
+		"details": "DXL02543_2C"
+	},
+	{
+		"id": "4663",
+		"start_date": "2018-03-15 02:00:00",
+		"end_date": "2018-03-15 00:00:00",
+		"text": "DXL02543_2C BWE",
+		"details": "DXL02543_2C BWE"
+	},
+	{
+		"id": "4666",
+		"start_date": "2018-03-15 02:00:00",
+		"end_date": "2018-03-15 00:00:00",
+		"text": "DXL05861",
+		"details": "DXL05861"
+	},
+	{
+		"id": "5002",
+		"start_date": "2018-03-20 00:30:00",
+		"end_date": "2018-03-20 00:00:00",
+		"text": "DXL05328",
+		"details": "DXL05328"
+	},
+	{
+		"id": "5005",
+		"start_date": "2018-03-20 01:30:00",
+		"end_date": "2018-03-20 00:00:00",
+		"text": "DXL02212_6C",
+		"details": "DXL02212_6C"
+	},
+	{
+		"id": "5018",
+		"start_date": "2018-03-20 01:30:00",
+		"end_date": "2018-03-20 00:00:00",
+		"text": "DXL02212_6C",
+		"details": "DXL02212_6C"
+	},
+	{
+		"id": "5006",
+		"start_date": "2018-03-20 02:00:00",
+		"end_date": "2018-03-20 00:00:00",
+		"text": "DXL02803_6C",
+		"details": "DXL02803_6C"
+	},
+	{
+		"id": "5007",
+		"start_date": "2018-03-20 02:00:00",
+		"end_date": "2018-03-20 00:00:00",
+		"text": "DXL03068_6C",
+		"details": "DXL03068_6C"
+	},
+	{
+		"id": "5019",
+		"start_date": "2018-03-20 02:00:00",
+		"end_date": "2018-03-20 00:00:00",
+		"text": "DXL02803_6C",
+		"details": "DXL02803_6C"
+	},
+	{
+		"id": "5020",
+		"start_date": "2018-03-20 02:00:00",
+		"end_date": "2018-03-20 00:00:00",
+		"text": "DXL03068_6C",
+		"details": "DXL03068_6C"
+	},
+	{
+		"id": "5021",
+		"start_date": "2018-03-20 02:00:00",
+		"end_date": "2018-03-20 00:00:00",
+		"text": "DXL03740_4C",
+		"details": "DXL03740_4C"
+	},
+	{
+		"id": "5022",
+		"start_date": "2018-03-20 02:00:00",
+		"end_date": "2018-03-20 00:00:00",
+		"text": "WTL01093_5C",
+		"details": "WTL01093_5C"
+	},
+	{
+		"id": "5023",
+		"start_date": "2018-03-20 02:00:00",
+		"end_date": "2018-03-20 00:00:00",
+		"text": "DXL06008_6C",
+		"details": "DXL06008_6C"
+	},
+	{
+		"id": "5024",
+		"start_date": "2018-03-20 02:00:00",
+		"end_date": "2018-03-20 00:00:00",
+		"text": "DXL01907_AWS",
+		"details": "DXL01907_AWS"
+	},
+	{
+		"id": "5001",
+		"start_date": "2018-03-20 02:30:00",
+		"end_date": "2018-03-20 00:00:00",
+		"text": "DXL00225",
+		"details": "DXL00225"
+	},
+	{
+		"id": "5003",
+		"start_date": "2018-03-20 02:30:00",
+		"end_date": "2018-03-20 00:00:00",
+		"text": "DXL02105_3C",
+		"details": "DXL02105_3C"
+	},
+	{
+		"id": "5004",
+		"start_date": "2018-03-20 02:30:00",
+		"end_date": "2018-03-20 00:00:00",
+		"text": "DXL02105_6C",
+		"details": "DXL02105_6C"
+	},
+	{
+		"id": "5279",
+		"start_date": "2018-03-22 01:30:00",
+		"end_date": "2018-03-22 00:00:00",
+		"text": "WTL01084",
+		"details": "WTL01084"
+	},
+	{
+		"id": "5284",
+		"start_date": "2018-03-22 01:30:00",
+		"end_date": "2018-03-22 00:00:00",
+		"text": "WTL01944",
+		"details": "WTL01944"
+	},
+	{
+		"id": "5286",
+		"start_date": "2018-03-22 01:30:00",
+		"end_date": "2018-03-22 00:00:00",
+		"text": "DXL00270",
+		"details": "DXL00270"
+	},
+	{
+		"id": "5278",
+		"start_date": "2018-03-22 02:00:00",
+		"end_date": "2018-03-22 00:00:00",
+		"text": "DXL00085",
+		"details": "DXL00085"
+	},
+	{
+		"id": "5280",
+		"start_date": "2018-03-22 02:00:00",
+		"end_date": "2018-03-22 00:00:00",
+		"text": "DXL02039",
+		"details": "DXL02039"
+	},
+	{
+		"id": "5281",
+		"start_date": "2018-03-22 02:00:00",
+		"end_date": "2018-03-22 00:00:00",
+		"text": "WTL01905",
+		"details": "WTL01905"
+	},
+	{
+		"id": "5283",
+		"start_date": "2018-03-22 02:00:00",
+		"end_date": "2018-03-22 00:00:00",
+		"text": "DXL02071",
+		"details": "DXL02071"
+	},
+	{
+		"id": "5285",
+		"start_date": "2018-03-22 02:00:00",
+		"end_date": "2018-03-22 00:00:00",
+		"text": "WTL03163",
+		"details": "WTL03163"
+	},
+	{
+		"id": "5282",
+		"start_date": "2018-03-22 02:30:00",
+		"end_date": "2018-03-22 00:00:00",
+		"text": "DXL02071",
+		"details": "DXL02071"
+	},
+	{
+		"id": "6268",
+		"start_date": "2018-03-26 02:00:00",
+		"end_date": "2018-03-26 23:59:00",
+		"text": "Audit_0326",
+		"details": "Audit_0326"
+	},
+	{
+		"id": "6271",
+		"start_date": "2018-03-26 02:00:00",
+		"end_date": "2018-03-26 23:59:00",
+		"text": "DXL05328",
+		"details": "DXL05328"
+	},
+	{
+		"id": "6272",
+		"start_date": "2018-03-26 02:00:00",
+		"end_date": "2018-03-26 23:59:00",
+		"text": "DXL02039",
+		"details": "DXL02039"
+	},
+	{
+		"id": "6274",
+		"start_date": "2018-03-26 02:00:00",
+		"end_date": "2018-03-26 23:59:00",
+		"text": "WTL01084",
+		"details": "WTL01084"
+	},
+	{
+		"id": "6743",
+		"start_date": "2018-03-27 02:00:00",
+		"end_date": "2018-03-27 23:59:00",
+		"text": "WTL03163",
+		"details": "WTL03163"
+	},
+	{
+		"id": "6740",
+		"start_date": "2018-03-27 02:30:00",
+		"end_date": "2018-03-27 23:59:00",
+		"text": "DXL03340_DXL02692",
+		"details": "DXL03340_DXL02692"
+	},
+	{
+		"id": "6741",
+		"start_date": "2018-03-27 02:30:00",
+		"end_date": "2018-03-27 23:59:00",
+		"text": "DXL03340_DXL02692_4C_BWE",
+		"details": "DXL03340_DXL02692_4C_BWE"
+	},
+	{
+		"id": "6742",
+		"start_date": "2018-03-27 02:30:00",
+		"end_date": "2018-03-27 23:59:00",
+		"text": "WTL01407",
+		"details": "WTL01407"
+	},
+	{
+		"id": "6883",
+		"start_date": "2018-03-27 02:30:00",
+		"end_date": "2018-03-27 23:59:00",
+		"text": "Audit_0327",
+		"details": "Audit_0327"
+	},
+	{
+		"id": "6940",
+		"start_date": "2018-03-28 02:00:00",
+		"end_date": "2018-03-28 23:59:00",
+		"text": "Audit_0328",
+		"details": "Audit_0328"
+	},
+	{
+		"id": "7038",
+		"start_date": "2018-03-28 02:00:00",
+		"end_date": "2018-03-28 23:59:00",
+		"text": "DXL02071_6C",
+		"details": "DXL02071_6C"
+	},
+	{
+		"id": "7039",
+		"start_date": "2018-03-28 02:00:00",
+		"end_date": "2018-03-28 23:59:00",
+		"text": "DXL04005_6C",
+		"details": "DXL04005_6C"
+	},
+	{
+		"id": "7040",
+		"start_date": "2018-03-28 02:00:00",
+		"end_date": "2018-03-28 23:59:00",
+		"text": "WTL03163",
+		"details": "WTL03163"
+	},
+	{
+		"id": "7985",
+		"start_date": "2018-03-29 00:00:00",
+		"end_date": "2018-03-29 23:59:00",
+		"text": "Audit_0329",
+		"details": "Audit_0329"
+	},
+	{
+		"id": "7611",
+		"start_date": "2018-03-29 01:30:00",
+		"end_date": "2018-03-29 23:59:00",
+		"text": "DXL00101_DXL02484",
+		"details": "DXL00101_DXL02484"
+	},
+	{
+		"id": "7610",
+		"start_date": "2018-03-29 02:00:00",
+		"end_date": "2018-03-29 23:59:00",
+		"text": "DXL00097_DXL01058",
+		"details": "DXL00097_DXL01058"
+	},
+	{
+		"id": "7613",
+		"start_date": "2018-03-29 02:00:00",
+		"end_date": "2018-03-29 23:59:00",
+		"text": "DXL02205_DXL02940",
+		"details": "DXL02205_DXL02940"
+	},
+	{
+		"id": "9272",
+		"start_date": "2018-04-02 16:00:00",
+		"end_date": "2018-04-02 23:59:00",
+		"text": "Parameter_test",
+		"details": "Parameter_test"
+	},
+	{
+		"id": "9420",
+		"start_date": "2018-04-03 00:00:00",
+		"end_date": "2018-04-03 23:59:00",
+		"text": "Audit_NTX_0403",
+		"details": "Audit_NTX_0403"
+	},
+	{
+		"id": "10285",
+		"start_date": "2018-04-03 00:00:00",
+		"end_date": "2018-04-03 23:59:00",
+		"text": "DXL03742_AWS BWE",
+		"details": "DXL03742_AWS BWE"
+	},
+	{
+		"id": "10286",
+		"start_date": "2018-04-03 00:30:00",
+		"end_date": "2018-04-03 23:59:00",
+		"text": "DXL05890_PCS BWE",
+		"details": "DXL05890_PCS BWE"
+	},
+	{
+		"id": "10803",
+		"start_date": "2018-04-04 00:00:00",
+		"end_date": "2018-04-04 23:59:00",
+		"text": "Audit_NTX_0404",
+		"details": "Audit_NTX_0404"
+	},
+	{
+		"id": "11526",
+		"start_date": "2018-04-05 00:00:00",
+		"end_date": "2018-04-05 23:59:00",
+		"text": "Audit_NTX_0405",
+		"details": "Audit_NTX_0405"
+	},
+	{
+		"id": "12076",
+		"start_date": "2018-04-06 00:00:00",
+		"end_date": "2018-04-06 23:59:00",
+		"text": "Submission_NTX_0406",
+		"details": "Submission_NTX_0406"
+	},
+	{
+		"id": "12077",
+		"start_date": "2018-04-06 00:00:00",
+		"end_date": "2018-04-06 23:59:00",
+		"text": "Submission_NTX_0406",
+		"details": "Submission_NTX_0406"
+	},
+	{
+		"id": "12078",
+		"start_date": "2018-04-06 00:00:00",
+		"end_date": "2018-04-06 23:59:00",
+		"text": "Submission_NTX_0406",
+		"details": "Submission_NTX_0406"
+	},
+	{
+		"id": "12079",
+		"start_date": "2018-04-06 00:00:00",
+		"end_date": "2018-04-06 23:59:00",
+		"text": "Submission_NTX_0406",
+		"details": "Submission_NTX_0406"
+	},
+	{
+		"id": "13381",
+		"start_date": "2018-04-09 00:30:00",
+		"end_date": "2018-04-09 23:59:00",
+		"text": "NTX_Audit_0409",
+		"details": "NTX_Audit_0409"
+	},
+	{
+		"id": "13681",
+		"start_date": "2018-04-10 00:00:00",
+		"end_date": "2018-04-10 23:59:00",
+		"text": "NTX_Audit_0410",
+		"details": "NTX_Audit_0410"
+	},
+	{
+		"id": "13682",
+		"start_date": "2018-04-10 00:00:00",
+		"end_date": "2018-04-10 23:59:00",
+		"text": "NTX_Submission_0410",
+		"details": "NTX_Submission_0410"
+	},
+	{
+		"id": "13683",
+		"start_date": "2018-04-10 00:00:00",
+		"end_date": "2018-04-10 23:59:00",
+		"text": "NTX_Submission_0410",
+		"details": "NTX_Submission_0410"
+	},
+	{
+		"id": "13684",
+		"start_date": "2018-04-10 00:00:00",
+		"end_date": "2018-04-10 23:59:00",
+		"text": "NTX_Submission_0410",
+		"details": "NTX_Submission_0410"
+	},
+	{
+		"id": "16383",
+		"start_date": "2018-04-10 00:00:00",
+		"end_date": "2018-04-10 23:59:00",
+		"text": "DXL06135_4C",
+		"details": "DXL06135_4C"
+	},
+	{
+		"id": "16384",
+		"start_date": "2018-04-10 00:00:00",
+		"end_date": "2018-04-10 23:59:00",
+		"text": "DXL06135_4C BWE",
+		"details": "DXL06135_4C BWE"
+	},
+	{
+		"id": "17154",
+		"start_date": "2018-04-11 00:00:00",
+		"end_date": "2018-04-11 23:59:00",
+		"text": "NTX_Audit_0411",
+		"details": "NTX_Audit_0411"
+	},
+	{
+		"id": "17174",
+		"start_date": "2018-04-11 00:00:00",
+		"end_date": "2018-04-11 23:59:00",
+		"text": "DXL01131",
+		"details": "DXL01131"
+	},
+	{
+		"id": "17175",
+		"start_date": "2018-04-11 00:00:00",
+		"end_date": "2018-04-11 23:59:00",
+		"text": "DXL01131",
+		"details": "DXL01131"
+	},
+	{
+		"id": "17176",
+		"start_date": "2018-04-11 00:00:00",
+		"end_date": "2018-04-11 23:59:00",
+		"text": "DXL04663_4C",
+		"details": "DXL04663_4C"
+	},
+	{
+		"id": "17372",
+		"start_date": "2018-04-12 00:00:00",
+		"end_date": "2018-04-12 23:59:00",
+		"text": "DXL03217_6C",
+		"details": "DXL03217_6C"
+	},
+	{
+		"id": "17373",
+		"start_date": "2018-04-12 00:00:00",
+		"end_date": "2018-04-12 23:59:00",
+		"text": "DXL01684_4C",
+		"details": "DXL01684_4C"
+	},
+	{
+		"id": "17361",
+		"start_date": "2018-04-12 01:00:00",
+		"end_date": "2018-04-12 23:59:00",
+		"text": "NTX_Audit_0412",
+		"details": "NTX_Audit_0412"
+	},
+	{
+		"id": "21684",
+		"start_date": "2018-04-17 00:00:00",
+		"end_date": "2018-04-17 23:59:00",
+		"text": "Test",
+		"details": "Test"
+	},
+	{
+		"id": "22324",
+		"start_date": "2018-04-17 00:00:00",
+		"end_date": "2018-04-17 23:59:00",
+		"text": "NTX_Audit_0417",
+		"details": "NTX_Audit_0417"
+	},
+	{
+		"id": "22325",
+		"start_date": "2018-04-17 00:00:00",
+		"end_date": "2018-04-17 23:59:00",
+		"text": "WTL00105",
+		"details": "WTL00105"
+	},
+	{
+		"id": "23966",
+		"start_date": "2018-04-18 00:00:00",
+		"end_date": "2018-04-18 23:59:00",
+		"text": "NTX_Audit_0418",
+		"details": "NTX_Audit_0418"
+	},
+	{
+		"id": "23967",
+		"start_date": "2018-04-18 00:00:00",
+		"end_date": "2018-04-18 23:59:00",
+		"text": "DXL01701_4c",
+		"details": "DXL01701_4c"
+	},
+	{
+		"id": "23968",
+		"start_date": "2018-04-18 00:00:00",
+		"end_date": "2018-04-18 23:59:00",
+		"text": "DXL01701_4C BWE",
+		"details": "DXL01701_4C BWE"
+	},
+	{
+		"id": "25493",
+		"start_date": "2018-04-19 00:30:00",
+		"end_date": "2018-04-19 23:59:00",
+		"text": "NTX_Audit_0419",
+		"details": "NTX_Audit_0419"
+	},
+	{
+		"id": "30343",
+		"start_date": "2018-04-24 00:00:00",
+		"end_date": "2018-04-24 23:59:00",
+		"text": "WTL05735_PCS BWE",
+		"details": "WTL05735_PCS BWE"
+	},
+	{
+		"id": "30347",
+		"start_date": "2018-04-24 00:00:00",
+		"end_date": "2018-04-24 23:59:00",
+		"text": "NTX_Audit_0424",
+		"details": "NTX_Audit_0424"
+	},
+	{
+		"id": "30348",
+		"start_date": "2018-04-24 00:00:00",
+		"end_date": "2018-04-24 23:59:00",
+		"text": "NTX_Audit_0424",
+		"details": "NTX_Audit_0424"
+	},
+	{
+		"id": "30761",
+		"start_date": "2018-04-25 00:00:00",
+		"end_date": "2018-04-25 23:59:00",
+		"text": "DXL04053_6C",
+		"details": "DXL04053_6C"
+	},
+	{
+		"id": "30760",
+		"start_date": "2018-04-25 00:30:00",
+		"end_date": "2018-04-25 23:59:00",
+		"text": "WTL00115",
+		"details": "WTL00115"
+	},
+	{
+		"id": "45077",
+		"start_date": "2018-05-01 00:30:00",
+		"end_date": "2018-05-01 23:59:00",
+		"text": "Audit_NTX_0501",
+		"details": "Audit_NTX_0501"
+	},
+	{
+		"id": "46641",
+		"start_date": "2018-05-02 00:00:00",
+		"end_date": "2018-05-02 23:59:00",
+		"text": "NTX_Audit_0502",
+		"details": "NTX_Audit_0502"
+	},
+	{
+		"id": "57988",
+		"start_date": "2018-05-08 00:00:00",
+		"end_date": "2018-05-08 23:59:00",
+		"text": "NTX_Audit_0508",
+		"details": "NTX_Audit_0508"
+	},
+	{
+		"id": "58325",
+		"start_date": "2018-05-08 00:00:00",
+		"end_date": "2018-05-08 23:59:00",
+		"text": "DXL05803_5C",
+		"details": "DXL05803_5C"
+	},
+	{
+		"id": "58326",
+		"start_date": "2018-05-08 00:00:00",
+		"end_date": "2018-05-08 23:59:00",
+		"text": "DXL05803_PCS BWE",
+		"details": "DXL05803_PCS BWE"
+	},
+	{
+		"id": "61515",
+		"start_date": "2018-05-09 00:00:00",
+		"end_date": "2018-05-09 23:59:00",
+		"text": "DXL00820",
+		"details": "DXL00820"
+	},
+    {
+      "id": "60816",
+      "start_date": "2018-05-09 00:30:00",
+      "end_date": "2018-05-09 23:59:00",
+      "text": "DXL02532_2C",
+      "details": "DXL02532_2C"
+    },
+	{
+		"id": "60818",
+		"start_date": "2018-05-09 00:30:00",
+		"end_date": "2018-05-09 23:59:00",
+		"text": "NTX_AUDIT_0509",
+		"details": "NTX_AUDIT_0509"
+	},
+	{
+		"id": "62207",
+		"start_date": "2018-05-10 00:00:00",
+		"end_date": "2018-05-10 23:59:00",
+		"text": "NTX_Audit_0510",
+		"details": "NTX_Audit_0510"
+	},
+	{
+		"id": "62320",
+		"start_date": "2018-05-10 00:00:00",
+		"end_date": "2018-05-10 23:59:00",
+		"text": "DXL00378_4C",
+		"details": "DXL00378_4C"
+	},
+	{
+		"id": "62323",
+		"start_date": "2018-05-10 00:00:00",
+		"end_date": "2018-05-10 23:59:00",
+		"text": "DXL00378_4C BWE",
+		"details": "DXL00378_4C BWE"
+	},
+	{
+		"id": "63214",
+		"start_date": "2018-05-11 00:00:00",
+		"end_date": "2018-05-11 23:59:00",
+		"text": "NTX_Audit_0511",
+		"details": "NTX_Audit_0511"
+	},
+	{
+		"id": "66368",
+		"start_date": "2018-05-16 00:00:00",
+		"end_date": "2018-05-16 23:59:00",
+		"text": "NTX_Audit_0516",
+		"details": "NTX_Audit_0516"
+	},
+	{
+		"id": "74206",
+		"start_date": "2018-05-23 00:00:00",
+		"end_date": "2018-05-23 23:59:00",
+		"text": "NTX_Test_05232018",
+		"details": "NTX_Test_05232018"
+	},
+	{
+		"id": "83679",
+		"start_date": "2018-06-04 00:00:00",
+		"end_date": "2018-06-04 23:59:00",
+		"text": "DXL00484_RELO",
+		"details": "DXL00484_RELO"
+	},
+	{
+		"id": "88384",
+		"start_date": "2018-06-06 18:00:00",
+		"end_date": "2018-06-06 23:59:00",
+		"text": "NTX_Test",
+		"details": "NTX_Test"
+	},
+	{
+		"id": "88411",
+		"start_date": "2018-06-06 20:00:00",
+		"end_date": "2018-06-06 23:59:00",
+		"text": "NTX Test 2",
+		"details": "NTX Test 2"
+	},
+	{
+		"id": "105652",
+		"start_date": "2018-06-18 00:00:00",
+		"end_date": "2018-06-18 23:59:00",
+		"text": "NTX_Submission_0618",
+		"details": "NTX_Submission_0618"
+	},
+	{
+		"id": "105653",
+		"start_date": "2018-06-18 00:00:00",
+		"end_date": "2018-06-18 23:59:00",
+		"text": "NTX_Submission_0618",
+		"details": "NTX_Submission_0618"
+	},
+	{
+		"id": "105654",
+		"start_date": "2018-06-18 00:00:00",
+		"end_date": "2018-06-18 23:59:00",
+		"text": "NTX_Submission_0618",
+		"details": "NTX_Submission_0618"
+	},
+	{
+		"id": "105655",
+		"start_date": "2018-06-18 00:00:00",
+		"end_date": "2018-06-18 23:59:00",
+		"text": "NTX_Submission_0618",
+		"details": "NTX_Submission_0618"
+	},
+	{
+		"id": "105656",
+		"start_date": "2018-06-18 00:00:00",
+		"end_date": "2018-06-18 23:59:00",
+		"text": "NTX_Submission_0618",
+		"details": "NTX_Submission_0618"
+	},
+	{
+		"id": "105657",
+		"start_date": "2018-06-18 00:00:00",
+		"end_date": "2018-06-18 23:59:00",
+		"text": "NTX_Submission_0618",
+		"details": "NTX_Submission_0618"
+	},
+	{
+		"id": "108577",
+		"start_date": "2018-06-20 00:00:00",
+		"end_date": "2018-06-20 23:59:00",
+		"text": "NTX_SUBMISSION_0620",
+		"details": "NTX_SUBMISSION_0620"
+	},
+	{
+		"id": "108578",
+		"start_date": "2018-06-20 00:00:00",
+		"end_date": "2018-06-20 23:59:00",
+		"text": "NTX_SUBMISSION_0620",
+		"details": "NTX_SUBMISSION_0620"
+	},
+	{
+		"id": "108579",
+		"start_date": "2018-06-20 00:00:00",
+		"end_date": "2018-06-20 23:59:00",
+		"text": "NTX_SUBMISSION_0620",
+		"details": "NTX_SUBMISSION_0620"
+	},
+	{
+		"id": "108580",
+		"start_date": "2018-06-20 00:00:00",
+		"end_date": "2018-06-20 23:59:00",
+		"text": "NTX_SUBMISSION_0620",
+		"details": "NTX_SUBMISSION_0620"
+	},
+	{
+		"id": "109318",
+		"start_date": "2018-06-21 00:00:00",
+		"end_date": "2018-06-21 23:59:00",
+		"text": "NTX_SUBMISSION_0621",
+		"details": "NTX_SUBMISSION_0621"
+	},
+	{
+		"id": "117772",
+		"start_date": "2018-06-27 00:00:00",
+		"end_date": "2018-06-27 23:59:00",
+		"text": "NTX_ARIESO_0627",
+		"details": "NTX_ARIESO_0627"
+	},
+	{
+		"id": "117774",
+		"start_date": "2018-06-27 00:00:00",
+		"end_date": "2018-06-27 23:59:00",
+		"text": "NTX_ARIESO_0627",
+		"details": "NTX_ARIESO_0627"
+	},
+	{
+		"id": "119399",
+		"start_date": "2018-06-28 00:00:00",
+		"end_date": "2018-06-28 23:59:00",
+		"text": "WTL01982_4C",
+		"details": "WTL01982_4C"
+	},
+	{
+		"id": "119403",
+		"start_date": "2018-06-28 00:00:00",
+		"end_date": "2018-06-28 23:59:00",
+		"text": "DXL03770_4C_5C_5C BWE",
+		"details": "DXL03770_4C_5C_5C BWE"
+	},
+	{
+		"id": "127966",
+		"start_date": "2018-07-03 00:00:00",
+		"end_date": "2018-07-03 23:59:00",
+		"text": "NTX_AUDIT_0703",
+		"details": "NTX_AUDIT_0703"
+	},
+	{
+		"id": "128827",
+		"start_date": "2018-07-03 00:00:00",
+		"end_date": "2018-07-03 23:59:00",
+		"text": "DXL02643_4C",
+		"details": "DXL02643_4C"
+	},
+	{
+		"id": "128828",
+		"start_date": "2018-07-03 00:00:00",
+		"end_date": "2018-07-03 23:59:00",
+		"text": "DXL05158_4C",
+		"details": "DXL05158_4C"
+	},
+	{
+		"id": "128831",
+		"start_date": "2018-07-03 00:00:00",
+		"end_date": "2018-07-03 23:59:00",
+		"text": "DXL05390_6C",
+		"details": "DXL05390_6C"
+	},
+	{
+		"id": "133964",
+		"start_date": "2018-07-06 00:00:00",
+		"end_date": "2018-07-06 23:59:00",
+		"text": "DXL05889_5C",
+		"details": "DXL05889_5C"
+	},
+	{
+		"id": "141804",
+		"start_date": "2018-07-10 00:00:00",
+		"end_date": "2018-07-10 08:00:00",
+		"text": "NTX_ARIESO_0710",
+		"details": "NTX_ARIESO_0710"
+	},
+	{
+		"id": "141808",
+		"start_date": "2018-07-10 00:00:00",
+		"end_date": "2018-07-10 08:00:00",
+		"text": "NTX_AUDIT_0710",
+		"details": "NTX_AUDIT_0710"
+	},
+	{
+		"id": "143162",
+		"start_date": "2018-07-11 00:00:00",
+		"end_date": "2018-07-11 08:00:00",
+		"text": "NTX_AUDIT_0711",
+		"details": "NTX_AUDIT_0711"
+	},
+	{
+		"id": "143227",
+		"start_date": "2018-07-11 00:00:00",
+		"end_date": "2018-07-11 08:00:00",
+		"text": "NTX_SUBMISSION_0711",
+		"details": "NTX_SUBMISSION_0711"
+	},
+	{
+		"id": "143228",
+		"start_date": "2018-07-11 00:00:00",
+		"end_date": "2018-07-11 08:00:00",
+		"text": "NTX_SUBMISSION_0711",
+		"details": "NTX_SUBMISSION_0711"
+	},
+	{
+		"id": "150644",
+		"start_date": "2018-07-12 00:00:00",
+		"end_date": "2018-07-12 08:00:00",
+		"text": "NTX_SUBMISSION_0712",
+		"details": "NTX_SUBMISSION_0712"
+	},
+	{
+		"id": "150645",
+		"start_date": "2018-07-12 00:00:00",
+		"end_date": "2018-07-12 08:00:00",
+		"text": "NTX_SUBMISSION_0712",
+		"details": "NTX_SUBMISSION_0712"
+	},
+	{
+		"id": "150646",
+		"start_date": "2018-07-12 00:00:00",
+		"end_date": "2018-07-12 08:00:00",
+		"text": "NTX_SUBMISSION_0712",
+		"details": "NTX_SUBMISSION_0712"
+	},
+	{
+		"id": "150647",
+		"start_date": "2018-07-12 00:00:00",
+		"end_date": "2018-07-12 08:00:00",
+		"text": "NTX_SUBMISSION_0712",
+		"details": "NTX_SUBMISSION_0712"
+	},
+	{
+		"id": "159628",
+		"start_date": "2018-07-16 00:00:00",
+		"end_date": "2018-07-16 08:00:00",
+		"text": "NTX_SUBMISSION_0716",
+		"details": "NTX_SUBMISSION_0716"
+	},
+	{
+		"id": "159629",
+		"start_date": "2018-07-16 00:00:00",
+		"end_date": "2018-07-16 08:00:00",
+		"text": "NTX_SUBMISSION_0716",
+		"details": "NTX_SUBMISSION_0716"
+	},
+	{
+		"id": "159630",
+		"start_date": "2018-07-16 00:00:00",
+		"end_date": "2018-07-16 08:00:00",
+		"text": "NTX_SUBMISSION_0716",
+		"details": "NTX_SUBMISSION_0716"
+	},
+	{
+		"id": "159617",
+		"start_date": "2018-07-16 18:44:56",
+		"end_date": "2018-07-17 02:44:56",
+		"text": "NTX_AUDIT_0716",
+		"details": "NTX_AUDIT_0716"
+	},
+	{
+		"id": "167126",
+		"start_date": "2018-07-18 00:00:00",
+		"end_date": "2018-07-18 08:00:00",
+		"text": "NTX_SUBMISSION_0718",
+		"details": "NTX_SUBMISSION_0718"
+	},
+	{
+		"id": "167127",
+		"start_date": "2018-07-18 00:00:00",
+		"end_date": "2018-07-18 08:00:00",
+		"text": "NTX_SUBMISSION_0718",
+		"details": "NTX_SUBMISSION_0718"
+	},
+	{
+		"id": "167128",
+		"start_date": "2018-07-18 00:00:00",
+		"end_date": "2018-07-18 08:00:00",
+		"text": "NTX_SUBMISSION_0718",
+		"details": "NTX_SUBMISSION_0718"
+	},
+	{
+		"id": "167129",
+		"start_date": "2018-07-18 00:00:00",
+		"end_date": "2018-07-18 08:00:00",
+		"text": "NTX_SUBMISSION_0718",
+		"details": "NTX_SUBMISSION_0718"
+	},
+	{
+		"id": "169546",
+		"start_date": "2018-07-19 00:00:00",
+		"end_date": "2018-07-19 08:00:00",
+		"text": "NTX_SUBMISSION_0719",
+		"details": "NTX_SUBMISSION_0719"
+	},
+	{
+		"id": "169547",
+		"start_date": "2018-07-19 00:00:00",
+		"end_date": "2018-07-19 08:00:00",
+		"text": "NTX_SUBMISSION_0719",
+		"details": "NTX_SUBMISSION_0719"
+	},
+	{
+		"id": "169548",
+		"start_date": "2018-07-19 00:00:00",
+		"end_date": "2018-07-19 08:00:00",
+		"text": "NTX_SUBMISSION_0719",
+		"details": "NTX_SUBMISSION_0719"
+	},
+	{
+		"id": "169549",
+		"start_date": "2018-07-19 00:00:00",
+		"end_date": "2018-07-19 08:00:00",
+		"text": "NTX_SUBMISSION_0719",
+		"details": "NTX_SUBMISSION_0719"
+	},
+	{
+		"id": "169550",
+		"start_date": "2018-07-19 00:00:00",
+		"end_date": "2018-07-19 08:00:00",
+		"text": "NTX_SUBMISSION_0719",
+		"details": "NTX_SUBMISSION_0719"
+	},
+	{
+		"id": "169551",
+		"start_date": "2018-07-19 00:00:00",
+		"end_date": "2018-07-19 08:00:00",
+		"text": "NTX_SUBMISSION_0719",
+		"details": "NTX_SUBMISSION_0719"
+	},
+	{
+		"id": "172070",
+		"start_date": "2018-07-20 00:00:00",
+		"end_date": "2018-07-20 08:00:00",
+		"text": "NTX_SUBMISSION_0720",
+		"details": "NTX_SUBMISSION_0720"
+	},
+	{
+		"id": "172071",
+		"start_date": "2018-07-20 00:00:00",
+		"end_date": "2018-07-20 08:00:00",
+		"text": "NTX_SUBMISSION_0720",
+		"details": "NTX_SUBMISSION_0720"
+	},
+	{
+		"id": "172072",
+		"start_date": "2018-07-20 00:00:00",
+		"end_date": "2018-07-20 08:00:00",
+		"text": "NTX_SUBMISSION_0720",
+		"details": "NTX_SUBMISSION_0720"
+	},
+	{
+		"id": "172073",
+		"start_date": "2018-07-20 00:00:00",
+		"end_date": "2018-07-20 08:00:00",
+		"text": "NTX_SUBMISSION_0720",
+		"details": "NTX_SUBMISSION_0720"
+	},
+	{
+		"id": "172074",
+		"start_date": "2018-07-20 00:00:00",
+		"end_date": "2018-07-20 08:00:00",
+		"text": "NTX_SUBMISSION_0720",
+		"details": "NTX_SUBMISSION_0720"
+	},
+	{
+		"id": "172075",
+		"start_date": "2018-07-20 00:00:00",
+		"end_date": "2018-07-20 08:00:00",
+		"text": "NTX_SUBMISSION_0720",
+		"details": "NTX_SUBMISSION_0720"
+	},
+	{
+		"id": "172076",
+		"start_date": "2018-07-20 00:00:00",
+		"end_date": "2018-07-20 08:00:00",
+		"text": "NTX_SUBMISSION_0720",
+		"details": "NTX_SUBMISSION_0720"
+	},
+	{
+		"id": "179061",
+		"start_date": "2018-07-23 00:00:00",
+		"end_date": "2018-07-23 08:00:00",
+		"text": "NTX_SUBMISSION_0723",
+		"details": "NTX_SUBMISSION_0723"
+	},
+	{
+		"id": "179062",
+		"start_date": "2018-07-23 00:00:00",
+		"end_date": "2018-07-23 08:00:00",
+		"text": "NTX_SUBMISSION_0723",
+		"details": "NTX_SUBMISSION_0723"
+	},
+	{
+		"id": "179063",
+		"start_date": "2018-07-23 00:00:00",
+		"end_date": "2018-07-23 08:00:00",
+		"text": "NTX_SUBMISSION_0723",
+		"details": "NTX_SUBMISSION_0723"
+	},
+	{
+		"id": "179064",
+		"start_date": "2018-07-23 00:00:00",
+		"end_date": "2018-07-23 08:00:00",
+		"text": "NTX_SUBMISSION_0723",
+		"details": "NTX_SUBMISSION_0723"
+	},
+	{
+		"id": "179065",
+		"start_date": "2018-07-23 00:00:00",
+		"end_date": "2018-07-23 08:00:00",
+		"text": "NTX_SUBMISSION_0723",
+		"details": "NTX_SUBMISSION_0723"
+	},
+	{
+		"id": "181597",
+		"start_date": "2018-07-24 00:00:00",
+		"end_date": "2018-07-24 08:00:00",
+		"text": "NTX_SUMISSION_0724",
+		"details": "NTX_SUMISSION_0724"
+	},
+	{
+		"id": "181598",
+		"start_date": "2018-07-24 00:00:00",
+		"end_date": "2018-07-24 08:00:00",
+		"text": "NTX_SUMISSION_0724",
+		"details": "NTX_SUMISSION_0724"
+	},
+	{
+		"id": "181599",
+		"start_date": "2018-07-24 00:00:00",
+		"end_date": "2018-07-24 08:00:00",
+		"text": "NTX_SUMISSION_0724",
+		"details": "NTX_SUMISSION_0724"
+	},
+	{
+		"id": "181600",
+		"start_date": "2018-07-24 00:00:00",
+		"end_date": "2018-07-24 08:00:00",
+		"text": "NTX_SUMISSION_0724",
+		"details": "NTX_SUMISSION_0724"
+	},
+	{
+		"id": "181601",
+		"start_date": "2018-07-24 00:00:00",
+		"end_date": "2018-07-24 08:00:00",
+		"text": "NTX_SUMISSION_0724",
+		"details": "NTX_SUMISSION_0724"
+	},
+	{
+		"id": "192527",
+		"start_date": "2018-07-26 00:00:00",
+		"end_date": "2018-07-26 08:00:00",
+		"text": "NTX_SUBMISSION_0726",
+		"details": "NTX_SUBMISSION_0726"
+	},
+	{
+		"id": "192528",
+		"start_date": "2018-07-26 00:00:00",
+		"end_date": "2018-07-26 08:00:00",
+		"text": "NTX_SUBMISSION_0726",
+		"details": "NTX_SUBMISSION_0726"
+	},
+	{
+		"id": "192529",
+		"start_date": "2018-07-26 00:00:00",
+		"end_date": "2018-07-26 08:00:00",
+		"text": "NTX_SUBMISSION_0726",
+		"details": "NTX_SUBMISSION_0726"
+	},
+	{
+		"id": "192530",
+		"start_date": "2018-07-26 00:00:00",
+		"end_date": "2018-07-26 08:00:00",
+		"text": "NTX_SUBMISSION_0726",
+		"details": "NTX_SUBMISSION_0726"
+	},
+	{
+		"id": "195708",
+		"start_date": "2018-07-27 00:00:00",
+		"end_date": "2018-07-27 08:00:00",
+		"text": "NTX_SUBMISSION_0727",
+		"details": "NTX_SUBMISSION_0727"
+	},
+	{
+		"id": "195709",
+		"start_date": "2018-07-27 00:00:00",
+		"end_date": "2018-07-27 08:00:00",
+		"text": "NTX_SUBMISSION_0727",
+		"details": "NTX_SUBMISSION_0727"
+	},
+	{
+		"id": "195710",
+		"start_date": "2018-07-27 00:00:00",
+		"end_date": "2018-07-27 08:00:00",
+		"text": "NTX_SUBMISSION_0727",
+		"details": "NTX_SUBMISSION_0727"
+	},
+	{
+		"id": "195711",
+		"start_date": "2018-07-27 00:00:00",
+		"end_date": "2018-07-27 08:00:00",
+		"text": "NTX_SUBMISSION_0727",
+		"details": "NTX_SUBMISSION_0727"
+	},
+	{
+		"id": "195712",
+		"start_date": "2018-07-27 00:00:00",
+		"end_date": "2018-07-27 08:00:00",
+		"text": "NTX_SUBMISSION_0727",
+		"details": "NTX_SUBMISSION_0727"
+	},
+	{
+		"id": "214546",
+		"start_date": "2018-07-30 00:00:00",
+		"end_date": "2018-07-30 08:00:00",
+		"text": "NTX_SUBMISSION_0730",
+		"details": "NTX_SUBMISSION_0730"
+	},
+	{
+		"id": "216848",
+		"start_date": "2018-07-31 00:00:00",
+		"end_date": "2018-07-31 08:00:00",
+		"text": "NTX_SUBMISSION_0731",
+		"details": "NTX_SUBMISSION_0731"
+	},
+	{
+		"id": "224600",
+		"start_date": "2018-08-01 00:00:00",
+		"end_date": "2018-08-01 08:00:00",
+		"text": "NTX_SUBMISSION_0801",
+		"details": "NTX_SUBMISSION_0801"
+	},
+	{
+		"id": "230656",
+		"start_date": "2018-08-02 00:00:00",
+		"end_date": "2018-08-02 08:00:00",
+		"text": "NTX_SUBMISSION_0802",
+		"details": "NTX_SUBMISSION_0802"
+	},
+	{
+		"id": "240796",
+		"start_date": "2018-08-06 00:00:00",
+		"end_date": "2018-08-06 09:00:00",
+		"text": "NTX_SUBMISSION_0806",
+		"details": "NTX_SUBMISSION_0806"
+	},
+	{
+		"id": "248808",
+		"start_date": "2018-08-07 00:00:00",
+		"end_date": "2018-08-07 08:00:00",
+		"text": "NTX_SUBMISSION_0807",
+		"details": "NTX_SUBMISSION_0807"
+	},
+	{
+		"id": "251693",
+		"start_date": "2018-08-08 00:00:00",
+		"end_date": "2018-08-08 08:00:00",
+		"text": "NTX_SUBMISSION_0808",
+		"details": "NTX_SUBMISSION_0808"
+	},
+	{
+		"id": "253455",
+		"start_date": "2018-08-09 00:00:00",
+		"end_date": "2018-08-09 08:00:00",
+		"text": "NTX_SUBMISSION_0809",
+		"details": "NTX_SUBMISSION_0809"
+	},
+	{
+		"id": "256509",
+		"start_date": "2018-08-10 00:00:00",
+		"end_date": "2018-08-10 09:00:00",
+		"text": "NTX_SUBMISSION_0810",
+		"details": "NTX_SUBMISSION_0810"
+	},
+	{
+		"id": "260002",
+		"start_date": "2018-08-13 00:00:00",
+		"end_date": "2018-08-13 09:00:00",
+		"text": "NTX_SUBMISSION_0813",
+		"details": "NTX_SUBMISSION_0813"
+	},
+	{
+		"id": "268822",
+		"start_date": "2018-08-14 00:00:00",
+		"end_date": "2018-08-14 08:00:00",
+		"text": "NTX_SUBMISSION_0814",
+		"details": "NTX_SUBMISSION_0814"
+	},
+	{
+		"id": "271120",
+		"start_date": "2018-08-15 00:00:00",
+		"end_date": "2018-08-15 08:00:00",
+		"text": "NTX_SUBMISSION_0815",
+		"details": "NTX_SUBMISSION_0815"
+	},
+	{
+		"id": "273248",
+		"start_date": "2018-08-16 00:00:00",
+		"end_date": "2018-08-16 08:00:00",
+		"text": "NTX_SUBMISSION_0816",
+		"details": "NTX_SUBMISSION_0816"
+	},
+	{
+		"id": "276120",
+		"start_date": "2018-08-17 00:00:00",
+		"end_date": "2018-08-17 08:00:00",
+		"text": "NTX_SUBMISSION_0817",
+		"details": "NTX_SUBMISSION_0817"
+	},
+	{
+		"id": "277170",
+		"start_date": "2018-08-17 20:30:00",
+		"end_date": "2018-08-17 21:30:00",
+		"text": "NTX_AUDIT_0817",
+		"details": "NTX_AUDIT_0817"
+	},
+	{
+		"id": "282883",
+		"start_date": "2018-08-21 00:00:00",
+		"end_date": "2018-08-21 08:00:00",
+		"text": "NTX_SUBMISSION_0821",
+		"details": "NTX_SUBMISSION_0821"
+	},
+	{
+		"id": "285354",
+		"start_date": "2018-08-22 00:00:00",
+		"end_date": "2018-08-22 08:00:00",
+		"text": "NTX_SUBMISSION_0822",
+		"details": "NTX_SUBMISSION_0822"
+	},
+	{
+		"id": "287461",
+		"start_date": "2018-08-23 00:00:00",
+		"end_date": "2018-08-23 08:00:00",
+		"text": "NTX_SUBMISSION_0823",
+		"details": "NTX_SUBMISSION_0823"
+	},
+	{
+		"id": "288138",
+		"start_date": "2018-08-23 21:30:00",
+		"end_date": "2018-08-23 22:30:00",
+		"text": "Test",
+		"details": "Test"
+	},
+	{
+		"id": "289189",
+		"start_date": "2018-08-24 00:00:00",
+		"end_date": "2018-08-24 08:00:00",
+		"text": "NTX_Submission_0824",
+		"details": "NTX_Submission_0824"
+	},
+	{
+		"id": "292500",
+		"start_date": "2018-08-27 00:00:00",
+		"end_date": "2018-08-27 08:00:00",
+		"text": "NTX_SUBMISSION_08272018",
+		"details": "NTX_SUBMISSION_08272018"
+	},
+	{
+		"id": "295150",
+		"start_date": "2018-08-28 00:00:00",
+		"end_date": "2018-08-28 08:00:00",
+		"text": "NTX_Submission_08282018",
+		"details": "NTX_Submission_08282018"
+	},
+	{
+		"id": "297487",
+		"start_date": "2018-08-29 00:00:00",
+		"end_date": "2018-08-29 08:00:00",
+		"text": "NTX_Submission_08292018",
+		"details": "NTX_Submission_08292018"
+	},
+	{
+		"id": "304312",
+		"start_date": "2018-08-31 18:00:00",
+		"end_date": "2018-08-31 19:00:00",
+		"text": "submission_0831",
+		"details": "submission_0831"
+	},
+	{
+		"id": "331874",
+		"start_date": "2018-09-07 17:00:00",
+		"end_date": "2018-09-07 18:00:00",
+		"text": "WTL01117",
+		"details": "WTL01117"
+	},
+	{
+		"id": "331876",
+		"start_date": "2018-09-07 17:00:00",
+		"end_date": "2018-09-07 18:00:00",
+		"text": "DXL00753_4C",
+		"details": "DXL00753_4C"
+	},
+	{
+		"id": "331879",
+		"start_date": "2018-09-07 17:00:00",
+		"end_date": "2018-09-07 18:00:00",
+		"text": "DXL00753_BWE",
+		"details": "DXL00753_BWE"
+	},
+	{
+		"id": "331883",
+		"start_date": "2018-09-07 17:00:00",
+		"end_date": "2018-09-07 18:00:00",
+		"text": "DXL04835",
+		"details": "DXL04835"
+	},
+	{
+		"id": "337207",
+		"start_date": "2018-09-10 17:30:00",
+		"end_date": "2018-09-11 02:30:00",
+		"text": "PCI_test",
+		"details": "PCI_test"
+	}
+]
+}

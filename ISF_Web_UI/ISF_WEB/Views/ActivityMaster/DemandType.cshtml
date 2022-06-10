@@ -1,0 +1,95 @@
+﻿@{
+    ViewBag.Title = "Demand Type";
+}
+
+@Scripts.Render("~/bundles/DemandType")
+@Scripts.Render("~/bundles/DataTableScript")
+@Styles.Render("~/bundles/css/DataTableStyle")
+@Scripts.Render("~/bundles/DataTablesAdvancedScript")
+@Styles.Render("~/bundles/css/DeliveryTracker")
+
+
+<style>
+    .panel-default > .panel-heading {
+        color: #333;
+        background-color: #d6d6d6;
+        border-color: #ddd;
+    }
+
+    .addDemandDiv {
+        box-shadow: 2px 5px 11px 5px rgba(0, 0, 0, 0.3);
+        position: relative;
+    }
+
+    .table-bordered {
+        box-shadow: 1px 5px 11px 5px rgba(0, 0, 0, 0.3);
+        position: relative;
+    }
+
+    .inputFileClass {
+        width: 100%;
+        padding: 4px;
+        display: inline-block;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+    }
+
+    .addDemandDiv {
+        border: 1px solid lightgray;
+        padding: 5px;
+        margin-left: 0px;
+        margin-right: 0px;
+    }
+
+    .EditDemandDiv {
+        border: 1px solid #ccc;
+        background-color: #ecf7ec;
+        border-radius: 4px;
+    }
+
+    a.icon-edit:hover {
+        background-color: #1169b5;
+    }
+
+    .colorChange {
+        background-color: #ccf5cc !important;
+    }
+</style>
+
+
+<div class="col-lg-12" style="padding-right: 0px;padding-left: 0px;">
+    <div class="panel panel-default" style="margin: 10px;">
+        <div class="panel-heading ">
+            <h3 class="panel-title" style="text-align:center;font-weight:bold;" title=""> DEMAND TYPE </h3>
+        </div>
+        <div class="panel-body" id="" style="padding: 10px;">
+            <div class="row addDemandDiv" style="height:94px;">
+                <form id="addDemandForm" action="#">
+                    <div class="col-lg-4">
+                        <label for="demandTypeText">Demand Type</label> <a class="text-danger">*</a>:
+                        <i class="fa fa-info-circle fa-1x" title="Special characters not allowed"></i>
+                        <input class="inputFileClass" type="text" style="margin-top: 4px;" id="demandText" name="demandTypeText" placeholder="Max 100 Alphanumeric characters are allowed" maxlength="100" onkeyup="validateForEnablingAddButton(); validateForCancelButton();" required />
+                        <input type="hidden" id="demandTypeID" />
+                    </div>
+                    <div class="col-lg-4">
+                        <label for="demandDescText">Demand Type Description</label> <a class="text-danger">*</a>:
+                        <i class="fa fa-info-circle fa-1x" title="Special characters not allowed: / \ # ^ % ? ; |"></i>
+                        <input class="inputFileClass" type="text" style="margin-top: 4px;" id="demandDescText" name="demandText" placeholder="Max 250 Alphanumeric & Some Special characters are allowed" maxlength="250" onkeyup="validateForEnablingAddButton(); validateForCancelButton();" required />
+                    </div>
+                    <div class="col-lg-2" id="addCancelDemandButtonDiv" style="margin-top: 23px;padding-left: 0px;padding-right: 0px;">
+                        <div class="form-group" style="margin-left: 18px;">
+                            <input type="button" class="btn btn-primary btnaddDemand" id="btnaddDemand" style="margin-right: 20px;" value="Add" onclick="" />
+                            <input type="button" class="btn btn-danger  btnCancelDemand" id="btnCancelDemand" style="font-size: 12px;" value="Cancel" onclick="" />
+                        </div>
+                    </div>
+                </form>
+                <label id="output"></label>
+            </div>
+            <div style="margin-top:15px;">
+                <table id="addDemandTypeTable" class="table table-bordered table-striped table-hover"></table>
+            </div>
+        </div>
+    </div>
+</div>
+

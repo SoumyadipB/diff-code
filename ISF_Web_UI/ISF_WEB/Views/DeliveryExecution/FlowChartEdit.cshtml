@@ -1,0 +1,258 @@
+﻿@{
+    Layout = "";
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Work Flow</title>
+    @Styles.Render("~/bundles/css/rappid")
+    @Styles.Render("~/bundles/css/bootstrap")
+
+    @Styles.Render("~/bundles/css/DataTableStyle")
+    @Styles.Render("~/bundles/css/DeliveryExecution")
+    <link type="text/css" rel="stylesheet" href="~/Content/CSS/font-awesome.min.css" />
+    
+    <style>
+        .popover {
+            max-width: 100%;
+            // Max Width of the popover (depending on the container!)
+        }
+
+        .joint-lightbox.modal {
+            display: block;
+        }
+
+        .joint-toolbar.joint-theme-material button {
+            height: 43px;
+        }
+
+        .navigator-container {
+            bottom: 50px;
+        }
+
+        .icon-size {
+            font-size: 20px;
+        }
+
+        .toolbar-container button.joint-widget[data-type="zoomIn"], .toolbar-container button.joint-widget[data-type="zoomOut"] {
+            display: block;
+        }
+
+        .toolbar-container {
+            left: 42px;
+        }
+        /*For Rappid overwrite*/
+        .app-title {
+            width: 42px;
+        }
+
+            .app-title h1 {
+                font-size: 12px;
+                line-height: 33px !important;
+                padding: 0 0 0 8px;
+            }
+
+        .app-header {
+            height: 28px !important;
+        }
+
+        .joint-widget.joint-theme-material[data-type=undo]:after, .joint-widget.joint-theme-material[data-type=redo]:after, .joint-widget.joint-theme-material[data-type=zoomToFit]:after, .joint-widget.joint-theme-material[data-type=zoomIn]:after, .joint-widget.joint-theme-material[data-type=zoomOut]:after, .joint-widget.joint-theme-material[data-type=fullscreen]:after {
+            background-size: 80px;
+        }
+
+        .joint-widget.joint-theme-material[data-name="clear"]:after, .joint-widget.joint-theme-material[data-name="layout"]:after, .joint-widget.joint-theme-material[data-name="print"]:after {
+            background-size: 80px;
+        }
+
+        .joint-widget.joint-theme-material[data-name="layout"]:after {
+            background-position: 2px -55px;
+        }
+
+        button.joint-widget.joint-theme-material {
+            min-width: 30px;
+            padding: 4px 0px;
+        }
+
+        .joint-widget.joint-theme-material[data-type=undo]:after {
+            background-position: 3px 0px;
+        }
+
+        .joint-widget.joint-theme-material[data-type=redo]:after {
+            background-position: -24px 0px;
+        }
+
+        .joint-widget.joint-theme-material[data-type=zoomToFit]:after {
+            background-position: 5px -26px;
+        }
+
+        .joint-widget.joint-theme-material[data-type=zoomOut]:after {
+            background-position: -52px 4px;
+        }
+
+        .joint-widget.joint-theme-material[data-type=zoomIn]:after {
+            background-position: -22px -26px;
+        }
+
+        .joint-app.joint-theme-material .app-body {
+            height: 94% !important;
+        }
+
+
+
+
+        /*Navigater*/
+        .joint-navigator {
+            right: -60px !important;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            background-color: #fdfdfd;
+        }
+
+        .navigator-container {
+            bottom: 20px !important;
+            // width: 140px;
+        }
+
+        .joint-select-button-group.joint-theme-material {
+            display: none;
+        }
+
+        .joint-navigator.joint-theme-material {
+            width: 166px !important;
+            padding-left: 49px !important;
+        }
+    </style>
+
+</head>
+<body style="padding-top:0px !important">
+    <div class="col-lg-12" style="margin-bottom: 0px;">
+
+    </div>
+    <div class="" id="app">
+        <div class="app-header" style="height:43px">
+            <div class="app-title">
+                <h1 style="line-height: 45px;">Edit WorkFlow</h1>
+            </div>
+            <div class="toolbar-container"></div>
+        </div>
+        <div class="app-body">
+            <div class="stencil-container"></div>
+            <div class="paper-container"></div>
+            <div class="inspector-container"></div>
+            <div class="navigator-container"></div>
+        </div>
+    </div>
+    <!-- Rappid/JointJS dependencies: -->
+    @Scripts.Render("~/bundles/rappid")
+    @Scripts.Render("~/bundles/jqueryui")
+    @Styles.Render("~/bundles/css/jqueryui")
+    @Scripts.Render("~/bundles/select2")
+    @Scripts.Render("~/bundles/global")
+    @Scripts.Render("~/bundles/GetSessionVars")
+    @Scripts.Render("~/bundles/config")
+    @Scripts.Render("~/bundles/bootstrap")
+    @Scripts.Render("~/bundles/datepicker")
+    @Scripts.Render("~/bundles/DeliveryExecution")
+    @Scripts.Render("~/bundles/DataTableScript")
+    @Scripts.Render("~/bundles/SessionManagement")
+    @Scripts.Render("~/bundles/ajaxRequest")
+    @Scripts.Render("~/bundles/ourCustom")
+    @Scripts.Render("~/bundles/FlowChartEdit")
+    @Scripts.Render("~/bundles/customConsole")
+    @Scripts.Render("~/bundles/formbuilder")
+
+
+    <!-- Local file warning: -->
+
+    <div id="message-fs" style="display: none;">
+        <p>The application was open locally using the file protocol. It is recommended to access it trough a <b>Web server</b>.</p>
+        <p>Please see <a href="README.md">instructions</a>.</p>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="addEditStep" role="dialog">
+        <div class="modal-dialog">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header btn-primary">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Add Step</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="Step" class="astrick">Step Name</label>
+                        <input type="text" class="form-control step" id="step">
+                    </div>
+                    <div class="form-group">
+                        <label for="Task">Task Name</label>
+                        <select class="form-control task" id="task"></select>
+                    </div>
+                    @*<div class="form-group">
+                            <label for="avgHrs">Average Estimated Hours(minutes)</label>
+                            <input type="number" placeholder="0.00" min="0" value="" class="form-control" id="avgHrs">
+                        </div>*@
+                    <div class="form-group">
+                        <label for="tool">Tools</label>
+                        <select class="form-control" id="tool"></select>
+                    </div>
+                    <div class="form-group">
+                        <label for="responsible" class="astrick">Responsible</label>
+                        <select class="form-control" id="responsible">
+                            <option value="MA">MA</option>
+                            <option value="GLOBAL">GLOBAL</option>
+                            <option value="ASP">ASP</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="reason" class="astrick">Reason</label>
+                        <input type="text" class="form-control" id="reason">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="execType">Step Type</label>
+                        <select class="form-control execType" id="execType">
+                            <option>Manual</option>
+                            <option>Decision</option>
+                            @*<option>Automatic</option>*@
+                        </select>
+                    </div>
+                    <div class="form-group" style="float:right;">
+                        <button type="submit" class="btn btn-primary addbtn" id="btn_add">Add</button>
+                        <button type="reset" class="btn btn-default resetbtn" id="btn_reset">Reset</button>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</body>
+</html>
+
+<div class="modal fade" id="confirm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="">Approve Work Flow</h4>
+            </div>
+            <div class="modal-body" id="">
+
+                <label>Work flow will go for Approval. Do you want to continue?</label>
+
+
+            </div>
+            <div class="modal-footer">
+
+                <button id="enterNewWFName" type="button" class="btn btn-default cnfrmbtn" data-dismiss="modal">Yes</button>
+                <button id="" type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+
+            </div>
+        </div>
+    </div>
+</div>

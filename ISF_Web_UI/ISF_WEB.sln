@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30309.148
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ISF_WEB", "ISF_WEB\ISF_WEB.csproj", "{C0C65DE8-6BE6-43AA-A9F3-543B5143296D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ISF.AzureRedisCache", "ISF.AzureRedisCache\ISF.AzureRedisCache.csproj", "{73027999-F902-41D9-A86A-F11943B60525}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C0C65DE8-6BE6-43AA-A9F3-543B5143296D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C0C65DE8-6BE6-43AA-A9F3-543B5143296D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C0C65DE8-6BE6-43AA-A9F3-543B5143296D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C0C65DE8-6BE6-43AA-A9F3-543B5143296D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{73027999-F902-41D9-A86A-F11943B60525}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{73027999-F902-41D9-A86A-F11943B60525}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{73027999-F902-41D9-A86A-F11943B60525}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{73027999-F902-41D9-A86A-F11943B60525}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {CF7710D4-5EA5-4936-A702-F4AE0E203DDA}
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,261 @@
+﻿@{
+	ViewBag.Title = "BOTS/DEV REQUEST";
+}
+@Scripts.Render("~/bundles/DataTableScript")
+@Styles.Render("~/bundles/css/DataTableStyle")
+@Styles.Render("~/bundles/css/select2")
+@Scripts.Render("~/bundles/DataTablesAdvancedScript")
+
+<style>
+	tfoot {
+		display: table-header-group;
+	}
+	.heading {
+		font-weight: bold;
+	}
+
+	.ui-autocomplete  {
+		max-height: 200px;
+		overflow-y: auto;
+		overflow-x: hidden;
+		z-index: 1000 !important;
+	}
+	.ui-autocomplete-loading {
+		background: url('../../Content/images/loading.gif') no-repeat right center;
+	}
+</style>
+
+<div class="col-lg-12">
+	<div class="panel panel-default">
+		<div class="panel-heading">
+			Bot Dev Requests
+		</div>
+		<div class="row">
+			<label id="lblMacroBotsMsg" for="message">
+			</label>
+		</div>
+		<div class="panel-body">
+			<div class="table-responsive" style="overflow-x: auto;">
+				<table id="tbDevReqBody" class="table table-striped table-bordered table-hover" style="width:100%">
+					<tfoot><tr><th></th><th>Request Id</th><th>Project</th><th>Subactivity</th><th>Workflow</th><th>SPOC</th><th>Request Raised On</th><th>Execution(Weekly)</th><th> Current Status</th><th>Request Type</th><th>Bot Language</th><th>Assigned To</th><th>Bot Name</th></tr></tfoot>
+				</table>
+			</div>
+
+			<div id="requestInfo" class="modal" role="dialog" style="top:70px;">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal">&times;</button>
+						<h4 class="modal-title" id="projectName"></h4>
+						<div class="pull-left">
+							<a onclick="this.href = downloadISFSetup" id="onMainHeader_downloadApp" class="btn-default btn-sm" style="cursor: pointer"><i class="fa fa-download" aria-hidden="true"></i> Download ISF setup</a>
+						</div>
+					</div>
+					<div class="modal-body" id="requestDetailsInfo">
+						<table class="table table-striped">
+						</table>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+						<button type="button" id="testBtnNewBotRequest" data-details="" class="btn btn-sm btn-warning testNewBotRequest" style="margin-left:10px">TEST BOT</button>
+						<button type="button" id="stopTestBtnBotRequest" data-details="" class="btn btn-sm btn-danger stopTestBtnBotRequest" style="margin-left:10px">STOP TEST-BOT</button>
+					</div>
+				</div>
+			</div>
+
+			<div class="modal fade" id="assignDev" role="dialog">
+				<div class="modal-dialog" style="margin-top: 150px; width: 350px;">
+					<div class="modal-content">
+						<div class="modal-header">
+							<button type="button" class="close" data-dismiss="modal">&times;</button>
+							<h4 class="modal-title text-center">Assign Developer</h4>
+						</div>
+						<div class="modal-body" id="assignDevBody">
+							<div class="row">
+								<div class="col-md-12">
+									<div class="form-group">
+										<label>Select Employee Signum</label>
+										<div class="form-group ">
+											<input type="text" id="cbxSignumWO" placeholder="Select Developer" style="width:150px" />
+										</div>
+									</div>
+								</div>
+							</div>
+							<hr />
+							<div class="row">
+								<button id="assignRequestDev" type="button" class="btn btn-default" style="float:right;">Assign</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="modal fade" id="auditModal" role="dialog">
+				<div class="modal-dialog" style="margin-top: 150px; width: 350px;">
+					<div class="modal-content">
+						<div class="modal-header">
+							<button type="button" class="close" data-dismiss="modal">&times;</button>
+							<h4 class="modal-title text-center">AUDIT REQUEST</h4>
+						</div>
+						<div class="modal-body">
+							<div class="row" id="">
+								<button class=" btn btn-default" title="Input File">
+									<i class="fa fa-download" aria-hidden="true"></i>
+									Input File
+								</button>
+								<button class=" btn btn-default" title="Output File">
+									<i class="fa fa-download" aria-hidden="true"></i>
+									Output File
+								</button>
+								<button class=" btn btn-default" title="Logic File">
+									<i class="fa fa-download" aria-hidden="true"></i>
+									Logic File
+								</button>
+							</div>
+							<div class="row">
+								<div class="col-md-12">
+									<div class="form-group">
+										<label>Select Audit Status</label>
+										<select id="auditOptions">
+											<option value="AuditPass">Pass</option>
+											<option value="AuditFail">Fail</option>
+										</select>
+									</div>
+								</div>
+							</div>
+							<hr />
+							<div class="row">
+								<button id="updateAuditStatus" onclick="submitAuditStatus()" type="button" class="btn btn-default" style="float:right;">Update Status</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="modal fade" id="rejectReasonModal" role="dialog">
+				<div class="modal-dialog" style="margin-top: 150px; width: 350px;">
+					<div class="modal-content">
+						<div class="modal-header">
+							<button type="button" class="close" data-dismiss="modal">&times;</button>
+							<h4 class="modal-title text-center">Reject Request</h4>
+						</div>
+						<div class="modal-body">
+							<div class="row">
+								<div class="col-md-12">
+									<div class="form-group">
+										<label>Enter Reason for Rejection</label>
+										<textarea id="rejectReason"></textarea>
+									</div>
+								</div>
+							</div>
+							<hr />
+							<div class="row">
+								<button id="rejectRequestButton" type="button" class="btn btn-default" onclick="submitRejectRequest()" style="float:right;">Submit</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+		</div>
+	</div>
+</div>
+
+@Scripts.Render("~/bundles/jquery-dateformat");
+@Scripts.Render("~/bundles/BotDevRequests");
+@Scripts.Render("~/bundles/bootstrap")
+@Scripts.Render("~/bundles/downloadBotFiles");
+
+
+<script>
+	$(document).ready(function () {
+		getRequestDetails();
+		var botRequestData; var assignRequestID; var versionNo; var auditRequestID; var rejectRequestID; var authWindow = "";
+
+
+		$('#requestInfo').on('show.bs.modal', function () {
+			$(this).find('.modal-content').css({
+				width: 'auto', //probably not needed
+				height: 'auto', //probably not needed
+				'max-width': '50%',
+				'margin': 'auto'
+			});
+		});
+
+
+		$('.testNewBotRequest').on('click', function () {
+
+
+			if ($(this).attr('data-details') != '') {
+				pwIsf.addLayer({ text: 'Please wait ...' });
+
+				let jsonObj = JSON.parse($(this).attr('data-details'));
+				let { reqId, signum } = jsonObj;
+
+				let ajCall = $.isf.ajax({
+					url: service_java_URL + "botStore/createBotTestingRequest/" + reqId + "/" + signum,
+					contentType: 'application/json',
+					type: 'POST',
+					returnAjaxObj: true
+
+				});
+
+				ajCall.done(function (data) {
+					if (data.apiSuccess) {
+						pwIsf.alert({ msg: 'Testing will be initiated after providing input to ISF Popup. Please ensure ISF Desktop App is running', type: 'success' });
+						window.open('isfalert:test_' + reqId, '_self');
+					}
+					else {
+						pwIsf.alert({ msg: '' + data.responseMsg, type: 'warning' });
+					}
+
+				});
+				ajCall.fail(function () { pwIsf.alert({ msg: 'Error in BOT testing.', type: 'error' }); });
+				ajCall.always(function () { pwIsf.removeLayer(); });
+
+			} else {
+				console.log('Error : Request id not received.');
+			}
+
+
+		});
+		//END - TEST FOR NEW BOT
+
+
+
+		$('.stopTestBtnBotRequest').on('click', function () {
+			pwIsf.addLayer({ text: 'Please wait ...' });
+
+			let jsonObj = JSON.parse($(this).attr('data-details'));
+			let { reqId, signum } = jsonObj;
+
+			let ajCall = $.isf.ajax({
+				url: service_java_URL + "botStore/stopInprogressBot/" + reqId + "/" + signum,
+				contentType: 'application/json',
+				type: 'POST',
+				returnAjaxObj: true
+			});
+
+			ajCall.done(function (data) {
+				if (data.apiSuccess) {
+					pwIsf.alert({ msg: '' + data.responseMsg, type: 'success' });
+					//window.open('isfalert:test_' + requestID, '_self');
+				} else {
+					pwIsf.alert({ msg: '' + data.responseMsg, type: 'warning' });
+				}
+			});
+
+			ajCall.fail(function () { pwIsf.alert({ msg: 'Error in BOT testing.', type: 'error' }); });
+			ajCall.always(function () { pwIsf.removeLayer(); });
+
+		});
+	});
+</script>
+<style>
+	header {
+		background-color: #666;
+		padding: 30px;
+		text-align: center;
+		font-size: 35px;
+		color: white;
+	}
+</style>

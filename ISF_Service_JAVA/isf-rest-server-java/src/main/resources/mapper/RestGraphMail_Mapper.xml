@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ericsson.isf.restGraph.mapper.RestGraphMailMapper">
+
+	<insert id='saveRefreshToken' parameterType="com.ericsson.isf.restGraph.model.TokenRequest">
+		INSERT INTO
+		transactionalData.TBL_RefreshTokenInfo
+		(RefreshToken,Active,createdon,createdBy,lastModifiedon,lastModifiedBy)
+		VALUES(#{tokenResponse.refreshToken},1,dbo.GetDateIST(),'ISF',dbo.GetDateIST(),'ISF')
+
+	</insert>
+
+	<select id='getActiveRefreshToken' resultType="java.util.LinkedHashMap">
+		select ID,RefreshToken from transactionalData.TBL_RefreshTokenInfo where Active=1;
+	</select>
+	
+	<update id='inactivateRefreshTokenByID'>
+        update TRANSACTIONALDATA.TBL_RefreshTokenInfo set Active=0 where ID=#{id}
+    </update>
+
+</mapper>
+

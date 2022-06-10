@@ -1,0 +1,1374 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ericsson.isf.mapper.NetworkElementMapper">
+
+ <resultMap type="NetworkElementModel" id="NetworkElementModelResultv1">
+        <id property="networkElementID" column="NetworkElementID" />
+        <result property="projectID" column="ProjectID" />
+        <result property="domainSubDomainID" column="DomainSubDomainID" />
+        <result property="technologyID" column="TechnologyID" />
+        <result property="vendorID" column="VendorID" />
+        <result property="market" column="Market" />
+        <result property="elementType" column="ElementType" />
+        <result property="type" column="Type" />
+        <result property="name" column="Name" />
+        <result property="latitude" column="Latitude" />
+        <result property="longitude" column="Longitude" />
+        
+        <result property="uploadedON" column="UploadedON" />
+        <result property="uploadedBy" column="UploadedBy" />
+        <result property="recordsTotal" column="recordsTotal" />
+        
+        <collection property="technologyDetails" ofType="TechnologyModel">
+            <id property="technologyID" column="TechnologyID" />
+            <result property="technology" column="Technology" />
+        </collection>
+        <collection property="domainDetails" ofType="DomainModel">
+            <id property="domainID" column="DomainID" />
+            <result property="domain" column="Domain" />
+            <result property="subDomain" column="SubDomain" />
+        </collection>
+        <collection property="vendorDetails" ofType="VendorModel">
+            <id property="vendorID" column="VendorID" />
+            <result property="vendor" column="Vendor" />
+             </collection>
+                  </resultMap>
+
+
+	<select id='getNetworkElementDetailsv1' resultMap="NetworkElementModelResultv1">
+		DECLARE @CountryCustomerGroupID int , @TotalCount int = #{recordsTotal}
+
+		SELECT top 1 @CountryCustomerGroupID = CountryCustomerGroupID
+		FROM transactionalData.TBL_PROJECTS p
+		INNER JOIN transactionalData.TBL_OPPORTUNITY O ON
+		p.OpportunityID=O.OpportunityID
+		AND p.ProjectID = #{projectID}
+		INNER JOIN refData.TBL_CountryCustomerMapping ccm ON
+		ccm.CountryID=o.CountryID
+		AND ccm.CustomerID=o.CustomerID
+
+		SELECT ne.Market,
+		ne.NetworkElementID,
+		ne.ProjectID,
+		ne.domainSubDomainID,
+		ne.ElementType,
+		ne.Type,
+		ne.Name,
+		ne.Latitude,
+		ne.Longitude,
+		d.DomainID,
+		CONCAT(d.Domain,+'/'+ d.SubDomain) AS DOMAIN,
+		v.VendorID,
+		v.Vendor,
+		t.TechnologyID,
+		t.Technology,
+		ne.UploadedON,
+		ne.UploadedBy,
+		@TotalCount recordsTotal
+
+		FROM transactionalData.TBL_NETWORK_ELEMENT ne
+		INNER JOIN refData.TBL_DOMAIN d ON d.DomainID=ne.DomainSubDomainID and ne.active = 1 and ne.CountryCustomerGroupID = @CountryCustomerGroupID
+		INNER JOIN refData.TBL_VENDOR v ON v.VendorID=ne.VendorID
+		INNER JOIN refData.TBL_TECHNOLOGY t ON t.TechnologyID=ne.TechnologyID
+		WHERE 1=1
+
+		<foreach item="column" index="index"
+			collection="dataTableReq.columns">
+			<if test="column.search != ''">
+				and ${column.data} like #{column.search}
+			</if>
+		</foreach>
+		<choose>
+		<when
+			test="dataTableReq.order != null and dataTableReq.order.sortDir!=null">
+			order by ${dataTableReq.order.data} ${dataTableReq.order.sortDir}, NetworkElementID asc
+		</when>
+		<otherwise>
+			order by NetworkElementID
+		</otherwise>
+		</choose>
+	<if test='dataTableReq.length != -1'>
+	OFFSET ${dataTableReq.start} ROWS
+	FETCH NEXT ${dataTableReq.length} ROWS ONLY
+	</if>
+</select>
+    
+    <select id='getNetworkElementDetailsv2' resultMap="NetworkElementModelResultv1">
+    
+    Declare @CountryCustomerGroupID int , @TotalCount int
+
+	Select top 1 @CountryCustomerGroupID = CountryCustomerGroupID
+	from transactionalData.TBL_PROJECTS p
+	inner join transactionalData.TBL_OPPORTUNITY  O on p.OpportunityID=O.OpportunityID and p.ProjectID = #{projectID}
+	inner join refData.TBL_CountryCustomerMapping ccm on ccm.CountryID=o.CountryID and ccm.CustomerID=o.CustomerID
+
+	Drop table IF exists #tempProjects
+
+Select distinct projectid
+into #tempProjects
+from transactionaldata.tbl_projects p 
+inner join transactionalData.TBL_OPPORTUNITY O on p.OpportunityID=O.OpportunityID and p.IsDeleted=0 and p.Status!='Closed' and p.Status!='Rejected'
+inner join refData.TBL_CountryCustomerMapping ccm on ccm.CountryID=o.CountryID and ccm.CustomerID=o.CustomerID and ccm.CountryCustomerGroupID = @CountryCustomerGroupID
+
+
+Select @TotalCount = count(1)
+from transactionalData.TBL_NETWORK_ELEMENT ne
+Join #tempProjects p on ne.ProjectID = p.ProjectID
+inner join refData.TBL_DOMAIN d on d.DomainID=ne.DomainSubDomainID
+inner join refData.TBL_VENDOR v on v.VendorID=ne.VendorID
+inner join refData.TBL_TECHNOLOGY t on t.TechnologyID=ne.TechnologyID
+
+Select
+       ne.Market,
+       ne.NetworkElementID,
+       ne.ProjectID,
+       ne.domainSubDomainID,
+       ne.ElementType,
+       ne.Type,
+       ne.Name,
+       ne.Latitude,
+       ne.Longitude,
+       
+       d.DomainID,
+       CONCAT(d.Domain,+'/'+ d.SubDomain) as Domain,
+       v.VendorID,
+       v.Vendor,
+       t.TechnologyID,
+       t.Technology,
+       ne.UploadedON,
+       ne.UploadedBy,
+        
+       @TotalCount recordsTotal
+from transactionalData.TBL_NETWORK_ELEMENT ne
+Join #tempProjects p on ne.ProjectID = p.ProjectID
+inner join refData.TBL_DOMAIN d on d.DomainID=ne.DomainSubDomainID
+inner join refData.TBL_VENDOR v on v.VendorID=ne.VendorID
+inner join refData.TBL_TECHNOLOGY t on t.TechnologyID=ne.TechnologyID
+    
+         <foreach item="column" index="index" collection="dataTableReq.columns">
+      		 <if test ="column.search != ''"> 
+              	and ${column.data} like #{column.search}
+          	 </if> 
+  		</foreach>
+  	
+		<choose>
+			 	<when test ="dataTableReq.order != null and dataTableReq.order.sortDir!=null">
+                  order by 	${dataTableReq.order.data} ${dataTableReq.order.sortDir}
+                </when>
+		 <otherwise>
+                 order by projectID
+               </otherwise>
+			 	</choose>
+		<if test ='dataTableReq.length != -1'>
+						OFFSET ${dataTableReq.start} ROWS
+						FETCH NEXT ${dataTableReq.length} ROWS ONLY
+		</if>
+         
+    </select>
+    
+    
+    <select id='getCountryCustomerGroupIDByProjectID' resultType='Integer'>
+	
+   IF EXISTS(select top 1 ccg.CountryCustomerGroupID
+	from refdata.TBL_CountryCustomerGroup ccg 
+	inner join  refData.TBL_CountryCustomerMapping ccm on ccm.countrycustomergroupid=ccg.CountryCustomerGroupID
+   inner join transactionalData.TBL_OPPORTUNITY  O on o.CustomerID= ccm.CustomerID
+   inner join transactionalData.tbl_projects p on p.OpportunityID= o.OpportunityID
+   where p.ProjectID= #{projectID} and  p.IsDeleted=0 and p.Status!='Closed' and p.Status!='Rejected')
+    BEGIN 
+     select distinct  ccg.CountryCustomerGroupID
+	from refdata.TBL_CountryCustomerGroup ccg 
+	inner join  refData.TBL_CountryCustomerMapping ccm on ccm.countrycustomergroupid=ccg.CountryCustomerGroupID
+   inner join transactionalData.TBL_OPPORTUNITY  O on o.CustomerID= ccm.CustomerID
+   inner join transactionalData.tbl_projects p on p.OpportunityID= o.OpportunityID
+   where p.ProjectID= #{projectID} and p.IsDeleted=0 and p.Status!='Closed' and p.Status!='Rejected'
+    END
+    ELSE
+    BEGIN
+    select 0 as 'CountryCustomerGroupID'
+    END
+	
+	</select>
+    
+    <insert id="appendNetworkElement">
+	    DECLARE
+		@DomainID varchar(100),
+		@TechnologyID varchar(100),
+		@VendorID varchar(100)
+		
+		select top 1 @DomainID = DomainID from refData.TBL_Domain where Domain = #{elements.domain} and SubDomain = #{elements.subDomain} and active = 1;
+		select top 1 @TechnologyID = TechnologyID from refData.TBL_TECHNOLOGY where Technology = #{elements.technology} and active = 1;
+		select top 1 @VendorID = VendorID from refData.TBL_Vendor where Vendor = #{elements.vendor} and active = 1;
+
+    	INSERT INTO transactionalData.TBL_NETWORK_ELEMENT (
+	    	ProjectID,
+	    	DomainSubDomainID,
+	    	TechnologyID,
+	    	VendorID,
+	    	ElementType,
+	    	Type,
+	    	Name,
+	    	Software_Release,
+	    	Market,
+	    	Sector,
+	    	Latitude,
+	    	Longitude,
+	    	UploadedBy,
+	    	UploadedON,
+	    	Band) 
+	    VALUES(#{elements.projectID},
+	    	@domainID,
+	    	@TechnologyID,
+	    	@VendorID,
+	    	#{elements.elementType},
+	    	#{elements.type},
+	    	#{elements.name},
+	    	#{elements.Software_Release},
+	    	#{elements.market},
+	    	#{elements.sector},
+	    	#{elements.latitude},
+	    	#{elements.longitude},
+	    	#{elements.uploadedBy},
+	    	convert (varchar, dbo.GetDateIST(), 120),
+	    	#{elements.band})
+    </insert>
+    
+    <select id="downloadNetworkElementv1" resultType="java.util.LinkedHashMap">
+    
+     Declare @CountryCustomerGroupID int 
+
+Select top 1 @CountryCustomerGroupID = CountryCustomerGroupID
+from transactionalData.TBL_PROJECTS p
+inner join transactionalData.TBL_OPPORTUNITY  O on p.OpportunityID=O.OpportunityID and p.ProjectID = #{projectID}
+inner join refData.TBL_CountryCustomerMapping ccm on ccm.CountryID=o.CountryID and ccm.CustomerID=o.CustomerID
+
+Drop table IF exists #tempProjects
+
+Select distinct projectid
+into #tempProjects
+from transactionaldata.tbl_projects p 
+inner join transactionalData.TBL_OPPORTUNITY O on p.OpportunityID=O.OpportunityID and p.IsDeleted=0 and p.Status!='Closed' and p.Status!='Rejected'
+inner join refData.TBL_CountryCustomerMapping ccm on ccm.CountryID=o.CountryID and ccm.CustomerID=o.CustomerID and ccm.CountryCustomerGroupID = @CountryCustomerGroupID
+
+
+
+Select
+       ne.Market,
+       ne.ElementType,
+       v.Vendor,
+       ne.Type,
+       ne.Name,
+       ne.Latitude,
+       ne.Longitude,
+      CONCAT(d.Domain,+'/'+ d.SubDomain) as Domain,
+      t.Technology,
+       ne.UploadedON,
+       ne.UploadedBy
+       
+       
+from transactionalData.TBL_NETWORK_ELEMENT ne
+Join #tempProjects p on ne.ProjectID = p.ProjectID
+inner join refData.TBL_DOMAIN d on d.DomainID=ne.DomainSubDomainID
+inner join refData.TBL_VENDOR v on v.VendorID=ne.VendorID
+inner join refData.TBL_TECHNOLOGY t on t.TechnologyID=ne.TechnologyID
+   
+      
+    </select>
+    
+	<select id="getValidateJsonForApi" resultType="String" useCache="true">
+		select top 1 ValidateJSON from Refdata.TBL_SourceApiValidateJson validate
+		inner join refData.TBL_IntegrationSources sources on sources.sourceId=validate.sourceid
+		where SourceAPI=#{apiName} and sourceName='ISF'
+	</select>
+	
+    <select id='checkDomain' resultType='String'>
+        select top 1 Domain from refData.TBL_Domain where Domain = #{stringValue} and Active = 1;
+    </select>
+    
+    <select id='checkSubDomain' resultType='String'>
+        select top 1 SubDomain from refData.TBL_Domain where SubDomain = #{stringValue} and Active = 1;
+    </select>
+
+    <select id='checkTechnology' resultType='String'>
+		select top 1 Technology from refData.TBL_Technology where Technology = #{stringValue} and Active = 1;
+    </select>
+
+    <select id='checkVendor' resultType='String'>
+        select top 1 Vendor from refData.TBL_Vendor where Vendor = #{stringValue} and Active = 1;
+    </select>
+
+    <select id='checkUploadedBy' resultType='String'>
+        select top 1 Signum from refData.TBL_Employees where signum = #{stringValue}  and Status = 'Active'
+    </select>
+    
+     <select id='checkNetworkElementType' resultType='String'>
+      select top 1 NetworkElementType from refData.TBL_Network_Element_Type where NetworkElementType= #{elementType} and Active = 1
+    </select>
+
+	<select id='checkNetworkSubElementType' resultType='String'>
+		select top 1 NetworkSubElementType from refdata.TBL_Network_Sub_Element_Type
+		where NetworkSubElementType= #{type} and Active = 1;
+	</select>
+    
+    <select id="checkIFRoleExists" resultType="Boolean">
+		DROP TABLE IF EXISTS #tempMarket
+		declare @ProjectMarket VARCHAR(10),@ProjectCreator VARCHAR(10)
+		Select @ProjectMarket = MarketAreaName,@ProjectCreator=ProjectCreator 
+		from transactionalData.TBL_PROJECTS a
+		join transactionalData.TBL_OPPORTUNITY  b
+		on a.OpportunityID = b.OpportunityID 
+		join refData.TBL_MARKETAREAS c
+		on b.MarketAreaID = c.MarketAreaID
+		where projectID = #{projectID}
+
+		Select a.SignumID,a.AccessProfileID,AccessProfileName,right(AccessProfileName,4) Market 
+		,left(AccessProfileName,2) [PM/DR] 
+		into #tempMarket
+		FROM TRANSACTIONALDATA.TBL_USER_ACCESS_PROFILE a
+		join refData.TBL_ACCESS_PROFILE b
+		on b.AccessProfileID = a.AccessProfileID
+		join refData.TBL_ACCESS_ROLE c
+		on b.AccessRoleID = c.AccessRoleID
+		where c.Role in( 'Project Manager','Delivery Responsible') and c.Active = 1
+		and SignumID = #{signum} AND a.Active=1
+
+		IF  EXISTS( Select top 1 Market from #tempMarket where Market = @ProjectMarket and [PM/DR] = 'PM')
+		AND EXISTS (select 1 from transactionalData.TBL_Projects where projectCreator = #{signum} and projectID = #{projectID} and isDeleted=0
+		and status not in ('Rejected', 'Closed'))
+		BEGIN
+		SELECT 1 AS 'RESULT'
+		END    
+		ELSE IF EXISTS( Select top 1 Market from #tempMarket where Market = @ProjectMarket and [PM/DR] = 'DR')
+		AND EXISTS (select 1 from transactionalData.TBL_Delivery_Responsible where signumID = #{signum} and projectID = #{projectID} and Active = 1) 
+		BEGIN
+		SELECT 1 AS 'RESULT'
+		END 
+		ELSE 
+		BEGIN         
+		SELECT 0 AS 'RESULT'            
+		END
+		DROP TABLE IF EXISTS #tempMarket
+		;
+
+
+    </select>
+    
+     <select id="checkDomainSubDomainCombination" resultType="Boolean">
+		IF Exists(
+	    select 1 from 	refData.TBL_Domain where Domain = #{domain} and SubDomain = #{subDomain} and active=1
+
+		)
+		Begin
+		Select 1 as 'Result'
+		End
+		else
+		Begin
+		Select 0 as 'Result'
+		End
+    </select>
+	
+	
+	 <select id="checkPMDRRoleForProjectID" resultType="Boolean">
+		IF EXISTS(select 1 from transactionalData.TBL_Delivery_Responsible where signumID = #{uploadedBy} and projectID = #{projectID} and Active = 1)
+ or exists(
+         select 1 from transactionalData.TBL_Projects where projectCreator = #{uploadedBy} and projectID = #{projectID} and isDeleted=0
+         and status not in ('Rejected', 'Closed')
+         )
+            BEGIN
+                SELECT 1 AS 'RESULT'
+            END
+        ELSE
+            BEGIN
+                SELECT 0 AS 'RESULT'
+            END
+    </select>
+    
+	 <select id="validateDuplicateNE" resultType="Boolean">
+		
+		 DECLARE
+		@DomainID varchar(100),
+		@TechnologyID varchar(100),
+		@VendorID varchar(100)
+		
+		select top 1 @DomainID = DomainID from refData.TBL_Domain where Domain = #{elements.domain} and SubDomain = #{elements.subDomain} and active = 1;
+		select top 1 @TechnologyID = TechnologyID from refData.TBL_TECHNOLOGY where Technology = #{elements.technology} and active = 1;
+		select top 1 @VendorID = VendorID from refData.TBL_Vendor where Vendor = #{elements.vendor} and active = 1;
+		
+		IF Exists(
+	    select 1 from 	transactionalData.TBL_Network_Element where DomainSubDomainID = @DomainID and TechnologyID= @TechnologyID
+		and vendorID= @VendorID and projectID= #{elements.projectID} and ElementType= #{elements.elementType}  and type= #{elements.type} 
+		and name= #{elements.name} 
+		and market= #{elements.market} 
+		and 
+		<choose>
+		<when test="elements.Software_Release != null and elements.Software_Release != '' ">
+		Software_Release= #{elements.Software_Release}
+		</when>
+		<otherwise>
+		(Software_Release  is null or Software_Release = '')
+		</otherwise>
+		</choose>
+		and
+		<choose>
+		<when test="elements.latitude != null and elements.latitude != ''  ">
+		latitude = #{elements.latitude}
+		</when>
+		<otherwise>
+		(latitude  is null or latitude = '')
+		</otherwise>
+		</choose>
+		
+		 and 
+		 
+		 <choose>
+		<when test="elements.longitude != null and elements.longitude != ''  ">
+		Longitude= #{elements.longitude}
+		</when>
+		<otherwise>
+		(Longitude  is null or Longitude = '')
+		</otherwise>
+		</choose>
+		 
+		and
+		
+		 <choose>
+		<when test="elements.sector  != null and elements.sector  != ''  ">
+		sector= #{elements.sector}
+		</when>
+		<otherwise>
+		(sector  is null or sector = '')
+		</otherwise>
+		</choose>
+		
+		
+		and
+		
+		<choose>
+		<when test="elements.getBand()  != null and elements.getBand() != ''  ">
+		band= #{elements.band}
+		</when>
+		<otherwise>
+		(band  is null or  band = '')
+		</otherwise>
+		</choose>
+		
+		
+		)
+		Begin
+		Select 1 as 'Result'
+		End
+		else
+		Begin
+		Select 0 as 'Result'
+		End
+    </select>
+
+
+	<select id="downloadReferenceMappingFile"
+		resultType="java.util.LinkedHashMap">
+		select CONCAT(d.Domain,+'/'+ d.SubDomain) as
+		[Domain/SubDomain],t.Technology,
+		v.Vendor, net.NetworkElementType [Network Element Type],
+		nset.NetworkSubElementType [Network Sub Element Type]
+		from refData.TBL_CNEDB_Reference_Mapping crm
+		inner join refdata.tbl_DomainSubDomain_Technology_Mapping dt on crm.dtid =
+		dt.dtid and dt.active = 1
+		inner join refData.TBL_DOMAIN d on d.domainID= dt.domainSubdomainID and
+		d.Active=1
+		inner join refData.TBL_TECHNOLOGY t on t.technologyID = dt.technologyID and
+		t.Active=1
+		inner join refData.TBL_VENDOR v on v.vendorID = crm.vendorID and v.Active=1
+		inner join refData.TBL_Network_Element_Type net on
+		net.networkElementTypeID
+		= crm.networkElementTypeID and net.active=1
+		inner join refdata.TBL_Network_Sub_Element_Type nset on
+		nset.networkSubElementTypeID = crm.networkSubElementTypeID
+		where crm.active=1 and nset.active=1
+
+	</select>
+	<select id="getUploadedFileStatus" resultType='com.ericsson.isf.model.MqttModel'>
+	
+			 SELECT TOP 1 createdBy AS signum,
+             passedlink   AS successLink,
+             failurelink  AS failureLink,
+             failedcount  AS failureCount,
+             passedcount  AS successCount,
+             FORMAT (ExpiryTime, 'hh:mm tt dd MMM yy') AS expiryTime,
+             uploadstatus AS currentStatus,
+             projectID,
+             originalFileName as origionalFileName
+			 FROM   transactionaldata.tbl_ne_upload_master
+			 WHERE  neuploadid = #{referenceId}
+       		 AND active = #{flag}
+             ORDER  BY createdOn DESC 
+	</select>
+	
+	<select id="checkStatusOfUserForNEUpload" resultType='com.ericsson.isf.model.NetworkElementUploadMasterModel'>
+
+	DECLARE @CountryCustomerGroupID int
+	SELECT top 1 @CountryCustomerGroupID = CountryCustomerGroupID
+	FROM transactionalData.TBL_PROJECTS p
+	INNER JOIN transactionalData.TBL_OPPORTUNITY O ON
+	p.OpportunityID=O.OpportunityID
+	AND p.ProjectID = #{projectID}
+	INNER JOIN refData.TBL_CountryCustomerMapping ccm ON
+	ccm.CountryID=o.CountryID
+	AND ccm.CustomerID=o.CustomerID
+
+
+	select top 1 nem.CreatedBy as userUploaded,CountryCustomerGroupID, UploadStatus,
+	emp.EmployeeName
+	from transactionalData.TBL_NE_Upload_Master nem
+	inner join refdata.TBL_Employees emp on emp.signum= nem.createdBy
+	where nem.CountryCustomerGroupID= @CountryCustomerGroupID
+	order by nem.CreatedOn desc
+	</select>
+	
+	
+	<insert id="insertStatusInUploadMasterTable"
+	parameterType="com.ericsson.isf.model.NetworkElementUploadMasterModel"
+	useGeneratedKeys="true"
+	keyProperty='networkElementUploadMasterModel.neUploadID'
+	keyColumn="NEUploadID">
+	insert into transactionalData.TBL_NE_Upload_Master
+	(
+	ExpiryTime,
+    CountryCustomerGroupID,
+	UploadStatus,
+	CreatedBy,
+	CreatedOn,
+	ModifiedBy,
+	ModifiedOn,
+	Active,
+	ProjectId,
+	originalFileName)
+
+	Values(
+    dateadd(minute, #{expiryTime}, dbo.GetDateIST()),
+    #{networkElementUploadMasterModel.countryCustomerGroupID},
+	#{networkElementUploadMasterModel.uploadStatus},
+	#{networkElementUploadMasterModel.userUploaded},
+	dbo.GetDateIST(),
+	#{networkElementUploadMasterModel.userUploaded},
+	dbo.GetDateIST(),
+	1,
+	#{networkElementUploadMasterModel.projectID},
+	#{originalFilename}
+	)
+
+
+</insert>
+	
+	
+	<insert id="insertStatusInWebNotificationTable"  parameterType="com.ericsson.isf.model.WebNotificationModel">
+	INSERT INTO [transactionalData].[TBL_Web_Notification]
+           ([NotificationSource]
+           ,[AuditComments]
+           ,[ToSignum]
+           ,[ReferenceID]
+           ,[Module]
+           ,[WOID]
+           ,[IsActive]
+           ,[CreatedBy]
+           ,[CreatedDate]
+           ,[ModifiedBy]
+           ,[ModifiedDate])
+	     VALUES
+	        (#{webNotificationModel.notificationSource}
+	        ,#{webNotificationModel.auditComments}
+	        ,#{webNotificationModel.createdBy}
+	        ,#{webNotificationModel.referenceId}
+	        ,#{webNotificationModel.module}
+	        ,#{webNotificationModel.woid}
+	        ,1
+	        ,#{webNotificationModel.createdBy}
+	        ,dbo.getDateIST()
+	        ,#{webNotificationModel.createdBy}
+	        ,dbo.getDateIST())
+	
+	</insert>
+	
+	<select id='migrateDataTempToMaster'  statementType="CALLABLE" resultType="String">
+		 {call [dbo].[USP_NE_Upload_PopUpAction] (
+        	#{tableName, mode=IN, jdbcType=VARCHAR},
+        	#{signum , mode=IN, jdbcType=VARCHAR},
+        	#{neuploadId, mode=IN, jdbcType=INTEGER},
+        	#{projectID ,mode=IN, jdbcType=INTEGER},
+        	#{status , mode=IN, jdbcType=VARCHAR},
+        	#{countryCustomerGroupID ,mode=IN, jdbcType=INTEGER})
+        }  
+	</select>
+	
+	<update id="updatePreviousStatusInWebNotificationTable"
+		parameterType="com.ericsson.isf.model.WebNotificationModel">
+
+		update transactionalData.TBL_Web_Notification
+		set isActive=0,
+		ModifiedBy = #{webNotificationModel.createdBy},
+		ModifiedDate = dbo.getDateIST()
+		where ReferenceID= #{webNotificationModel.referenceId}
+
+
+	</update>
+	
+	 <select id ="validateNetworkElementFile" statementType="CALLABLE" resultType="String">
+        {call [dbo].[USP_Validate_NE_Upload] 
+        (#{FileTable,mode=IN, jdbcType=VARCHAR},
+        #{networkElementUploadMasterModel.userUploaded ,mode=IN, jdbcType=INTEGER},
+        #{networkElementUploadMasterModel.countryCustomerGroupID,mode=IN, jdbcType=INTEGER},
+        #{projectID,mode=IN, jdbcType=INTEGER},
+        #{networkElementUploadMasterModel.neUploadID, mode=IN, jdbcType=INTEGER}
+        )}
+    </select>
+	
+	
+	 <select id="downloadSuccessFile" resultType="java.util.LinkedHashMap">
+	 DECLARE @FileTable varchar(100)= #{Filetable},
+@sql varchar(max)
+set @sql = 'select Market,
+[Domain/Sub-Domain],
+Technology,
+Vendor,
+[Network Element Type],
+[Network Sub-Element Type],
+[Network Element Name/ID],
+Latitude,
+Longitude,
+ErrorDescription as [Error Message]
+from '+@FileTable+'
+where iserror = 0'
+exec(@sql)
+	 
+	 </select>
+	
+	
+		 <select id="downloadFailureFile" resultType="java.util.LinkedHashMap">
+	 DECLARE @FileTable varchar(100)= #{Filetable},
+@sql varchar(max)
+set @sql = 'select Market,
+[Domain/Sub-Domain],
+Technology,
+Vendor,
+[Network Element Type],
+[Network Sub-Element Type],
+[Network Element Name/ID],
+Latitude,
+Longitude,
+ErrorDescription as [Error Message]
+from '+@FileTable+'
+where iserror = 1'
+exec(@sql)
+	 
+	 </select>
+	
+	
+	<delete id='deleteStatusInUploadMasterTable'>
+
+	Declare @TableName varchar(50), @sql varchar(1000),
+	@neuploadid int
+
+	set @sql = 'Drop Table if Exists '+ #{fileName}+'
+	delete from
+	transactionalData.TBL_NE_Upload_Master
+	where NEUploadID=
+	'+cast(#{neUploadID} as varchar)
+
+
+	exec(@sql)
+</delete> 
+    
+    <update id="updateLinkInNeUploadMaster">
+    	Update transactionalData.TBL_NE_Upload_Master 
+    	set PassedLink=#{successLink},FailureLink=#{failureLink}
+    	where NEUploadID= #{neUploadId}
+    </update>
+    <select id="getPassFailCount" resultType="com.ericsson.isf.model.NetworkElementUploadMasterModel">
+        select PassedCount, FailedCount from transactionalData.TBL_NE_Upload_Master where NEUploadID= #{neUploadId}
+    </select> 
+    
+    <update id="updateStatusInMasterTable">
+
+
+	Declare @TableName varchar(50), @sql varchar(1000),
+	@CurrentUploadStatus varchar(100),@modifiedby varchar(20), @neuploadid
+	int
+
+	set @sql = 'Drop Table if Exists '+ #{fileName}+'
+	Update transactionalData.TBL_NE_Upload_Master
+	set UploadStatus= '''+#{currentUploadStatus}+''',
+	active= 0,
+	ModifiedBy = '''+#{modifiedBy}+''',
+	ModifiedOn = dbo.getDateIST()
+	where NEUploadID= '+cast(#{neUploadID} as varchar)
+
+
+	exec(@sql)
+    </update>
+	 
+	 
+	 <select id="getPreviousUploadStatusCnedb" resultType='com.ericsson.isf.model.MqttModel'>
+	
+			 SELECT TOP 1 createdBy AS signum,
+             passedlink   AS successLink,
+             failurelink  AS failureLink,
+             failedcount  AS failureCount,
+             passedcount  AS successCount,
+             FORMAT (ExpiryTime, 'hh:mm tt dd MMM yy') AS expiryTime,
+             uploadstatus AS currentStatus,
+             FORMAT (ISNULL(ModifiedOn,dbo.getDateIST()), 'hh:mm tt dd MMM yy') AS startTime
+			 FROM   transactionaldata.tbl_ne_upload_master
+			 WHERE  neuploadid = #{neuploadId}
+             ORDER  BY createdOn DESC 
+	</select>
+	
+	 <select id="getAllFileBetweenTwoDates" resultType='com.ericsson.isf.model.MqttModel'>
+	 	SELECT PassedLink,FailureLink from transactionaldata.tbl_ne_upload_master where
+		StartTime &gt;=  #{startDate} AND StartTime &lt;=  #{endDate}
+	 </select>
+	<select id="getAllPmBasedOnCountryCustomerGroupId" resultType="java.lang.String">
+		SELECT DISTINCT 
+        emp.employeeemailid AS emailID
+		FROM   transactionaldata.tbl_projects pro
+        INNER JOIN refdata.tbl_employees emp
+        ON emp.signum = pro.projectcreator
+        INNER JOIN transactionaldata.tbl_opportunity O
+        ON pro.opportunityid = O.opportunityid
+        INNER JOIN refdata.tbl_countrycustomermapping ccm
+        ON ccm.countryid = o.countryid
+        AND ccm.customerid = o.customerid
+		WHERE  ccm.countrycustomergroupid = #{countryCustomerGroupID}
+        AND pro.isdeleted = 0
+        AND pro.status != 'Closed'
+        AND pro.status != 'Rejected' 
+	</select>
+	
+	<select id="getAllDrBasedOnCountryCustomerGroupId" resultType="java.lang.String">
+		select
+		distinct
+		empDR.EmployeeEmailID as emailID
+		from transactionalData.TBL_PROJECTS pro
+		inner join transactionalData.TBL_DELIVERY_RESPONSIBLE dr on pro.ProjectID=
+		dr.ProjectID and dr.active=1 AND pro.IsDeleted=0
+		AND pro.Status!='Closed'
+		AND pro.Status!='Rejected'
+		inner join refData.TBL_Employees empDR on empDR.Signum= dr.SignumID
+		inner join transactionalData.TBL_OPPORTUNITY O on
+		pro.OpportunityID=O.OpportunityID
+		inner join refData.TBL_CountryCustomerMapping ccm on
+		ccm.CountryID=o.CountryID and ccm.CustomerID=o.CustomerID
+		WHERE  ccm.countrycustomergroupid = #{countryCustomerGroupID} 
+	</select>
+
+	<select id="getNetworkElementNameByTerm" resultType="java.lang.String">
+		Declare @CountryCustomerGroupID int
+
+		Select distinct @CountryCustomerGroupID = CountryCustomerGroupID
+		from
+		transactionalData.TBL_PROJECTS p WITH (NOLOCK)
+		inner join
+		transactionalData.TBL_OPPORTUNITY O WITH (NOLOCK) on
+		p.OpportunityID=O.OpportunityID and p.ProjectID = #{projectID}
+		inner join
+		refData.TBL_CountryCustomerMapping ccm WITH (NOLOCK) on
+		ccm.CountryID=o.CountryID and ccm.CustomerID=o.CustomerID
+
+		select distinct name from transactionalData.TBL_NETWORK_ELEMENT
+		where CountryCustomerGroupID = @CountryCustomerGroupID
+		and DomainSubDomainID in (${domainCommaSeparated}) and TechnologyID in (${techCommaSeparated}) 
+		and name
+		like '%${term}%' and active=1
+	</select>
+	
+	
+	<insert id="insertStatusInValidateMasterTable"
+	parameterType="com.ericsson.isf.model.NetworkElementValidateMasterModel"
+	useGeneratedKeys="true"
+	keyProperty='networkElementValidateMasterModel.neValidateID'
+	keyColumn="NeValidateID">
+	insert into transactionalData.TBL_NEValidate_Master
+	(Status,
+	Active,
+	CreatedBy,
+	CreatedOn,
+	ModifiedBy,
+	ModifiedOn)
+	Values
+	(
+	#{networkElementValidateMasterModel.status},
+	1,
+	#{networkElementValidateMasterModel.signum},
+	dbo.getDateIST(),
+	#{networkElementValidateMasterModel.signum},
+	dbo.getDateIST()
+	)
+
+</insert>
+
+<select id='validateCommaSeparatedNetworkElementData'  statementType="CALLABLE" resultType="String">
+		 {call [dbo].[validate_wo_do_nodenames] (
+        	#{signum, mode=IN, jdbcType=VARCHAR},
+        	#{techCommaSeparated , mode=IN, jdbcType=VARCHAR},
+        	#{domainCommaSeparated, mode=IN, jdbcType=VARCHAR},
+        	#{projectID ,mode=IN, jdbcType=INTEGER},
+        	#{neValidateID , mode=IN, jdbcType=INTEGER},
+        	#{networkElementNames ,mode=IN, jdbcType=VARCHAR},
+        	#{source ,mode=IN, jdbcType=VARCHAR},
+        	#{executionPlanName ,mode=IN, jdbcType=VARCHAR},
+        	#{nodeType ,mode=IN, jdbcType=VARCHAR},
+        	#{ccGroupID ,mode=IN, jdbcType=INTEGER})
+        } 
+        
+	</select>
+	<select id='viewNetworkElementDetails'   resultType="com.ericsson.isf.model.NetworkElemntViewModel">
+	DECLARE @FileTable varchar(100)= #{tablename}, @sql
+	varchar(max), @Group varchar(100)= #{status}
+
+
+
+	set @sql = ';with CTE(Name,recordsTotalGroup)
+	AS(
+	select Name,
+	Count(Name) recordsTotalGroup
+	from '+@FileTable+'
+	group by Name
+	)
+	select cc.Name,ElementType networkElementType,Type
+	networkSubElementType,market,domainSubDomain,technology,Vendor,Status,networkElementId,tableName,radioSelection,
+	Count(*) OVER() recordsTotal from CTE cc join '+@FileTable+' es on es.Name=cc.Name  
+		<if test="status != 'All'">
+		where status = '''+@group+'''
+		</if>
+	
+		<foreach item="column" index="index" collection="dataTableRequest.columns">
+	<if test="column.search != '' and column.data != 'radio' ">
+		<choose>
+			<when test="column.data == 'networkElementType' ">
+				and ElementType like ''' + #{column.search} + '''
+			</when>
+			<when test="column.data == 'networkSubElementType' ">
+				and Type like ''' + #{column.search} + '''
+			</when>
+			<when test="column.data == 'name' ">
+				and cc.Name like ''' + #{column.search} + '''
+			</when>
+
+			<otherwise>
+				and ${column.data} like ''' + #{column.search} + '''
+			</otherwise>
+		</choose>
+	</if>
+		</foreach>
+	   <choose>
+			<when
+				test="dataTableRequest.order != null and dataTableRequest.order.sortDir!=null">
+				order by recordsTotalGroup desc,${dataTableRequest.order.data} ${dataTableRequest.order.sortDir}
+			</when>
+		</choose>
+		<if test='dataTableRequest.length != -1'>
+			OFFSET ${dataTableRequest.start} ROWS
+			FETCH NEXT ${dataTableRequest.length} ROWS ONLY'
+		</if>
+		exec(@sql)
+	</select>
+	
+	<update id="updateInactiveRadioSelectionByNEname">
+
+
+	DECLARE @FileTable varchar(100)= #{tableName},
+	@sql varchar(max)
+	set @sql =
+	'update '+@FileTable+'
+	set radioselection =0
+	where Name=
+	'''+#{networkElementName}+''''
+	exec(@sql)
+
+
+</update>
+	
+	<update id="updateActiveRadioSelectionByID">
+
+
+	DECLARE @FileTable varchar(100)= #{tableName},
+	@sql varchar(max)
+	set @sql = 'update '+@FileTable+'
+	set radioselection =1
+	
+	where NetworkElementID= '+cast(#{networkElementId} as varchar)
+	exec(@sql)
+
+</update>
+
+	<select id="getDistinctNetworkElementType" resultType="String">
+		DECLARE
+		@FileTable varchar(100)= #{tableName},
+		@sql varchar(max)
+		set @sql = 'select distinct elementType from '+@FileTable+'
+		where RadioSelection=1'
+		exec(@sql)
+	</select>
+	<insert id="addWorkOrderPlanNodes">
+			Declare @signum varchar(20) = #{signum},
+			@tableName varchar(50) = #{tableName} ,
+			@WOPlanID int = #{woPlanId},
+			@sql varchar(max)
+
+			set @sql = 'Insert into transactionalData.TBL_WORK_ORDER_PLAN_NODES ( NodeType, NodeNames, CreatedBy, CreatedDate, LastModifiedBy, LastModifiedDate, active, networkelementid, WOplanID)
+			select ElementType, Name, '''+@signum+''', dbo.getdateIST(), '''+@signum+''', dbo.getdateIST(), 1, networkelementid, '+cast(@WOPlanID as varchar)+' from '+@tableName+' where radioselection = 1'
+
+			exec(@sql)
+	</insert>
+	
+	<select id="createNodesForWorkOrder" parameterType="com.ericsson.isf.model.CreateWorkOrderModel2">
+		
+			Declare  @woid int = #{createWorkOrderModel.woId},
+			@signum varchar(20) = #{createWorkOrderModel.createBy},
+			@sql varchar(max)='',
+			@tablename varchar(200) = #{tableName}
+		
+			<foreach item="item" index="index" collection="nodeNames" >
+			set @sql = @sql+ ' 
+			 insert into transactionalData.TBL_WORK_ORDER_NODES(WOID,NodeType,NodeNames,CreatedBy,CreatedDate,LastModifiedBy,LastModifiedDate,Active,networkelementid)
+			select '+cast(@woid as varchar)+',ElementType,'''+#{item}+''','''+@signum+''',dbo.GetDateIST(),'''+@signum+''',dbo.GetDateIST(),1,networkelementid
+			from '+@tablename+'
+			where name = '''+#{item}+''' and radioselection = 1'
+			
+			</foreach>
+			exec(@sql)
+
+			
+	</select>
+	<insert id="insertWorkOrderNeCount">
+			Declare @signum varchar(20) = #{createModel.createBy},
+			@woid int = #{createModel.woId},@lastModifiedBy varchar(20) = #{createModel.createBy}
+			Insert into [transactionalData].[TBL_WorkOrder_NECount]
+			(WOID,NeCount,NeCSV,Active,CreatedBy,[CreatedOn],[ModifiedBy],[ModifiedOn])
+			select
+				@woid,[NeCount],[NeCSV],1,@lastModifiedBy,dbo.getdateist(),@lastModifiedBy,dbo.getdateist()
+				FROM [transactionalData].[TBL_WorkOrder_NECount]
+				where woid = #{woid}
+	</insert>
+
+	<update id="deleteTempTableForNE">
+
+		DECLARE @FileTable varchar(100)= #{tablename},
+		@sql varchar(max)
+		set @sql = 'Drop Table if Exists '+  @FileTable+''
+		 
+		exec(@sql)
+
+	</update>
+	
+	 <select id="getWorkOrderNeCount" resultType='com.ericsson.isf.model.NodeFilterModel'>
+			 SELECT TOP 1 NeCount as count,NeCSV as nodeNames
+             from transactionalData.TBL_WorkOrder_NECount
+			 where WOID=#{woid} and Active=1 
+	</select>
+	<insert id="insertWoNeCount">
+			Declare @signum varchar(20) = #{createModel.createBy},
+			@woid int = #{createModel.woId},@neCount int = #{neCount},
+			@neTextName varchar(max) = #{neTextName}
+			insert into transactionalData.TBL_WorkOrder_NECount
+					(WOID,NeCount,NeCSV,Active,CreatedBy,CreatedOn,ModifiedBy,ModifiedOn)
+				Select @woid,count(NodeNames) NeCount,@neTextName,1,@signum,dbo.getdateIST(),@signum,dbo.getdateIST()
+             from transactionalData.TBL_WORK_ORDER_NODES
+             where woid = @woid
+	</insert>
+
+
+	<update id="updateActiveRadioSelectionForValid">
+
+		declare @sql varchar(max), @tableName varchar(100) = #{tableName},
+		@networkElementId int = #{networkElementId}
+		set @sql = 'update '+@tableName+'
+		set radioselection = ~cast(radioselection as bit)
+		where networkelementid = '+cast(@networkElementId as varchar)
+
+		exec(@sql)
+	</update>
+	
+	<select id="getDistinctNetworkElementNameAndCount"
+	resultType='com.ericsson.isf.model.WorkOrderNetworkElementModel'>
+	declare @sql varchar(max),@tableName varchar(100) = #{tableName}
+
+
+	set @sql = 'select [Name] as neTextName,
+	(len([Name])-len(replace([Name],'','','''')))+1 as Count
+	from (
+	select
+	STUFF( (SELECT '',''+ [name] FROM '+@tableName+' where radioselection = 1 FOR
+	XML PATH('''') ), 1, 1, '''' ) as [name]) a'
+	exec(@sql)
+</select>
+
+
+<select id="getDistinctNetworkElementName"
+	resultType="String">
+	declare @sql varchar(max),@tableName varchar(100) = #{tableName}
+
+
+	set @sql = 'select [Name] as neTextName
+	from (
+	select
+	STUFF( (SELECT '',''+ [name] FROM '+@tableName+' where radioselection = 1 FOR
+	XML PATH('''') ), 1, 1, '''' ) as [name]) a'
+	exec(@sql)
+</select>
+
+
+
+<select id="getRadioSelectionByID"
+	resultType="Integer">
+	DECLARE
+		@FileTable varchar(100)= #{tableName}, @networkElementId int = #{networkElementId},
+		@sql varchar(max)
+		set @sql = 'select RadioSelection  from '+@FileTable+'
+		where networkElementID  = '+cast(@networkElementId as varchar)
+		
+		exec(@sql)
+</select>
+
+	<update id="updateInActiveRadioSelectionByID">
+
+
+	DECLARE @FileTable varchar(100)= #{tableName},
+	@sql varchar(max)
+	set @sql = 'update '+@FileTable+'
+	set radioselection =0
+	
+	where NetworkElementID= '+cast(#{networkElementId} as varchar)
+	exec(@sql)
+
+</update>
+
+<insert id="insertNetworkClusterNetworkElementCount">
+	Declare @signum varchar(20) = #{createModel.createBy},
+	@woid int = #{createModel.woId},@neCount int = #{neCount},
+	@neTextName varchar(max) = #{neTextName}
+	insert into transactionalData.TBL_WorkOrder_NECount
+	(WOID,
+	NeCount
+	<if test="neTextName != null and neTextName != '' ">
+	,NeCSV
+	</if>
+	,Active,
+	CreatedBy,
+	CreatedOn,
+	ModifiedBy,
+	ModifiedOn)
+	Values (
+	@woid,
+	@neCount
+	<if test="neTextName != null and neTextName != '' ">
+	,@neTextName
+	</if>
+	,1,
+	@signum,
+	dbo.getdateIST(),
+	@signum,
+	dbo.getdateIST()
+	)
+
+</insert>
+
+<select id='checkNodeNameandTypeExistsInCNEDB'
+	statementType="CALLABLE" resultType="String">
+	{call [dbo].[CheckNodesForExternal] (
+	#{countryCustomerGroupID, mode=IN, jdbcType=INTEGER},
+	#{nodeNames , mode=IN, jdbcType=VARCHAR},
+	#{nodeType, mode=IN, jdbcType=VARCHAR},
+	#{source ,mode=IN, jdbcType=VARCHAR},
+	#{executionPlanName , mode=IN, jdbcType=VARCHAR},
+	#{projectID ,mode=IN, jdbcType=INTEGER})
+	}
+
+</select>
+
+ <select id="downloadNeDataOnStatus" resultType="java.util.LinkedHashMap">
+ 	DECLARE @FileTable varchar(100)= #{tablename}, @sql
+	varchar(max), @Group varchar(100)= #{status}
+
+	set @sql = 'select Name as "Network Element Name/ID" ,ElementType as "Network Element Type",
+	 Type as "Network Sub-Element Type" ,Market,domainSubDomain as "Domain/Sub-Domain", Technology,Vendor 
+	 from '+@FileTable+'
+	<if test="status != 'All'">
+		where status = '''+@group+''''
+	</if>
+		exec(@sql)
+ </select>
+
+	<insert id="insertIntoTempTable"
+		parameterType="com.ericsson.isf.model.NetworkElementNewModel">
+
+		Declare @tablename1 varchar(100) =#{tableName}
+		,@sql1 varchar(4000)
+
+		set @sql1 = 'SELECT TOP 0 * INTO '+@tablename1+' FROM NE_Upload_Template'
+
+		exec(@sql1)
+
+		Declare @tablename varchar(100) = #{tableName}
+		,@sql varchar(4000),
+		@market
+		varchar(100) = #{elements.market},
+		@domainSubDomainName varchar(100) =
+		#{elements.domainSubDomainName},
+		@technology varchar(100) =
+		#{elements.technology},
+		@vendor varchar(100) = #{elements.vendor},
+		@elementType varchar(100) = #{elements.elementType},
+		@type varchar(100)
+		=#{elements.type},
+		@name varchar(100) =#{elements.name},
+		@latitude
+		varchar(100) = #{elements.latitude},
+		@longitude varchar(10)
+		=#{elements.longitude}
+
+
+		select @sql = CONCAT(col1,col2,col3,col4, col5, col6,col7)
+		from(
+		select 'INSERT INTO '+@tableName+'
+		(
+		[Market],
+		[Domain/Sub-Domain],
+		[Technology],
+		[Vendor],
+		[Network Element Type],
+		[Network Sub-Element Type],
+		[Network Element Name/ID]' col1
+		,case when @latitude is null then '' else ',[Latitude]' end col2
+		,case when @longitude is null then '' else ',[Longitude]' end col3
+		,')
+		VALUES(
+		'''+@market+''',
+		'''+@domainSubDomainName+''',
+		'''+@technology+''',
+		'''+@vendor+''',
+		'''+@elementType+''',
+		'''+@type+''',
+		'''+@name+'''' col4
+		,case when @latitude is null then '' else ','''+@latitude+'''' end col5
+		,case when @longitude is null then '' else ','''+@longitude+'''' end
+		col6
+		,')' col7) a
+		exec(@sql)
+
+	</insert>
+
+	<select id="getNeValidateIDByTableName" resultType="Integer">
+
+		Select
+		reverse(SUBSTRING(reverse(#{tableName}),1,charindex('_',reverse(#{tableName}),1)-1))
+		as NeValidateID
+
+	</select>
+	
+	<update id="updateNeValidateMasterTable">
+
+	update transactionalData.TBL_NEValidate_Master set Status='Completed',
+	ModifiedBy= #{createdBy} , ModifiedOn = dbo.GetDateIST() where
+	NeValidateID= #{neValidateID}
+
+	</update>
+	
+ 	<select id="getValidationMessage" resultType="String">
+	 	declare @sql varchar(2000), @tableName varchar(100)=#{tableName}
+		set @sql = 'select ErrorDescription from '+@tableName
+		exec(@sql)
+ 	</select>
+ 	
+ 	<select id="checkMigrationSuccess" resultType="String">
+	 	if exists(select 1 from transactionalData.TBL_NE_Upload_Master
+		where neuploadid = #{neUploadID} and FailedCount > 0 and PassedCount = 0)
+		Begin
+		select 'Failed'
+		End
+		Else if Exists(select * from transactionalData.TBL_NE_Upload_Master
+		where neuploadid = #{neUploadID} and PassedCount > 0 and FailedCount = 0)
+		Begin
+		Select 'Success'
+		End
+ 	</select>
+ 	
+ 	<select id="getCountryCustomerByID" resultType="hashmap">
+		Declare @CountryCustomerGroupID int = #{countryCustomerGroupID}
+		Declare @ProjectID int = #{projectID}
+		Declare @customerID int
+		Declare @countryID int
+		
+		
+		Select 
+		DIStinct @customerID = ccm.customerID, @countryID =ccm.countryID
+		from
+		transactionalData.TBL_PROJECTS p WITH (NOLOCK)
+		inner join
+		transactionalData.TBL_OPPORTUNITY O WITH (NOLOCK) on
+		p.OpportunityID=O.OpportunityID and p.ProjectID = @ProjectID
+		inner join
+		refData.TBL_CountryCustomerMapping ccm WITH (NOLOCK) on
+		ccm.CountryID=o.CountryID and ccm.CustomerID=o.CustomerID
+		
+		
+		select distinct c.CustomerName, co.CountryName from refData.TBL_CountryCustomerMapping ccm 
+		left join refData.TBL_CUSTOMERS c on ccm.CustomerID = c.CustomerID 
+		left join refData.TBL_COUNTRIES co on ccm.CountryID = co.CountryID 
+		where CountryCustomerGroupID = @CountryCustomerGroupID
+		and c.CustomerID = @customerID
+		and co.CountryID = @countryID
+ 	</select>
+ 	
+ 	<select id="getTotalNetworkElementCount" resultType='Long'>
+ 		DECLARE @CountryCustomerGroupID int
+
+
+		SELECT top 1 @CountryCustomerGroupID = CountryCustomerGroupID
+		FROM transactionalData.TBL_PROJECTS p
+		INNER JOIN transactionalData.TBL_OPPORTUNITY O ON
+		p.OpportunityID=O.OpportunityID
+		AND p.ProjectID = #{networkElementCountModel.projectID}
+		INNER JOIN refData.TBL_CountryCustomerMapping ccm ON
+		ccm.CountryID=o.CountryID
+		AND ccm.CustomerID=o.CustomerID
+
+
+		select count(1) TotalRecords
+		from transactionalData.TBL_NETWORK_ELEMENT ne with (index=NCI_CCGID)
+		left join refData.TBL_DOMAIN d on d.DomainID=ne.DomainSubDomainID
+		left join refData.TBL_VENDOR v on v.VendorID=ne.VendorID
+		left join refData.TBL_TECHNOLOGY t on t.TechnologyID=ne.TechnologyID
+		where CountryCustomerGroupID = @CountryCustomerGroupID and ne.active = 1 
+		
+		<if test="networkElementCountModel.domainName != '' and networkElementCountModel.domainName != null">
+				and d.Domain like '%${networkElementCountModel.domainName}%'
+		</if> 
+		<if test="networkElementCountModel.latitude != '' and networkElementCountModel.latitude != null">
+				and ne.Latitude like '%${networkElementCountModel.latitude}%'
+		</if>
+		<if test="networkElementCountModel.longitude != '' and networkElementCountModel.longitude != null">
+				and ne.Longitude like '%${networkElementCountModel.longitude}%'
+		</if>
+		<if test="networkElementCountModel.market != '' and networkElementCountModel.market != null">
+				and ne.Market like '%${networkElementCountModel.market}%'
+		</if>
+		<if test="networkElementCountModel.networkElementName != '' and networkElementCountModel.networkElementName != null">
+				and ne.Name like '%${networkElementCountModel.networkElementName}%'
+		</if>
+		<if test="networkElementCountModel.networkElementType != '' and networkElementCountModel.networkElementType != null">
+				and ne.ElementType like '%${networkElementCountModel.networkElementType}%'
+		</if>
+		<if test="networkElementCountModel.networkSubElementType != '' and networkElementCountModel.networkSubElementType != null">
+				and ne.Type like '%${networkElementCountModel.networkSubElementType}%'
+		</if>
+		<if test="networkElementCountModel.technologyName != '' and networkElementCountModel.technologyName != null">
+				and t.Technology like '%${networkElementCountModel.technologyName}%'
+		</if>
+		<if test="networkElementCountModel.uploadedBy != '' and networkElementCountModel.uploadedBy != null">
+				and ne.UploadedBy like '%${networkElementCountModel.uploadedBy}%'
+		</if>
+		<if test="networkElementCountModel.uploadedOn != '' and networkElementCountModel.uploadedOn != null">
+				and ne.UploadedON like '%${networkElementCountModel.uploadedOn}%'
+		</if>
+		<if test="networkElementCountModel.vendor != '' and networkElementCountModel.vendor != null">
+				and v.Vendor like '%${networkElementCountModel.vendor}%'
+		</if>
+ 	</select>
+ 	
+ 	
+ 	<update id="updateInActiveRadioSelectionByIDForSelectAll">
+
+	Declare @neid varchar(max) = #{listOfNetworkElementId}
+	DECLARE @FileTable varchar(100)= #{tableName},
+	@sql varchar(max)
+
+	Drop table if exists #neid
+
+	Create table #neid (neid int)
+	Insert into #neid
+	select value from string_split(@neid,',')
+
+	set @sql = 'update '+@FileTable+'
+	set radioselection =0
+	from '+@FileTable+' as Ne
+	inner join #neid as neid on neid.neid = ne.networkelementid'
+
+	Exec (@sql)
+
+    </update>
+    
+    <update id="updateInactiveRadioSelectionByNEnameForSelectAll">
+
+	Declare @nename varchar(max) = #{listOfName}
+	DECLARE @FileTable varchar(100)= #{tableName},
+	@sql varchar(max)
+
+	Drop table if exists #nname
+
+	Create table #nname (nename varchar(max))
+	Insert into #nname
+	select value from string_split(@nename,',')
+
+	set @sql = 'update '+@FileTable+'
+	set radioselection = 0
+	from '+@FileTable+' as Ne
+	inner join #nname as Nname on Nname.nename = ne.name'
+
+	Exec (@sql)
+
+    </update>
+    
+    <update id="updateActiveRadioSelectionByIDForSelectAll">
+
+    Declare @neid varchar(max) = #{listOfNetworkElementId}
+	DECLARE @FileTable varchar(100)= #{tableName},
+	@sql varchar(max)
+
+	Drop table if exists #neid
+
+	Create table #neid (neid int)
+	Insert into #neid
+	select value from string_split(@neid,',')
+
+	set @sql = 'update '+@FileTable+'
+	set radioselection =1
+	from '+@FileTable+' as Ne
+	inner join #neid as neid on neid.neid = ne.networkelementid'
+
+	Exec (@sql)
+
+    </update>
+    
+    <update id="updateActiveRadioSelectionForValidForSelectAll">
+
+	Declare @neid varchar(max) = #{listOfNetworkElementId}
+	DECLARE @FileTable varchar(100)= #{tableName}
+	DECLARE @Radioselection int =#{radioSelectionForSelectAll} ,
+	@sql varchar(max)
+
+	Drop table if exists #neid
+	Create table #neid (neid int)
+	Insert into #neid
+	select value from string_split(@neid,',')
+
+	set @sql = 'update '+@FileTable+'
+	set radioselection = '+cast(@Radioselection as varchar)+'
+	from '+@FileTable+' as Ne
+	inner join #neid as neid on neid.neid = ne.networkelementid'
+	Exec (@sql)
+
+    </update>
+    
+    <update id="resetSelectedRecordsForNE">
+
+	DECLARE @FileTable varchar(100)= #{tableName},
+	@sql varchar(max)
+	set @sql = 'update '+@FileTable+'
+	set radioselection =0
+
+	where Status= '''+#{status}+''''
+	exec(@sql)
+
+    </update>
+     
+     
+</mapper>

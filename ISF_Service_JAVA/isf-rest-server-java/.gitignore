@@ -1,0 +1,14 @@
+
+# START FOR API --------------------------------
+**/target/*
+**/bin/*
+**/*.sw*
+**/*.class
+**/.classpath
+**/.mvn/*
+**/servers/*
+**/.settings
+**/.metadata/
+# END FOR API --------------------------------
+/target/
+target/

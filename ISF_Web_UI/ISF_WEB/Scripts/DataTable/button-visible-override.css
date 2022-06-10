@@ -1,0 +1,20 @@
+.dt-button.buttons-columnVisibility{
+        color:#bbb;
+    }
+.dt-button.buttons-columnVisibility.active{
+    color: black;
+}
+
+div.dt-button-collection {
+    width: 300%;
+}
+
+div.dt-button-collection button.dt-button, div.dt-button-collection div.dt-button, div.dt-button-collection a.dt-button{
+    width:48%;
+    float:left;
+    margin-left:5px;
+}
+
+button.dt-button, div.dt-button, a.dt-button{
+    white-space:normal;
+}

@@ -1,0 +1,614 @@
+﻿@{
+    Layout = "";
+}
+
+<!DOCTYPE html>
+<head>
+    <meta charset="utf-8">
+    <title>Work Flow</title>
+    <link href="~/Scripts/lib/tooltip/protip/protip.min.css" rel="stylesheet">
+    @Styles.Render("~/bundles/css/rappid")
+    @Styles.Render("~/bundles/css/bootstrap")
+    <link href="~/Scripts/select2/select2.min.css" rel="stylesheet">
+    @Styles.Render("~/bundles/css/DataTableStyle")
+    @Styles.Render("~/bundles/css/DeliveryExecution")
+    <link type="text/css" rel="stylesheet" href="~/Content/CSS/font-awesome.min.css" />
+
+    <style>
+
+        table {
+            border-collapse: collapse;
+        }
+
+        table, th, td {
+            border: 1px solid black;
+        }
+     
+        .fa {
+            font-size: 20px;
+        }
+
+
+        /* icons */
+
+        #autosenseprotip i {
+            position: relative;
+            top: 4px;
+            font-size: 20px;
+        }
+        .joint-widget.joint-theme-material[data-name="clear"]:after, .joint-widget.joint-theme-material[data-name="layout"]:after, .joint-widget.joint-theme-material[data-name="print"]:after {
+            background-image: url(../../Scripts/Rappid/apps/KitchenSink/assets/toolbar-icons-material.png) !important;
+        }
+
+        [data-group |= layout] {
+            background: #2a7ee8;
+        }
+
+        .joint-select-box-options {
+            max-height: 800px;
+        }
+
+        .select2-container {
+            width: 100% !important;
+        }
+
+        .divnowrap {
+            white-space: nowrap;
+            overflow: hidden;
+            padding-right: 0px;
+            text-overflow: ellipsis;
+        }
+
+        .icon-size {
+            font-size: 20px;
+        }
+
+        .select2-container {
+            width: 100% !important;
+        }
+
+        .joint-lightbox.modal {
+            display: block;
+        }
+
+        .joint-popup.joint-theme-modern {
+            background-color: lightcyan;
+            border: 2px solid #31d0c6;
+            border-radius: 10px;
+            padding: 10px;
+        }
+
+        .joint-toolbar.joint-theme-material button {
+            height: 43px;
+        }
+
+        .navigator-container {
+            bottom: 50px;
+            right: 20px;
+        }
+
+        .joint-popup.joint-theme-dark {
+            background-color: lightcyan;
+            border: 2px solid #31d0c6;
+            border-radius: 10px;
+            padding: 10px;
+            font-family: lato-light,Arial,sans-serif;
+        }
+
+        .joint-popup.joint-theme-material {
+            background-color: lightcyan;
+            border: 2px solid #31d0c6;
+            border-radius: 10px;
+            padding: 10px;
+            font-family: lato-light,Arial,sans-serif;
+        }
+
+        .popover {
+            max-width: 100%;
+        }
+
+        .toolbar-container button.joint-widget[data-type="zoomIn"], .toolbar-container button.joint-widget[data-type="zoomOut"] {
+            display: block;
+        }
+
+        .toolbar-container {
+            left: 128px;
+        }
+
+        /*For Rappid overwrite*/
+        .app-title {
+            width: 128px;
+        }
+
+            .app-title h1 {
+                font-size: 12px;
+                line-height: 33px !important;
+            }
+
+        .app-header {
+            height: 28px !important;
+        }
+
+        .joint-widget.joint-theme-material[data-type=zoomToFit]:after {
+            background-position: 0px -34px;
+        }
+
+        .joint-widget.joint-theme-material[data-type=zoomOut]:after {
+            background-position: -62px 0px;
+        }
+
+        .joint-widget.joint-theme-material[data-name=layout]:after {
+            background-position: -3px -66px;
+        }
+
+        .joint-widget.joint-theme-material[data-type=zoomIn]:after {
+            background-position: -27px -34px;
+        }
+
+        .joint-widget.joint-theme-material[data-type=fullscreen]:after {
+            background-position: -58px -33px;
+        }
+
+        .joint-widget.joint-theme-material[data-name=layout]:after, .joint-widget.joint-theme-material[data-type=undo]:after, .joint-widget.joint-theme-material[data-type=redo]:after, .joint-widget.joint-theme-material[data-type=zoomToFit]:after, .joint-widget.joint-theme-material[data-type=zoomIn]:after, .joint-widget.joint-theme-material[data-type=zoomOut]:after, .joint-widget.joint-theme-material[data-type=fullscreen]:after {
+            background-size: 92px;
+        }
+
+
+        .joint-app.joint-theme-material .app-body {
+            height: 94% !important;
+        }
+
+
+        .instructionP {
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+
+
+
+        /*Navigater*/
+        .joint-navigator {
+            right: -60px !important;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            background-color: #fdfdfd;
+        }
+
+        .navigator-container {
+            bottom: 20px !important;
+            // width: 140px;
+        }
+
+        .joint-select-button-group.joint-theme-material {
+            display: none;
+        }
+
+        .joint-navigator.joint-theme-material {
+            width: 166px !important;
+            padding-left: 49px !important;
+        }
+
+        .fa-certificate path {
+            stroke: gray;
+            stroke-width: 30px;
+        }
+
+        .enable-autosense {
+            color: white;
+            padding: 10px 30px;
+            border-radius: 5px;
+            background: Orange;
+            box-shadow: 0 10px 10px -2px rgba(0,0,0,.25);
+            font-weight: bold;
+            border: 0 !important;
+        }
+
+        .disable-autosense {
+            color: white;
+            padding: 10px 30px;
+            border-radius: 5px;
+            background: gray;
+            box-shadow: 0 10px 10px -2px rgba(0,0,0,.25);
+            border: 0 !important;
+            font-weight: bold;
+        }
+
+        .validateArea {
+            position: absolute;
+            right: 15px;
+            z-index: 2;
+            top: 125%;
+            padding: 0 15px !important;
+        }
+
+        .autoSenseTooltip {
+            background: cornsilk;
+            border: 1px solid black;
+            border-radius: 5px;
+            z-index: 2;
+            padding: 5px
+        }
+
+        #tooltipText {
+            background: cornsilk;
+            border: 1px solid black;
+            border-radius: 5px;
+            padding: 5px;
+            z-index: 1000000000000
+        }
+
+        .sliderSource {
+            background-color: #5bc0de
+        }
+
+        .disableAssessedBg {
+            background-color: #CCC !important
+        }
+
+        .tooltip-inner {
+            max-width: none;
+            word-break: normal;
+        }
+        .aqua-tooltip + .tooltip > .tooltip-inner {background-color: #339996;}
+        .aqua-tooltip + .tooltip > .tooltip-arrow { border-top-color: #339996; border-bottom-color: #339996 }
+
+        #serverBotInputUrl{
+			width: 87%;
+			border-width:thin;
+        }
+
+        #serverBotOutputUrl {
+            width: 85%;
+            border-width: thin;
+        }
+    </style>
+
+</head>
+<body style="padding-top:0px !important">
+
+    @*MODAL BOT STORE*@
+    @Html.Partial("BotStore")
+
+
+    <input type="hidden" id="defID" />
+    <input type="hidden" id="flowchartVersion" />
+    <input type="hidden" id="wfName" />
+    <input type="hidden" id="workFlowAutoSenseEnabled" />
+    <input type="hidden" id="workOrderAutoSenseEnabled" />
+    <div class="" id="app">
+        <div class="app-header" style="height:43px">
+            <div class="app-title">
+                <h1 style="line-height: 45px;">Execution</h1>
+            </div>
+            <div class="toolbar-container"></div>
+            <div id="tooltipText" display="none" style="position: absolute; display: none"></div>
+        </div>
+        <div class="app-body">
+            <div class="stencil-container"></div>
+            <div class="paper-container">
+                <ul class="dropdown-menu list-group" id="step_instructions" style="width:207px;"></ul>
+            </div>
+            <div class="inspector-container"></div>
+            <div class="navigator-container"></div>
+        </div>
+    </div>
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/TimeZone")
+    <!-- Rappid/JointJS dependencies: -->
+    @Scripts.Render("~/bundles/rappid")
+    @Scripts.Render("~/bundles/jqueryui")
+    @Scripts.Render("~/bundles/select2")
+    @Scripts.Render("~/bundles/global")
+
+    @Scripts.Render("~/bundles/GetSessionVars")
+    @Scripts.Render("~/bundles/config")
+    @Scripts.Render("~/bundles/MainPage")
+    @Scripts.Render("~/bundles/bootstrap")
+    @Scripts.Render("~/bundles/datepicker")
+
+    @Scripts.Render("~/bundles/DeliveryExecution")
+    @Scripts.Render("~/bundles/DataTableScript")
+    @Scripts.Render("~/bundles/formbuilder")
+    @Scripts.Render("~/bundles/SessionManagement")
+    @Scripts.Render("~/bundles/ajaxRequest")
+    @Scripts.Render("~/bundles/FlowChartExecution")
+    @Scripts.Render("~/bundles/WorkorderPanel")
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    @Scripts.Render("~/bundles/customConsole")
+
+    <!-- Local file warning: -->
+
+    <div id="message-fs" style="display: none;">
+        <p>The application was open locally using the file protocol. It is recommended to access it trough a <b>Web server</b>.</p>
+        <p>Please see <a href="README.md">instructions</a>.</p>
+    </div>
+
+    <!--Modals-->
+
+    <div class="modal fade" id="botConfigModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog modal-lg" role="document" style="width: 56% ;overflow-y: initial !important">
+            <div class="modal-content">
+                <div class="modal-header" style="background-color:#d9edf7">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title text-center" id="">BOT Config</h4>
+                </div>
+                <div class="modal-body" style="max-height: calc(100vh - 210px);overflow-y: auto;">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <input type="hidden" id="currentCelldata" />
+
+                            <form method="POST" enctype="multipart/form-data" id="botConfigForm" name="botform">
+                                <div class="dataTable_wrapper" id="botConfigBody"></div>
+
+                                <hr />
+                                <div style="display:flex;" id="expectedFileNames"><label>File names expected: </label><p id="fileNames" class="fileNames"></p></div>
+                                <div class="col-md-12" input-group id="fileInputDiv" style="display:none;">
+                                    <input type="file" id="fileinputOnServerPlay" class="form-control" aria-describedby="basic-addon3" required multiple />
+                                    <input type="button" id="btnUploadFile" class="col-md-3" aria-describedby="basic-addon3" name="Upload" value="Upload" /> <br />
+                                </div>
+                                <br />
+                                <input type="hidden" id="runOnServer" />
+                                <button type="submit" class="btn btn-primary" id="saveBotConfigBtn" disabled>Run</button>
+                            </form>
+                        </div>
+                    </div> <!--//Table  -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalBotNestStreaming" role="dialog">
+        <div class="modal-dialog modal-lg" role="dialog" style="overflow-y: initial !important;width: 60%;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 id="" class="modal-title text-center">Bot Nest Streaming</h4>
+                    <input type="hidden" id="botdetails" />
+                </div>
+                <div class="modal-body" style="overflow-y:auto">
+                    <div class="row">
+
+                        <label>Live Streaming</label>
+
+                        <video class="video-js vjs-default-skin" width="100%" height="198" controls id="botVideo" autoplay>
+                            <source src="" type="application/x-mpegURL">
+                        </video>
+                        <div id="botStream"></div>
+                    </div>
+                    <hr />
+                    <div class="row">
+                        <label>Bot Logs</label>
+                        <div id="botLogStatus" style="height: 100px; border:1px solid black; overflow-y:auto;">
+                            <ul class="tabs"></ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalSkippedWF" role="dialog">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 id="skippedHeaderWF" class="modal-title text-center"></h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <input id="woIdWF" type="hidden" value="" />
+                            <input id="bookIdWF" type="hidden" value="" />
+                            <input id="taskIdWF" type="hidden" value="" />
+                            <input id="statusWF" type="hidden" value="" />
+                            <input id="stepID" type="hidden" value="" />
+                            <input id="flowChartType" type="hidden" value="" />
+
+                            <div class="col-md-12" style="display:grid;"><label>Enter Comments: </label><select id="commentSkippedWF" class="select2able"></select></div>
+
+                        </div>
+                    </div>
+                    <hr />
+                    <div class="row">
+                        <button type="button" class="btn btn-default pull-right" onclick="updateFlowChartTaskStatus(document.getElementById('flowChartType').value, document.getElementById('woIdWF').value, subActivityFlowChartDefID, document.getElementById('stepID').value, document.getElementById('taskIdWF').value, document.getElementById('bookIdWF').value, document.getElementById('statusWF').value, $('#commentSkippedWF').val(), executionType, true)">Submit</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalStopWF" role="dialog">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 id="" class="modal-title text-center">Stop WorkFlow</h4>
+                </div>
+                <div class="modal-body stopAuto">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <input id="woIdWF" type="hidden" value="" />
+                            <input id="bookIdWF" type="hidden" value="" />
+                            <input id="bookTypeWF" type="hidden" value="" />
+                            <input id="taskIdWF" type="hidden" value="" />
+                            <input id="stepID" type="hidden" value="" />
+                            <input id="subActDefId" type="hidden" value="" />
+                            <input id="calledFromSkip" type="hidden" value="" />
+                            <input id="flowChartType" type="hidden" value="" />
+
+                            <div class="col-md-12" style="display:grid;"><label>Enter Comments: </label><select id="commentStoppedWF" class="select2able"></select></div>
+
+                        </div>
+                    </div>
+                    <hr />
+                    <div class="row">
+
+                        <button type="button" class="btn btn-default pull-right" onclick="forceStopOnSkip($('.stopAuto #flowChartType').val(), $('.stopAuto #woIdWF').val(), $('.stopAuto #subActDefId').val(), $('.stopAuto #stepID').val(), $('.stopAuto #taskIdWF').val(), true, 'Automatic', $('.stopAuto #bookIdWF').val(), $('.stopAuto #bookTypeWF').val(), $('#commentStoppedWF').val(), $('#calledFromSkip').val(), afterLoadingFlowchart)">Submit</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="pdfDiv" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog modal-lg" role="document" style="width: 70%;">
+            <div class=" modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="scopeTitleModal">Work Instruction</h4>
+                </div>
+                <div class="modal-body" id="WFBody" style="height: 676px;">
+                    <br />
+
+                    <object id="objpdf" width="100%" height="100%" type="application/pdf" data="">
+                    </object>
+                </div>
+                <div class="modal-footer">
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalBrowseFile" role="dialog">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 id="modalBrowseFileHeader" class="modal-title text-center"></h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-12" style="padding-right:0px;">
+                            <div class="col-md-12" style="padding-left:0px;padding-right:0px;">
+                                <input type="hidden" value="" id="botjsondetails" />
+                                <input type="hidden" value=rpaId id="rpaid" />
+                                <label>Input Url : </label>&nbsp;&nbsp;
+                                <input type="url" id="serverBotInputUrl" />
+                            </div>
+                        </div>
+                    </div>
+                    <hr />
+                    <div class="row">
+                        <button type="button" class="btn btn-primary pull-right" id="runBotOnServer" onclick="submitRpaFile()">Run BOT on server</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalOutputFileForServerBot" role="dialog">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 id="modalBrowseFileHeaderForOutput" class="modal-title text-center"></h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-12" style="padding-right:0px;">
+                            <div class="col-md-12" style="padding-left:0px;padding-right:0px;">
+                                <input type="hidden" value="" id="botjsondetails" />
+                                <input type="hidden" value=rpaId id="rpaid" />
+                                <label>Output Url : </label>&nbsp;&nbsp;
+                                <input type="url" id="serverBotOutputUrl" />
+                            </div>
+                        </div>
+                    </div>
+                    <hr style="margin-bottom:10px;" />
+                    <div class="row" style="padding-left:17px;padding-top:0px;">
+                        <label style="color:red"> NOTE : Please enter URL till your folder </label>
+                    </div>
+                    <div class="row">
+                        <button type="button" class="btn btn-primary pull-right" id="runNoInputBotOnServer" onclick="submitOutputFile()">Run BOT on server</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalSelectStartOption" role="dialog">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 id="modalSelectStartHeader" class="modal-title text-center">Bot Execution Alert</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="col-md-12">
+                                <input type="hidden" id="cellDataAutomatic" />
+                                <input type="hidden" id="runOnLocal" />
+                                <p>
+                                    The Bot you are about to execute is also
+                                    compatible with server execution. Do you
+                                    want to run it on Server?
+                                </p>
+                            </div>
+                            <br />
+                            <div class="col-md-12">
+                                <button class="serverstart btn btn-primary" id="runOnServerAutomatic">Yes, Run On Server</button>
+                                <button class="btn btn-warning pull-right" id="runOnLocalAutomatic">No, Run On Local</button>
+                            </div>
+                        </div>
+                    </div>
+                    <hr />
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalAutoSenseStepRule" role="dialog">
+        <div class="modal-dialog" style="margin-top: 100px; width: 700px;">
+            <div class="modal-content">
+                <div class="modal-header" style="border: 0.1px solid #ccc; border-radius: 3px/6px; box-shadow: #0000006b 0px 1px 5px; padding: 10px;">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="margin-top: -2.5px; float: right; margin-right: 0px;">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <span style="font-size: medium;display: flex;">
+                        Rules for Step Name:&nbsp;<span id="stepRuleTitle" class="aqua-tooltip" data-toggle="tooltip" style="font-weight: bold; margin-top: 0px; margin-bottom: 0px;"></span>
+                    </span>
+                </div>
+
+                <div class="modal-body" style="padding: 20px;">
+
+                    <div id="stepRulesDiv">
+                        <table class="table table-bordered table-striped table-hover" id="stepRulesTable" style="margin-bottom: 0px;"></table>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    @*nahar*@
+    <div class="modal fade" id="stepLevelInst" style="width:30%;overflow:hidden" role="dialog">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content" style="width:250px;">
+
+
+
+
+                <div class="modal-body" style="padding:5px">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <br>
+                    <ul id="step_instruction" class="list-group"></ul>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @Scripts.Render("~/bundles/jquery-dateformat")
+    @Scripts.Render("~/bundles/FlowChartWorkOrderView")
+    @Scripts.Render("~/bundles/downloadBotFiles")
+    @Scripts.Render("~/bundles/downloadTemplates")
+    @Scripts.Render("~/bundles/WFFeedback")
+
+</body>

@@ -1,0 +1,73 @@
+﻿<script language="JavaScript">
+    function redrToHttps() {
+        var httpsURL = window.location.hostname + window.location.pathname + window.location.search;
+        if (window.location.protocol === 'http:') {
+            var httpURL = "https://" + httpsURL;
+            window.location = httpURL;
+        }
+    }
+    var hostName = document.location.hostname;
+    if (document.location.hostname != "localhost") {
+        redrToHttps();
+    }
+
+</script>
+
+@Html.Partial("RegisterASP")
+
+@*<input type="text" value="@ViewBag.accessParam" />*@
+
+@*<div class="col-sm-12">
+        <form class="form-horizontal" novalidate>
+            <fieldset>
+                <div class="form-group">
+                    <div class="col-sm-8 col-sm-offset-2">
+                        <input id="asp_username" name="" type="text" placeholder="Username" class="form-control input-sm">
+                    </div>
+
+                </div>
+                <div class="form-group">
+
+                    <div class="col-sm-8 col-sm-offset-2">
+                        <input id="asp_vendorCode" name="" type="text" placeholder="Vendor Code" class="form-control input-sm">
+                    </div>
+
+
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-offset-2">
+                        <div class="col-sm-7">
+                            <input id="asp_password" name="" type="password" placeholder="Password" class="form-control input-sm">
+                        </div>
+                        <button name="" onclick="authenticateUserASP(this);" data-toggle="modal" data-target="#resetASPPasswordModal" class="btn btn-primary" style=" background-color: #198cff;"><i class="fa fa-hand-o-right"></i>&nbsp;Login</button>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-8 col-sm-offset-2 ">
+                        <div class="checkbox col-sm-6">
+                            <label style="color:white">
+                                <input type="checkbox"> Remember me
+                            </label>
+                        </div>
+                        <div class="checkbox" style="padding-left:  0px;">
+                            <label style=" color:white;">
+                                <a href="#" data-toggle="modal" data-target="#forgotASPPasswordModal" style="color:white"><i class="fa fa-key">&nbsp;Forgot password?</i></a>
+                            </label>
+                        </div>
+                    </div>
+                    <br />
+                    <div class="col-sm-12" style="padding-top:40px;">
+                        <div class="col-sm-offset-2">
+                            <button class="btn btn-warning" style=" background-color: #ff7d37;" data-toggle="modal" data-target="#resetASPPasswordModal"><i class="fa fa-lock"></i>&nbsp;Change Password</button>
+                            <button class="btn btn-success col-sm-offset-2" style=" background-color: #9bc617;" data-toggle="modal" data-target="#registerASPModal"><i class="fa fa-hand-o-up"></i>&nbsp;Register</button>
+                            <div class="panel-body">
+                                <div class="row">
+                                    @Html.Partial("RegisterASP")
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </fieldset>
+        </form>
+    </div>*@

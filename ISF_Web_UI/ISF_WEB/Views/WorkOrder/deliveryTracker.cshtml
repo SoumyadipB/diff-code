@@ -1,0 +1,558 @@
+﻿@{
+    ViewBag.Title = "Delivery Tracker";
+}
+@Styles.Render("~/bundles/css/DeliveryTracker")
+@Styles.Render("~/bundles/css/ganttEnterprise")
+@Scripts.Render("~/bundles/ganttEnterprise")
+
+<script type="text/javascript" src="~/Scripts/gantt/deliveryTracker.js"></script>
+<script type="text/javascript" src="~/Scripts/TimeZone/TimeZone.js"></script>
+<script type="text/javascript" src="~/Scripts/TimeZone/TimeZoneColumnsConfigs.js"></script>
+<style>
+    input[type=text], select {
+        width: 100%;
+        padding: 4px;
+        display: inline-block;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+    }
+    /*button colors*/
+    .btn-grey {
+        color: #ffffff;
+        background-color: #8A8D91;
+        border-color: #4B4D54;
+    }
+
+        .btn-grey:hover,
+        .btn-grey:focus,
+        .btn-grey:active,
+        .btn-grey.active,
+        .open .dropdown-toggle.btn-grey {
+            color: #8A8D91;
+            background-color: #FFFFFF;
+            border-color: #8A8D91;
+        }
+
+        .btn-grey:active,
+        .btn-grey.active,
+        .open .dropdown-toggle.btn-grey {
+            background-image: none;
+        }
+
+    .btn-purple {
+        color: #ffffff;
+        background-color: #521A8A;
+        border-color: #4B4D54;
+    }
+
+        .btn-purple:hover,
+        .btn-purple:focus,
+        .btn-purple:active,
+        .btn-purple.active,
+        .open .dropdown-toggle.btn-purple {
+            color: #521A8A;
+            background-color: #FFFFFF;
+            border-color: #521A8A;
+        }
+
+        .btn-purple:active,
+        .btn-purple.active,
+        .open .dropdown-toggle.btn-purple {
+            background-image: none;
+        }
+
+    .btn-blue {
+        color: #ffffff;
+        background-color: #0677AD;
+        border-color: #0524F2;
+    }
+
+        .btn-blue:hover,
+        .btn-blue:focus,
+        .btn-blue:active,
+        .btn-blue.active,
+        .open .dropdown-toggle.btn-yellow {
+            color: #0677AD;
+            background-color: #FFFFFF;
+            border-color: #0677AD;
+        }
+
+        .btn-blue:active,
+        .btn-blue.active,
+        .open .dropdown-toggle.btn-blue {
+            background-image: none;
+        }
+
+    .btn-orange {
+        color: #ffffff;
+        background-color: #FFAD4D;
+        border-color: #ED602D;
+    }
+
+        .btn-orange:hover,
+        .btn-orange:focus,
+        .btn-orange:active,
+        .btn-orange.active,
+        .open .dropdown-toggle.btn-yellow {
+            color: #ED602D;
+            background-color: #FFFFFF;
+            border-color: #ED602D;
+        }
+
+        .btn-orange:active,
+        .btn-orange.active,
+        .open .dropdown-toggle.btn-orange {
+            background-image: none;
+        }
+    .btn-yellow {
+        color: #00983b;
+        background-color: #ffec2c;
+        border-color: #8F9903;
+    }
+
+        .btn-yellow:hover,
+        .btn-yellow:focus,
+        .btn-yellow:active,
+        .btn-yellow.active,
+        .open .dropdown-toggle.btn-yellow {
+            color: #8F9903;
+            background-color: #FFFFFF;
+            border-color: #8F9903;
+        }
+
+        .btn-yellow:active,
+        .btn-yellow.active,
+        .open .dropdown-toggle.btn-yellow {
+            background-image: none;
+        }
+
+    .btn-green {
+        color: #ffffff;
+        background-color: #00983b;
+        border-color: #216629;
+    }
+
+        .btn-green:hover,
+        .btn-green:focus,
+        .btn-green:active,
+        .btn-green.active,
+        .open .dropdown-toggle.btn-green {
+            color: #00983b;
+            background-color: #FFFFFF;
+            border-color: #00983b;
+        }
+
+        .btn-green:active,
+        .btn-green.active,
+        .open .dropdown-toggle.btn-green {
+            background-image: none;
+        }
+    .btn-red {
+        color: #ffffff;
+        background-color: #fb0606;
+        border-color: #8B0000;
+    }
+
+        .btn-red:hover,
+        .btn-red:focus,
+        .btn-red:active,
+        .btn-red.active,
+        .open .dropdown-toggle.btn-red {
+            color: #fb0606;
+            background-color: #FFFFFF;
+            border-color: #fb0606;
+        }
+
+        .btn-red:active,
+        .btn-red.active,
+        .open .dropdown-toggle.btn-red {
+            background-image: none;
+        }
+    /*button colors end*/
+    /*toggle switch for cumulative and stand alone*/
+    .switch {
+        position: relative;
+        display: inline-block;
+        width: 120px;
+        height: 20px;
+    }
+
+        .switch input {
+            display: none;
+        }
+
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ca2222;
+        -webkit-transition: .4s;
+        transition: .4s;
+    }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 12px;
+            width: 12px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            -webkit-transition: .4s;
+            transition: .4s;
+        }
+
+    input:checked + .slider {
+        background-color: #2ab934;
+    }
+
+    input:focus + .slider {
+        box-shadow: 0 0 1px #2196F3;
+    }
+
+    input:checked + .slider:before {
+        -webkit-transform: translateX(100px);
+        -ms-transform: translateX(100px);
+        transform: translateX(100px);
+    }
+
+    /*------ ADDED CSS ---------*/
+    .on {
+        display: none;
+    }
+
+    .on, .off {
+        color: white;
+        position: absolute;
+        transform: translate(-50%,-50%);
+        top: 50%;
+        left: 50%;
+        font-size: 10px;
+        font-family: Verdana, sans-serif;
+    }
+
+    input:checked + .slider .on {
+        display: block;
+    }
+
+    input:checked + .slider .off {
+        display: none;
+    }
+
+    /*--------- END --------*/
+
+    /* Rounded sliders */
+    .slider.round {
+        border-radius: 34px;
+    }
+
+        .slider.round:before {
+            border-radius: 50%;
+        }
+
+    /*toggle switch end*/
+
+    .btn-search:link, .btn-search:visited {
+        color: #fff;
+    }
+
+    .btn-search:active, .btn-search:hover {
+        background: #1c1c1c;
+        color: #fff;
+    }
+    .btn-search {
+        background: #424242;
+        border-radius: 0;
+        color: #fff;
+        border-width: 1px;
+        border-style: solid;
+        border-color: #1c1c1c;
+    }
+
+.ui-autocomplete-loading { background: url('../../Content/images/loading.gif') no-repeat right center }
+
+    .fontS {
+        font-size: 8px;
+    }
+    .fixedHeight {
+        font-size: 10px;
+        max-height: 150px;
+        margin-bottom: 10px;
+        overflow-x: auto;
+        overflow-y: auto;
+    }
+    .ui-autocomplete  {
+        max-height: 200px;
+        overflow-y: auto;
+        overflow-x: hidden;
+        z-index: 1000 !important;
+    } 
+    .curActive {
+        background-color: #eeeeee;
+    }
+
+    a.divider:hover {
+        background-color: #eeeeee;
+    }
+
+    .divider.active {
+        background-color: #eeeeee;
+    }
+
+    .dividerStatus.active {
+        background-color: #eeeeee;
+        text-decoration: underline;
+    }
+
+    .labelDist {
+        font-size: 10px;
+        float: left;
+        margin: 5px 2px 0px 15px;
+    }
+
+    .filterHrefs {
+        width: 35%;
+        text-align: center;
+        text-transform: capitalize;
+        background-color: #ffffffc2;
+        padding: 4px;
+        border: 1px solid;
+        border-radius: 10px;
+        border-color: #cec8c8;
+        font-size: 10px;
+    }
+
+    .divider {
+        border-right: 1px solid;
+        padding: 4px 0px 4px 0px;
+        color: #cec8c8;
+    }
+
+    .dividerStatus {
+        border-right: 1px solid;
+        padding: 4px 0px 4px 0px;
+        color: #cec8c8;
+    }
+
+    .link {
+        margin: 0px 5px 0px 5px;
+        color: blue;
+    }
+</style>
+<div class="col-lg-12" style="padding-right: 0px;padding-left: 0px;">
+    <div class="panel-group">
+        <div id="content" class="panel panel-default">
+            <div class="panel-heading" style="text-align:left;">
+                <div class="col-lg-12">
+                    <div class="row">
+                        <div class="col-lg-3" style="width:19%">
+                            <a onclick="goBack()" class="btn btn-info rm " role="button" style="float:left" title="Go back to Dashboard">
+                                <i class="fa fa-arrow-left"></i>
+                            </a>
+                            Delivery Tracker
+
+                        </div>
+                        <div class="col-lg-3" style="width:19%">                            
+                        </div>
+                        <div>
+                            <a id="colP" data-toggle="collapse" href="#collapse1" style="float:right"><i class="fa fa-angle-double-down"></i></a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div id="collapse1" class="panel-collapse collapse in">
+                <div class="panel-body" style="padding-bottom: 0px;">
+                    <div class="row">
+                        <div class="col-sm-11" style="margin-bottom: 0px;">
+                            <div class="row">
+                                <div class="col-sm-6" style="margin-bottom: 0px;">
+                                    <div class="row">
+                                        <div class="col-sm-4">
+                                            <div class="form-group">
+                                                <label>Project:</label>
+                                                <select id="projList" class="select2able" onchange="onChangeProject();">
+                                                    <option value=''>Select Project</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-4" style="right: 10px;margin-bottom: 0px;">
+                                            <div class="form-group">
+                                                <label> Deliverable :</label>
+                                                <select id="scopeList" class="select2able" onchange="onScopeChange();">
+                                                    <option value=''>Select Deliverable</option>
+                                                </select>
+                                                <div style="color:red;font-size: 9px;"><label style="padding-top: 5px;margin-bottom: 0px;">*(Project Required)</label></div>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-4" style="right: 10px;margin-bottom: 0px;">
+                                            <div class="form-group">
+                                                <label style="padding-bottom: 1px;padding-right: -5;width: 175px;">Network Element Name/ID:</label>
+                                                <input type="text" id="neidList" placeholder="Name" title="Minimum 3 characters required!" />
+                                                <div style="color:red;font-size: 9px;"><label style="padding-top: 3px;margin-bottom: 0px;">*(Project Required)</label></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6" style="margin-bottom: 0px;">
+                                    <div class="row">
+                                        <div class="col-sm-4" style="right: 10px;margin-bottom: 0px;">
+                                            <div class="form-group">
+                                                <label style="padding-bottom: 1px;">Assigned To :</label>
+                                                <input type="text" id="AssignedTo" placeholder="Signum/Name" title="Minimum 3 characters required!" />
+
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-4" style="margin-bottom: 0px;">
+                                            <div class="form-group">
+                                                <label style="padding-bottom: 1px;">Assigned By :</label>
+                                                <input type="text" id="AssignedBy" placeholder="Signum/Name" title="Minimum 3 characters required!" />
+                                            </div>
+                                        </div>
+
+                                        <div class="col-sm-4" style="margin-bottom: 0px;">
+                                            <div class="form-group" id="selectWODiv">
+                                                    <label style="padding-bottom: 1px;">Work Order :</label>
+                                                    <input type="text" id="selectAllWO" onkeyup="getWorkOrders();" style='width:100%' placeholder="Work Order Name(s)" title="Minimum 3 characters required!" multiple />
+                                            </div>
+
+                                        </div>
+
+
+                                    </div>
+
+                                </div>
+
+
+                            </div>
+
+                        </div>
+                        <div class="col-sm-1">
+                            <div class="row" style=" padding-top: 18px;">
+                                <div class="col-sm-6" style="margin-bottom: 0px;left: 10px;">
+                                    <button class="btn btn-info btn-sm" style="height: 27px;padding-top: 4px;padding-bottom: 4px;" type="button" id="btnCompetence"  title="Search" onclick="generateGantt();"><i class="fa fa-search fa-fw"></i></button>
+                                </div>
+                                <div class="col-sm-6" style="margin-bottom: 0px;padding-right: 0px;padding-left: 20px;left: 10px;">
+                                    <button class="btn btn-info btn-sm" style="height: 27px;padding-top: 4px;padding-bottom: 4px;" type="button" id="reset"  title="Reset" onclick="clearFields();"><i class="fa fa-refresh fa-fw"></i></button>
+                                </div>
+                            </div>
+
+
+
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 pull-right">
+                            <div class="col-sm-4" style="margin-bottom: 0px;left:21%;">
+                                <div class="form-group">
+
+                                    <label style="margin-left:1px"><i class="fa fa-calendar"></i>Start Date<a class="text-danger">*</a></label>
+                                    <input type="text" id="dtStart_Date" class="form-control" data-date-format='yyyy-mm-dd' placeholder="yyyy-mm-dd" readonly="readonly" />
+
+                                </div>
+                            </div>
+
+                            <div class="col-sm-4" style="margin-bottom: 0px;left:20%;">
+                                <div class="form-group">
+
+                                    <label style="margin-left:1px"><i class="fa fa-calendar"></i>End Date<a class="text-danger">*</a></label>
+                                    <input type="text" id="dtEnd_Date" class="form-control" data-date-format='yyyy-mm-dd' placeholder="yyyy-mm-dd" readonly="readonly" />
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                        <div class="col-md-3" style="float:right;">
+                            <input type="radio" name="Filtering" id="Filtering" value="All" style="display:none" checked onchange="generateGantt();" />@*<label>Zooming:</label>*@
+                        </div>
+                    
+            </div>
+        </div>
+
+        <div id="divPanelResult" class="panel panel-default" style="visibility:hidden">
+            <div class="panel-heading" style=" padding-left: 0px;padding-right: 0px">
+                <div class="row">
+                    <div class="col-lg-6" style="margin-bottom: 0px;">
+                        <div class="row">
+                            <div class="col-lg-12" style="padding-right: 0px;padding-left: 25px;margin-bottom: 0px;">
+                                <label class="labelDist" style="width: 50px;margin-left: 0px;margin-right: 5px;">Duration:</label>
+                                <div id="durationButtons" class="btn-group btn-group-xs" style=" margin-bottom: 0px;width: 410px;height:25px;margin-right: 0px;padding-bottom: 0px;right:9%;">
+                                    <button type="button" style="width:60px; height:25px" class="btn btn-orange removeActive" onclick="getDurationDT(this.innerText, this)"><label class="fontS">Last Month</label></button>
+                                    <button type="button" style="width:60px ;height:25px" class="btn btn-orange removeActive" onclick="getDurationDT(this.innerText, this)"><label class="fontS">Last Week</label></button>
+                                    <button type="button" style="width:50px; height:25px" id="todayButton" class="btn btn-green removeActive" onclick="getDurationDT(this.innerText, this)"><label class="fontS">Today</label></button>
+                                    <button type="button" style="width:50px;height:25px" id="weekButton" class="btn btn-green  removeActive active" onclick="getDurationDT(this.innerText, this)"><label class="fontS">This Week</label></button></span>
+                                    <button type="button" style="width:60px;height:25px" id="monthButton" class="btn btn-green removeActive" onclick="getDurationDT(this.innerText, this)"><label class="fontS">This Month</label></button>
+                                    <button type="button" style="width:60px; height:25px" class="btn btn-yellow removeActive" onclick="getDurationDT(this.innerText, this)">
+                                        <label class="fontS">
+                                            <b>Next Week</b>
+                                        </label>
+                                    </button>
+                                    <button type="button" style="width:60px; height:25px" class="btn btn-yellow removeActive" onclick="getDurationDT(this.innerText, this)" style="border-right:0px;"><label class="fontS"><b>Next Month</b></label></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-6" style="margin-bottom: 0px;padding-left: 0px;right:34px;">
+                        <div class="row">
+                            <div class="col-lg-10" style="padding-left: 0px;padding-right: 0px;">
+                                <label class="labelDist" style="margin-left: 0px;margin-right: 5px;padding-left: 0px;">Status:</label>
+                                <div class="btn-group btn-group-xs" style="margin-bottom: 0px;width: 470px;margin-right: 0px;display: inline;">
+                                    <button type="button" style="width:25px;padding-left: 0px;padding-right: 0px;" class="btn btn-grey removeActive2" onclick="getStatusDT(this)">
+                                        <label style="font-size:8.5px">All</label>
+                                    </button>
+                                    <button type="button" style="width:60px;padding-left: 0px;" class="btn btn-blue removeActive2" onclick="getStatusDT(this)">
+                                        <label id="assigned" style="font-size:8.5px">Assigned</label>
+                                    </button>
+                                    <button type="button" style="width:75px" class="btn btn-yellow removeActive2 active" onclick="getStatusDT(this)">
+                                        <label id="inprogress" style="font-size:8.5px">In Progress</label>
+                                    </button>
+                                    <button type="button" style="width:60px" class="btn btn-orange removeActive2" onclick="getStatusDT(this)">
+                                        <label id="onhold" style="font-size:8.5px">OnHold</label>
+                                    </button>
+                                    <button type="button" style="width:60px" class="btn btn-red removeActive2" onclick="getStatusDT(this)">
+                                        <label id="deferred" style="font-size:8.5px">Deferred</label>
+                                    </button>
+                                    <button type="button" style="width:60px;padding-left: 0px;" class="btn btn-green removeActive2" onclick="getStatusDT(this)" title="Duration is for the current specified filter" style="border-right:0px;"><label id="closed" style="font-size:8.5px">Closed</label></button>
+                                    <button type="button" style="width:60px;padding-left: 0px;" class="btn btn-purple removeActive2" onclick="getStatusDT(this)">
+                                        <label id="planned" style="font-size:8.5px">Planned</label>
+                                    </button>
+                                    <button type="button" style="width:60px;padding-left: 0px;" class="btn btn-danger removeActive2" onclick="getStatusDT(this)">
+                                        <label id="rejected" style="font-size:8.5px">Rejected</label>
+                                    </button>
+
+                                </div>
+                            </div>
+                            <div class="col-lg-2" style="padding-left: 0px;padding-right: 0px;margin-bottom: 0px;">
+                                <div class="row">
+                                    <div class="col-lg-3">
+                                        <label class="labelDist" style="width: 30px;margin-left: 0px;">Zoom:</label>
+                                    </div>
+                                    <div class="col-lg-9" style="padding-right: 0px;">
+                                        <select id="Zooming" class="select2able" onchange="generateGantt();">
+                                            <option name="Zooming" value='Hours' onclick="generateGantt();">Hours</option>
+                                            <option name="Zooming" value='Days' onclick="generateGantt();" selected>Days</option>
+                                            <option name="Zooming" value='Months' onclick="generateGantt();">Months</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel-body">
+                <div class="row">
+                    <div id="divIframe"></div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+

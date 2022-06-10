@@ -1,0 +1,1308 @@
+﻿@Scripts.Render("~/bundles/DataTableScript")
+@Styles.Render("~/bundles/css/DataTableStyle")
+@Scripts.Render("~/bundles/ResourceEngagement")
+@Styles.Render("~/Content/CSS/Resource/ResourceCalendar/dhtmlxscheduler_material.css")
+
+@{
+    ViewBag.Title = "Engineer Engagement";
+
+    Dictionary<string, string> engineerDetailsNameTitle = new Dictionary<string, string>()
+    {
+        { "plannedAssignedWOCount",  "Planned and Assigned WO Count"},
+        { "inprogressWOCount",  "InProgress WO Count"},
+        { "manualHours",  "Manual Hours"},
+        { "digitalHours",  "Digital Hours"},
+        { "projectAdhocHours",  "Project Non-WO Booking Hours"},
+        { "internalAdhocHours",  "Internal Non-WO Booking Hours"},
+        { "leaveHours",  "Leave Hours"},
+    };
+}
+
+<style>
+    .margintop {
+        margin-top: 10px;
+    }
+
+
+    a.dividerPriority:hover {
+        background-color: #eeeeee;
+    }
+
+    .dividerPriority.active {
+        background-color: #eeeeee;
+        text-decoration: none;
+    }
+
+    .dividerPriority {
+        height: 40px;
+        border-right: 1px solid;
+        color: #cec8c8;
+        font-size: smaller;
+    }
+
+    #tableMain th {
+        font-size: 13px;
+    }
+
+    .clickable {
+        cursor: pointer;
+    }
+
+    .panel-heading span {
+        margin-top: -20px;
+    }
+
+    .CellWithComment {
+        position: relative;
+    }
+
+    .CellComment {
+        text-align: left;
+        width: 230px;
+        display: none;
+        position: absolute;
+        z-index: 100;
+        border: 1px;
+        background-color: white;
+        border-style: solid;
+        border-width: 1px;
+        border-color: black;
+        padding: 3px;
+        color: black;
+        overflow-wrap: break-word;
+        /*top: 20px;
+          left: 20px;*/
+    }
+
+    .CellWithComment:hover span.CellComment {
+        display: block;
+    }
+
+    td:last-child > .CellWithComment:hover > span.CellComment {
+        right: 15px;
+    }
+
+    td:nth-last-child(2) > .CellWithComment:hover > span.CellComment {
+        right: 15px;
+    }
+
+    tr:last-child td > .CellWithComment:hover > span.CellComment {
+        bottom: 5px;
+    }
+
+    tr:nth-last-child(2) td > .CellWithComment:hover > span.CellComment {
+        bottom: 25px;
+    }
+
+
+    .tooltip {
+        position: relative;
+        display: inline-block;
+        opacity: 1;
+    }
+
+     #tooltiptext {
+        visibility: hidden;
+        width: 500px;
+        background-color: white;
+        color: black;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px 0;
+        position: absolute;
+        z-index: 11;
+        top: 81px;
+        right: 32px;
+        margin-left: -60px;
+        padding: 10px;
+        box-shadow: 0px 0px 20px 5px rgba(0, 0, 0, 0.2), 0px 0px 20px 5px rgba(0, 0, 0, 0.19);
+    }
+
+        #tooltiptext::after {
+            content: "";
+            position: absolute;
+            bottom: 100%;
+            right: 15px;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: transparent transparent black transparent;
+        }
+
+    .tooltip:hover #tooltiptext {
+        visibility: visible;
+    }
+
+      .bodyBacklog {
+        border-top: solid 1px #000000;
+        color: #333;
+        font-family: Arial;
+        font-size: 12px;
+        margin: 0;
+        padding: 0;
+    }
+
+    #mainBacklog {
+        padding: 2em;
+    }
+
+    .overlayBacklog {
+        background-color: #000;
+        bottom: 0;
+        cursor: pointer;
+        display: none;
+        left: 0;
+        opacity: .5;
+        position: fixed;
+        right: 0;
+        top: 0;
+        z-index: 1;
+    }
+
+    h2 {
+        font-size: 2em;
+        font-weight: normal;
+    }
+
+    /* new design */
+
+    .tilesBacklog {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    .tileBacklog {
+        background-color: #eee;
+        border: solid 2px #d3d3d3;
+        box-shadow: 6px 5px 2em 0em #d7d7d7;
+        box-sizing: border-box;
+        float: left;
+        /*.bodyBacklog height: 8em;*/
+        list-style: none;
+        margin: 0 8px 12px 8px;
+        overflow: hidden;
+        transition: all 600ms ease;
+        width: 15em;
+        height: 130px;
+    }
+
+        .tileBacklog header {
+            background: #999;
+            color: #fff;
+            font-size: 1.333333em;
+            height: 2em;
+            margin-top: -2px; /* to balance tile border-top */
+        }
+
+            .tileBacklog header label {
+                display: inline-block;
+                margin: .25em;
+                padding: .25em .25em .15em .25em;
+            }
+
+
+
+            .tileBacklog header span {
+                font-weight: bold;
+            }
+
+            .tileBacklog header .fa {
+                float: right;
+                margin: .25em .125em;
+                padding: .25em;
+            }
+
+                .tileBacklog header label:hover,
+                .tileBacklog header .fa:hover {
+                    background-color: #333;
+                    border-radius: 4px;
+                    cursor: pointer;
+                }
+
+    .nodeName {
+        width: 158px;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+
+    .tileBacklog .body {
+        /* box-shadow:0 .25em .5em #000 inset; */
+        background-color: #eee;
+        box-sizing: border-box;
+        cursor: pointer;
+        cursor: -webkit-zoom-in;
+        padding: .5em;
+    }
+
+        .tileBacklog .body:hover {
+            background-color: #ddd;
+            color: #000;
+        }
+
+        .tileBacklog .body h3 {
+            margin: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            width: 100%;
+        }
+
+        .tileBacklog .body p {
+            margin: .5em 0;
+        }
+
+        .tileBacklog .body .incomplete {
+            display: none;
+        }
+
+        .tileBacklog .body .details {
+            display: table;
+            margin-left: -1em;
+            table-layout: fixed;
+        }
+
+        .tileBacklog .body dl {
+            display: table-cell;
+            margin: 0;
+            padding: 0 1em;
+        }
+
+        .tileBacklog .body dt {
+            border-top: solid 1px #ccc;
+            font-size: .833333em; /* 10px */
+            font-weight: bold;
+            margin: 2px 0;
+            overflow: hidden;
+            padding-top: 1px;
+            position: relative;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            width: 17.5em;
+        }
+
+            .tileBacklog .body dt:after {
+                content: ":";
+            }
+
+        .tileBacklog .body dd {
+            margin-left: 1em;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            width: 14em; /* 16em - padding & indent */
+        }
+
+    /* tile states */
+
+    .tileBacklog.selected {
+        border-color: #333;
+    }
+
+        .tileBacklog.selected .body {
+            /*background-color:inherit;
+    color:#fff;*/
+        }
+
+        .tileBacklog.selected header label {
+            background-color: #333;
+            border-radius: 5px;
+        }
+
+    .tileBacklog.no-rag {
+        background-color: #fff;
+        border-color: #d3d3d3;
+        border-radius: 10px;
+    }
+
+        .tileBacklog.no-rag header {
+            background-color: #730000;
+        }
+
+    .tileBacklog.red {
+        background-color: #c00;
+        border-color: #c00;
+    }
+
+        .tileBacklog.red header {
+            background-color: #c00;
+        }
+
+    .tileBacklog.amber {
+        background-color: #f83;
+        border-color: #f83;
+    }
+
+        .tileBacklog.amber header {
+            background-color: #f83;
+        }
+
+    .tileBacklog.green {
+        background-color: #6a4;
+        border-color: #6a4;
+    }
+
+        .tileBacklog.green header {
+            background-color: #6a4;
+        }
+
+    .tileBacklog.incomplete .complete {
+        display: none;
+    }
+
+    .tileBacklog.incomplete .incomplete {
+        color: #c00;
+        display: block;
+        margin: 5px;
+    }
+
+    .tileBacklog.invisible {
+        opacity: 0;
+        transition: all 1ms;
+    }
+
+    .tileBacklog.copy {
+        position: fixed;
+        z-index: 2;
+    }
+
+    .tileBacklog.zoom {
+        box-shadow: 1em 1em 1em -1em #000;
+        height: auto; /*32em;*/
+        left: 50% !important;
+        margin-left: -25em;
+        margin-top: -16em;
+        top: 50% !important;
+        /* transform:rotate(360deg); */
+        width: 50em;
+    }
+
+        .tileBacklog.zoom .body {
+            cursor: auto;
+        }
+
+            .tileBacklog.zoom .body:hover {
+                background-color: #eee;
+            }
+
+    .no-scroll {
+        overflow: hidden;
+    }
+</style>
+
+<style type="text/css">
+
+    .dhx_cal_event.grayleave div {
+        background-color: #808080 !important;
+        color: white !important;
+        border-color: white;
+    }
+    /*multi-day event in month view*/
+    .dhx_cal_event_line.grayleave {
+        background-color: #808080 !important;
+        color: white !important;
+        border-color: white;
+    }
+
+    /*event with fixed time, in month view*/
+    .dhx_cal_event_clear.grayleave {
+        color: #808080 !important;
+    }
+    /*event in day or week view*/
+    .dhx_cal_event.grayleave div {
+        background-color: #808080 !important;
+        color: white !important;
+        border-color: white;
+    }
+    /*multi-day event in month view*/
+    .dhx_cal_event_line.casual_leave {
+        background-color: #AB9C51 !important;
+        color: white !important;
+        border-color: white;
+    }
+
+    /*event with fixed time, in month view*/
+    .dhx_cal_event_clear.casual_leave {
+        color: #AB9C51 !important;
+    }
+
+	.dhx_cal_event.project_non_wo_booking div {
+		background-color: #E3DEDD !important;
+		color: white !important;
+		border-color: white;
+	}
+    /*multi-day event in month view*/
+	.dhx_cal_event_line.project_non_wo_booking {
+		background-color: #E3DEDD !important;
+		color: white !important;
+		border-color: white;
+	}
+    /*event with fixed time, in month view*/
+    .dhx_cal_event_clear.project_non_wo_booking {
+        color: #E3DEDD !important;
+    }
+
+    .dhx_cal_event.project_training div {
+        background-color: #D5CECD !important;
+        color: white !important;
+        border-color: white;
+    }
+    /*multi-day event in month view*/
+    .dhx_cal_event_line.project_training {
+        background-color: #D5CECD !important;
+        color: white !important;
+        border-color: white;
+    }
+
+    /*event with fixed time, in month view*/
+    .dhx_cal_event_clear.project_training {
+        color: #D5CECD !important;
+    }
+
+    .dhx_cal_event.internal_non_wo_booking div {
+        background-color: #C6C2C1 !important;
+        color: white !important;
+        border-color: white;
+    }
+    /*multi-day event in month view*/
+    .dhx_cal_event_line.internal_non_wo_booking {
+        background-color: #C6C2C1 !important;
+        color: white !important;
+        border-color: white;
+    }
+    /*event with fixed time, in month view*/
+    .dhx_cal_event_clear.internal_non_wo_booking {
+        color: #C6C2C1 !important;
+    }
+
+    .dhx_cal_event.internal_training div {
+        background-color: #8B7E7E !important;
+        color: white !important;
+        border-color: white;
+    }
+    /*multi-day event in month view*/
+    .dhx_cal_event_line.internal_training {
+        background-color: #8B7E7E !important;
+        color: white !important;
+        border-color: white;
+    }
+    /*event with fixed time, in month view*/
+    .dhx_cal_event_clear.internal_training {
+        color: #8B7E7E !important;
+    }
+
+    .dhx_cal_event.project_adhoc div {
+        background-color: #b0a1a1 !important;
+        color: white !important;
+        border-color: white;
+    }
+    /*multi-day event in month view*/
+    .dhx_cal_event_line.project_adhoc {
+        background-color: #b0a1a1 !important;
+        color: white !important;
+        border-color: white;
+    }
+    /*event with fixed time, in month view*/
+    .dhx_cal_event_clear.project_adhoc {
+        color: #b0a1a1 !important;
+    }
+
+    .dhx_cal_event.internal_adhoc div {
+        background-color: #8B7E7E !important;
+        color: white !important;
+        border-color: white;
+    }
+    /*multi-day event in month view*/
+    .dhx_cal_event_line.internal_adhoc {
+        background-color: #8B7E7E !important;
+        color: white !important;
+        border-color: white;
+    }
+    /*event with fixed time, in month view*/
+    .dhx_cal_event_clear.internal_adhoc {
+        color: #8B7E7E !important;
+    }
+
+
+    /*event in day or week view*/
+    .dhx_cal_event.others_break div {
+        background-color: #cfb6b6 !important;
+        color: white !important;
+        border-color: white;
+    }
+    /*multi-day event in month view*/
+    .dhx_cal_event_line.others_break {
+        background-color: #cfb6b6 !important;
+        color: white !important;
+        border-color: white;
+    }
+    /*event with fixed time, in month view*/
+    .dhx_cal_event_clear.others_break {
+        color: #cfb6b6 !important;
+    }
+
+
+    /*event in day or week view*/
+    .dhx_cal_event.internal_break div {
+        background-color: #8B7E7E !important;
+        color: white !important;
+        border-color: white;
+    }
+    /*multi-day event in month view*/
+    .dhx_cal_event_line.internal_break {
+        background-color: #8B7E7E !important;
+        color: white !important;
+        border-color: white;
+    }
+    /*event with fixed time, in month view*/
+    .dhx_cal_event_clear.internal_break {
+        color: #ffffff !important;
+    }
+
+    /*event in day or week view*/
+    .dhx_cal_event.earned_leave div {
+        background-color: #A1CB11 !important;
+        color: white !important;
+        border-color: white;
+    }
+    /*multi-day event in month view*/
+    .dhx_cal_event_line.earned_leave {
+        background-color: #A1CB11 !important;
+        color: white !important;
+        border-color: white;
+    }
+    /*event with fixed time, in month view*/
+    .dhx_cal_event_clear.earned_leave {
+        color: #A1CB11 !important;
+    }
+    /*event in day or week view*/
+    .dhx_cal_event.sick_leave div {
+        background-color: #B860EE !important;
+        color: white !important;
+        border-color: white;
+    }
+    /*multi-day event in month view*/
+    .dhx_cal_event_line.sick_leave {
+        background-color: #B860EE !important;
+        color: white !important;
+        border-color: white;
+    }
+    /*event with fixed time, in month view*/
+    .dhx_cal_event_clear.sick_leave {
+        color: #B860EE !important;
+    }
+
+
+
+    /*event in day or week view*/
+    .dhx_cal_event.inprogress_event div {
+        background-color: #ffec2c !important;
+        color: white !important;
+        border-color: white;
+    }
+    /*multi-day event in month view*/
+    .dhx_cal_event_line.inprogress_event {
+        background-color: #ffec2c !important;
+        color: white !important;
+        border-color: white;
+    }
+    /*event with fixed time, in month view*/
+    .dhx_cal_event_clear.inprogress_event {
+        color: #ffec2c !important;
+    }
+
+    /*event in day or week view*/
+    .dhx_cal_event.closed_event div {
+        background-color: #00983b !important;
+        color: white !important;
+        border-color: white;
+    }
+    /*multi-day event in month view*/
+    .dhx_cal_event_line.closed_event {
+        background-color: #00983b !important;
+        color: white !important;
+        border-color: white;
+    }
+    /*event with fixed time, in month view*/
+    .dhx_cal_event_clear.closed_event {
+        color: #00983b !important;
+    }
+
+    /*event in day or week view*/
+    .dhx_cal_event.deferred_event div {
+        background-color: #fb0606 !important;
+        color: white !important;
+        border-color: white;
+    }
+    /*multi-day event in month view*/
+    .dhx_cal_event_line.deferred_event {
+        background-color: #fb0606 !important;
+        color: white !important;
+        border-color: white;
+    }
+    /*event with fixed time, in month view*/
+    .dhx_cal_event_clear.deferred_event {
+        color: #fb0606 !important;
+    }
+
+    /*event in day or week view*/
+    .dhx_cal_event.assigned_event div {
+        background-color: #0677AD !important;
+        color: white !important;
+        border-color: white;
+    }
+    /*multi-day event in month view*/
+    .dhx_cal_event_line.assigned_event {
+        background-color: #0677AD !important;
+        color: white !important;
+        border-color: white;
+    }
+    /*event with fixed time, in month view*/
+    .dhx_cal_event_clear.assigned_event {
+        color: #0677AD !important;
+    }
+
+    /*event in day or week view*/
+    .dhx_cal_event.onhold_event div {
+        background-color: #FFAD4D !important;
+        color: white !important;
+        border-color: white;
+    }
+    /*multi-day event in month view*/
+    .dhx_cal_event_line.onhold_event {
+        background-color: #FFAD4D !important;
+        color: white !important;
+        border-color: white;
+    }
+    /*event with fixed time, in month view*/
+    .dhx_cal_event_clear.onhold_event {
+        color: #FFAD4D !important;
+    }
+
+    /*event in day or week view*/
+    .dhx_cal_event.otherprojectWO_event div {
+        background-color: #000000cc !important;
+        color: white !important;
+        border-color: white;
+    }
+    /*multi-day event in month view*/
+    .dhx_cal_event_line.otherprojectWO_event {
+        background-color: #000000cc !important;
+        color: white !important;
+        border-color: white;
+    }
+    /*event with fixed time, in month view*/
+    .dhx_cal_event_clear.otherprojectWO_event {
+        color: #000000cc !important;
+    }
+
+    /*event in day or week view*/
+    .dhx_cal_event.others_event div {
+        background-color: #b0b0b0 !important;
+        color: white !important;
+        border-color: white;
+    }
+    /*multi-day event in month view*/
+    .dhx_cal_event_line.others_event {
+        background-color: #b0b0b0 !important;
+        color: white !important;
+        border-color: white;
+    }
+    /*event with fixed time, in month view*/
+    .dhx_cal_event_clear.others_event {
+        color: #b0b0b0 !important;
+    }
+
+    .dhx_marked_timespan.gray_section {
+       /*background-color: #b0b0b0 !important;*/
+        background: repeating-linear-gradient( 180deg, #fff, #fff 1px, #767676 2px, #767575 1px);
+        border-style: solid;
+        border-width: 1px;
+        border-color: #acacac;
+    }
+
+    /*Style for Calendar Panel*/
+
+    .calendar_panel {
+        width: 80%;
+        height: 100%;
+        /* min-height: 800px; */
+        z-index: 10;
+        background-color: #ffffff;
+        right: -3%;
+        position: fixed;
+        opacity: 0;
+        margin-top: -10px;
+        border-color: #a7a7a78c;
+        border-style: solid;
+        border-width: 1px;
+        box-shadow: 0px 0px 20px 5px rgba(0, 0, 0, 0.2), 0px 0px 20px 5px rgba(0, 0, 0, 0.19);
+    }
+
+    body {
+        overflow-x: hidden;
+    }
+
+    .show-scroll-x-with-maxwidth {
+        overflow-x: scroll;
+        max-width: 99.99%;
+    }
+
+    .refresh {
+        position: absolute;
+        vertical-align: middle;
+        display: inline-block;
+        margin-left: 5px;
+    }
+
+   .refresh:after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            height: 20px;
+            width: 20px;
+        }
+
+    #divShowEnggHours {
+        position: absolute;
+        padding: 3px;
+        background: #ffffff;
+        -webkit-box-shadow: 0px 4px 10px -2px rgba(0, 0, 0, 0.3);
+        -moz-box-shadow: 0px 4px 10px -2px rgba(0, 0, 0, 0.3);
+        box-shadow: 0 4px 10px -2px rgba(0, 0, 0, 0.3);
+        z-index: 1009;
+        top: 50%;
+        left: 50%;
+        height: 40%;
+        width: 35%;
+        transform: translate(-50%, -50%);
+    }
+
+    .rowInfo {
+        /*border-bottom: 1px solid #00000033;*/
+        box-shadow: 0 1px 1px -1px #000000d9;
+    }
+
+    .rowInfo .detail {
+        width:65%
+    }
+
+    #engineerDetailsTable {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0 1em;
+        margin-bottom: 20px;
+    }
+
+    .table-hover > tbody > tr:hover > td {
+        background-color: transparent;
+    }
+
+    .clickableCell{
+        cursor: pointer;
+    }
+
+    .addBackground {
+        background-color: #49403847 !important;
+    }
+
+    #backlogPanel {
+        display: block;
+        width: 50%;
+        position: fixed;
+        z-index: 11;
+        background-color: white;
+        margin-top: 35px;
+        right: 0px;
+        border-color: #a7a7a78c;
+        border-style: solid;
+        border-width: 1px;
+        box-shadow: 0px 0px 20px 5px rgba(0, 0, 0, 0.2), 0px 0px 20px 5px rgba(0, 0, 0, 0.19);
+        display: none;
+        right: -3%;
+        opacity: 1;
+    }
+
+
+</style>
+
+<div class="container-fluid">
+    <div id="calendar_panel" class="panel-default">
+        <div id="backlogPanel">
+            <div class="panel panel-default" style="width: 100%; margin-bottom:35px;background-color: #ffffff; height:100%">
+                <div class="panel-heading " style="width: 100%;display: -webkit-inline-box;">
+                    <h3 class="panel-title" style="margin-top: 5px;">
+                        <span class="fa fa-bullhorn" aria-hidden="true" style="margin-right: 10px;"></span>
+                        Backlog Items
+                    </h3>
+                    <div style="width: 60%; text-align: -webkit-right;">
+                        <div class="panel panel-default" style="height: 15px;width: 15px;/* margin-bottom:35px; */background-color: #730000;margin-top: 5px;/* margin-left: 5px; */">
+                            <div class="panel-body" style="padding: 0px;margin-left: 20px;margin-top: 0px;width: 25px;font-size: 11px;">
+                                Assigned
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="button" class="btn btn-default btn-xs" onclick="CloseBackLogs();" style="right:0px; position:absolute; top:10px" title="Close Backlog View">
+                        <span class="fa fa-remove" aria-hidden="true"></span>
+                    </button>
+                </div>
+                <div class="panel-body" id="mainBacklog" style="padding: 10px; height:300px; overflow:auto">
+                    <ul class="tilesBacklog">
+                    </ul>
+                </div>
+                <div class="overlayBacklog"></div>
+            </div>
+        </div>
+        <div id="calendar_view" class="calendar_panel">
+            <div class="panel panel-default" style="width: 100%; margin-bottom:35px;background-color: #ffffff; height:100%">
+                <div class="panel-heading" style="width: 100%;display: -webkit-inline-box;">
+                    <h3 id="calendar_title" class="panel-title" style="margin-top: 5px;"></h3>
+                    <div style="display: -webkit-box;width: 70%;right: 0%;position: absolute;text-align:right;">
+
+                    </div>
+                    <button id="tooltiplegends" type="button" class="btn btn-default btn-xs" style="right:30px; position:absolute">
+                        <span class="fa fa-sliders" aria-hidden="true"></span>
+                    </button>
+                    <button type="button" class="btn btn-default btn-xs" onclick="ShowBackLogs();" style="right:60px; position:absolute;" title="Backlog Items">
+                        <span class="fa fa-bullhorn" aria-hidden="true"></span>
+                    </button>
+                    <button type="button" class="btn btn-default btn-xs" onclick="CloseCalendarView();" style="right:0px; position:absolute" title="Close Calendar">
+                        <span class="fa fa-remove" aria-hidden="true"></span>
+                    </button>
+                </div>
+
+                <div class="panel-body" style="padding: 0px; height:100%">
+                    <div id="scheduler_here" class="dhx_cal_container" style='width:100%; height:90%;'>
+                        <div class="dhx_cal_navline">
+                            <div class="dhx_cal_prev_button">&nbsp;</div>
+                            <div class="dhx_cal_next_button">&nbsp;</div>
+                            <div class="dhx_cal_today_button"></div>
+                            <div class="dhx_cal_date"></div>
+                            <div class="dhx_cal_tab" name="day_tab" style="right:auto;left:16px;"></div>
+                            <div class="dhx_cal_tab" name="week_tab" style="right:auto;left:103px;"></div>
+                            <div class="dhx_cal_tab" name="month_tab" style="right:auto;left:192px;"></div>
+                        </div>
+
+                        <div class="dhx_cal_header">
+                        </div>
+
+                        <div class="dhx_cal_data" style="overflow: auto; width:100%">
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+        <span id="tooltiptext">
+            <table style="width: 100%;">
+                <tr>
+                    <th style="width: 25%;">
+                        WO BOOKING
+                    </th>
+                    <th style="width: 35%;">
+                        NON-WO BOOKING
+                    </th>
+
+                    <th style="width: 30%;">
+                        LEAVE
+                    </th>
+                </tr>
+                <tr>
+                    <td>
+                        <div style="width: 100px;">
+                            <div class="panel panel-default" style="height: 15px;width: 15px; margin-bottom:5px; background-color: #0677AD;margin-top: 5px;/* margin-left: 5px; */">
+                                <div class="panel-body" style="padding: 0px;margin-left: 20px;margin-top: 0px;width: 25px;font-size: 11px;">
+                                    ASSIGNED
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div style="width: 100px;">
+                            <div class="panel panel-default" style="height: 15px;width: 15px; margin-bottom:5px; background-color:#E3DEDD;margin-top: 5px;/* margin-left: 5px; */">
+                                <div class="panel-body" style="padding: 0px;margin-left: 20px;margin-top: 0px;width: 146px;font-size: 11px;">
+                                    PROJECT NON-WO BOOKING
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div style="width: 100px;">
+                            <div class="panel panel-default" style="height: 15px;width: 15px; margin-bottom:5px; background-color: #808080;margin-top: 5px;/* margin-left: 5px; */">
+                                <div class="panel-body" style="padding: 0px;margin-left: 20px;margin-top: 0px;/*width: 120px;*/font-size: 11px;">
+                                    LEAVE
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div style="width: 100px;">
+                            <div class="panel panel-default" style="height: 15px;width: 15px; margin-bottom:5px; background-color: #00983b;margin-top: 5px;/* margin-left: 5px; */">
+                                <div class="panel-body" style="padding: 0px;margin-left: 20px;margin-top: 0px;width: 25px;font-size: 11px;">
+                                    CLOSED
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div style="width: 100px;">
+                            <div class="panel panel-default" style="height: 15px;width: 15px; margin-bottom:5px; background-color: #C6C2C1;margin-top: 5px;/* margin-left: 5px; */">
+                                <div class="panel-body" style="padding: 0px;margin-left: 20px;margin-top: 0px;width: 167px;font-size: 11px;text-align: left;">
+                                    INTERNAL NON-WO BOOKING
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div style="width: 100px;">
+                            <div class="panel panel-default" style="height: 15px;width: 15px; margin-bottom:5px; background-color: #fb0606;margin-top: 5px;/* margin-left: 5px; */">
+                                <div class="panel-body" style="padding: 0px;margin-left: 20px;margin-top: 0px;width: 25px;font-size: 11px;">
+                                    DEFERRED
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                    <td style="position:center">
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div style="width: 100px;">
+                            <div class="panel panel-default" style="height: 15px;width: 15px; margin-bottom:5px; background-color: #ffec2c;margin-top: 5px;/* margin-left: 5px; */">
+                                <div class="panel-body" style="padding: 0px;margin-left: 20px;margin-top: 0px;width: 25px;font-size: 11px;">
+                                    INPROGRESS
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>
+                        <div style="width: 100px;">
+                            <div class="panel panel-default" style="height: 15px;width: 15px; margin-bottom:5px; background-color: #FFAD4D;margin-top: 5px;/* margin-left: 5px; */">
+                                <div class="panel-body" style="padding: 0px;margin-left: 20px;margin-top: 0px;width: 50px;font-size: 11px;">
+                                    ON-HOLD
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div style="width: 100px;">
+                            <div class="panel panel-default" style="height: 15px;width: 15px; margin-bottom:5px; background-color:#000000cc;margin-top: 5px;/* margin-left: 5px; */">
+                                <div class="panel-body" style="padding: 0px;margin-left: 17px;margin-top: 0px;width: 115px;font-size: 11px;">
+                                    OTHER PROJECT WOS
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </span>
+        <div class="clearfix"></div>
+        <div class="container-fluid" style="padding-right: 20px;">
+            <div style="text-align:left; display: -webkit-box;">
+                <div class="row" style="width: 54%;">
+                    <div class="col-lg-4" style="margin-bottom: 0px;">
+                        <div class="form-group" id="projDD">
+                            <label><b>Project:</b></label>
+                            <select id="projList" class="select2able">
+                                <option value=""></option>
+                            </select>
+                            <br />
+                            <label id="projectWarning" style="color: red; padding-top: 5px;font-weight: bold; font-size: smaller; display:none">Please select a project</label>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4" style=" padding-right: 0px;padding-left: 40px; margin-bottom: 20px;">
+
+                        <div id="resourceClick" class="row" style="width: 150px; ">
+                            <div class="form-group" style="padding-right: 0px; padding-left: 0px; margin-bottom: 0px; padding-bottom: 2px; ">
+                                <label><b>Select Week :</b></label>
+                            </div>
+                            <div style="padding-left: 0px; opacity: 0.8; ">
+                                <input id="datepicker" type="text" class="form-control" onchange="console.log('call on change')" />
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div id="signumListParentDiv" style="margin-bottom: 0px;position:relative;display: block ">
+
+                        <div class="form-inline col-lg-4">
+                            <label style="opacity: 0.5; margin-bottom: 0px;"><b>Signum:</b></label>
+                            <select id="signumsList" class="select2able">
+                                <option value="" selected="selected"></option>
+                            </select>
+                            <span class="refresh" style="cursor:pointer;" title="Remove selected signum" onclick="clearSearchedSignum();">
+                                <i class="fa fa-refresh fa-fw"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div id="divEESearch" style="padding-left: 0px; padding-top: 15px;">
+                    <button class="btn btn-info btn-sm" style="height: 27px;padding-top: 4px;padding-bottom: 4px;" type="button" title="Search" onclick="searchEngineerEngg()"><i class="fa fa-search fa-fw"></i></button>
+                </div>
+
+            </div>
+
+            <div class="panel panel-default" style="margin-left: 10px; margin-right: 10px; margin-bottom: 10px;width:100%;">
+                <div class="panel-heading ">
+                    <div class="col-md-3 pull-right" id="dateRange" style="text-align:center;"></div>
+                    <h3 class="panel-title"> Engineer Engagement </h3>
+                    <span class="pull-right clickable"><i class="fa fa-angle-up"></i></span>
+                </div>
+                <div class="panel-body" id="tableMain" style="padding: 0px; display:block;">
+                    <div class="row">
+                        <div id="div_table" class="table-responsive">
+                            <table class="table table-striped table-bordered table-hover" id="tblinfo" style="margin: 0px; width:100%"></table>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="modelContainer">
+                    <div id="ResCalendar" class="modal fade in" tabindex="-1" role="dialog">
+                        <div class="modal-dialog" role="document" style="min-width:800px; width: 100%; height: 100%">
+                            <div class="modal-content" style="width: 100%; height: 100%">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">×</span>
+                                    </button>
+                                    <h4 class="modal-title">Resource Calendar</h4>
+                                </div>
+                                <div id="calendar_modal" class="modal-body" style="width: 100%; height: 100%; overflow-y: auto;">
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="empInfo" class="modal" role="dialog" style="top:70px;">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h4 class="modal-title" id="projectName">
+                                Employee Details
+                            </h4>
+
+                        </div>
+                        <div class="modal-body" id="empDetailsInfo">
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <div class="widget-container fluid-height">
+
+
+                                        @*First Column*@
+                                        <div class="col-lg-4">
+                                            <div class="form-group">
+                                                <label>Signum</label>
+                                                <input class="form-control" placeholder="Signum" id="self_employee_signum" readonly="readonly">
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label>Email</label>
+                                                <input class="form-control" placeholder="Email" id="self_employee_email" readonly="readonly">
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label>Job Role</label>
+                                                <input class="form-control" placeholder="Job Role" id="self_employee_jobRole" readonly="readonly">
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label>Service Area</label>
+                                                <input class="form-control" placeholder="Service Area" id="self_employee_serviceArea" readonly="readonly">
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Building</label>
+                                                <input class="form-control" placeholder="Building" id="self_employee_officeBuilding" readonly="readonly">
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Contact (main)</label>
+                                                <input class="form-control" placeholder="Contact Number" id="self_employee_contactNumber" readonly="readonly">
+                                            </div>
+                                        </div>
+
+                                        @*Second Column*@
+                                        <div class="col-lg-4">
+                                            <div class="form-group">
+                                                <label>Name</label>
+                                                <input class="form-control" placeholder="Name" id="self_employee_employeeName" readonly="readonly">
+
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Personnel No</label>
+                                                <input class="form-control" placeholder="Personnel No" id="self_employee_personnelNumber" readonly="readonly">
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Manager Signum</label>
+                                                <input class="form-control" placeholder="Manager Signum" id="self_employee_managerSignum" readonly="readonly">
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Org. Unit</label>
+                                                <input class="form-control" placeholder="Org.Unit" id="self_employee_unit" readonly="readonly">
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Job Family</label>
+                                                <input class="form-control" placeholder="Job Family" id="self_employee_jobRoleFamily" readonly="readonly">
+                                            </div>
+                                            <div class="form-group">
+                                                <label>City</label>
+                                                <input class="form-control" placeholder="City" id="self_employee_city" readonly="readonly">
+                                            </div>
+                                        </div>
+
+                                        @*Third Column*@
+                                        <div class="col-lg-4">
+
+                                            <div class="form-group">
+                                                <label>Cost Center</label>
+                                                <input class="form-control" placeholder="Cost Center" id="self_employee_costCenter" readonly="readonly">
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label>Functional Area</label>
+                                                <input class="form-control" placeholder="Functional Area" id="self_employee_functionalArea" readonly="readonly">
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label>HR Location</label>
+                                                <input class="form-control" placeholder="HR Location" id="self_employee_hrLocation" readonly="readonly">
+                                            </div>
+
+
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div id="divShowEnggHours" class="centered" tabindex="1" style="z-index:1004;display:none">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            Data wiil display soon..
+                        </div>
+                        <div class="pull-right">
+                            <input id="btnEnggDetailsHide" class="btn btn-danger" type="submit" value="Close" name="Close" onclick="hideEnggDetails();" />
+                        </div>
+                    </div>
+                </div>
+
+                <div id="engineerDetailsModals" class="modal fade in" tabindex="-1" role="dialog">
+                    <div class="modal-dialog" role="document" style="min-width:800px; width: 100%; height: 100%">
+                        <div class="modal-content" style="width: 100%; height: 100%">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">×</span>
+                                </button>
+                                <h4 class="modal-title">Engineer Details</h4>
+                            </div>
+                            <div id="calendar_modal" class="modal-body" style="width: 100%; height: 100%; overflow-y: auto;">
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal fade" id="engineerDetailsModal" role="dialog" data-backdrop="static">
+                    <div class="modal-dialog" style="margin-top: 100px; width: 500px;">
+                        <div class="modal-content">
+                            <div class="modal-body" style="padding: 20px;">
+
+                                <h4 id="dateSignumHeader"></h4>
+                                <table id="engineerDetailsTable">
+                                    @foreach (var enggDetail in engineerDetailsNameTitle)
+                                    {
+                                        <tr class="rowInfo">
+                                            <td class="detail">@enggDetail.Value</td>
+                                            <td name="@enggDetail.Key">NA</td>
+                                        </tr>
+                                    }
+                                </table>
+
+                                <div style="text-align: end;">
+                                    <button class="btn btn-danger btn-sm" style="margin-bottom: 0px; margin-right: 0px;"
+                                            onclick="$('#engineerDetailsModal').modal('hide')">
+                                        Close
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                @Scripts.Render("~/bundles/jquery-dateformat")
+                @*<script src="~/Scripts/global.js"></script>*@
+                @Scripts.Render("~/bundles/protip")
+                <link href="~/Scripts/lib/tooltip/protip/protip.min.css" rel="stylesheet" />
+                @*<script src="~/Scripts/jquery-ui.min.js"></script>*@
+                @*<script src="~/Scripts/jquery.weekpicker.js"></script>*@
+                @*<link href="~/Content/CSS/jquery-ui.min.css" rel="stylesheet" />*@
+                @*<link rel="stylesheet" href="~/Content/CSS/jquery-ui-weekpicker.css">*@
+                @*<script type="text/javascript" src="~/Scripts/TimeZone/TimeZone.js"></script>*@
+                @*<script type="text/javascript" src="~/Scripts/TimeZone/TimeZoneColumnsConfigs.js"></script>*@
+                <script>
+                    var clickedValue = "";
+                    $(document).on("click", "#resourceClick", function () {
+                        clickedValue = "resourceClick";
+                    });
+                    $(document).on("click", "#shiftClick", function () {
+                        clickedValue = "shiftClick";
+                    });
+                    let afterSelect = function (textVal) {
+                        console.log(textVal);
+                        var activeProfileObj = JSON.parse(ActiveProfileSession);
+                        var roleID = activeProfileObj.roleID;
+                        if (clickedValue == "resourceClick" && roleID == 7) {
+                            getDateOfISOWeek(textVal);
+                        }
+                        else {
+                            getDateOfISOWeekShift(textVal);
+                        }
+                    }
+                    $(document).ready(function () {
+                        $.protip();
+                        $('#projList').select2({ placeholder: "Enter Project" });
+                        $('#empInfo').on('show.bs.modal', function () {
+                            $(this).find('.modal-content').css({
+                                width: 'auto', //probably not needed
+                                height: 'auto', //probably not needed
+                                'max-width': '50%',
+                                'margin': 'auto'
+                            });
+                        });
+
+
+                        $('#datepicker').weekpicker({
+                            dateFormat: 'dd/mm/yy',
+                            showOthersMonths: true,
+                            selectOtherMonths: true,
+                            showWeek: true,
+                            weekFormat: "w/oo",
+
+                        });
+                        selectWeek();
+                    });
+                    loadCalendar();
+                </script>
+            </div>
+        </div>
+    </div>
+</div>

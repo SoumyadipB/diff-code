@@ -1,0 +1,236 @@
+﻿@*<script src="~/Scripts/jquery-ui.min.js"></script>*@
+@*<script src="~/Scripts/jquery.weekpicker.js"></script>*@
+@*<link href="~/Content/CSS/jquery-ui.min.css" rel="stylesheet" />*@
+@*<link rel="stylesheet" href="~/Content/CSS/jquery-ui-weekpicker.css">*@
+
+<style>
+    .site{
+        border: 0px;
+        width: 20%;
+        height: 1em;
+    }
+    .locationmodal{
+        /* causing all the model popup window width issue*/
+        max-width:43% !important;
+     
+    }*/
+    .not-active {
+  pointer-events: none;
+  cursor: default;
+  /*text-decoration: none;
+  color: black;*/
+}
+</style>
+
+
+<script>
+
+    localStorage.setItem('sc', "<script src='~/Scripts/jquery - ui.min.js' />");
+
+
+</script>
+<div id="locationModal" class="modal" role="dialog" style="top:70px;">
+    <div class="modal-content locationmodal">
+        <div class="modal-header" style="height:34px">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title text-center" style="line-height:0.5">Update Location - <span id="locationTitle" style="font-size:14px;"></span></h4>
+        </div>
+        
+        <div class="modal-body" id="locationBody" style="padding-bottom: 0px; padding-left:10px;">
+
+            <div class="row">
+                <div class="col-lg-12" style="margin-bottom: 15px;">
+                    <div class="row">
+                        <div>
+                            <label  class="col-lg-3" style="margin-bottom: 0px; display:flex">
+                            <input type="radio" class="form-control site" name="site" value="1" id="notOnsiteRadio" checked />
+                            Not Onsite
+                            </label>
+                        </div>
+                        <div >
+                            <label class="col-lg-4" style="margin-bottom: 0px; display:flex">
+                            <input type="radio" class="form-control site" name="site" value="2" id="onsiteDomesticRadio" />
+                            Onsite(Domestic)
+                            </label>
+                        </div>
+                        <div >
+                            <label class="col-lg-4" style="margin-bottom: 0px; display:flex">
+                            <input type="radio" class="form-control site" name="site" value="3" id="onsiteInterRadio" />
+                            Onsite(International)
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-12" style="margin-bottom: 0px;">
+                    <div class="row">
+                        <div class="col-lg-6" style="margin-bottom: 0px;">
+                            Enter Country
+                            <div style="width: 20px;  margin-left: 76px; margin-top: -19px; font-size: 17px; color:red;">*</div>
+                        </div>
+                        <div class="col-lg-6" style="margin-bottom: 0px;">
+                            Enter City
+                            <div style="width: 20px;  margin-left: 54px; margin-top: -19px; font-size: 17px; color:red;">*</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row" style="margin-bottom: 10px;">
+                <div class="col-lg-12" style="margin-bottom: 0px;">
+                    <div class="row">
+                        <div class="col-lg-6" style="margin-bottom: 0px;">
+                            <select class="select2able select2-offscreen" id="select_user_location_country" onchange="getCitiesByCountryID($('#select_user_location_country option:selected').val())">
+                                <option value="0">Select Country</option>
+                            </select>
+
+
+                        </div>
+                        <div class="col-lg-6" style="margin-bottom: 0px;">
+                            <div style="display:flex">
+                                <input id="select_user_location_city" style='width:100%' placeholder="Select City" title="Minimum 3 characters required!" />
+                                <input type="hidden" id="user_city" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-12" style="margin-bottom: 0px;">
+                    <div class="row">
+                        <div class="col-lg-6" style="margin-bottom: 0px;">
+                            Location Type
+                            <div style="width: 20px;  margin-left: 76px; margin-top: -19px; font-size: 17px; color:red;">*</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row" style="margin-bottom: 10px;">
+                <div class="col-lg-12" style="margin-bottom: 0px;">
+                    <div class="row">
+                        <div class="col-lg-6" style="margin-bottom: 0px;">
+                            <select class="select2able select2-offscreen" id="select_user_location_type" placeholder="Select LocationType"></select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row"><div class="col-lg-12" style="margin-bottom: 0px;"><div class="row"><div class="col-lg-12" style="margin-bottom: 0px;">Enter Address <small style="color:blue">(In Case of City- "Others", please mention the city name below)</small></div></div></div></div>
+            <div class="row" style="margin-bottom: 10px;">
+                <div class="col-lg-12" style="margin-bottom: 0px;">
+                    <div class="row">
+                        <div class="col-lg-12" style="margin-bottom: 0px;">
+                            <textarea placeholder="Enter Address" style="height: 70px;width: 100%;" id="user_address" maxlength="250"></textarea>
+                            <small>Max size of the address should be 250 characters</small>
+
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+
+            <!--Visible only when OnSite enabled-->
+            <div id="onsiteInformation" style="display:none;">
+                <div class="row">
+                    <div class="col-lg-12" style="margin-bottom: 0px;">
+                        <div class="row">
+                            <div class="col-lg-6" style="margin-bottom: 0px;">
+                                Market Area:
+                                <div style="width: 20px;  margin-left: 67px; margin-top: -19px; font-size: 17px; color:red;">*</div>
+                            </div>
+                            <div class="col-lg-6" style="margin-bottom: 0px;">
+                                Customer Name:
+                                <div style="width: 20px;  margin-left: 85px; margin-top: -19px; font-size: 17px; color:red;">*</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row" style="margin-bottom: 10px;">
+                    <div class="col-lg-12" style="margin-bottom: 0px;">
+                        <div class="row">
+                            <div class="col-lg-6" style="margin-bottom: 0px;">
+                                <select class="select2able select2-offscreen" id="select_market_area"></select>
+                            </div>
+                            <div class="col-lg-6" style="margin-bottom: 0px;">
+                                <div>
+                                    <input type="text" class="" id="customer_name" style="width:100%"; maxlength="50"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-lg-12" style="margin-bottom: 0px;">
+                        <div class="row">
+                            <div class="col-lg-6" style="margin-bottom: 0px;">
+                                Start Date:
+                                <div style="width: 20px;  margin-left: 57px; margin-top: -19px; font-size: 17px; color:red;">*</div>
+                            </div>
+                            <div class="col-lg-6" style="margin-bottom: 0px;">
+                                End Date:
+                                <div style="width: 20px;  margin-left: 51px; margin-top: -19px; font-size: 17px; color:red;">*</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row" style="margin-bottom: 10px;">
+                    <div class="col-lg-12" style="margin-bottom: 0px;">
+                        <div class="row">
+                            <div class="col-lg-6" style="margin-bottom: 0px;">
+                                <input type="text" id="locStartDate" class="" data-date-format='yyyy/mm/dd' placeholder="yyyy/mm/dd" style="width:90%"; onkeydown="return false" autocomplete="off" />
+                            </div>
+                            <div class="col-lg-6" style="margin-bottom: 0px;">
+                                <input type="text" id="locEndDate" class="" data-date-format='yyyy/mm/dd' placeholder="yyyy-mm-dd" style="width:100%"; onkeydown="return false" autocomplete="off" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-lg-12" style="margin-bottom: 0px;">
+                        <div class="row">
+                            <div class="col-lg-6" style="margin-bottom: 0px;">
+                                Contact Number:
+                                @*<div style="width: 20px;  margin-left: 87px; margin-top: -19px; font-size: 17px; color:red;">*</div>*@
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row" style="margin-bottom: 0px;">
+                    <div class="col-lg-12" style="margin-bottom: 0px;">
+                        <div class="row" style="display:flex;">
+                            <div style="margin-left: 10px;"><span style="font-size:17px;">+</span></div>
+
+                            @*<div class="col-lg-2" style="margin-bottom: 0px; margin-right:10px;">*@
+                                <input type="number" pattern="[0-9]" class="col-lg-2" id="countryCode" style="width:11%;" maxlength="5" min="0" onkeypress="return event.charCode >= 48 && event.charCode <= 57" />
+                            @*</div>*@
+                            @*<div class="col-lg-6" style="margin-bottom: 0px;">*@
+                                <input type="number" class="col-lg-3" id="contactNumber" style="margin-left: 10px;" maxlength="10" min="0" stpe="1" onkeypress="return event.charCode >= 48 && event.charCode <= 57"  />
+                            @*</div>*@
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+
+        </div>
+        <div class="modal-footer" style="margin-top: 0px;padding-top: 0px;height:45px">
+            <button class="btn btn-primary" onclick="saveUserLocation()">Save Location</button>
+            <button class="btn btn-danger" data-dismiss="modal">Close</button>
+        </div>
+        
+    </div>
+</div>
+
+
+

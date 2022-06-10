@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<BCPFORMAT xmlns="http://schemas.microsoft.com/sqlserver/2004/bulkload/format" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ <RECORD>
+  <FIELD ID="1" xsi:type="CharTerm" TERMINATOR="\\t" MAX_LENGTH="50"/>
+  <FIELD ID="2" xsi:type="CharTerm" TERMINATOR="\\t" MAX_LENGTH="50"/>
+  <FIELD ID="3" xsi:type="CharTerm" TERMINATOR="\\t" MAX_LENGTH="50"/>
+  <FIELD ID="4" xsi:type="CharTerm" TERMINATOR="\\t" MAX_LENGTH="50"/>
+  <FIELD ID="5" xsi:type="CharTerm" TERMINATOR="\\t" MAX_LENGTH="50"/>
+  <FIELD ID="6" xsi:type="CharTerm" TERMINATOR="\\t" MAX_LENGTH="50"/>
+  <FIELD ID="7" xsi:type="CharTerm" TERMINATOR="\\t" MAX_LENGTH="50"/>
+  <FIELD ID="8" xsi:type="CharTerm" TERMINATOR="\\t" MAX_LENGTH="50"/>
+ </RECORD>
+ <ROW>
+  <COLUMN SOURCE="1" NAME="Market" xsi:type="SQLVARYCHAR"/>
+  <COLUMN SOURCE="2" NAME="ElementType" xsi:type="SQLVARYCHAR"/>
+  <COLUMN SOURCE="3" NAME="Type" xsi:type="SQLVARYCHAR"/>
+  <COLUMN SOURCE="4" NAME="Name" xsi:type="SQLVARYCHAR"/>
+  <COLUMN SOURCE="5" NAME="Sector" xsi:type="SQLVARYCHAR"/>
+  <COLUMN SOURCE="6" NAME="Latitude" xsi:type="SQLVARYCHAR"/>
+  <COLUMN SOURCE="7" NAME="Longitude" xsi:type="SQLVARYCHAR"/>
+  <COLUMN SOURCE="8" NAME="Software_Release" xsi:type="SQLVARYCHAR"/>
+ </ROW>
+</BCPFORMAT>

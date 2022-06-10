@@ -1,0 +1,394 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ericsson.isf.mapper.WODeliveryAcceptanceMapper">
+    
+    <resultMap type="WorkOrderAcceptanceModel" id="WorkOrderAcceptanceModelResult">
+        <id property="deliveryAcceptanceID" column="DeliveryAcceptanceID" />
+        <result property="woName" column="WOName" />
+        <result property="rating" column="Rating" />
+        <result property="acceptance" column="Acceptance" />
+        <result property="reason" column="Reason" />
+        <result property="comment" column="Comment" />
+        <result property="acceptedOrRejectedBy" column="AcceptedOrRejectedBy" />
+        <result property="acceptedOrRejectedDate" column="AcceptedOrRejectedDate" />
+        <result property="lastModifiedBy" column="LastModifiedBy" />
+        <result property="lastModifiedDate" column="LastModifiedDate" />
+        <collection property='lstWoID' ofType='java.lang.Integer'>
+		<result property="lstWoID" column="WOID" />
+        </collection>
+    </resultMap>
+    
+    <select id='getAcceptanceRatings' resultType="String">
+        SELECT RATING FROM REFDATA.TBL_ACCEPTANCE_RATING
+    </select>
+    
+    <update id='acceptWorkOrder'>
+        UPDATE transactionalData.TBL_WORK_ORDER_DELIVERY_ACCEPTANCE SET RATING= #{rating},
+                                                                        ACCEPTANCE= 'Accepted',
+                                                                        Comment = concat(Comment, '->',#{comment}),
+                                                                        ACCEPTEDORREJECTEDBY =#{acceptedOrRejectedBy},
+                                                                        ACCEPTEDORREJECTEDDATE=dbo.GetDateIST(),
+                                                                        LASTMODIFIEDBY= #{lastModifiedBy},
+                                                                        LASTMODIFIEDDATE=dbo.GetDateIST()
+                                                                where WOID= #{woID}            
+    </update>
+    
+    <update id='sendWorkOrderForAcceptance'>
+        UPDATE [transactionalData].[TBL_WORK_ORDER_DELIVERY_ACCEPTANCE] with(rowlock)
+        set
+        AcceptedOrRejectedBy = #{accOrRejBy},
+        Comment = concat(Comment, '->',#{comment}),
+        LastModifiedBy = #{lastModifiedBy},
+        LastModifiedDate = dbo.GetDateIST()
+        where
+        WOID = #{woID}
+    </update>
+    
+    <select id='rejectWorkOrder' statementType="CALLABLE" resultType="java.lang.Integer">
+        {call user_sp_rejectWorkOrder(
+        #{woID,mode=IN, jdbcType=INTEGER},
+        #{acceptance,mode=IN, jdbcType=VARCHAR},
+        #{accOrRejBy,mode=IN, jdbcType=VARCHAR},
+        #{reason,mode=IN, jdbcType=VARCHAR},
+        #{comment,mode=IN, jdbcType=VARCHAR},
+        #{lastModifiedBy,mode=IN, jdbcType=VARCHAR})}
+    </select>
+    
+    <resultMap type='ClosedWODetailsModel' id='ClosedWODetailsModelResult'>
+        
+        <result property='wOID' column='WOID'/>
+        <result property='wOName' column='WOName'/>
+        <result property='doid' column='DOID'/>
+        <result property='woplanid' column='woplanid'/>
+        <result property='deliverableUnitName' column='DeliverableUnitName'/>
+        <result property='nodeType' column='NodeType'/>
+        <result property='nodeName' column='NodeNames'/>
+        <result property='comment' column='comment'/>
+        <result property='scopeName' column='scopeName'/>
+        <result property='closedOn' column='ClosedOn'/>
+        <result property='closedBy' column='ClosedBy'/>
+        <result property='plannedOn' column='PlannedStartDate'/>
+        <result property='workFlowName' column='workFlowName'/>
+        <result property='createdBy' column='CreatedBy'/>
+        <result property='signum' column='signumId'/>
+        <result property='acceptedOrRejectedBy' column='AcceptedOrRejectedBy'/>
+        <result property='acceptedOrRejectedDate' column='AcceptedOrRejectedDate'/>
+        <result property='wfID' column='WFID'/>
+        <result property='projectID' column='PROJECTID'/>
+        <result property='proficiencyID' column='ProficiencyID'/>
+        <result property='proficiencyName' column='ProficiencyName'/>
+        <collection property='activityDetails' ofType='WorkOrderActivityDetailsModel'>
+            <result property='subActivityID' column='SubActivityID'/>
+            <result property='subActivityName' column='SubActivityName'/>
+            <result property='subActivityStartDate' column='SubActivityStartDate'/>
+            <result property='subActivityEndDate' column='SubActivityEndDate'/>
+        </collection>
+    </resultMap>
+    
+    <select id = 'getclosedWODetails' resultMap = 'ClosedWODetailsModelResult'>
+            declare @Assessedproficiencyid tinyint,@ExperiencedProficiencyid TINYINT, @ProficiencyName varchar(15),@ExpProficiencyName  VARCHAR(15) ,@KPI_ID int
+            <!-- select  @Assessedproficiencyid=proficiencyid ,@ProficiencyName=ProficiencyName  
+                    from refdata.TBL_WF_Proficiency_Type where ProficiencyName='Assessed' -->
+            select TOP 1 @KPI_ID=KpiID from REFDATA.TBL_WF_PROFICIENCY_KPI where KpiName ='Qualify Count'
+            SELECT @Assessedproficiencyid = proficiencyid, 
+       			   @ProficiencyName = proficiencyname 
+				   FROM   refdata.tbl_wf_proficiency_type 
+				   WHERE  proficiencyname = 'Assessed' 
+			SELECT @ExperiencedProficiencyid = proficiencyid, 
+       			   @ExpProficiencyName = proficiencyname 
+				   FROM   refdata.tbl_wf_proficiency_type 
+				   WHERE  proficiencyname = 'Experienced' 
+            
+        <choose>  
+    	 <when test="role != null and role == 'Delivery Acceptence SPOC'">
+    	 select wo.DOID,wo.WOID,wp.WOPlanID,wo.signumId, wo.WOName,pdu.DeliverableUnitName, wopn.NodeType, LEFT(wopn.NodeNames, LEN(wopn.NodeNames)-1) as NodeNames, wo.ClosedOn, wo.LastModifiedBy, 
+        s.SubActivityID, s.SubActivity as SubActivityName, s.CreatedDate as SubActivityStartDate,s.LastModifiedDate as SubActivityEndDate,
+        wo.StatusComment as comment,wo.PlannedStartDate,ps.ScopeName,emp.Signum +' ('+emp.EmployeeName+')' as ClosedBy,f.WorkFlowName,
+        COALESCE(emp2.Signum +' ('+emp2.EmployeeName+')',wo.CreatedBy) as CreatedBy,emp3.Signum
+		+'('+emp3.EmployeeName+')'as AcceptedOrRejectedBy, wo.PROJECTID projectID, f.WFID wfID, 
+		CASE
+         WHEN wo.status IN ( 'ASSIGNED', 'PLANNED', 'REOPENED' ) AND ISNULL(tt.kpivalue, -1) = 0 THEN @ExperiencedProficiencyid
+         WHEN wo.Status NOT IN ( 'ASSIGNED', 'PLANNED', 'REOPENED' ) AND ISNULL(tt.kpivalue, -1) = 0 THEN ISNULL(wo.proficiencyid, @ExperiencedProficiencyid)
+		 WHEN wo.status IN ( 'ASSIGNED', 'PLANNED', 'REOPENED' ) AND ISNULL(tt.kpivalue, -1) != 0 THEN @Assessedproficiencyid
+         ELSE ISNULL(wo.proficiencyid, @Assessedproficiencyid)
+       	 END                             ProficiencyID,
+       
+       CASE
+         WHEN wo.Status  IN ( 'ASSIGNED', 'PLANNED', 'REOPENED' ) AND Isnull(tt.kpivalue, -1) = 0 THEN @ExpProficiencyName
+		 WHEN wo.Status NOT IN ( 'ASSIGNED', 'PLANNED', 'REOPENED' ) AND Isnull(tt.kpivalue, -1) = 0 THEN 
+		 ISNULL(twt.ProficiencyName, @ExpProficiencyName)
+         WHEN wo.status IN ( 'ASSIGNED', 'PLANNED', 'REOPENED' ) AND ISNULL(tt.kpivalue, -1) != 0 THEN @ProficiencyName
+         ELSE ISNULL(twt.ProficiencyName, @ProficiencyName)
+         END                             ProficiencyName ,
+         ISNULL(tt.KPIValue,-1) as KPIValue 
+
+		from transactionalData.TBL_WORK_ORDER wo
+		inner join transactionalData.TBL_Deliverable_Order_ID doi on wo.DOID = doi.DOID 
+		inner join transactionalData.TBL_WORK_ORDER_PLAN wp on wo.WOPlanID = wp.WOPlanID
+		and wp.ProjectID = wo.PROJECTID
+		inner join transactionalData.TBL_PROJECTSCOPE ps on wp.ScopeID = ps.ProjectScopeID
+		inner join refData.TBL_Project_Deliverable_Unit pdu on ps.deliverableUnit = pdu.DeliverableUnitID
+		
+        inner join transactionalData.TBL_PROJECTS p on wp.ProjectID = p.ProjectID
+        inner join transactionalData.TBL_WORK_ORDER_DELIVERY_ACCEPTANCE da on da.WOID = wo.WOID
+        inner join [transactionalData].[TBL_SUBACTIVITY_FLOWCHART_DEF] f on wo.flowchartdefid=f.SubActivityFlowChartDefID
+		left join refData.TBL_Employees emp on emp.Signum = wo.LastModifiedBy
+		left join refData.TBL_Employees emp2 on emp2.Signum = wo.CreatedBy
+		left join refData.TBL_Employees emp3 on emp3.Signum = da.AcceptedOrRejectedBy
+		left join transactionalData.TBL_DELIVERY_ACCEPTANCE dac on dac.ProjectID=wp.ProjectID
+		LEFT JOIN(
+					Select projectid,wfid,KPIValue,SubActivityID
+					from( select projectid,wfid,KPIValue,SubActivityID,
+ 					ROW_NUMBER() over(partition by kpiid,ProjectID,wfid,SubactivityID order by modifiedDate desc)rn
+                	from transactionaldata.TBL_SubactivityFlowChart_Kpi_Value
+                	where projectid=#{projectID}
+					and KpiID=@KPI_ID and IsActive=1 )kk
+					WHERE kk.rn=1
+				) tt on tt.projectid=p.projectid and tt.wfid=f.WFID and tt.SubactivityID=f.SubActivityID
+		
+        left join (
+                select nn1.WOID, nn1.NodeType, nn1.NodeCount, nn2.NodeNames
+                from
+                (
+                        select WOID, NodeType, COUNT(NodeNames) as NodeCount
+                        from transactionalData.TBL_WORK_ORDER_NODES
+                        group by WOID, NodeType
+                ) as nn1
+                inner join
+                (
+                        select	distinct n2.WOID, n2.NodeType, substring(
+                            (
+                                    select n1.NodeNames + ',' as [text()]
+                                    from transactionalData.TBL_WORK_ORDER_NODES n1
+                                    where n1.WOId = n2.WOID
+                                    and n1.NodeType = n2.NodeType
+                                    order by n1.WOID
+                                    for xml path('')
+                            ), 1, 1000
+                    ) as NodeNames
+                        from transactionalData.TBL_WORK_ORDER_NODES n2
+                ) as nn2 on nn1.WOID = nn2.WOID
+                                and nn1.NodeType = nn2.NodeType
+        ) wopn on wo.WOID = wopn.WOID
+		inner join refData.TBL_SUBACTIVITY s on wo.SubActivityID = s.SubActivityID
+		left join refdata.tbl_WF_Proficiency_Type twt ON twt.ProficiencyID=wo.ProficiencyID
+		where wo.Status='CLOSED'  and wo.Active=1 and (da.ACCEPTANCE != 'Accepted' or da.Acceptance is null)
+		and p.ProjectID=#{projectID} and dac.SignumID=#{signumID}
+    	 
+    	 
+    	 </when>
+	       <otherwise>
+    	 
+        select wo.DOID,wo.WOID,wp.WOPlanID,wo.signumId, wo.WOName,pdu.DeliverableUnitName, wopn.NodeType, LEFT(wopn.NodeNames, LEN(wopn.NodeNames)-1) as NodeNames, wo.ClosedOn, wo.LastModifiedBy, 
+        s.SubActivityID, s.SubActivity as SubActivityName, s.CreatedDate as SubActivityStartDate,s.LastModifiedDate as SubActivityEndDate,
+        wo.StatusComment as comment,wo.PlannedStartDate,ps.ScopeName,emp.Signum +' ('+emp.EmployeeName+')' as ClosedBy,f.WorkFlowName,
+		COALESCE(emp2.Signum +' ('+emp2.EmployeeName+')',wo.CreatedBy) as CreatedBy,emp3.Signum
+		+'('+emp3.EmployeeName+')'as AcceptedOrRejectedBy, wo.PROJECTID projectID, f.WFID wfID,
+		CASE
+         WHEN wo.status IN ( 'ASSIGNED', 'PLANNED', 'REOPENED' ) AND ISNULL(tt.kpivalue, -1) = 0 THEN @ExperiencedProficiencyid
+         WHEN wo.Status NOT IN ( 'ASSIGNED', 'PLANNED', 'REOPENED' ) AND ISNULL(tt.kpivalue, -1) = 0 THEN ISNULL(wo.proficiencyid, @ExperiencedProficiencyid)
+		 WHEN wo.status IN ( 'ASSIGNED', 'PLANNED', 'REOPENED' ) AND ISNULL(tt.kpivalue, -1) != 0 THEN @Assessedproficiencyid
+         ELSE ISNULL(wo.proficiencyid, @Assessedproficiencyid)
+       	 END                             ProficiencyID,
+       
+       CASE
+         WHEN wo.Status  IN ( 'ASSIGNED', 'PLANNED', 'REOPENED' ) AND Isnull(tt.kpivalue, -1) = 0 THEN @ExpProficiencyName
+		 WHEN wo.Status NOT IN ( 'ASSIGNED', 'PLANNED', 'REOPENED' ) AND Isnull(tt.kpivalue, -1) = 0 THEN 
+		 ISNULL(twt.ProficiencyName, @ExpProficiencyName)
+         WHEN wo.status IN ( 'ASSIGNED', 'PLANNED', 'REOPENED' ) AND ISNULL(tt.kpivalue, -1) != 0 THEN @ProficiencyName
+         ELSE ISNULL(twt.ProficiencyName, @ProficiencyName)
+         END                             ProficiencyName ,ISNULL(tt.KPIValue,-1) as KPIValue 
+		from transactionalData.TBL_WORK_ORDER wo
+
+		inner join transactionalData.TBL_Deliverable_Order_ID doi on wo.DOID = doi.DOID 
+		inner join transactionalData.TBL_WORK_ORDER_PLAN wp on wo.WOPlanID = wp.WOPlanID
+		and wp.ProjectID = wo.PROJECTID
+		inner join transactionalData.TBL_PROJECTSCOPE ps on wp.ScopeID = ps.ProjectScopeID
+		inner join refData.TBL_Project_Deliverable_Unit pdu on ps.deliverableUnit = pdu.DeliverableUnitID
+
+        inner join transactionalData.TBL_PROJECTS p on wp.ProjectID = p.ProjectID
+        inner join transactionalData.TBL_WORK_ORDER_DELIVERY_ACCEPTANCE da on da.WOID = wo.WOID
+        inner join [transactionalData].[TBL_SUBACTIVITY_FLOWCHART_DEF] f on wo.flowchartdefid=f.SubActivityFlowChartDefID
+		left join refData.TBL_Employees emp on emp.Signum = wo.LastModifiedBy
+		left join refData.TBL_Employees emp2 on emp2.Signum = wo.CreatedBy
+		left join refData.TBL_Employees emp3 on emp3.Signum = da.AcceptedOrRejectedBy
+		LEFT JOIN(
+                      select projectid,wfid,KPIValue,SubactivityID
+                from transactionaldata.TBL_SubactivityFlowChart_Kpi_Value
+                where projectid=#{projectID}
+
+                    and KpiID=@KPI_ID 
+
+                     and IsActive=1
+                      ) tt  on tt.projectid=p.projectid and  tt.wfid=f.WFID and tt.SubactivityID=f.SubactivityID
+		
+        left join (
+                select nn1.WOID, nn1.NodeType, nn1.NodeCount, nn2.NodeNames
+                from
+                (
+                        select WOID, NodeType, COUNT(NodeNames) as NodeCount
+                        from transactionalData.TBL_WORK_ORDER_NODES
+                        group by WOID, NodeType
+                ) as nn1
+                inner join
+                (
+                        select	distinct n2.WOID, n2.NodeType, substring(
+                            (
+                                    select n1.NodeNames + ',' as [text()]
+                                    from transactionalData.TBL_WORK_ORDER_NODES n1
+                                    where n1.WOId = n2.WOID
+                                    and n1.NodeType = n2.NodeType
+                                    order by n1.WOID
+                                    for xml path('')
+                            ), 1, 1000
+                    ) as NodeNames
+                        from transactionalData.TBL_WORK_ORDER_NODES n2
+                ) as nn2 on nn1.WOID = nn2.WOID
+                                and nn1.NodeType = nn2.NodeType
+        ) wopn on wo.WOID = wopn.WOID
+		inner join refData.TBL_SUBACTIVITY s on wo.SubActivityID = s.SubActivityID
+		left join refdata.tbl_WF_Proficiency_Type twt ON twt.ProficiencyID=wo.ProficiencyID
+		where wo.Status='CLOSED'  and wo.Active=1 and (da.ACCEPTANCE != 'Accepted' or da.Acceptance is null)
+		and p.ProjectID=#{projectID}  and da.acceptedOrRejectedBy=#{signumID}  
+		</otherwise>
+	   </choose> 
+    </select>
+    
+    <resultMap type='ReasonFromWOModel' id='ReasonFromWOModelResult'>
+        
+        <result property='wOID' column='WOID'/>
+        <result property='reason' column='Reason'/>
+        
+    </resultMap>
+    
+    <select id='getWOStatus' resultType='String'>
+        SELECT STATUS FROM TRANSACTIONALDATA.TBL_WORK_ORDER WHERE WOID=#{woID}
+    </select>
+    
+    <select id='getDelieveryAcceptance' resultType="String">
+        SELECT ACCEPTANCE FROM TRANSACTIONALDATA.TBL_WORK_ORDER_DELIVERY_ACCEPTANCE WHERE WOID=#{woID}
+    </select>
+    
+    <select id='getWOForParentWOID' resultType="Integer">
+        SELECT PARENTWORKORDERID FROM TRANSACTIONALDATA.TBL_WORK_ORDER WHERE WOID=#{woID}
+    </select>
+    
+    <select id = 'getReasonFromWO' resultMap = 'ReasonFromWOModelResult'>
+        select WOID, Reason from transactionalData.TBL_WORK_ORDER where WOID=#{wOID}
+    </select>
+    
+    <resultMap type='WORelatedDetails' id='WORelatedDetailsResult'>
+        <result property='woStatus' column='WOStatus'/>
+        <result property='userComments' column='UserComments'/>
+        <result property='userDeliveryStatus' column='UserDeliveryStatus'/>
+        <result property='userReason' column='UserReason'/>
+        <result property='deliveryReason' column='DeliveryReason'/>
+        <result property='deliveryComment' column='DeliveryComment'/>
+        <result property='deliveryRatings' column='DeliveryRatings'/>
+        <result property='deliveryStatus' column='DeliveryStatus'/>
+    </resultMap>
+    
+    <select id='getStatusReasons' resultMap='WORelatedDetailsResult'>
+        select wo.Status as WOStatus,wo.StatusComment as UserComments,wo.DeliveryStatus 
+        as UserDeliveryStatus,wo.Reason as UserReason,da.Rating as DeliveryRatings,
+        da.Comment as DeliveryComment, da.acceptance as DeliveryStatus,da.reason as DeliveryReason
+        from transactionalData.TBL_WORK_ORDER wo
+        inner join transactionalData.TBL_WORK_ORDER_DELIVERY_ACCEPTANCE da on wo.WOID=da.WOID
+        where wo.WOID=#{woID}
+    </select>
+    
+    <select id = 'getacceptedWODetails' resultMap = 'ClosedWODetailsModelResult'>
+    	DECLARE @Assessedproficiencyid TINYINT, @ExperiencedProficiencyid TINYINT,
+        @ProficiencyName       VARCHAR(15) ,@ExpProficiencyName  VARCHAR(15) ,@KPI_ID int,@projectID  int=348
+		select TOP 1 @KPI_ID=KpiID from REFDATA.TBL_WF_PROFICIENCY_KPI where KpiName ='Qualify Count'
+		SELECT @Assessedproficiencyid = proficiencyid, 
+      	@ProficiencyName = proficiencyname 
+		FROM   refdata.tbl_wf_proficiency_type 
+		WHERE  proficiencyname = 'Assessed' 
+		SELECT @ExperiencedProficiencyid = proficiencyid, 
+       @ExpProficiencyName = proficiencyname 
+		FROM   refdata.tbl_wf_proficiency_type 
+		WHERE  proficiencyname = 'Experienced' 
+
+     select wo.DOID,wo.WOID,wo.signumId, wo.WOName,pdu.DeliverableUnitName, wopn.NodeType, 
+     	LEFT(wopn.NodeNames, LEN(wopn.NodeNames)-1) as NodeNames, wo.ClosedOn, wo.LastModifiedBy, 
+        wo.SubActivityID, s.SubActivity as SubActivityName, s.CreatedDate as SubActivityStartDate,
+        s.LastModifiedDate as SubActivityEndDate,wo.StatusComment as comment,
+        wo.PlannedStartDate,ps.ScopeName,emp.Signum +' ('+emp.EmployeeName+')' as ClosedBy,f.WorkFlowName,
+		COALESCE(emp2.Signum +' ('+emp2.EmployeeName+')',wo.CreatedBy) as CreatedBy,emp3.Signum
+		+'('+emp3.EmployeeName+')'as AcceptedOrRejectedBy,da.AcceptedOrRejectedDate,wo.WOPlanID woplanid, wo.PROJECTID projectID, f.WFID wfID,
+		CASE 
+         WHEN wo.status IN ( 'ASSIGNED', 'PLANNED', 'REOPENED' ) AND ISNULL(tt.kpivalue, -1) = 0 THEN @ExperiencedProficiencyid
+         WHEN wo.Status NOT IN ( 'ASSIGNED', 'PLANNED', 'REOPENED' ) AND ISNULL(tt.kpivalue, -1) = 0 THEN ISNULL(wo.proficiencyid, @ExperiencedProficiencyid)
+		 WHEN wo.status IN ( 'ASSIGNED', 'PLANNED', 'REOPENED' ) AND ISNULL(tt.kpivalue, -1) != 0 THEN @Assessedproficiencyid
+         ELSE ISNULL(wo.proficiencyid, @Assessedproficiencyid)
+         
+       END 
+       	ProficiencyID, 
+       
+       CASE 
+         WHEN wo.Status  IN ( 'ASSIGNED', 'PLANNED', 'REOPENED' ) AND ISNULL(tt.kpivalue, -1) = 0 THEN @ExpProficiencyName
+		 WHEN wo.Status NOT IN ( 'ASSIGNED', 'PLANNED', 'REOPENED' ) AND ISNULL(tt.kpivalue, -1) = 0 THEN ISNULL(twpt.ProficiencyName, @ExpProficiencyName)
+         WHEN wo.status IN ( 'ASSIGNED', 'PLANNED', 'REOPENED' ) AND ISNULL(tt.kpivalue, -1) != 0 THEN @ProficiencyName
+         ELSE ISNULL(twpt.ProficiencyName, @ProficiencyName)
+         
+       END 
+       		ProficiencyName 
+		from transactionalData.TBL_WORK_ORDER wo
+		inner join transactionalData.TBL_Deliverable_Order_ID doi on wo.DOID = doi.DOID 
+		inner join transactionalData.TBL_WORK_ORDER_PLAN wp on wo.WOPlanID = wp.WOPlanID
+		and wp.ProjectID = wo.PROJECTID
+		inner join transactionalData.TBL_PROJECTSCOPE ps on wp.ScopeID = ps.ProjectScopeID
+		inner join refData.TBL_Project_Deliverable_Unit pdu on ps.deliverableUnit = pdu.DeliverableUnitID
+		
+        inner join transactionalData.TBL_PROJECTS p on wp.ProjectID = p.ProjectID
+        inner join transactionalData.TBL_WORK_ORDER_DELIVERY_ACCEPTANCE da on da.WOID = wo.WOID
+        inner join [transactionalData].[TBL_SUBACTIVITY_FLOWCHART_DEF] f on wo.flowchartdefid=f.SubActivityFlowChartDefID
+		left join refData.TBL_Employees emp on emp.Signum = wo.LastModifiedBy
+		left join refData.TBL_Employees emp2 on emp2.Signum = wo.CreatedBy
+		left join refData.TBL_Employees emp3 on emp3.Signum = da.AcceptedOrRejectedBy
+		left join transactionalData.TBL_DELIVERY_ACCEPTANCE dac on dac.ProjectID=wp.ProjectID
+		LEFT JOIN(
+		Select projectid,wfid,KPIValue,SubActivityID
+		from( select projectid,wfid,KPIValue,SubActivityID,
+		ROW_NUMBER() over(partition by kpiid,ProjectID,wfid,SubactivityID order by modifiedDate desc)rn
+                from transactionaldata.TBL_SubactivityFlowChart_Kpi_Value
+                where projectid=#{projectID}
+				and KpiID=@KPI_ID and IsActive=1 )kk
+				WHERE kk.rn=1
+				) tt on tt.projectid=p.projectid and tt.wfid=f.WFID and tt.SubactivityID=f.SubActivityID
+        left join (
+                select nn1.WOID, nn1.NodeType, nn1.NodeCount, nn2.NodeNames
+                from
+                (
+                        select WOID, NodeType, COUNT(NodeNames) as NodeCount
+                        from transactionalData.TBL_WORK_ORDER_NODES
+                        group by WOID, NodeType
+                ) as nn1
+                inner join
+                (
+                        select	distinct n2.WOID, n2.NodeType, substring(
+                            (
+                                    select n1.NodeNames + ',' as [text()]
+                                    from transactionalData.TBL_WORK_ORDER_NODES n1
+                                    where n1.WOId = n2.WOID
+                                    and n1.NodeType = n2.NodeType
+                                    order by n1.WOID
+                                    for xml path('')
+                            ), 1, 1000
+                    ) as NodeNames
+                        from transactionalData.TBL_WORK_ORDER_NODES n2
+                ) as nn2 on nn1.WOID = nn2.WOID
+                                and nn1.NodeType = nn2.NodeType
+        ) wopn on wo.WOID = wopn.WOID
+		inner join refData.TBL_SUBACTIVITY s on wo.SubActivityID = s.SubActivityID
+		LEFT JOIN refdata.tbl_wf_proficiency_type twpt
+              ON twpt.proficiencyid = wo.proficiencyid
+		where wo.Status='CLOSED'  and wo.Active=1 
+		and p.ProjectID=#{projectID}
+                       and
+		  convert(Date, da.AcceptedOrRejectedDate)&gt;=convert(Date,dbo.GetDateIST()-90) and da.AcceptedOrRejectedDate&lt;=dbo.GetDateIST()
+     </select>
+                
+</mapper>
+

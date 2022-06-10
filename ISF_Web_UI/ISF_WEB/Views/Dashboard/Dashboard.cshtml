@@ -1,0 +1,196 @@
+﻿
+@Scripts.Render("~/bundles/DataTableScript")
+@Styles.Render("~/bundles/css/Dashboard")
+@Scripts.Render("~/bundles/Dashboard")
+@Styles.Render("~/bundles/css/datepicker")
+
+
+
+@{
+    ViewBag.Title = "DASHBOARD";
+}
+
+<script>
+
+    $(function () {
+        //variable
+        var projectID = "";
+        var today = new Date();
+        var dd = today.getDate();
+        var mm = today.getMonth() + 1;
+        var yyyy = today.getFullYear();
+        today = yyyy + '-' + mm + '-' + dd;
+
+        //date settings
+        var sdate = $('#sdate').datepicker({
+            dateFormat: 'yy-mm-dd',
+        });
+        var edate = $('#edate').datepicker({
+            dateFormat: 'yy-mm-dd',
+        });
+
+        openNav();
+        //Load Filters
+        loadFilters();
+        //$('[data-toggle="menubar"]').trigger("click");
+
+    });
+
+
+    
+
+    function openNav() {
+        document.getElementById("myNav").style.height = "auto";
+        $("#myNav").css({ "top": "44px", 'left': '67px', 'padding': '10px 0px' });
+
+        //showHideBtn();
+    }
+
+    function closeNav() {
+        document.getElementById("myNav").style.height = "0%";
+        $("#myNav").css("top", "0px");
+        $("#myNav").css("padding", "0px");
+    }
+</script>
+
+<style>
+    body {
+        /*overflow: hidden;
+        position: fixed;*/
+        width: 100%;
+    }
+
+    #base {
+        color: #FFF !important;
+        background-color: #233952;
+        /*margin-top: -10px;*/
+        margin-top: -27px;
+    }
+
+    .select2-container {
+        color: #000000 !important;
+        width: 90% !important;
+        font-size: 12px !important;
+    }
+</style>
+<style type="text/css" media="screen and (min-width: 1024px)">
+    .select2-container {
+        width: 92% !important;
+    }
+</style>
+<style type="text/css" media="screen and (min-width: 768px) and (max-width: 1023px)">
+    .select2-container {
+        width: 83% !important;
+    }
+</style>
+<style type="text/css" media="screen and (min-width: 320px) and (max-width: 767px)">
+    .select2-container {
+        width: 65% !important;
+    }
+</style>
+
+<!--Filters-->
+<div id="myNav" class="overlay">
+    <div class="overlay-content">
+        <div class="row">
+            <div class="col-md-6 col-xs-12">
+                <label>Project :</label>
+                <select class="select2able" id="selectProjectDashboard" style="color:#000000">
+                    <option value="">Select Project</option>
+                </select>
+                <div>
+                    <label id="projectValid" style="color: red; font-size: 10px; text-align: center; "></label>
+                </div>
+
+            </div>
+            <div class="col-md-2 col-xs-12">
+                <label>Start date : </label>
+                <input id="sdate" type="text" />
+                <label id="startDateValid" style="color: red; font-size: 10px; text-align: center; "></label>
+            </div>
+            <div class="col-md-2 col-xs-12">
+                <label>End date :</label>
+                <input id="edate" type="text" />
+                <label id="endDateValid" style="color: red; font-size: 10px; text-align: center; "></label>
+            </div>
+            <div class="col-md-2 col-xs-12">
+                <button class="btn btn-primary btn-sm" id="btnGo" onclick="loadDashboard()">Go</button>
+                <button class="btn btn-danger btn-sm" onclick="closeNav()"><i class="fa fa-close" style="cursor: pointer;" title="close filter"></i></button>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+<!--/Filters-->
+<!--Top Project Detail Heading-->
+<div class="row" id="divProjectDetails" style="display:block;">
+    <!--Show / Hide Filters-->
+    <div class="col-md-11">
+        @*<label class="col-md-12 col-lg-12" id="lblProjectHeading" style="font-size:medium;font-family:'Ericsson Capital TT';text-align: center;font-weight:  bold;color: #ff9000;"></label>*@
+        <label class="col-md-12 col-lg-12" id="lblProjectHeading" style="font-size:medium;font-family:'Ericsson Hilda';text-align: center;font-weight:  bold;color: #ff9000;"></label>
+    </div>
+    <div class="col-md-1">
+        <button class="btn btn-default-dark" title="toggleFilters" id="btnSlideFilter2" style="float: right;margin:16px 0 0 0;" onclick="openNav()"><i id="caretImg2" class="fa fa-caret-down"></i></button>
+    </div>
+    <label class="col-md-12 col-lg-12" id="lblselectedProjDetails" style="font-size:10px;color: #ff9000;text-align: center;"></label>
+
+</div>
+<!--/Top Project Detail Heading-->
+<!-- Main Dashboard Panel -->
+<div class="panel-default" id="divDashboardPanel" style="display:none;">
+
+    <!-- top tiles/Widgets -->
+    <div id="divTilesContainer" class="row tile_count" style="padding: 1px 0 0 5px;">
+    </div>
+    <!-- /top tiles -->
+    <!-- Chart Row1--->
+    <div class="row" id="divChartRowOne">
+        <div class="col-md-6 col-sm-6 col-xs-12" id="divChartContainer1" style="border: 2px solid #ff9000;">
+            <div id="chart_plot_01" class="demo-placeholder">
+            </div>
+        </div>
+        <div class="col-md-6 col-sm-6 col-xs-12" id="divChartContainer2" style="border: 2px solid #ff9000;">
+            <div id="chart_plot_02" class="demo-placeholder">
+            </div>
+        </div>
+    </div>
+    <!-- /Chart Rows1--->
+    <!-- Chart Row 2 with 2 charts-->
+    <div class="row" id="divChartRowTwo">
+        <div class="col-md-6 col-sm-6 col-xs-12" id="divChartContainer3" style="border: 2px solid #ff9000;">
+            <div id="chart_plot_03" class="demo-placeholder"></div>
+        </div>
+        <div class="col-md-6 col-sm-6 col-xs-12" id="divChartContainer4" style="border: 2px solid #ff9000;">
+            <div id="chart_plot_05_status" class="demo-placeholder">
+            </div>
+            @*<ul class="nav nav-tabs" style="background-color:#333;margin-top:1px;">
+                    <li class="active"><a data-toggle="tab" href="#tab1">Status</a></li>
+                    <li><a data-toggle="tab" href="#tab2">Weekly</a></li>
+                    <li><a data-toggle="tab" href="#tab3"> Resource</a></li>
+                    <li><a data-toggle="tab" href="#tab4"> Activity</a></li>
+                </ul>
+                <div class="tab-content">
+                    <div id="tab1" class="tab-pane fade in active">
+                        <div id="chart_plot_05_status" class="demo-placeholder">
+                        </div>
+                    </div>
+                    <div id="tab2" class="tab-pane fade">
+                        <div id="chart_plot_05_weekly" class="demo-placeholder">
+                        </div>
+                    </div>
+                    <div id="tab3" class="tab-pane fade">
+                        <div id="chart_plot_05_resource" class="demo-placeholder">
+                        </div>
+                    </div>
+                    <div id="tab4" class="tab-pane fade">
+                        <div id="chart_plot_05_activity" class="demo-placeholder">
+                        </div>
+                    </div>
+                </div>*@
+        </div>
+    </div>
+    <!-- /Chart Row 2 with 2 charts-->
+
+</div>
+<!-- /Main Dashboard Panel -->

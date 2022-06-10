@@ -1,0 +1,80 @@
+﻿@Scripts.Render("~/bundles/DataTableScript")
+
+@Styles.Render("~/bundles/css/DataTableStyle")
+
+@Scripts.Render("~/bundles/DataTablesAdvancedScript")
+
+@Scripts.Render("~/bundles/Admin")
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+<div class="container">
+    <div class="page-header" align="center">
+        <h2>ADMIN APPROVAL</h2>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-striped table-bordered table-hover">
+            <thead>
+                <tr>
+                    <th>Select</th>
+                    <th>Request Id</th>
+                    <th>Request Name</th>
+                    <th>SPOC</th>
+                    <th>Periodicity</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><input type="radio" onselect="selectDev()" /></td>
+                    <td>1</td>
+                    <td>Amit</td>
+                    <td>Spoc1</td>
+                    <td>Daily</td>
+                    <td>Discussion</td>
+                </tr>
+                <tr>
+                    <td><input type="radio" onselect="selectDev()" /></td>
+                    <td>2</td>
+                    <td>Abhishek</td>
+                    <td>Spoc2</td>
+                    <td>Weekly</td>
+                    <td>Waiting</td>
+                </tr>
+            </tbody>
+        </table>
+        </div>
+    <div class="form-control">
+    <div id="assignDiv" style="display:none">
+           <select class="form-control" >
+             <option value="" selected disabled hidden>Choose here</option>>
+            <option value="dev2">devname(devsignum)</option>
+            <option value="dev3">devname(devsignum)</option>
+            <option value="dev4">devname(devsignum)</option>
+        </select>
+        </div>
+        <br/>
+        <div class="btn btn-success">Assign</div>
+    </div>
+    </div>
+<style>
+header {
+    background-color: #666;
+    padding: 30px;
+    text-align: center;
+    font-size: 35px;
+    color: white;
+}
+</style>
+<script>
+    $(document).ready(function () {
+        function selectDev() {
+            $('#assignDiv').show();
+        }
+
+    });
+
+</script>
+
+
+

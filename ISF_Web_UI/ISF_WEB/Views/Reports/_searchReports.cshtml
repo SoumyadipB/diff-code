@@ -1,0 +1,512 @@
+﻿@Scripts.Render("~/bundles/Reports")
+@Scripts.Render("~/bundles/DataTableScript")
+@Scripts.Render("~/bundles/DataTablesAdvancedScript")
+@Styles.Render("~/bundles/css/DataTableStyle")
+
+<script>
+    $(document).ready(function () {
+        getReportNameModuleSubModule();
+        getFilterattributesEdit();
+       
+    });
+</script>
+
+<style>
+    .label_required {
+        color: red;
+    }
+
+    .desc_dimensions {
+        min-width: 100%;
+        height: 70px;
+        resize: none;
+    }
+
+    .desc_dimensions_small {
+        min-width: 100%;
+        height: 40px;
+        resize: none;
+
+    }
+</style>
+<style>
+
+    tfoot {
+         display:table-header-group;
+    }
+</style>
+
+@*<div class="container">*@
+    <div class="col-lg-12">
+       
+        <div class="col-lg-4">
+            <label>Module</label>
+            <div>
+                <select id="Module" class="select2able" >
+                    @*<option value="0">Select One</option>*@
+                </select>
+
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <label>Sub Module</label>
+            <div>
+                <select id="SubModule" class="select2able">
+                    @*<option value="0">Select One</option>*@
+                </select>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <label>Report Name</label>
+            <input class="form-control" placeholder="Report Name" id="txtReportName" autocomplete="on" list="json-reportlist">
+            <datalist id="json-reportlist"></datalist>
+        </div>
+        <div style="text-align:right">
+            <button class="btn btn-primary" type="button" title="Submit" onclick="getRptDetailsSubmit()">Submit</button>
+        </div>
+    </div>
+
+
+    <div id="contentreport">
+        <section>
+            <div class="section-header">
+                <ol class="breadcrumb">
+                    <li class="active">Report List</li>
+                </ol>
+            </div>
+            <div id="container">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="widget-container fluid-height">
+                            <div class="tab-content padded" id="my-tab-content">
+
+                                <div class="dataTables_paginate">
+                                    <table class="table table-striped table-bordered table-hover" id="table_SearchReport">
+                                        <thead>
+                                            <tr>
+                                                <th>Report Name</th>
+                                                <th>Module</th>
+                                                <th>Sub Module</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="table_serachReportBody"></tbody>
+                                        <tfoot>
+                                            <tr>
+                                                <th>Report Name</th>
+                                                <th>Module</th>
+                                                <th>Sub Module</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+    @*</div>*@
+
+  
+    <!----------------------------------------------------------------Start---Delete Report------------------------------------------------------------------------------>
+    <div class="modal fade" id="modalDeleteReport" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="scopeTitleModal">Delete Report</h4>
+                </div>
+                <div class="modal-body" id="modalDeleteReportContent">
+                    <div class="alert alert-success" style="display:none;" id="messageOK">
+                        <button class="close" data-dismiss="modal" type="button">×</button>Success! You have deleted Report.
+                    </div>
+                    <form action="#" class="form-horizontal" id="contentFormDelete">
+                        <div class="form-group">
+                            <label class="control-label col-md-3">
+                                Report Name
+                            </label>
+                            <div class="col-md-7">
+                                <input id="reportname_delete" class="form-control" type="text" style="width:280px">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-md-3">
+                                Module
+                            </label>
+                            <div class="col-md-7">
+                                <input id="module_delete" class="form-control" type="text" style="width:280px">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="control-label col-md-3">
+                                subModule
+                            </label>
+                            <div class="col-md-7" id="contentReason">
+                                <input id="subModule_delete" class="form-control" type="text" style="width:280px">
+                            </div>
+                        </div>
+
+                    </form>
+                    <div class="col-lg-6">
+                        <center>
+                            <label hidden id="lblDeletereport"> Are you sure to delete this report? </label>
+                                @*<p>Are you sure to delete this report?</p>*@
+                           
+                            <a class="btn btn-primary" onclick="deleteReport()" id="deletebutton">Delete</a>&thinsp;&thinsp;&thinsp;&thinsp;
+                            <a class="btn btn-primary" data-dismiss="modal" id="cancelModal">Close</a>
+                            @*<button id="cancelModal" type="button"  class="btn btn-default" data-dismiss="modal">Cancel</button>*@
+                        </center>
+                    </div>
+                </div>
+                <div class="modal-footer"></div>
+            </div>
+        </div>
+    </div>
+<!---------------------------------------------------------------------------------End Delete----------------------------------------------------------->
+
+   
+ <!----------------------------------------------------------------Start---View --- Report------------------------------------------------------------------------------>
+<div class="modal fade" id="modalViewReport" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="scopeTitleModal">View Report</h4>
+            </div>
+            <div class="modal-body" id="modalViewReportContent">
+                
+                <form action="#" class="form-horizontal" id="contentFormView">
+                    <div class="col-lg-12">
+                        <div class="col-lg-4">
+                            <label>Report ID</label>
+                            <input class="form-control" placeholder="Report ID" id="view_report_ID" readonly="readonly" hidden="hidden">
+                        </div>
+                        <div class="col-lg-4">
+                            <label>Report Name</label>
+                            <input class="form-control" placeholder="Report Name" id="view_report_name" readonly="readonly">
+                        </div>
+                        <div class="col-lg-4">
+                            <label>Module</label>
+                            <input class="form-control" placeholder="Module" id="view_module_name" readonly="readonly">
+                        </div>
+                        <div class="col-lg-4">
+                            <label>Sub Module</label>
+                            <input class="form-control" placeholder="SubModule" id="view_subModule_Name" readonly="readonly">
+                        </div>
+                        <div class="col-lg-4">
+                            <label>Report Description</label>
+                            <input class="form-control" placeholder="Report Description" id="view_Description" readonly="readonly">
+                        </div>
+                        <div class="col-lg-4">
+                            <label>Formula</label>
+                            <input class="form-control" placeholder="Formula" id="view_Formula" readonly="readonly">
+                        </div>
+                        <div class="col-lg-4">
+                            <label>Technical Explanation</label>
+                            <input class="form-control" placeholder="Technical Explanation" id="view_Technical_Explanation" readonly="readonly">
+                        </div>
+                        <div class="col-lg-4" hidden="hidden">
+                            <label>Remarks</label>
+                            <input class="form-control" placeholder="Remarks" id="view_Remarks" readonly="readonly">
+                        </div>
+                        <div class="col-lg-4">
+                            <label>Detail Query</label>
+                            <input class="form-control" placeholder="Detail Query" id="view_DetailQuesry" readonly="readonly">
+                        </div>
+                        <div class="col-lg-4">
+                            <label>GroupBy</label>
+                            <input class="form-control" placeholder="Select And GroupBy" id="view_Select_GroupBy" readonly="readonly">
+                        </div>
+                        <div class="col-lg-4">
+                            <label>Chart Type</label>
+                            <input class="form-control" placeholder="Chart Type" id="view_ChartType" readonly="readonly">
+                        </div>
+                        <div class="col-lg-4">
+                            <label>Axis Type</label>
+                            <input class="form-control" placeholder="Axis Type" id="view_AxisType" readonly="readonly">
+                        </div>
+                        <div class="col-lg-4">
+                            <label>X-Axis Label</label>
+                            <input class="form-control" placeholder=" X Axis Label" id="input_X_Axis">
+                        </div>
+                        <div class="col-lg-4">
+                            <label>Y-Axis Label</label>
+                            <input class="form-control" placeholder=" Y Axis Label" id="view_Y_Axis">
+                        </div>
+                    
+                        <div class="col-lg-4">
+                            <label>Active</label>
+                            <input class="form-control" placeholder="Active" id="view_active">
+                        </div>
+                        <div class="col-lg-4">
+                            <label>CreatedBy</label>
+                            <input class="form-control" placeholder="CreatedBy" id="view_createdBy">
+                        </div>
+                        <div class="col-lg-4">
+                            <label>CreatedOn</label>
+                            <input class="form-control" placeholder="CreatedOn" id="view_createdOn">
+                        </div>
+                        </div>
+        </form>
+                
+            </div>
+            <div class="modal-footer"></div>
+        </div>
+    </div>
+</div>
+<!---------------------------------------------------------------------------------End View----------------------------------------------------------->
+
+<!-----------------------------------------------------Start Edit Model   ------------------------------------------------------------------------------->
+
+<div class="modal fade" id="modalEditReport" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content" style="width:800px;align-self:auto">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="funcCallReset()"><span aria-hidden="true">&times;</span></button>
+                <div class="row">
+                    <div class="col-md-4">
+                        <h4 class="modal-title" id="scopeTitleModal">
+                            View/Edit Report
+                        </h4></div>                                         
+                    </div>
+                <div class="row">
+                    <button class="btn btn-sm btn-default pull-right" data-toggle="tooltip" title="Edit fields" id="editFields_btn" onclick="editFields();"><i class="fa fa-edit" style="color:blue"></i>&nbsp;&nbsp;Edit Fields</button>
+
+                </div>
+                
+
+            </div>
+            <div class="modal-body" id="modalEditReportContent">
+
+                <form action="">
+                    <div class="col-lg-12">
+                        <div class="panel-body">
+                            <div class="col-lg-12" style="border: 1px solid #d0d0d0;">
+
+                                <div class="panel-body">
+
+                                    <form class="form-horizontal" role="form" id="projectEditForm">
+                                        <div class="col-lg-4" hidden="hidden">
+                                            <label><span class="label_required"></span>Report ID</label>
+                                            <input class="form-control" placeholder="Report ID" id="edit_report_ID" readonly="readonly" hidden="hidden">
+                                        </div>
+                                        <div class="col-lg-4">
+                                            <label><span class="label_required"></span>Report Name</label>
+                                            <input class="form-control" placeholder="Report Name" id="edit_report_name" readonly="readonly">
+                                        </div>
+                                        <div class="col-lg-4">
+                                            <label><span class="label_required">*</span>Module</label>
+                                           
+                                            <input class="form-control" placeholder="Module" id="edit_module" readonly="readonly">
+                                            <div id="module_edit_view" style='display:none'>
+                                                <select id="module_edit" class="form-control">
+                                                    <option value="0">Select Module</option>
+                                                </select>
+                                            </div>
+                                            
+                                        </div>
+                                        <div class="col-lg-4">
+                                            <label><span class="label_required">*</span>Sub Module</label>
+                                            <input class="form-control" placeholder="Sub Module" id="edit_subModule" readonly="readonly">
+                                            <select id="submodule_edit" class="form-control" style='display:none'>
+                                                <option value="0">Select Sub Module</option>
+                                            </select>
+                                        </div>
+                                        <br/>
+                                        <div>
+                                            <label><span class="label_required">*</span>Report Description</label>
+                                            <textarea class="desc_dimensions_small" placeholder="Report Description" id="edit_report_description" readonly="readonly"></textarea>
+                                        </div>
+                                        <div>
+                                            <label><span class="label_required">*</span>Formula</label>
+                                            <textarea class="desc_dimensions" placeholder="Formula" readonly="readonly" id="edit_formula"></textarea>
+                                        </div>
+                                        <div>
+                                            <label><span class="label_required">*</span>Technical Explanation</label>
+                                            <textarea class="desc_dimensions_small" placeholder="Technical Explanation" readonly="readonly" id="edit_technical_explanation"></textarea>
+                                        </div>
+                                        <div>
+                                            <label><span class="label_required">*</span>Detail Query (Format to be followed--> select EmployeeName,EmployeeEmailID,Signum,ManagerSignum from refData.TBL_Employees where IsLineManager ='NO' or IsLineManager is NULL)</label>
+                                            <textarea class="desc_dimensions" placeholder="Detail Query" readonly="readonly" id="edit_detail_query"></textarea>
+                                        </div>
+                                        <div style="text-align:right; padding-top:8px;">
+                                            <button class="btn btn-primary" type="button" title="Validate" id="validate_query_edit" onclick="validateQueryEDIT()" style="display:none;">Validate Query</button>
+                                            <button class="btn btn-primary" type="button" title="change" id="Change_query_edit" onclick="ChangeQueryEDIT()" style="display:none">Change Query</button>
+                                        </div>
+                                        <div class="row">
+
+                                            <div class="col-lg-4" id="group_by_view_div">
+                                                <label>Group By</label>
+                                                <input class="form-control" readonly="readonly" placeholder="Group By" id="edit_group_by">
+                                            </div>
+                                            <div class="col-lg-4" id="edit_filter_view_div">                                              
+                                                <label>Filter Attribute</label>  
+                                                <input class="form-control" readonly="readonly" placeholder="Group By" id="edit_filter_attr">                                                                                       
+                                            </div>
+
+                                            <div class="col-lg-6" id="group_by_edit_div" style="display:none">
+                                                <label><span class="label_required">*</span>Group By</label>
+                                                <div>
+                                                    <select id="group_by_edit" class="select2able" multiple="multiple" ></select>
+                                                </div>
+                                                <div class="row">
+                                                    <label id="group_by-Required" style="color: red; font-size: 10px; padding-left: 15px;"></label>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-6" id="filter_attr_edit_div" style="display:none">
+                                                @*<label><span class="label_required">*</span>Filter Groups</label>*@
+                                                <label>Filter Attribute</label>
+                                                <div>
+                                                    <select id="filter_attr_edit" class="select2able" multiple="multiple" ></select>
+                                                </div>
+                                                <div class="row">
+                                                    <label id="filter_attr-Required" style="color: red; font-size: 10px; padding-left: 15px;"></label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label><span class="label_required">*</span>Chart Query  (Format to be followed--> select  :selectGroupBy ,[Employee Count]=count(distinct signum)  from (select * from (:detailQuery) x :filterAttribute ) a group by :selectGroupBy)</label>
+                                            <textarea class="desc_dimensions" placeholder="Chart Query" readonly="readonly" id="edit_chart_query"></textarea>
+                                        </div>
+                                        <div style="text-align:right; padding-top:8px;">
+                                            <button class="btn btn-primary" type="button" title="Validate"  style="display:none" id="validate_chart_query_edit" onclick="validateChartQueryEDIT()">Validate Chart Query</button>
+                                            <button class="btn btn-primary" type="button" title="Validate" id="changeChartQuery_ForFilter_edit" onclick="changeChartQueryForFilterEDIT()" style="display:none">Change Chart Query</button>
+                                        </div>
+                                    </form>
+
+                                </div>
+
+                            </div>
+                            <div class="col-lg-12" style="border: 1px solid #d0d0d0;">
+                                <div class="panel-body">
+
+                                    <form class="form-horizontal" role="form" id="projectViewForm">
+
+                                        
+                                        
+                                        <div class="col-lg-4">
+                                            <label><span class="label_required">*</span>Chart Type</label>
+                                            <input class="form-control" readonly="readonly" placeholder="Group By" id="view_chart_type">
+                                            
+                                            <div id="edit_chart_type_div" style="display:none">                                             
+                                                <select id="edit_chart_type" class="select2able" multiple="multiple" >
+                                                    <option value="line">line</option>
+                                                    <option value="column">column</option>
+                                                    <option value="table">table</option>
+                                                    <option value="bar">bar</option>
+                                                    <option value="area">area</option>
+                                                    <option value="stack">stack</option>
+                                                </select>
+                                            </div>
+                                            <div class="row">
+                                                <label id="edit_chart_type-Required" style="color: red; font-size: 10px; padding-left: 15px;"></label>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-4">
+                                            <label><span class="label_required">*</span>Axis Type</label>
+                                            <input class="form-control" readonly="readonly" placeholder="Axis type" id="view_axis_type" >
+                                            <div id="edit_axis_type_div" style="display:none">
+                                                <select id="edit_axis_type" disabled class="select2able" required onchange="yAxisAddEDIT();">
+                                                    <option selected="true" disabled="disabled">-------Select-------</option> 
+                                                    <option value="single">Single</option>
+                                                    <option value="multiple">Multiple</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-4">
+                                            <label><span class="label_required">*</span>Active</label>
+                                            <input class="form-control" readonly="readonly" placeholder="ACTIVE" id="active_read">
+                                            <div id="edit_active_view_div" style="display:none">
+                                                <select id="edit_active" disabled="" class="select2able" required>
+                                                    <option selected="true" disabled="disabled">-------Select-------</option> 
+                                                    <option value="1">True</option>
+                                                    <option value="0">False</option>
+                                                </select>
+                                            </div>
+                                            <div class="row">
+                                                <label id="edit_active-Required" style="color: red; font-size: 10px; padding-left: 15px;"></label>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-4">
+                                            <label data-toggle="tooltip" title="X axis label can be any string"><span class="label_required"></span>X-Axis Label</label>
+                                            <input class="form-control"readonly="readonly"  placeholder="X-Axis Label" id="edit_x_label" required>
+                                        </div>
+                                        <div class="col-lg-4" id="y_axis_lab_EDIT">
+                                            <label data-toggle="tooltip" title="Provide y-side(integer 0/1),title(any string),Value Suffix(any string) ,Column Name(Select from drop down)"><span class="label_required"></span>Y-Axis Label</label>
+                                            <input class="form-control" type="number" placeholder="Y-Side" id="y_side_EDIT" title="" value="0" required readonly="readonly">
+                                            <input class="form-control" placeholder="Title" id="y_title_EDIT" title="" required readonly="readonly">
+                                            <input class="form-control" placeholder="Value suffix" id="y_val_suff_EDIT" title="" required readonly="readonly">
+                                            <input class="form-control" placeholder="Value suffix" id="y_val_col_EDIT" title="" required readonly="readonly">
+                                            <br />
+                                            <select id="y_col_name_EDIT" class=" form-control" placeholder="Column Name" style="display:none"></select>
+                                        </div>
+                                        <div class="col-lg-4" id="y_axis_lab_mul_EDIT" style="display:none">
+                                            <label><span class="label_required"></span>Y-Axis Label 2</label>
+                                            <input class="form-control" type="number" placeholder="Y-Side" id="y_side_mul_EDIT" title="" value="1" required readonly="readonly">
+                                            <input class="form-control" placeholder="Title" id="y_title_mul_EDIT" title="" required readonly="readonly">
+                                            <input class="form-control" placeholder="Value suffix" id="y_val_suff_mul_EDIT" title="" required readonly="readonly">
+                                            <input class="form-control" placeholder="Value suffix" id="y_val_col_mul_EDIT" title="" required readonly="readonly">
+                                            <br />
+                                            <select id="y_col_name_mul_EDIT" class=" form-control" placeholder="Column Name" style="display:none">
+                                                <option disabled></option>
+                                            </select>
+                                        </div>
+                                        @*<div class="col-lg-4">
+                                            <label>Column Chart</label>
+                                            <input class="form-control" placeholder="Column Chart" id="edit_col_chart">
+                                        </div>
+                                        <div class="col-lg-4">
+                                            <label>Column Detail Query</label>
+                                            <input class="form-control" placeholder="Column Detail Query" id="edit_col_detail_query">
+                                        </div>*@
+                                        
+
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="text-align:right">
+                            <button class="btn btn-primary" type="button"  title="Submit" id="btnEdit" onclick="onEditReport()" style="display:none;">Submit</button>
+                            <button class="btn btn-primary" type="button" title="Cancel" id="cancelEditModal" data-dismiss="modal" onclick="funcCallReset()">Cancel</button>
+                        </div>
+
+                        <div class="modal fade" id="previewReportModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                    </div>
+                                    <div class="modal-body" id="scopeContentModal">
+                                        <div class="widget-container fluid-heightA clearfix">
+                                            <div class="widget-content padded">
+                                                <form action="#" class="form-horizontal">
+                                                    <center>
+                                                        <div class="form-group">
+
+                                                        </div>
+                                                    </center>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button id="cancelPreviewModal" type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </form>
+</div>
+            <div class="modal-footer"></div>
+        </div>
+    </div>
+</div>
+<!-------------------------------------------------------------------------------End Edit model ----------------------------------------------------------------------->

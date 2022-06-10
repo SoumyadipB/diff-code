@@ -1,0 +1,176 @@
+﻿
+
+<html>
+<head>
+    <style>
+        tr, td {
+            border: 2px solid black;
+        }
+
+        td {
+            padding: 10px;
+        }
+        .ui-autocomplete  {
+        max-height: 200px;
+        overflow-y: auto;
+        overflow-x: hidden;
+        z-index: 1000 !important;
+    }
+
+    .ui-autocomplete-loading {
+        background: url('//ajax.googleapis.com/ajax/libs/jqueryui/1.8.2/themes/smoothness/images/ui-anim_basic_16x16.gif') no-repeat right center
+    }
+    </style>
+  
+
+</head>
+<body>
+    <button onclick="requestWorkorder()" type="button" class="btn btn-default" title="getWODetailsLoadTest">getWODetailsLoadTest</button>
+    <button onclick="updateWorkOrder()" type="button" class="btn btn-default" title="updateWODetailsLoadTest">updateWODetailsLoadTest</button>
+    @*<input onkeyup="getAllSignumForTransferSingle()" id="selectUserAllSignum" style='width:100%' placeholder="Signum/Name" title="Minimum 3 characters required!" multiple />*@
+    <script>
+        function updateWorkOrder() {
+            var signum = ['EZNISPA', 'EWALMAN', 'ETANBUT', 'EAANRPR', 'epreeda', 'EMISGOU', 'EBMHUAK', 'EJANGUA'];
+            var arrLenght = signum.length;
+            for (let i = 0; i < arrLenght; i++) {
+                let signumID = signum[i];
+
+                for (let j = 0; j < 100; j++) {
+                    $.isf.ajax({
+                        type: "POST",
+                        enctype: "multipart/form-data",
+                        url: service_java_URL + "accessManagement/testUpdateWOModifiedDate?signum="+signumID,
+                        //data: data,
+                        processData: false,
+                        contentType: false,
+                        async: true,
+                        //cache: false,
+                        //timeout: 600000,
+                        success: function (data) {
+                            //if (data.isValidationFailed == true) {
+                            //    pwIsf.alert({ msg: data.formMessages[0], type: 'failure' });
+                            //}
+                            //else {
+                            //    pwIsf.alert({ msg: data.formMessages[0], type: 'success' });
+                            //}
+                            //pwIsf.removeLayer();
+                            //$("#myFileWOUpload").val('');
+                            //fileName = '';
+                            //$('#btnUpload').attr("disabled", true);
+                        },
+                        error: function (jqXHR, textStatus, errorThrown) {
+                            //  alert("Please check your Template data. It should not be the blank or NA where Interger value is required");
+                            //pwIsf.alert({ msg: jqXHR.responseJSON.errorMessage, type: 'error' });
+                            //pwIsf.removeLayer();
+                            //$("#myFile").val('')
+
+                        }
+                    }); // end ajax call
+
+
+                }
+            }
+        }
+
+
+        function requestWorkorder() {
+            var signum = ['EZNISPA', 'EWALMAN', 'ETANBUT', 'EAANRPR', 'epreeda', 'EMISGOU', 'EBMHUAK', 'EJANGUA'];
+            //let service_java_URL = "https://isfsitservices.internal.ericsson.com:8443/isf-rest-server-java_sit_minor/";
+            var arrLenght = signum.length;
+            for (let i = 0; i < arrLenght; i++) {
+                let signumID = signum[i];
+
+                for (let j = 0; j < 100; j++) {
+                    var serviceUrl = service_java_URL + "woExecution/getWorkOrders?signumID=" + signumID + "&" + "status=INPROGRESS,ASSIGNED,ONHOLD,REOPENED";
+                    if (ApiProxy == true) {
+                        serviceUrl = service_java_URL + "woExecution/getWorkOrders?signumID=" + encodeURIComponent(signumID + "&" + "status=INPROGRESS,ASSIGNED,ONHOLD,REOPENED");
+                    }
+                    //$('.work_order_dBox_container').html(pleaseWaitISF({ text: 'Loading your work order(s) ...' }));
+
+                    var jqxhr = $.isf.ajax({
+                        url: serviceUrl,
+                        returnAjaxObj: true,
+                        async: true
+                    });
+
+                    jqxhr.done(function (data) {
+                        //var d = data.data;
+
+                        //if (d.length) {
+                        //    global_workOrderData = d;
+
+                        //    createWorkorderHtml(d, bindElementOfWorkorder);
+
+                        //} else {
+                        //    $('.work_order_dBox_container').html('<div class="funMsg">No Work Order Found For You.</div>');
+                        //    $('.work_order_panel .pull-right').hide();
+                        //}
+
+                    })
+                    jqxhr.fail(function () {
+                    })
+                    jqxhr.always(function () {
+                        //$('#searchInWorkOrder').trigger('keyup');
+                    });
+                }
+            }
+
+        }
+
+        function getAllSignumForTransferSingle() {
+            $("#selectUserAllSignum").autocomplete({
+
+                //appendTo: "#modalTransfer",
+                source: function (request, response) {
+                    $.isf.ajax({
+                        url: service_java_URL + "activityMaster/getEmployeesByFilter",
+                        type: "POST",
+                        data: {
+                            term: request.term
+                        },
+                        success: function (data) {
+                            $("#selectUserAllSignum").autocomplete().addClass("ui-autocomplete-loading");
+                            var result = [];
+                            $.each(data, function (i, d) {
+                                result.push({
+                                    "label": d.signum + "/" + d.employeeName,
+                                    "value": d.signum
+                                });
+                            })
+                            response(result);
+                            $("#selectUserAllSignum").autocomplete().removeClass("ui-autocomplete-loading");
+                        },
+                        search: function () {
+                            // custom minLength
+                            var term = extractLast(this.value);
+                            if (term.length < 3) {
+                                return false;
+                            }
+                        },
+                        focus: function () {
+                            // prevent value inserted on focus
+                            return false;
+                        },
+                        select: function (event, ui) {
+                            var terms = split(this.value);
+                            // remove the current input
+                            terms.pop();
+                            // add the selected item
+                            erms.push(ui.item.value);
+                            // add placeholder to get the comma-and-space at the end
+                            terms.push("");
+                            this.value = terms.join(", ");
+                            return false;
+                        },
+                    });
+                },
+
+                minLength: 3
+
+            });
+            $("#selectUserAllSignum").autocomplete("widget").addClass("fixedHeight");
+        }
+
+    </script>
+</body>
+</html>

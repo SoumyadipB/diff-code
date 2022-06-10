@@ -1,0 +1,274 @@
+﻿@{
+    Layout = "";
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Work Flow</title>
+    @Scripts.Render("~/bundles/SessionManagement")
+    @Styles.Render("~/bundles/css/rappid")
+    @Styles.Render("~/bundles/css/bootstrap")
+
+    @Styles.Render("~/bundles/css/DataTableStyle")
+    @Styles.Render("~/bundles/css/DeliveryExecution")
+    <link type="text/css" rel="stylesheet" href="~/Content/CSS/font-awesome.min.css" />
+    <style>
+        .icon-size {
+            font-size: 20px;
+        }
+
+        .joint-lightbox.modal {
+            display: block;
+        }
+
+        .joint-popup.joint-theme-modern {
+            background-color: lightcyan;
+            border: 2px solid #31d0c6;
+            border-radius: 10px;
+            padding: 10px;
+        }
+
+        .joint-popup.joint-theme-dark {
+            background-color: lightcyan;
+            border: 2px solid #31d0c6;
+            border-radius: 10px;
+            padding: 10px;
+            font-family: lato-light,Arial,sans-serif;
+        }
+
+        .joint-popup.joint-theme-material {
+            background-color: lightcyan;
+            border: 2px solid #31d0c6;
+            border-radius: 10px;
+            padding: 10px;
+            font-family: lato-light,Arial,sans-serif;
+        }
+
+        .popover {
+            max-width: 100%;
+            // Max Width of the popover (depending on the container!)
+        }
+    </style>
+
+</head>
+<body>
+    <div class="container">
+        <input type="hidden" id="defID" />
+        <div id="wOdetailForWF"></div>
+        <hr />
+        <div class="row">
+            <div class="col-md-2">Started<span style="margin-left: 5px ;padding: 3px 10px 3px 10px;background-color:#6e88ff;"></span></div>
+            <div class="col-md-2">Completed<span style=" margin-left: 5px ;padding: 3px 10px 3px 10px;background-color:#00983b;"></span></div>
+            <div class="col-md-2">On Hold<span style="margin-left: 5px ;padding: 3px 10px 3px 10px;background-color:#E5E500 ;"></span></div>
+            <div class="col-md-2">Skipped<span style=" margin-left: 5px ;padding: 3px 10px 3px 10px;background-color:#FFAB73 ;"></span></div>
+            <div class="col-md-2">Manual<span style=" margin-left: 5px ;padding: 3px 17px 3px 17px;background-color:#dcd7d7;border: 1px solid #31d0c6 ;"></span></div>
+            <div class="col-md-2" style="width:155px">Automatic<span style="margin-left: 5px;padding: 3px 4px 4px 4px;background-color:#ffffff;border: 1px solid red;"><span style=" margin-left: 0px ;padding: 1px 15px 1px 15px;background-color:#31d0c6;border: 1px solid red"></span></span></div>
+            <a href="#" onclick="location.reload();"><span class="fa fa-refresh" style="color:blue;" data-placement="bottom" data-toggle="tooltip" title="Refresh"></span></a>
+        </div>
+        <br />
+    </div>
+    <div class="container" id="app">
+        <div class="app-header">
+            <div class="app-title">
+                <h1>Execution</h1>
+            </div>
+            <div class="toolbar-container"></div>
+        </div>
+        <div class="app-body">
+            <div class="stencil-container"></div>
+            <div class="paper-container"></div>
+            <div class="inspector-container"></div>
+            <div class="navigator-container"></div>
+        </div>
+    </div>
+    <!-- Rappid/JointJS dependencies: -->
+    @Scripts.Render("~/bundles/rappid")
+    @Scripts.Render("~/bundles/GetSessionVars")
+    @Scripts.Render("~/bundles/config")
+    @Scripts.Render("~/bundles/bootstrap")
+    @Scripts.Render("~/bundles/datepicker")
+
+    @Scripts.Render("~/bundles/DeliveryExecution")
+    @Scripts.Render("~/bundles/DataTableScript")
+
+    <script>
+
+        var urlParams = new URLSearchParams(window.location.search);
+        $(document).ready(function () {
+            getWODetailsForWF(urlParams.get("woID"));
+        });
+
+        joint.setTheme('material');
+        app = new App.MainView({ el: '#app' });
+
+        themePicker = new App.ThemePicker({ mainView: app });
+        themePicker.render().$el.appendTo(document.body);
+        window.addEventListener('load', function () {
+
+        });
+
+        $("#btn-edit").css("border", "2px solid");
+
+        var contentDiv = '';
+        var currentTaskID, currentTaskName, currentShape, executionType, urlpath;
+        var bookingID = '', bookingStatus = '';
+        var subActivityFlowChartDefID = '', stepID = '';
+        makePopup();
+
+        app.paper.on('cell:pointerclick', function (cellView, evt, x, y) {
+
+            currentShape = cellView.model.attributes.type;
+            subActivityFlowChartDefID = $("#defID").val();
+            stepID = cellView.model.attributes.id;
+
+            //console.log('cell view ' + cellView.model.attributes.attrs.task.taskID + ' was clicked');
+            if (cellView.model.attributes.attrs.task != undefined) {
+                currentTaskID = cellView.model.attributes.attrs.task.taskID;
+
+                currentTaskName = cellView.model.attributes.attrs.task.taskName;
+                bookingID = cellView.model.attributes.attrs.task.bookingID;
+                bookingStatus = cellView.model.attributes.attrs.task.status;
+                executionType = cellView.model.attributes.attrs.task.executionType;
+                if ((executionType == "Automatic") && (bookingStatus == "COMPLETED")) {
+                    urlpath = cellView.model.attributes.attrs.task.outputLink;
+                    if ((urlpath != null) || (urlpath != undefined))
+                        // urlpath = urlpath.split("=")[1];
+                        urlpath = urlpath;
+                }
+                if (currentShape == "basic.Rect" || currentShape == "erd.WeakEntity" || currentShape == 'app.ericssonWeakEntity' || currentShape == 'app.ericssonStep') {
+
+                    if (((bookingID == "%BOOKING_ID%") || (bookingID == "")) && ((bookingStatus == "%STATUS%") || (bookingStatus == ""))) {
+
+                        contentDiv = '<a id="PlayBTN" href="#" onclick="InvokeStartFlowChartTask(' + urlParams.get("woID") + ',' + currentTaskID + ',' + subActivityFlowChartDefID + ',\' ' + executionType + '\',' + stepID + ',\' ' + bookingStatus + '\')"><span class="fa fa-play icon-size" style="color:blue" data-toggle="tooltip" title="START"></span></a>' +
+                            '<a href="#" class="view-skip-wf" data-modalname="Skipped" data-status-wf="SKIPPED" data-taskname="' + currentTaskName + '" data-workidb="' + urlParams.get("woID") + '" data-taskidb="' + currentTaskID + '" data-bookid="' + bookingID + '"> <span class="fa fa-forward icon-size" data-toggle="tooltip" title="Skip" style="color:black;margin-left:3px;"></span></a>' +
+                            '<a href="#" class=""><span class="fa fa-info icon-size" data-toggle="tooltip" title="' + currentTaskName + '" style="color:red;margin-left:3px;"></span></a>';
+
+                    }
+                    if ((bookingID != "") && (bookingStatus == "STARTED") && (bookingID != "%BOOKING_ID%")) {
+                        if (executionType == "Automatic") {
+                            contentDiv = '<a id="stop" href="#" onclick="InvokeStopFlowChartTask(' + urlParams.get("woID") + ',' + currentTaskID + ',' + bookingID + ')" ><span class="fa fa-stop icon-size" data-toggle="tooltip" title="Stop" style="color:orangered"></span></a>' +
+                                '<a href="#" class="view-skip-wf" data-status-wf="SKIPPED" data-modalname="Skipped" data-taskname="' + currentTaskName + '" data-workidb="' + urlParams.get("woID") + '" data-taskidb="' + currentTaskID + '" data-bookid="' + bookingID + '"> <span class="fa fa-forward icon-size" data-toggle="tooltip" title="Skip" style="color:black;margin-left:3px;"></span></a>' +
+                                '<a href="#" class=""><span class="fa fa-info icon-size" data-toggle="tooltip" title="' + currentTaskName + '" style="color:red;margin-left:3px;"></span></a>';;
+                        }
+                        else {
+                            contentDiv = '<a id="stop" href="#" onclick="InvokeStopFlowChartTask(' + urlParams.get("woID") + ',' + currentTaskID + ',' + bookingID + ')" ><span class="fa fa-stop icon-size" data-toggle="tooltip" title="Stop" style="color:orangered"></span></a>' +
+                                '<a href="#" class="view-skip-wf" data-status-wf="SKIPPED" data-modalname="Skipped" data-taskname="' + currentTaskName + '" data-workidb="' + urlParams.get("woID") + '" data-taskidb="' + currentTaskID + '" data-bookid="' + bookingID + '"> <span class="fa fa-forward icon-size" data-toggle="tooltip" title="Skip" style="color:black;margin-left:3px;"></span></a>' +
+                                '<a href="#" id="pause" class="view-skip-wf" data-modalname="Hold" data-status-wf="ONHOLD" data-taskname="' + currentTaskName + '" data-workidb="' + urlParams.get("woID") + '" data-taskidb="' + currentTaskID + '" data-bookid="' + bookingID + '"><span class="fa fa-pause icon-size" data-toggle="tooltip" title="On Hold" style="color:black"></span></a>' +
+                                '<a href="#" class=""><span class="fa fa-info icon-size" data-toggle="tooltip" title="' + currentTaskName + '" style="color:red;margin-left:3px;"></span></a>';;
+                        }
+                    }
+                    if ((bookingID != "") && (bookingStatus == "ONHOLD") && (bookingID != "%BOOKING_ID%")) {
+
+                        contentDiv = '<a id="holdsign"><span class="fa fa-info icon-size" data-toggle="tooltip" title="' + currentTaskName + ' is On Hold" style="color:red;padding-right:3px;"></span></a>' +
+                            '<a href="#" class="view-skip-wf" data-modalname="Skipped" data-status-wf="SKIPPED" data-taskname="' + currentTaskName + '" data-workidb="' + urlParams.get("woID") + '" data-taskidb="' + currentTaskID + '" data-bookid="' + bookingID + '"> <span class="fa fa-forward icon-size" data-toggle="tooltip" title="Skip" style="color:black;margin-left:3px;"></span></a>' +
+                            '<a id="PlayBTN" href="#" onclick="InvokeStartFlowChartTask(' + urlParams.get("woID") + ',' + currentTaskID + ',' + subActivityFlowChartDefID + ',\' ' + executionType + '\',' + stepID + ',\' ' + bookingStatus + '\')"><span class="fa fa-play icon-size" style="color:blue" data-toggle="tooltip" title="START"></span></a>';
+                        //'<a href="#" class=""><span class="fa fa-info icon-size" data-toggle="tooltip" title="' + currentTaskName + '" style="color:red;margin-left:3px;"></span></a>';
+                    }
+                    if ((bookingID != "") && (bookingStatus == "COMPLETED") && (bookingID != "%BOOKING_ID%")) {
+                        if ((executionType == "Automatic") && (urlpath != undefined)) {
+                            contentDiv = '<a id="PlayBTN" href="#" onclick="InvokeStartFlowChartTask(' + urlParams.get("woID") + ',' + currentTaskID + ',' + subActivityFlowChartDefID + ',\' ' + executionType + '\',' + stepID + ',\' ' + bookingStatus + '\')"><span class="fa fa-play icon-size" style="color:blue" data-toggle="tooltip" title="START"></span></a>' +
+                                '<a id="saved"><span class="fa fa-check icon-size" data-toggle="tooltip" title="Completed" style="color:green;padding-right:3px;"></span></a>' +
+                                '<a id="download" href="' + uploadRPAFile + urlpath + '"><span class="fa fa-download icon-size" data-toggle="tooltip" title="DownloadFile" style="color:green;padding-right:3px;"></span></a>' +
+                                '<a href="#" class=""><span class="fa fa-info icon-size" data-toggle="tooltip" title="' + currentTaskName + '" style="color:red;margin-left:3px;"></span></a>';;
+                        }
+                        else {
+                            contentDiv = '<a id="PlayBTN" href="#" onclick="InvokeStartFlowChartTask(' + urlParams.get("woID") + ',' + currentTaskID + ',' + subActivityFlowChartDefID + ',\' ' + executionType + '\',' + stepID + ',\' ' + bookingStatus + '\')"><span class="fa fa-play icon-size" style="color:blue" data-toggle="tooltip" title="START"></span></a>' +
+                                '<a id="saved"><span class="fa fa-check icon-size" data-toggle="tooltip" title="Completed" style="color:green;padding-right:3px;"></span></a>' +
+                                '<a href="#" class=""><span class="fa fa-info icon-size" data-toggle="tooltip" title="' + currentTaskName + '" style="color:red;margin-left:3px;"></span></a>';;
+                        }
+                    }
+
+                    if ((bookingID != "") && (bookingStatus == "SKIPPED") && (bookingID != "%BOOKING_ID%")) {
+
+                        contentDiv = '<a id="PlayBTN" href="#" onclick="InvokeStartFlowChartTask(' + urlParams.get("woID") + ',' + currentTaskID + ',' + subActivityFlowChartDefID + ',\' ' + executionType + '\',' + stepID + ',\' ' + bookingStatus + '\')"><span class="fa fa-play icon-size" style="color:blue" data-toggle="tooltip" title="START"></span></a>' +
+                            '<a id="skipsign"><span class="fa fa-ban icon-size" data-toggle="tooltip" title="Skipped" style="color:red;padding-right:3px;"></span></a>' +
+                            '<a href="#" class=""><span class="fa fa-info icon-size" data-toggle="tooltip" title="' + currentTaskName + '" style="color:red;margin-left:3px;"></span></a>';;
+                    }
+                    $("#popupContent").append(contentDiv);
+                }
+
+                else if (currentShape == "erd.Relationship") {
+                    if ((currentTaskID != 0) || (currentTaskID != null)) {
+                        if (((bookingID == "%BOOKING_ID%") || (bookingID == "")) && ((bookingStatus == "%STATUS%") || (bookingStatus == ""))) {
+
+                            contentDiv = '<a id="PlayBTN" href="#" onclick="InvokeStartFlowChartTask(' + urlParams.get("woID") + ',' + currentTaskID + ',' + subActivityFlowChartDefID + ',\' ' + executionType + '\',' + stepID + ',\' ' + bookingStatus + '\')"><span class="fa fa-play" style="color:blue" data-toggle="tooltip" title="START"></span></a>' +
+                                '<a id="stop" href="#" onclick="InvokeStopFlowChartTask(' + urlParams.get("woID") + ',' + currentTaskID + ',' + bookingID + ')" ><span class="fa fa-stop" data-toggle="tooltip" title="Stop" style="color:orangered"></span></a>';
+
+                        }
+                        else if ((bookingID != "") && (bookingStatus == "COMPLETED") && (bookingID != "%BOOKING_ID%")) {
+                            contentDiv = '<a id="PlayBTN" href="#" onclick="InvokeStartFlowChartTask(' + urlParams.get("woID") + ',' + currentTaskID + ',' + subActivityFlowChartDefID + ',\' ' + executionType + '\',' + stepID + ',\' ' + bookingStatus + '\')"><span class="fa fa-play icon-size" style="color:blue" data-toggle="tooltip" title="START"></span></a>';
+                        }
+                        else if ((bookingID != "") && (bookingStatus == "STARTED") && (bookingID != "%BOOKING_ID%")) {
+                            contentDiv = '<a id="stop" href="#" onclick="InvokeStopFlowChartTask(' + urlParams.get("woID") + ',' + currentTaskID + ',' + bookingID + ')" ><span class="fa fa-stop icon-size" data-toggle="tooltip" title="Stop" style="color:orangered"></span></a>';
+                        }
+                    }
+                    else {
+                        contentDiv = '<a id="yesBtn" href="#" onclick="" ><span class="" style="color:blue" data-toggle="tooltip" title="START">Yes</span></a>' +
+                            '<a id="noBtn" href="#" onclick="" ><span class="" data-toggle="tooltip" title="No" style="color:orangered">No</span></a>';
+                        // $(".joint-popup").hide();
+                    }
+                    $("#popupContent").append(contentDiv);
+                }
+            }
+            else {
+                if (currentShape == 'erd.Relationship') {
+                    var yes = "YES", no = "NO";
+                    contentDiv = '<a id="yesBtn" href="#" onclick="stepDetails(' + urlParams.get("woID") + ',' + stepID + ',' + subActivityFlowChartDefID + ',\'' + yes + '\')" style="padding-right:10px; font-size: 11px; font-weight: bolder;"><span class="" style="color:blue" data-toggle="tooltip" title="START">Yes</span></a>' +
+                        '<a id="noBtn" href="#" onclick="stepDetails(' + urlParams.get("woID") + ',' + stepID + ',' + subActivityFlowChartDefID + ',\'' + no + '\')" style="font-size: 11px; font-weight: bolder;"><span class="" data-toggle="tooltip" title="No" style="color:orangered">No</span></a>';
+                }
+                $("#popupContent").append(contentDiv);
+            }
+        });
+
+        //Make Popup and pass TaskID
+
+    </script>
+    <!-- Local file warning: -->
+
+    <div id="message-fs" style="display: none;">
+        <p>The application was open locally using the file protocol. It is recommended to access it trough a <b>Web server</b>.</p>
+        <p>Please see <a href="README.md">instructions</a>.</p>
+    </div>
+    <script>
+        (function () {
+            var fs = (document.location.protocol === 'file:');
+            var ff = (navigator.userAgent.toLowerCase().indexOf('firefox') !== -1);
+            if (fs && !ff) {
+                (new joint.ui.Dialog({
+                    width: 300,
+                    type: 'alert',
+                    title: 'Local File',
+                    content: $('#message-fs').show()
+                })).open();
+            }
+        })();
+
+    </script>
+
+    <div class="modal fade" id="modalSkippedWF" role="dialog">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 id="skippedHeaderWF" class="modal-title text-center"></h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <input id="woIdWF" type="hidden" value="" />
+                            <input id="bookIdWF" type="hidden" value="" />
+                            <input id="taskIdWF" type="hidden" value="" />
+                            <input id="statusWF" type="hidden" value="" />
+                            <input id="commentSkippedWF" class="form-control" type="text" placeholder="Enter comment" required />
+                        </div>
+                    </div>
+                    <hr />
+                    <div class="row">
+                        <button type="button" class="btn btn-default pull-right" onclick="updateFlowChartTaskStatus(document.getElementById('woIdWF').value,document.getElementById('taskIdWF').value,document.getElementById('bookIdWF').value,document.getElementById('statusWF').value, document.getElementById('commentSkippedWF').value)">Submit</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>

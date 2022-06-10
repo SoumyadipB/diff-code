@@ -1,0 +1,307 @@
+﻿
+@{
+    ViewBag.Title = "Plan Landing";
+}
+@Scripts.Render("~/bundles/WorkOrder")
+
+
+<style>
+    td.details-control {
+        background: url('http://datatables.net/examples/resources/details_open.png') no-repeat center center;
+        cursor: pointer;
+    }
+
+    tr.shown td.details-control {
+        background: url('http://datatables.net/examples/resources/details_close.png') no-repeat center center;
+    }
+
+    table.display {
+        overflow-x: scroll;
+    }
+
+    .work_table {
+        overflow-x: scroll;
+    }
+</style>
+
+
+<div id="content">
+    <section>
+        <div class="section-header">
+            <ol class="breadcrumb">
+                <li class="active">Work Order Plan Landing</li>
+            </ol>
+        </div>
+        <div id="page-wrapper">
+
+            <!-- /.row -->
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="col-lg-3">
+                        Domain:<br />
+                        <select class="select2able select2-offscreen" id="select_domain" onchange="getActivitiesSub();">
+                            <option value="0"></option>
+                        </select>
+                    </div>
+                    <div class="col-lg-3">
+                        Service Area:<br />
+                        <select class="select2able select2-offscreen" id="select_product_area" onchange="getActivitiesSub();">
+                            <option value="0"></option>
+                        </select>
+                    </div>
+                    <div class="col-lg-3">
+                        Technology:<br />
+                        <select class="select2able select2-offscreen" id="select_technology" onchange="getActivitiesSub();">
+                            <option value="0"></option>
+                        </select>
+                    </div>
+
+                    <div class="col-lg-3">
+                        Activity:<br />
+                        <select class="select2able select2-offscreen" id="select_activity"></select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- /.row -->
+            <div class="row">
+                <div class="col-lg-12">
+
+                    <div class="col-lg-3">
+                        SubActivity:<br />
+                        <select class="select2able select2-offscreen" id="select_activitysub"></select>
+                    </div>
+                    <div class="col-lg-3">
+                    </div>
+                    <div class="col-lg-3">
+                        <button class="btn btn-primary" onclick="search()">Search</button>
+                        <button class="btn btn-primary" onclick="location.href='../WorkOrder';">Add New</button>
+                    </div>
+
+
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="widget-container fluid-height">
+
+
+                        <div class="tab-content padded" id="my-tab-content">
+
+
+                            <div class="dataTable_wrapper work_table" >
+
+                              
+
+
+                                <table id="table_wo_planning" class="display" cellspacing="0" width="100%" >
+                                    @*<thead>
+                                            <tr>
+                                                <th></th>
+                                                <th>projectID</th>
+                                                <th>scopeID</th>
+                                                <th>createdBy</th>
+                                                <th>priority</th>
+                                            </tr>
+                                        </thead>
+                                        <tfoot>
+                                            <tr>
+                                                <th></th>
+                                                <th>projectID</th>
+                                                <th>scopeID</th>
+                                                <th>createdBy</th>
+                                                <th>priority</th>
+                                            </tr>
+                                        </tfoot>*@
+                                </table>
+
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal -->
+            <div class="modal fade" id="modalTransfer" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title" id="scopeTitleModal">Transfer Work Order</h4>
+                        </div>
+                        <div class="modal-body" id="scopeContentModal">
+
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <div class="form-group">
+                                        <label>Work Order ID</label>
+                                    </div>
+
+
+                                    <div class="form-group">
+                                        <label>Signum ID</label>
+
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-6">
+                                    <div class="form-group">
+                                        <input class="form-control" id="modal_input_woid" disabled>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <select class="select2able select2-offscreen" id="select_modal_signum"></select>
+                                    </div>
+
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="modal-footer">
+                            <a id="submitModal" class="btn btn-primary" onclick="transferWorkOrder()">Send</a>
+                            <button id="cancelModal" type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+          
+            <!-- Modal -->
+            <div class="modal fade" id="edit_success" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title" id="scopeTitleModal">Work Order</h4>
+                        </div>
+                        <div class="modal-body" id="scopeContentModal">
+
+                            <label id="employee_change_status"></label>
+
+                        </div>
+                        <div class="modal-footer">
+                            <a id="submitModal" class="btn btn-primary" onclick="modalClose()">Close</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal -->
+            <div class="modal fade" id="modal_work_order" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title" id="scopeTitleModal">Edit Work Order</h4>
+                        </div>
+                        <div class="modal-body" id="scopeContentModal">
+
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <div class="form-group">
+                                        <label>Work Order ID</label>
+                                    </div>
+
+                                    <br />
+                                    <div class="form-group">
+                                        <label>Work Plan Order ID</label>
+                                    </div>
+
+                                    <br />
+                                    <div class="form-group">
+                                        <label>SignumID</label>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <i class="fa fa-calendar"></i> <label>PlannedStartDate</label>
+                                        <br />
+                                    </div>
+
+                                    <br />
+                                    <div class="form-group">
+                                        <i class="fa fa-calendar"></i> <label>PlannedEndDate</label>
+                                    </div>
+
+                                    <br />
+                                    <div class="form-group">
+                                        <i class="fa fa-calendar"></i> <label>ActualStartDate</label>
+                                    </div>
+
+                                    <br />
+                                    <div class="form-group">
+                                        <i class="fa fa-calendar"></i> <label>ActualEndDate</label>
+                                    </div>
+
+                                    
+                                    <div class="form-group">
+                                        <label>Node Type</label>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label>Node Name</label>
+                                    </div>
+
+                                    <br />
+                                    <div class="form-group">
+                                        <label>Priority</label>
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-6">
+                                    <div class="form-group">
+                                        <input class="form-control" id="modal_input_wOID" disabled>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <input class="form-control" id="modal_input_wOPlanID" disabled>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <select class="select2able select2-offscreen" id="select_modal_signum2"></select>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <input type="date" Name="DateResigned" id="modal_planned_start_date" class="form-control" data-date-format='yyyy-mm-dd' placeholder="mm/dd/yyyy" readonly />
+                                    </div>
+                                    <div class="form-group">
+                                        <input type="date" Name="DateResigned" id="modal_planned_end_date" class="form-control" data-date-format='yyyy-mm-dd' placeholder="mm/dd/yyyy" readonly />
+                                    </div>
+                                    <div class="form-group">
+                                        <input type="date" Name="DateResigned" id="modal_actual_start_date" class="form-control" data-date-format='yyyy-mm-dd' placeholder="mm/dd/yyyy" readonly />
+                                    </div>
+                                    <div class="form-group">
+                                        <input type="date" Name="DateResigned" id="modal_actual_end_date" class="form-control" data-date-format='yyyy-mm-dd' placeholder="mm/dd/yyyy" readonly />
+                                    </div>
+
+                                    <div class="form-group">
+                                        <select class="select2able select2-offscreen" id="select_node_type"></select>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <input class="form-control" id="modal_input_node_name" >
+                                    </div>
+
+                                    <div class="form-group">
+                                        <select class="select2able select2-offscreen" id="select_modal_priority"></select>
+                                    </div>
+
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="modal-footer">
+                            <a id="submitModal" class="btn btn-primary" onclick="updateWorkOrder();" >Update</a>
+                            <button id="cancelModal" type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+
+    </section>
+</div>
+

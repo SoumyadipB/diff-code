@@ -1,0 +1,132 @@
+﻿@Scripts.Render("~/bundles/ReportIndex")
+@{
+    ViewBag.Title = "Reports/ReportIndex";
+}
+
+
+<script type='text/javascript' src='https://tbsrvp.internal.ericsson.com/javascripts/api/viz_v1.js'></script>
+<style>
+    hr {
+        margin-top: -5px;
+    }
+
+    #dumpPath table, #dumpPath td, #dumpPath th {
+        border: 1px solid black;
+        text-align: center;
+        padding-top: 5px;
+        padding-bottom: 5px;
+        padding-left:8px;
+        padding-right:8px;
+    }
+</style>
+
+<div class="col-md-12">
+    <div class="panel panel-default" style="padding-top: 0%">
+        <div class="panel-heading" id="TabCollection">
+            <ul class="nav nav-tabs">
+                <li><a data-toggle="tab" href="#TABLEAU_REPORT1" id="TableuTab"><strong>TABLEAU REPORTS</strong></a></li>               
+                <li class="active"><a data-toggle="tab" href="#DETAIL_DUMP_STOP"><strong>DETAIL DUMP</strong></a></li>
+            </ul>
+        </div>
+        <div class="panel-body">
+            <div id="ecnMessage" style="display:none;" class="panel-heading">
+                <label style="color:orange;">  NOTE!!! Reports can now only be viewed on <a target="_blank" style="color:blue;text-decoration:underline" href="https://isf.internal.ericsson.com/">ECN</a> </label>
+            </div>
+            <div class="tab-content">
+
+                <div id="DETAIL_DUMP_STOP" class="tab-pane fade in active" style="padding-top:10px;">
+                    <label style="color:orange;font-size:x-large;">  NOTE!!!Detail dump of Reports Has been stopped temporarily due to some critical hardware issue.</label>
+
+                    <div id="dumpPath">
+                        <table style="text-align:center; border-collapse: collapse;">
+                            <tr>
+                                <th>Unit</th>
+                                <th>Sharepoint Owner</th>
+                                <th>Signum</th>
+                                <th>Sharepoint site</th>
+                            </tr>
+                            <tr>
+                                <td>All MA (Common Data only)</td>
+                                <td>Pramod Kumar Indoria</td>
+                                <td>epraind</td>
+                                <td>
+                                    <a href="https://ericsson.sharepoint.com/sites/OEDataReports/Shared%20Documents/Forms/AllItems.aspx" target="_blank">
+                                        https://ericsson.sharepoint.com/sites/OEDataReports/Shared%20Documents/Forms/AllItems.aspx
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>MANA</td>
+                                <td>Syed Afzal Nasir</td>
+                                <td>esyenas</td>
+                                <td>
+                                    <a href="https://ericsson-my.sharepoint.com/:f:/r/personal/syed_afzal_nasir_ericsson_com/Documents/ISF?csf=1&e=O3poQU" target="_blank">
+                                        https://ericsson-my.sharepoint.com/:f:/r/personal/syed_afzal_nasir_ericsson_com/Documents/ISF?csf=1&e=O3poQU
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>MELA</td>
+                                <td>Komala</td>
+                                <td>ekomala</td>
+                                <td>
+                                    <a href="https://ericsson.sharepoint.com/:f:/r/sites/MELADMHAutomationTeam/Shared%20Documents/ISF%20Daily%20Dumps?csf=1&e=XDNFup" target="_blank">
+                                        https://ericsson.sharepoint.com/:f:/r/sites/MELADMHAutomationTeam/Shared%20Documents/ISF%20Daily%20Dumps?csf=1&e=XDNFup
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>MOAI (Excluding Bharti MS)</td>
+                                <td>Mukesh Agrawal M</td>
+                                <td>emukeag</td>
+                                <td>
+                                    <a href="https://ericsson.sharepoint.com/:f:/r/sites/DFOT_MOAI/ISFPowerBI%20REPORTS/DAILY%20ISF%20REPORTS?csf=1&e=lXLj2p" target="_blank">
+                                        https://ericsson.sharepoint.com/:f:/r/sites/DFOT_MOAI/ISFPowerBI%20REPORTS/DAILY%20ISF%20REPORTS?csf=1&e=lXLj2p
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>MMEA</td>
+                                <td>Ashish Mehta</td>
+                                <td>emehtas</td>
+                                <td>
+                                    <a href="https://ericsson.sharepoint.com/:f:/r/sites/MMEAISFReportDump/Shared%20Documents/01MMEA%20ISF%20Report%20Dump?csf=1&e=u8zUgQ" target="_blank">
+                                        https://ericsson.sharepoint.com/:f:/r/sites/MMEAISFReportDump/Shared%20Documents/01MMEA%20ISF%20Report%20Dump?csf=1&e=u8zUgQ
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>MNEA</td>
+                                <td>Perry Wang</td>
+                                <td>enprstn</td>
+                                <td>
+                                    <a href="https://ericsson.sharepoint.com/sites/DFOptimizeDMMNEA/Shared%20Documents/Forms/AllItems.aspx?id=%2Fsites%2FDFOptimizeDMMNEA%2FShared%20Documents%2FMNEA%20ISF%20reports%20dump" target="_blank">
+                                        https://ericsson.sharepoint.com/sites/DFOptimizeDMMNEA/Shared%20Documents/Forms/AllItems.aspx?id=%2Fsites%2FDFOptimizeDMMNEA%2FShared%20Documents%2FMNEA%20ISF%20reports%20dump
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>BHARTI MS</td>
+                                <td>Manish Sachdeva</td>
+                                <td>emanisa</td>
+                                <td>
+                                    <a href="https://ericsson.sharepoint.com/:f:/r/sites/BhartiMS/Shared%20Documents/ISF%20Reports%20dump%20for%20DMH%20Bharti?csf=1&web=1&e=HCzExA" target="_blank">
+                                        https://ericsson.sharepoint.com/:f:/r/sites/BhartiMS/Shared%20Documents/ISF%20Reports%20dump%20for%20DMH%20Bharti?csf=1&web=1&e=HCzExA
+                                    </a>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>                
+
+                <div id="TABLEAU_REPORT1" class="tab-pane fade in" style="padding-top:10px;">                    
+                    <label style="color:orange;font-size:x-large;"> Tableau Reports discontinued Post R15.0 </label>
+                </div>                
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+

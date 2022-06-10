@@ -1,0 +1,160 @@
+﻿@{
+    Layout = null;
+}
+@{
+    ViewBag.title = "Login";
+}
+<link rel="icon" type="image/png" href="~/Content/images/Ericsson/favicon.ico" />
+<link type="text/css" rel="stylesheet" href="~/Content/CSS/fontStyle.css" media="all" />
+<link type="text/css" rel="stylesheet" href="~/Content/CSS/font-awesome.min.css?1422529194" />
+<title>ISF - @ViewBag.Title </title>
+@Styles.Render("~/bundles/css/bootstrap")
+
+@Scripts.Render("~/bundles/jquery")
+@Scripts.Render("~/bundles/config")
+@Scripts.Render("~/bundles/bootstrap")
+@Scripts.Render("~/bundles/datepicker")
+@Scripts.Render("~/bundles/Login")
+@Styles.Render("~/bundles/css/select2")
+@Scripts.Render("~/bundles/select2")
+
+
+@Scripts.Render("~/bundles/customConsole")
+@Scripts.Render("~/bundles/ajaxRequest")
+
+<style>
+    .bg {
+        /* The image used */
+        /* Full height */
+        height: 100%;
+        /* Center and scale the image nicely */
+        background-repeat: no-repeat;
+        background-size: cover;
+    }
+
+    body {
+        font-family: 'Ericsson Hilda' !important;
+    }
+
+    h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
+        font-family: 'Ericsson Hilda' !important;
+    }
+
+    .centered {
+        position: fixed; /* or absolute */
+        top: 30%;
+        left: 50%;
+        margin-left: -30px;
+    }
+
+    .nav > li > a:hover, .nav > li > a:focus {
+        background-image: linear-gradient(to right, #113975, #1e58ad);
+    }
+
+    .nav-tabs > li.active > a, .nav-tabs > li.active > a:hover, .nav-tabs > li.active > a:focus {
+        color: #ffffff;
+        border: 1px solid #2e6dca;
+        border-bottom: 1px solid #00000000;
+        background-image: linear-gradient(to right, #113975, #1e58ad);
+    }
+
+        .nav-tabs > li.active > a:focus {
+            color: #ffffff;
+            background-image: linear-gradient(to right, #113975, #1e58ad);
+        }
+
+    .nav-tabs.nav-justified > .active > a {
+        border-bottom-color: #00000000;
+    }
+
+    .nav-tabs.nav-justified > li > a {
+        border-bottom: 1px solid #2e6dca;
+    }
+</style>
+
+<body style="background-color:#132f58;" class="bg" onload="prevent();">
+
+    <div class="col-md-12">
+        <div>
+            <h2 id="lblLogin" style="color:red;text-align:center"></h2>
+        </div>
+
+        <div class="container" style="padding-top:5px">
+
+            <div id="loginAlert" class="alert alert-warning alert fade in" role="alert" style="display: none;">
+                <button type="button" class="close" aria-label="Close" onclick="dismissLoginAlert()">
+                    <span aria-hidden="true">×</span>
+                </button>
+                <strong>Authentication Error:</strong> Username or Password is incorrect, please enter correct username and password.
+            </div>
+
+            <div id="authAlert" class="alert alert-warning alert fade in" role="alert" style="display: none;">
+                <button type="button" class="close" aria-label="Close" onclick="dismissAuthAlert()">
+                    <span aria-hidden="true">×</span>
+                </button>
+                <strong>Authorization Error:</strong> Your credentials are authenticated, however, you don't have ISF Authorization. Please contact ISF Support Team.
+            </div>
+
+            <div class="row" style="border-bottom:2px solid white;margin-bottom:20px;">
+                <div style="display:inline-flex;">
+                    <img src="~/Content/images/Ericsson/icon_white.png" height="50" alt="ISF" border="0"> <h1 style="color: white; margin-top: 7px;padding-left: 16px;">Integrated Service Flow (ISF)</h1>
+                </div>
+            </div>
+
+            <br />
+
+            <div class="col-md-12">
+                <div class="row">
+                    <div class="col-md-6">
+                        <img src="~/Content/images/Ericsson/all.svg" style="height: 300px;background: transparent no-repeat center;background-size: cover;">
+
+                        <div class="col-md-12 col-md-offset-2">
+                            <div class="col-md-offset-5 col-sm-4">
+                                <div><img src="~/Content/images/Ericsson/Peoplegrey.png" title="People" style="width: 60px"></div>
+
+                                <div class="col-md-1 checkbox" style="margin-left: -9px;"><label style="color:#c4c9ce; text-align: center; ">People</label></div>
+                            </div>
+                        </div>
+                        <div class="row col-md-offset-5">
+                            <div class="col-md-6 col-sm-6">
+                                <div><img src="~/Content/images/Ericsson/Processgrey.png" title="Process" style="width: 60px"></div>
+
+                                <div class="col-md-1 checkbox" style="margin-left: -11px;"><label style="color:#c4c9ce; text-align: center; ">Process</label></div>
+                            </div>
+                            <div class="col-md-6" style="margin-top: 10px;">
+                                <div><img src="~/Content/images/Ericsson/Toolsgrey.png" title="Tools" style="width: 45px; margin-left:20px;"></div>
+
+                                <div class="col-md-1 checkbox" style="margin-left:7px;"><label style="color:#c4c9ce; text-align: center; ">Tools</label></div>
+                            </div>
+                        </div>
+                        <br />
+                    </div>
+
+                    <div class="col-md-5 col-md-offset-1" style="background-image: linear-gradient(to left, #113975, #1e58ad); border-radius: 12px; padding: 0; box-shadow: 0px 0px 14px 2px #3697f7;">
+                        <div>
+                            <ul class="nav nav-tabs nav-justified">
+                                <li class="nav-item active"><a class="nav-link-login" data-toggle="tab" href="#ericsson"><span style="font-size:18px;">Ericsson User</span></a></li>
+                                <li class="nav-item"><a class="nav-link-login" data-toggle="tab" href="#asp"><span style="font-size:18px;">ASP User</span></a></li>
+                            </ul>
+
+                        </div>
+
+                        <div class="tab-content">
+                            <br /><br />
+                            <div id="ericsson" class="tab-pane fade in active">
+                                @Html.Partial("EricssonLogin")
+                            </div>
+                            <div id="asp" class="tab-pane fade">
+                                @Html.Partial("AspLogin")
+                            </div>
+                        </div>
+
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</body>

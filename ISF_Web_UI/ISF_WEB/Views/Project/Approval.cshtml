@@ -1,0 +1,162 @@
+﻿
+@{
+    ViewBag.Title = "Project Approval";
+}
+@Scripts.Render("~/bundles/projectApproval")
+@*@Scripts.Render("~/bundles/Project")*@
+
+<script>
+    $(document).ready(function () {
+        getApprovalRequestBySignum();
+    });
+
+
+    var login_signum = signumGlobal /*"ebhjpra"*/;
+</script>
+
+
+<div class="col-lg-12">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            Project Approval
+        </div>
+        <div class="panel-body">
+            <div id="page-wrapper">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="widget-container fluid-height">
+                            <!-- </div> -->
+                            <div class="tab-content padded" id="my-tab-content">
+
+                                <!-- <div class="tab-pane" id="tab2"> -->
+                                <div class="col-lg-8">
+                                    <br>
+                                    @*<button class="col-lg-3 btn btn-primary" data-toggle="modal" data-target="#myModal2">*@
+                                    <button class="col-lg-3 btn btn-primary" onclick="OpenModalApprove()">
+                                        Approve
+                                    </button>
+                                    @*<button class="col-lg-3 btn btn-primary" data-toggle="modal" data-target="#myModal3">*@
+                                    <button class="col-lg-3 btn btn-primary" onclick="OpenModalReject()">
+                                        Reject
+                                    </button>
+
+                                </div>
+                                
+                                <div class="dataTable_wrapper">
+                                    <form name="f1">
+                                        <table class="table table-striped table-bordered table-hover" id="table_lm_approval">
+
+                                            <thead>
+                                                <tr>
+                                                    <th><a href="javascript:selectAll()">Select all</a></th>
+
+                                                    <th>Project ID</th>
+                                                    <th>Approver Signum</th>
+                                                    <th>Requested By</th>
+                                                    <th>Requested On</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody></tbody>
+                                        </table>
+                                    </form>
+                                </div>
+                                <!-- </div> -->
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal -->
+                <div class="modal fade" id="myModal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                <h4 class="modal-title" id="scopeTitleModal">Approval Confirmation</h4>
+                            </div>
+                            <div class="modal-body" id="scopeContentModal">
+
+                                <label>Are you sure you want to approve selected approval request?</label>
+
+                            </div>
+                            <div class="modal-footer">
+                                <a id="submitModal" class="btn btn-primary" data-dismiss="modal" onclick="updateProjectApprovalDetails(true)">Yes</a>
+                                <button id="cancelModal" type="button" class="btn btn-default" data-dismiss="modal">No</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal -->
+                <div class="modal fade" id="myModal3" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                <h4 class="modal-title" id="scopeTitleModal">Reject Confirmation</h4>
+                            </div>
+                            <div class="modal-body" id="scopeContentModal">
+
+
+                                <label>Are you sure you want to reject selected approval requests?</label>
+
+
+                            </div>
+                            <div class="modal-footer">
+                                <a id="submitModal" class="btn btn-primary" data-dismiss="modal" onclick="updateProjectApprovalDetails(false)">Yes</a>
+                                <button id="cancelModal" type="button" class="btn btn-default" data-dismiss="modal">No</button>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal -->
+                <div class="modal fade" id="myModal4" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                <h4 class="modal-title" id="scopeTitleModal">Project Approval </h4>
+                            </div>
+                            <div class="modal-body" id="scopeContentModal">
+
+
+                                <label id="modal_result"></label>
+
+
+                            </div>
+                            <div class="modal-footer">
+                                <button id="cancelModal" type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal -->
+                <div class="modal fade" id="myModal5" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                <h4 class="modal-title" id="scopeTitleModal">Plese, select some registers before </h4>
+                            </div>
+                            <div class="modal-body" id="scopeContentModal">
+                                <label id="modal_result"></label>
+                            </div>
+                            <div class="modal-footer">
+                                <button id="cancelModal" type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+

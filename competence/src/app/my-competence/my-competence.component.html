@@ -1,0 +1,29 @@
+<!-- <div class="breadcrumb">Home > My Competence</div> -->
+
+<!-- <div class="pageHeading">My Competence</div> -->
+
+<mat-tab-group (selectedTabChange)="tabClick($event)">
+    <mat-tab label="Manage Competence">
+        <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="5px">
+            <div fxFlex='20'>
+                <app-engg-add-competence #child1 (updateTable)="isUpateTable($event)"></app-engg-add-competence>
+            </div>
+
+            <div fxFlex='80'>
+                <app-engg-competence-list #child2 (addValuesForm)="editCompParent($event)"></app-engg-competence-list>
+            </div>
+            <!-- <div fxFlex="1 1 auto">
+                            <app-engg-add-competence></app-engg-add-competence>
+                        </div>
+                        <div fxFlex="1 1 auto">
+                                <app-engg-competence-list></app-engg-competence-list>
+                            </div> -->
+        </div>
+
+    </mat-tab>
+
+    <mat-tab label="Progress">
+        <app-competence-progress #child3></app-competence-progress>
+    </mat-tab>
+
+</mat-tab-group>

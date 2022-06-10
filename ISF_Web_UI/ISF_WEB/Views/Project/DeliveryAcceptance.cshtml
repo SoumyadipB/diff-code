@@ -1,0 +1,643 @@
+﻿@{
+    ViewBag.Title = "Delivery Acceptance";
+}
+
+@Styles.Render("~/bundles/css/DataTableStyle")
+@Scripts.Render("~/bundles/DataTableScript")
+@Scripts.Render("~/bundles/DataTablesAdvancedScript")
+@Scripts.Render("~/bundles/DeliveryAcceptance")
+<style>
+    .outputLink { 
+        top: 1%;left: 6%;position: relative;
+    }
+
+    .select2-hidden-accessible {
+        display: none !important;
+    }
+
+    tfoot {
+        display: table-header-group;
+    }
+
+    .CellComment a:focus,a:hover{
+        color: #12aad8;
+    }
+
+    .CellWithComment {
+        position: relative;
+    }
+
+    .CellComment {
+        text-align: left;        
+        display: none;
+        position: absolute;
+        z-index: 100;
+        border: 1px;
+        background-color:#fafafb ;
+        border-style: solid;
+        border-width: thin;
+        border-color: #d0c4c4;
+        padding: 5px;
+        color: #3e5381;
+        margin-top: 16px;
+        margin-left: 80px;
+        border-radius: 5px;
+        box-shadow: 0px 0px 2px #5f77a0;
+    }
+ 
+
+    .CellWithComment:hover span.CellComment {
+        display: block;
+    }
+
+</style>
+<div class="col-lg-12">
+    <div class="row">
+        <ul class="nav nav-tabs" id="nav_MainProjectView">
+            <li class="active"><a data-toggle="tab" href="#delivery_acceptance">Delivery Acceptance</a></li>
+            <li><a data-toggle="tab" href="#accepted_wos">Accepted Work Orders</a></li>
+
+        </ul>
+    </div>
+    <div class="tab-content" id="main_tab">
+
+        @***************************************Delivery Acceptance*************************************************************@
+        <div id="delivery_acceptance" class="tab-pane fade in active">
+            <br />
+            <h5 style="text-align:center">Delivery Acceptance</h5>
+            <br />
+            <div class="row">
+                <div class="col-md-1">
+                    <label>Project</label>
+                </div>
+
+                <div class="col-md-6">
+                    <select id="sel_project_name" class="select2able">
+                        <option value="0">Select any project</option>
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <button class="btn btn-primary" id="searchAcceptRejectTable" onclick="SearchProject()">Search</button>
+                </div>
+                <div class="col-md-3">
+
+                    <button class="btn btn-success" id="AcceptbuttonWO" data-toggle="modal" onclick="acceptmultipleWO()">Accept</button>
+
+                    <button class="btn btn-danger" id="RejectbuttonWO" data-toggle="modal" onclick="rejectmultipleWO()">Reject</button>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="alert alert-danger" style="display:none;" id="messageError">
+                    <button class="close" data-dismiss="alert" type="button">×</button>No matching records found
+                </div>
+                <div class="table-responsive" style="overflow-x:auto">
+                    <table class="table table-striped table-bordered table-hover" id="tblProjects">
+                        <thead>
+                            <tr>
+                                <th><input type="checkbox" class="checkBoxClassDA" title="Select All" value="wOID" id="ckbCheckAllDA"></th>
+                                <th class="sorting_disabled">Actions</th>
+                                <th>DOID</th>
+                                <th>Deliverable Name</th>
+                                <th>Deliverable Unit</th>
+                                <th>Work Order Name</th>
+                                <th>Sub Activity</th>
+                                <th> Work Order ID</th>
+                                <th>Work Flow Name </th>
+                                <th>Network Element Name/ID</th>
+                                <th>Planned On</th>
+                                <th>Closed On</th>
+                                <th>Created By</th>
+                                <th>Closed By</th>
+                                <th>Comment</th>
+
+                            </tr>
+                        </thead>
+                        <tfoot>
+                            @*<tr>
+                                <th></th>
+                                <th></th>
+                                <th>DOID</th>
+                                <th>Deliverable Name</th>
+                                <th>Deliverable Unit</th>
+                                <th>Work Order Name</th>
+                                <th>Sub Activity</th>
+                                <th> Work Order ID</th>
+                                <th>Work Flow Name </th>
+                                <th>NE Name </th>
+                                <th>Planned On</th>
+                                <th>Closed On</th>
+                                <th>Created By</th>
+                                <th>Closed By</th>
+                                <th>Comment</th>
+
+                            </tr>*@
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        @***************************************Accepted WOs*************************************************************@
+        <div id="accepted_wos" class="tab-pane fade">
+            <br />
+            <h5 style="text-align:center">Accepted Work Orders</h5>
+            <br />
+            <div class="row">
+                <div class="col-md-1">
+                    <label>Project</label>
+                </div>
+
+                <div class="col-md-6">
+                    <select id="sel_project_name_wo" class="select2able">
+                        <option value="0">Select any project</option>
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <button class="btn btn-primary" id="searchAcceptRejectTableAcceptedWO" onclick="SearchProjectAcceptedWO()">Search</button>
+                </div>
+                <div class="col-md-3">
+                    <button class="btn btn-danger" id="RejectbuttonWO1" data-toggle="modal" onclick="rejectmultipleAcceptedWO()">Reject</button>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="alert alert-danger" style="display:none;" id="messageErrorWO">
+                    <button class="close" data-dismiss="alert" type="button">×</button>No matching records found
+                </div>
+                <div class="table-responsive" style="overflow-x:auto">
+                    <table class="table table-striped table-bordered table-hover" id="tblProjectsAcceptedWO">
+                        <thead>
+                            <tr>
+                                <th><input type="checkbox" class="checkBoxClassDAWO" title="Select All" value="wOID" id="ckbCheckAllDAWO"></th>
+                                <th class="sorting_disabled">Actions</th>
+                                <th>DOID</th>
+                                <th>Deliverable Name</th>
+                                <th>Deliverable Unit</th>
+                                <th>Work Order Name</th>
+                                <th>Sub Activity</th>
+                                <th> Work Order ID</th>
+                                <th>Work Flow Name </th>
+                                <th>Network Element Name/ID </th>
+                                <th>Planned On</th>
+                                <th>Closed On</th>
+                                <th>Created By</th>
+                                <th>Closed By</th>
+                                <th>Accepted/Rejected By</th>
+                                <th>Accepted/Rejected Date</th>
+                                <th>Comment</th>
+
+                            </tr>
+                        </thead>
+                        <tfoot>
+                            @*<tr>
+                                <th></th>
+                                <th></th>
+                                <th>DOID</th>
+                                <th>Deliverable Name</th>
+                                <th>Deliverable Unit</th>
+                                <th>Work Order Name</th>
+                                <th>Sub Activity</th>
+                                <th> Work Order ID</th>
+                                <th>Work Flow Name </th>
+                                <th>NE Name </th>
+                                <th>Planned On</th>
+                                <th>Closed On</th>
+                                <th>Created By</th>
+                                <th>Closed By</th>
+                                <th>Accepted/Rejected By</th>
+                                <th>Accepted/Rejected Date</th>
+                                <th>Comment</th>
+                            </tr>*@
+                        </tfoot>
+                        <tbody id="tbodyProjectsWO"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    @***************************************Accepted WOs*************************************************************@
+
+
+    <!--MODALS-->
+    <!--START modal_viewWorkFlow-->
+    <div class="modal fade" id="modal_viewWorkFlow" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="scopeTitleModal">Work Flow</h4>
+                </div>
+                <div class="modal-body" id="modal_viewWorkFlowContent">
+                    <div class="col-lg-6">
+                        <center>
+
+                        </center>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button id="cancelModal" type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modal_wo_nodes_detail" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" style="z-index:9999;">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="scopeTitleModal">Network Element Details</h4>
+                </div>
+                <div class="modal-body" id="scopeContentModal" style="overflow:auto">
+
+                    <table id="table_wo_nodes_de" class="display table-bordered" cellspacing="0" width="100%"></table>
+
+                </div>
+                <div class="modal-footer">
+                    @*<a id="submitModal" class="btn btn-primary" onclick="$('#modal_wo_nodes').modal('hide');">Close</a>*@
+                    <button id="cancelModal" type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--END modal_viewWorkFlow-->
+    <!--START modal_viewWorkOrder-->
+    <div class="modal fade" id="myModalMadEwo" role="dialog">
+        <div class="modal-dialog modal-lg" style="overflow-y: initial !important;width:60%">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title text-center"> View Work Order</h4>
+                </div>
+                <div class="modal-body" style="height:600px;overflow-y: auto; ">
+
+                    @Html.Partial("WorkOrderViews")
+
+                    <hr />
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--END modal_viewWorkOrder-->
+    <!--START modal_accept-->
+    <div class="modal fade" id="modal_accept" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" id="closeAccept" class="close" data-dismiss="modal" onclick="acceptModalClose()" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="scopeTitleModal">Accept</h4>
+                </div>
+                <div class="modal-body" id="modal_acceptContent">
+                    <div class="alert alert-success" style="display:none;" id="messageOK">
+                        <button class="close" onclick="cleanAll_Acceptance();" data-dismiss="modal" type="button">×</button>Success! You have completed your task.
+                    </div>
+                    <form action="#" class="form-horizontal" id="contentForm">
+                        <div class="form-group">
+                            <label id="woIdlabel" class=" control-label col-md-3">
+                                WO ID & name
+                            </label>
+                            <div class="col-md-7">
+
+                                <input id="woID" class="form-control" type="hidden" style="width:280px">
+                                <input id="woIDandName" class="form-control" type="text" style="width:280px" readonly>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="control-label col-md-3">
+                                Rating
+                            </label>
+                            <div class="col-md-7" id="contentRatings">
+                                <input type="number" class="rating" id="ratingAccept" name="test" data-min="1" data-max="5" value="0">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="control-label col-md-3">
+                                Comments ( max 1000 characters)
+                            </label>
+                            <div class="col-md-7">
+                                <textarea class="form-control" id="comments" rows="4" style="border: 1px solid #ccc; padding-top: 10px;"></textarea>
+                            </div>
+                        </div>
+
+                    </form>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="AcceptButton" onclick="acceptWO()">Accept</button>
+                    <button id="cancelModalAceeptWO" type="button" class="btn btn-default" onclick="acceptModalClose()" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--END modal_accept-->
+    <!--START modal_reject-->
+    <div class="modal fade" id="modal_reject" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" id="ModalCloseReject" data-dismiss="modal" onclick="rejectModalClose()" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="scopeTitleModal">Reject</h4>
+                </div>
+                <div class="modal-body" id="modal_rejectContent">
+                    <div class="alert alert-success" style="display:none;" id="messageOK_Reject">
+                        <button class="close" onclick="cleanAll_Reject($('#isAcceptedWO').val());" data-dismiss="modal" type="button">×</button>Success! You have completed your task.
+                    </div>
+                    <form action="#" class="form-horizontal" id="contentFormReject">
+                        <div class="form-group">
+                            <label id="woIdlabelreject" class="control-label col-md-3">
+                                WO ID & name
+                            </label>
+                            <div class="col-md-7">
+                                <input id="isAcceptedWO" class="form-control" type="hidden" style="width:280px">
+                                <input id="woID_Reject" class="form-control" type="hidden" style="width:280px">
+                                <input id="woID_RejectandName" class="form-control" type="text" style="width:280px" value="" readonly>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-md-7">
+                                <input id="acceptRejectBy" class="form-control" type="hidden" style="width:280px">
+                                <input id="subActivityID" type="hidden" value="">
+                                <input id="wfid" class="form-control" type="hidden" style="width:280px">
+                                <input id="projid" class="form-control" type="hidden" style="width:280px">
+                                <input id="signum" class="form-control" type="hidden" style="width:280px">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="control-label col-md-3">
+                                Reason
+                            </label>
+                            <div class="col-md-7" id="contentReason">
+                                <select id="reasonReject" class="form-control"></select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="control-label col-md-3">
+                                Comments
+                            </label>
+                            <div class="col-md-7">
+                                <textarea class="form-control" id="commentsReject" rows="4" style="border: 1px solid #ccc; padding-top: 10px;"></textarea>
+                            </div>
+                        </div>
+
+                    </form>
+
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="RejectButton" onclick="reject();">Reject</button>
+                    <button id="cancelModalReject" type="button" class="btn btn-default" onclick="rejectModalClose()" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<div class="modal fade" id="modal_reject_accept_WO" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" id="ModalCloseRejectWO" data-dismiss="modal" onclick="acceptedWORejectModalClose()" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="scopeTitleModal">Reject</h4>
+            </div>
+            <div class="modal-body" id="modal_rejectContent">
+                <div class="alert alert-success" style="display:none;" id="messageOK_Reject">
+                    <button class="close" onclick="cleanAll_AcceptedWOReject();" data-dismiss="modal" type="button">×</button>Success! You have completed your task.
+                </div>
+                <form action="#" class="form-horizontal" id="contentFormReject">
+                        <div class="form-group">
+                            <label id="woIdlabelreject1" class="control-label col-md-3">
+                                WO ID & name
+                            </label>
+                            <div class="col-md-7">
+                                <input id="woID_Reject1" class="form-control" type="hidden" style="width:280px">
+                                <input id="woID_RejectandName1" class="form-control" type="text" style="width:280px" readonly>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-md-7">
+                                <input id="acceptRejectBy1" class="form-control" type="hidden" style="width:280px">
+                                <input id="subactivityid1" class="form-control" type="hidden" style="width:280px">
+                                <input id="wfid1" class="form-control" type="hidden" style="width:280px">
+                                <input id="projid1" class="form-control" type="hidden" style="width:280px">
+                                <input id="signum1" class="form-control" type="hidden" style="width:280px">
+                            </div>
+                       
+                        </div>
+
+                        <div class="form-group">
+                            <label class="control-label col-md-3">
+                                Reason
+                            </label>
+                            <div class="col-md-7" id="contentReason">
+                                <select id="reasonReject1" class="form-control"></select>
+                            </div>
+                        </div>
+                    
+
+                        <div class="form-group">
+                            <label class="control-label col-md-3">
+                                Comments
+                            </label>
+                            <div class="col-md-7">
+                                <textarea class="form-control" id="commentsReject1" rows="4" style="border: 1px solid #ccc; padding-top: 10px;"></textarea>
+                            </div>
+                        </div>
+                    
+
+                </form>
+
+
+            </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="RejectButton" onclick="rejectAcceptedWO();">Reject</button>
+                    <button id="cancelModalReject" type="button" class="btn btn-default" onclick="rejectModalClose()" data-dismiss="modal">Close</button>
+                </div>
+            
+        </div>        
+    </div>
+</div>
+    <!--END modal_reject-->
+    <!--START modal_moveTo-->
+    <div class="modal fade" id="modal_moveTo" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" id="modalMoveTo" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="scopeTitleModal">Move To</h4>
+                </div>
+                <div class="modal-body" id="modal_moveToContent">
+                    <div class="alert alert-success" style="display:none;" id="messageOK_moveTo">
+                        <button class="close" onclick="cleanAll_MoveTo();" data-dismiss="modal" type="button">×</button>Success! You have completed your task.
+                    </div>
+                    <form action="#" class="form-horizontal" id="contentMoveTo">
+
+                        <div class="form-group">
+                            <label class="control-label col-md-3">
+                                WO ID
+                            </label>
+                            <div class="col-md-7">
+                                <input id="woID_MoveTo" class="form-control" type="text" style="width:280px" readonly>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-md-3">
+                                Move to
+                            </label>
+                            <div class="col-md-7">
+                                <select id="acceptOrRejectBy_MoveTo" class="select2able2"></select>
+
+                                <label id="lbl_delAcceptance_Required_moveTo" style="color: red; font-size: 10px; padding-left: 0px;display:none;">Please select one </label>
+                            </div>
+
+                        </div>
+
+                        <div class="form-group">
+
+                            <label class="control-label col-md-3">
+                                Comments
+                            </label>
+                            <div class="col-md-7">
+                                <textarea class="form-control" id="comment_MoveTo" rows="4" style="border: 1px solid #ccc; padding-top: 10px;"></textarea>
+                            </div>
+                        </div>
+
+
+                    </form>
+
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="MoveButtonSEND" onclick="moveTo();">Send</button>
+                    <button id="buttonCancelModal" type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+
+        (function ($) {
+
+            $.fn.rating = function () {
+
+                var element;
+
+                // A private function to highlight a star corresponding to a given value
+                function _paintValue(ratingInput, value) {
+                    var selectedStar = $(ratingInput).find('[data-value=' + value + ']');
+                    selectedStar.removeClass('fa-star-o').addClass('fa-star');
+                    selectedStar.prevAll('[data-value]').removeClass('fa-star-o').addClass('fa-star');
+                    selectedStar.nextAll('[data-value]').removeClass('fa-star').addClass('fa-star-o');
+                }
+
+                // A private function to remove the selected rating
+                function _clearValue(ratingInput) {
+                    var self = $(ratingInput);
+                    self.find('[data-value]').removeClass('fa-star').addClass('fa-star-o');
+                    self.find('.rating-clear').hide();
+                    self.find('input').val('').trigger('change');
+                }
+
+                // Iterate and transform all selected inputs
+                for (element = this.length - 1; element >= 0; element--) {
+
+                    var el, i, ratingInputs,
+                        originalInput = $(this[element]),
+                        max = originalInput.data('max') || 5,
+                        min = originalInput.data('min') || 0,
+                        clearable = originalInput.data('clearable') || null,
+                        stars = '';
+
+                    // HTML element construction
+                    for (i = min; i <= max; i++) {
+                        // Create <max> empty stars
+                        stars += ['<span class="fa fa-star-o" data-value="', i, '"></span>'].join('');
+                    }
+                    // Add a clear link if clearable option is set
+                    if (clearable) {
+                        stars += [
+                            ' <a class="rating-clear" style="display:none;" href="javascript:void">',
+                            '<span class="fa fa-remove"></span> ',
+                            clearable,
+                            '</a>'].join('');
+                    }
+
+                    el = [
+                        // Rating widget is wrapped inside a div
+                        '<div class="rating-input">',
+                        stars,
+                        // Value will be hold in a hidden input with same name and id than original input so the form will still work
+                        '<input type="hidden" name="',
+                        originalInput.attr('name'),
+                        '" value="',
+                        originalInput.val(),
+                        '" id="',
+                        originalInput.attr('id'),
+                        '" />',
+                        '</div>'].join('');
+
+                    // Replace original inputs HTML with the new one
+                    originalInput.replaceWith(el);
+
+                }
+
+                // Give live to the newly generated widgets
+                $('.rating-input')
+                    // Highlight stars on hovering
+                    .on('mouseenter', '[data-value]', function () {
+                        var self = $(this);
+                        _paintValue(self.closest('.rating-input'), self.data('value'));
+                    })
+                    // View current value while mouse is out
+                    .on('mouseleave', '[data-value]', function () {
+                        var self = $(this);
+                        var val = self.siblings('input').val();
+                        if (val) {
+                            _paintValue(self.closest('.rating-input'), val);
+                        } else {
+                            _clearValue(self.closest('.rating-input'));
+                        }
+                    })
+                    // Set the selected value to the hidden field
+                    .on('click', '[data-value]', function (e) {
+                        var self = $(this);
+                        var val = self.data('value');
+                        self.siblings('input').val(val).trigger('change');
+                        self.siblings('.rating-clear').show();
+                        e.preventDefault();
+                        false
+                    })
+                    // Remove value on clear
+                    .on('click', '.rating-clear', function (e) {
+                        _clearValue($(this).closest('.rating-input'));
+                        e.preventDefault();
+                        false
+                    })
+                    // Initialize view with default value
+                    .each(function () {
+                        var val = $(this).find('input').val();
+                        if (val) {
+                            _paintValue(this, val);
+                            $(this).find('.rating-clear').show();
+                        }
+                    });
+
+            };
+
+            // Auto apply conversion of number fields with class 'rating' into rating-fields
+            $(function () {
+                if ($('input.rating[type=number]').length > 0) {
+                    $('input.rating[type=number]').rating();
+                }
+            });
+
+        }(jQuery));
+    </script>

@@ -1,0 +1,155 @@
+﻿html, body {
+    /*height: 100%;
+    padding: 0px;
+    margin: 0px;*/
+    /*overflow: hidden;*/
+}
+
+.gantt_task_cell.week_end {
+    background-color: #EFF5FD;
+}
+
+.gantt_task_row.gantt_selected .gantt_task_cell.week_end {
+    background-color: #F8EC9C;
+}
+.onhold {
+    border: 2px solid #ffad4d;
+    color: #d96c49;
+    background: #ffad4d;
+}
+
+    .onhold .gantt_task_progress {
+        background: #ffad4d;
+        border-right: 1px solid #ffad4d;
+        box-shadow: -1px 0 0 1px #ffad4d inset;
+    }
+
+.assigned {
+    border: 2px solid #0677ad;
+    color: #0677ad;
+    background: #0677ad;
+}
+
+    .assigned .gantt_task_progress {
+        background: #0677ad;
+        border-right: 1px solid #0677ad;
+        box-shadow: -1px 0 0 1px #0677ad inset;
+    }
+
+.inprogress {
+    border: 2px solid #f5e014;
+    color: #ffec2c;
+    background: #ffec2c;
+}
+
+    .inprogress .gantt_task_progress {
+        background: #ffec2c;
+        border-right: 1px solid #ffec2c;
+        box-shadow: -1px 0 0 1px #ffec2c inset;
+    }
+
+    .inprogress .gantt_task_content {
+        color: green;
+    }
+
+.open {
+    border: 2px solid #c7c7c7;
+    color: #c7c7c7;
+    background: #c7c7c7;
+}
+
+    .open .gantt_task_progress {
+        background: #c7c7c7;
+        border-right: 1px solid #c7c7c7;
+        box-shadow: -1px 0 0 1px #c7c7c7 inset;
+    }
+
+.planned {
+    border: 2px solid #521A8A;
+    color: #521A8A;
+    background: #521A8A;
+}
+
+    .planned .gantt_task_progress {
+        background: #521A8A;
+        border-right: 1px solid #521A8A;
+        box-shadow: -1px 0 0 1px #521A8A inset;
+    }
+
+.closed {
+    border: 2px solid #00983b;
+    color: #00983b;
+    background: #00983b;
+}
+
+    .closed .gantt_task_progress {
+        background: #00983b;
+        border-right: 1px solid #00983b;
+        box-shadow: -1px 0 0 1px #00983b inset;
+    }
+
+.deferred {
+    border: 2px solid #fb0606;
+    color: #fb0606;
+    background: #fb0606;
+}
+
+    .deferred .gantt_task_progress {
+        background: #fb0606;
+        border-right: 1px solid #fb0606;
+        box-shadow: -1px 0 0 1px #fb0606 inset;
+    }
+
+.rejected {
+    border: 2px solid #d9534f;
+    color: #d9534f;
+    background: #d9534f;
+}
+
+    .rejected .gantt_task_progress {
+        background: #d9534f;
+        border-right: 1px solid #d9534f;
+        box-shadow: -1px 0 0 1px #d9534f inset;
+    }
+
+.project {
+    background: #4f4f4f;
+    background-size: 4px 4px;
+    background-position: 0 0,2px 2px;
+    background-image: linear-gradient(45deg,rgba(255,255,255,.05) 25%,transparent 25%,transparent 75%,rgba(255,255,255,.05) 75%,rgba(255,255,255,.05)),linear-gradient(45deg,rgba(255,255,255,.05) 25%,transparent 25%,transparent 75%,rgba(255,255,255,.05) 75%,rgba(255,255,255,.05));
+    border: 1px solid #59595e;
+}
+
+    .project .gantt_task_progress {
+        background: #4f4f4f;
+        background-size: 4px 4px;
+        background-position: 0 0,2px 2px;
+        background-image: linear-gradient(45deg,rgba(255,255,255,.05) 25%,transparent 25%,transparent 75%,rgba(255,255,255,.05) 75%,rgba(255,255,255,.05)),linear-gradient(45deg,rgba(255,255,255,.05) 25%,transparent 25%,transparent 75%,rgba(255,255,255,.05) 75%,rgba(255,255,255,.05));
+        border-right: 1px solid #505054;
+        box-shadow: -1px 0 0 1px #505054 inset;
+    }
+
+.navbar .brand {
+    float: left;
+    display: block;
+    padding: 8px 20px 12px;
+    margin-left: -20px;
+    font-size: 20px;
+    font-weight: 300;
+    line-height: 1;
+    color: white;
+}
+
+img {
+    max-width: 100%;
+    vertical-align: middle;
+    border: 0;
+    -ms-interpolation-mode: bicubic;
+}
+
+.brand img {
+    float: left;
+    height: 20px;
+    width: 20px;
+    margin-right: 5px;
+}	

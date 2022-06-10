@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="windows-1252"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ericsson.isf.mapper.ToolsMasterMapper">
+<cache type="org.mybatis.caches.ehcache.EhcacheCache"/>
+	<resultMap type="ToolsModel" id="ToolsModelResult">
+		<id property="toolID" column="ToolID" />
+                <result property="tool" column="Tool" />
+                <result property="licenseType" column="LicenseType" />
+                <result property="active" column="Active" />
+                <result property="createdBy" column="CreatedBy" />
+                <result property="createdDate" column="CreatedDate" />
+                <result property="lastModifiedBy" column="LastModifiedBy" />
+                <result property="lastModifiedDate" column="LastModifiedDate" />
+                <result property="developer" column="Developer" />
+                <result property="introduction" column="Introduction" />
+                <result property="infoURL" column="InfoURL" />
+                <result property="toolType" column="ToolType" />
+	</resultMap>
+        
+        <select id='checkIfToolExists' resultType="Boolean">
+            IF Exists(SELECT 1 FROM refData.TBL_TOOL_INVENTORY WHERE TOOL=#{tool}  and Active=1)
+            Begin
+                select 1 as 'Return'
+            End
+            else
+            Begin
+                select 0 as 'Return'
+            End
+            
+        </select>
+        
+        
+	<insert id = 'saveToolInventory' parameterType="ToolsModel">
+		insert into refData.tbl_tool_inventory(Tool,LicenseType,Active,CreatedBy,CreatedDate,LastModifiedBy,LastModifiedDate,Developer,Introduction,InfoURL,toolType) 
+                values(#{toolModel.tool,jdbcType=VARCHAR},#{toolModel.licenseType,jdbcType=VARCHAR},#{toolModel.active},
+                       #{toolModel.createdBy,jdbcType=VARCHAR},dbo.GetDateIST(),#{toolModel.createdBy,jdbcType=VARCHAR},
+                       dbo.GetDateIST(),#{toolModel.developer,jdbcType=VARCHAR},#{toolModel.introduction,jdbcType=VARCHAR},#{toolModel.infoURL,jdbcType=VARCHAR}
+                       ,#{toolModel.toolType,jdbcType=VARCHAR})
+        </insert>
+        
+        <update id = 'updateToolInventory' parameterType="ToolsModel">
+		update refData.tbl_tool_inventory set Tool=#{toolModel.tool,jdbcType=VARCHAR},
+                                              LicenseType=#{toolModel.licenseType,jdbcType=VARCHAR},
+                                              LastModifiedBy = #{toolModel.lastModifiedBy,jdbcType=VARCHAR},
+                                              LastModifiedDate = dbo.GetDateIST(),
+                                              Active=#{toolModel.active},
+                                              Developer = #{toolModel.developer,jdbcType=VARCHAR},
+                                              Introduction = #{toolModel.introduction,jdbcType=VARCHAR},
+                                              InfoURL = #{toolModel.infoURL,jdbcType=VARCHAR},
+                       						  ToolType = #{toolModel.toolType,jdbcType=VARCHAR}
+                                              where ToolID=#{toolModel.toolID,jdbcType=INTEGER};
+        </update>
+        
+       <!--  <update id = 'deleteToolInventory' parameterType="ToolsModel">
+	         <if test ="activeStatus != null and activeStatus == 'true'"> 
+	              update refData.tbl_tool_inventory set Active=1, lastModifiedBy=#{signumID}, lastModifiedDate=getDate() where ToolID=#{toolID};
+	          </if> 
+	          <if test ="activeStatus != null and activeStatus == 'false'"> 
+	              update refData.tbl_tool_inventory set Active=0, lastModifiedBy=#{signumID}, lastModifiedDate=getDate() where ToolID=#{toolID};
+	          </if> 
+			update refData.tbl_tool_inventory set Active=0, lastModifiedBy=#{signumID}, lastModifiedDate=getDate() where ToolID=#{toolID};
+        </update>
+         -->
+        
+        
+         <update id = 'deleteToolInventory' parameterType="ToolsModel">
+        	 update refData.tbl_tool_inventory set
+	         	<if test ="activeStatus != null and activeStatus == 'true'"> 
+	            	  Active=1, lastModifiedBy=#{signumID}, lastModifiedDate=dbo.GetDateIST()
+	         	 </if> 
+	        	<if test ="activeStatus != null and activeStatus == 'false'"> 
+	            	 Active=0, lastModifiedBy=#{signumID}, lastModifiedDate=dbo.GetDateIST()
+	         	 </if> 
+	           where ToolID=#{toolID};
+			<!-- update refData.tbl_tool_inventory set Active=0, lastModifiedBy=#{signumID}, lastModifiedDate=getDate() where ToolID=#{toolID}; -->
+        </update>
+        
+         <select id='getToolInventoryDetails' resultMap="ToolsModelResult" useCache="true">
+			select ToolID,Tool,LicenseType,
+			case when Developer is null then 'NA' else Developer end as Developer,
+			case when Introduction is null then 'NA' else Introduction end as Introduction,
+			case when InfoURL is null then 'NA' else InfoURL end InfoURL,
+			ToolType,Active,CreatedBy,CreatedDate,LastModifiedBy,LastModifiedDate
+			from refData.tbl_tool_inventory order by tool
+			</select>
+			  <select id='getActiveToolInventoryDetails' resultMap="ToolsModelResult" useCache="true">
+			select ToolID,Tool,LicenseType,
+			case when Developer is null then 'NA' else Developer end as Developer,
+			case when Introduction is null then 'NA' else Introduction end as Introduction,
+			case when InfoURL is null then 'NA' else InfoURL end InfoURL,
+			ToolType,Active,CreatedBy,CreatedDate,LastModifiedBy,LastModifiedDate
+			from refData.tbl_tool_inventory  where active=1  order by tool
+			</select>
+        <select id='getToolInventoryDetailsByID' resultMap="ToolsModelResult">
+                select * from refData.tbl_tool_inventory where toolID=#{toolID} and active = 1
+        </select>
+        
+        <select id='getToolByTaskID' resultMap="ToolsModelResult">
+            select distinct ti.Tool,ti.ToolID from refData.TBL_TOOL_INVENTORY ti
+            inner join refData.TBL_TASK_TOOL tl on tl.ToolID=ti.ToolID
+            where tl.TaskID=#{taskID}
+        </select>
+        
+        <select id='getToolsDetails' resultType="Integer">
+            select ISNULL(tool.ToolID,2) as ToolID
+            from refData.TBL_TASK tsk
+            left Join refData.TBL_TASK_TOOL tt on tt.TaskID = tsk.TaskID
+            left JOIN refData.TBL_TOOL_INVENTORY tool on tool.ToolID=tt.ToolID
+            where tsk.SubActivityID = #{subActivityID} and tsk.Task = #{taskID}
+            and tsk.Active=1 and tool.Active =1
+        </select>     
+       
+        <insert id = 'saveUserFeedback' parameterType="com.ericsson.isf.model.UserFeedbackModel" >
+		insert into transactionalData.TBL_User_Feedback(Title,TextArea,Rating,CreatedOn,SubmittedBy,Url,UploadFile,FileName,FileType,DataFile) 
+                values(#{userFeedbackModel.title},#{userFeedbackModel.textArea},#{userFeedbackModel.rating},
+                       dbo.GetDateIST(),#{userFeedbackModel.submittedBy},#{userFeedbackModel.url},
+                       #{userFeedbackModel.uploadFile},#{userFeedbackModel.fileName},#{userFeedbackModel.fileType},#{userFeedbackModel.dataFile})
+
+        </insert>
+        <resultMap type="UserFeedbackModel" id="UserFeedbackModelResult">
+		<id property="feedbackID" column="FeedbackID" />
+                <result property="title" column="Title" />
+                <result property="textArea" column="TextArea" />
+                <result property="rating" column="Rating" />
+                <result property="createdOn" column="CreatedOn" />
+                <result property="submittedBy" column="SubmittedBy" />
+                <result property="url" column="Url" />
+                <result property="uploadFile" column="UploadFile" />
+                <result property="fileName" column="FileName" />
+                <result property="fileType" column="FileType" />
+                <result property="dataFile" column="DataFile" />
+	</resultMap>
+        
+         <select id='getUserFeedback' resultMap="UserFeedbackModelResult" >
+                select * from transactionalData.TBL_User_Feedback  order by FeedbackID desc
+        </select>
+         <resultMap type="ExternalActivitySubactivityModel" id="ExternalActivitySubactivityModel">
+		<id property="activityID" column="ActivityID" />
+                <result property="extActivityID" column="ExtActivityID" />
+                <result property="isfSubActivityID" column="IsfSubActivityID" />
+                <result property="sourceID" column="SourceID" />
+                <result property="lastModifiedBy" column="LastModifiedBy" />
+                <result property="lastModifiedDate" column="LastModifiedDate" />
+               </resultMap>
+        <insert id = 'saveExternalActivity' parameterType="ExternalActivitySubactivityModel">
+		insert into transactionalData.TBL_EXTERNAL_ACTIVITY_SUBACTIVITY_MAPPING(ExtActivityID,IsfSubActivityID,SourceID,LastModifiedBy,LastModifiedDate) 
+                values(#{externalActivitySubactivityModel.extActivityID,jdbcType=VARCHAR},#{externalActivitySubactivityModel.isfSubActivityID},#{externalActivitySubactivityModel.sourceID},
+                       #{externalActivitySubactivityModel.lastModifiedBy,jdbcType=VARCHAR},dbo.GetDateIST())
+        </insert>
+         <update id = 'updateExternalActivity' parameterType="ExternalActivitySubactivityModel">
+		update transactionalData.TBL_EXTERNAL_ACTIVITY_SUBACTIVITY_MAPPING set ExtActivityID=#{externalActivitySubactivityModel.extActivityID,jdbcType=VARCHAR},
+                                              IsfSubActivityID=#{externalActivitySubactivityModel.isfSubActivityID},
+                                              SourceID =#{externalActivitySubactivityModel.sourceID},
+                                              LastModifiedBy=#{externalActivitySubactivityModel.lastModifiedBy,jdbcType=VARCHAR},
+                                              LastModifiedDate = dbo.GetDateIST()
+                                              where ActivityID=#{externalActivitySubactivityModel.activityID};
+        </update>
+
+        <delete id = "deleteExternalActivity" parameterType = "int">
+      	DELETE from transactionalData.TBL_EXTERNAL_ACTIVITY_SUBACTIVITY_MAPPING WHERE ActivityID = #{activityID};
+     		<!--update transactionalData.TBL_EXTERNAL_ACTIVITY_SUBACTIVITY_MAPPING set isactive=0  WHERE ActivityID = #{activityID}-->
+       </delete>
+   		<select id='getExternalActivity' resultMap="ExternalActivitySubactivityModel" useCache="true">
+              select t1.ActivityID,t1.ExtActivityID,t1.SourceID,t2.sourceName,t1.LastModifiedBy,t1.LastModifiedDate from  transactionalData.TBL_EXTERNAL_ACTIVITY_SUBACTIVITY_MAPPING as t1
+		join refData.TBL_IntegrationSources as t2 on t1.SourceID=t2.sourceId
+        </select>
+         <select id='checkIfActivityExists' parameterType="ExternalActivitySubactivityModel" resultType="Boolean">
+            IF Exists(SELECT 1 FROM transactionalData.TBL_EXTERNAL_ACTIVITY_SUBACTIVITY_MAPPING WHERE ExtActivityID=#{externalActivitySubactivityModel.extActivityID} 
+            COLLATE SQL_Latin1_General_CP1_CS_AS
+            and SourceID=#{externalActivitySubactivityModel.sourceID})
+            Begin
+                select 1 as 'Return'
+            End
+            else
+            Begin
+                select 0 as 'Return'
+            End
+            
+        </select>
+        
+        <select id='getToolType' resultType='java.util.HashMap'>
+             select ToolTypeID,ToolType from refData.TBL_TOOL_TYPE where active=1
+        </select>
+        
+
+        </mapper> 

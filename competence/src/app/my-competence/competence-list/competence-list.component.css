@@ -1,0 +1,14 @@
+table{
+    width: 100%;      
+}
+
+.tempTable .mat-header-cell {
+    background-color: #e4efe3;
+    /* font-size: 14px; */
+}
+
+.table-header-text{
+    font-size: 13px;
+    font-weight: lighter;
+    padding: 5px;
+}

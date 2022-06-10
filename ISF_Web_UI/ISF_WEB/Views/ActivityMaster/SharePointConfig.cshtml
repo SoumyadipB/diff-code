@@ -1,0 +1,151 @@
+﻿@{
+    ViewBag.Title = "SharePoint Configuration";
+}
+
+@Scripts.Render("~/bundles/SharePointConfig")
+@Scripts.Render("~/bundles/DataTableScript")
+@Styles.Render("~/bundles/css/DataTableStyle")
+
+<style>
+    .fontWeight {
+        font-weight: bold;
+    }
+
+    .inputHeight {
+        height: 25px
+    }
+
+    .bottomMargin {
+        margin-bottom: 5px;
+    }
+
+    .formDiv {
+        box-shadow: #0000008f 0px 0px 2px;
+        padding-top: 10px;
+        padding-bottom: 10px;
+        margin-bottom: 10px;
+        border-radius: 5px;
+        background: #f5f5f56b;
+    }
+
+    .EditSharepointConfigDiv {
+        border: 1px solid #ccc;
+        background-color: #ecf7ec;
+        border-radius: 4px;
+    }
+</style>
+
+<div class="col-lg-12">
+    <div class="panel panel-default">
+
+        <div class="panel-heading">
+            SHAREPOINT CONFIGURATION
+        </div>
+
+        <div class="panel-body" id="sharePointPanelBody" style="position:relative">
+
+            <div class="formDiv">
+                <div class="row">
+                    <div class="col-lg-3 bottomMargin">
+                        <div class="row">
+                            <div class="col-lg-11 bottomMargin">
+                                <label class="fontWeight">Market </label>
+                            </div>
+                            <div class="col-lg-1 fontWeight bottomMargin">
+                                :
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-9 bottomMargin" style="width: 20%;">
+                        <select class="select2able select2-offscreen" id="selectMarket">
+                            <option value=""></option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-lg-3 bottomMargin">
+                        <div class="row">
+                            <div class="col-lg-11 bottomMargin">
+                                <label class="fontWeight">Site Name (<span id="sharePointUrl"></span>)</label>
+                            </div>
+                            <div class="col-lg-1 fontWeight bottomMargin">
+                                :
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-9 bottomMargin">
+                        <input class="form-control inputHeight" id="siteNameInput" placeholder="Enter Site Name" />
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-lg-3 bottomMargin">
+                        <div class="row">
+                            <div class="col-lg-11 bottomMargin">
+                                <label class="fontWeight">Client ID</label>
+                            </div>
+                            <div class="col-lg-1 fontWeight bottomMargin">
+                                :
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-9 bottomMargin">
+                        <input class="form-control inputHeight" id="clientId" placeholder="Enter Client ID" />
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-lg-3 bottomMargin">
+                        <div class="row">
+                            <div class="col-lg-11 bottomMargin">
+                                <label class="fontWeight">Client Secret Key</label>
+                            </div>
+                            <div class="col-lg-1 fontWeight bottomMargin">
+                                :
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-9 bottomMargin">
+                        <input class="form-control inputHeight" id="clientSecret" placeholder="Enter Client Secret" />
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div style="text-align:end" id="divValidateBtn">
+                        <button class="btn btn-primary" id="validateSharepointConfig" onclick="validateSharepointConfig()" style=" margin-bottom: 0px;">
+                            Validate
+                        </button>
+                        <button class="btn btn-primary" id="validateSaveUpdate" onclick="validateSharepointConfig(true)" style=" margin-bottom: 0px;">
+                            Validate and Save
+                        </button>
+                        <button class="btn btn-danger" style="font-size:12px; margin-bottom: 0px; display:none" id="cancelSharepointConfigUpdate" onclick="cancelSharepointConfigUpdate();">
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="table-responsive" style="width:100%; overflow:auto">
+                <div id="tableLoader" style="text-align:center">
+                    Loading table...
+                </div>
+                <table class="table table-bordered table-striped table-hover" id="sharePointConfigTable" style="display:none">
+                    <thead>
+                        <tr>
+                            <th>Actions</th>
+                            <th>Market</th>
+                            <th>Site Name</th>
+                            <th>Client ID</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+</div>

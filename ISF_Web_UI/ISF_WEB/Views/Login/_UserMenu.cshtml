@@ -1,0 +1,82 @@
+﻿@model  List<ISF_WEB.Models.UserMenu>
+@using System.Text.RegularExpressions;
+
+    @*<link type="text/css" rel="stylesheet" href="~/Content/CSS/layoutTheme.css?1425466319" />
+    <script src="~/Scripts/layoutTheme.js"></script>*@
+
+@foreach (var item in Model)
+{
+
+    List<string> menuIdArr = new List<string>();
+    List<ISF_WEB.Models.MenuWithURL> menueIdsWithUrl = new List<ISF_WEB.Models.MenuWithURL>();
+    string UiRootDir = ViewBag.UiRootDir;
+    string pHref = string.Empty;
+
+    menuIdArr.Add(item.id); //store all ids of groups
+    pHref = item.groupHref;
+
+    if (Regex.Matches(item.groupHref, "javascript|#").Count == 0)
+    {
+        pHref = UiRootDir + item.groupHref;
+        menueIdsWithUrl.Add(new ISF_WEB.Models.MenuWithURL { id = item.id, url = pHref }); // store all ids with url location of groups (parent menue)
+    }
+    else
+    {
+        if (Regex.Matches(item.groupHref, "/#/").Count > 0)
+        {
+            menueIdsWithUrl.Add(new ISF_WEB.Models.MenuWithURL { id = item.id, url = pHref }); // store all ids with url location of groups (parent menue)
+        }
+    }
+
+    <li title="@item.groupTitle" id=@item.id>
+
+        <a href="@pHref">
+            <div class="gui-icon">
+                <i class="@item.groupIcon"></i>
+            </div>
+            <span class="title">@item.groupTitle</span>
+        </a>
+
+        <ul>
+
+            @if (item.submenu != null && item.submenu.Count > 0)
+            {
+                foreach (var subMenuItem in item.submenu)
+                {
+
+                    if (subMenuItem.onClick == "1")
+                    {
+                        string childHref = UiRootDir + @subMenuItem.subMenuHref;
+                        <li id="@subMenuItem.id" onclick="ActivePage('@subMenuItem.id');">
+                            <a href="@childHref">
+                                <span class="title">
+                                    @subMenuItem.subMenuTitle
+                                </span>
+                            </a>
+                        </li>
+
+                    }
+                    else
+                    {
+                        <li id="@subMenuItem.id">
+                            <a href="@subMenuItem.subMenuHref">
+                                <span class="title">
+                                    @subMenuItem.subMenuTitle
+                                </span>
+                            </a>
+                        </li>
+                    }
+
+                }
+
+            }
+
+        </ul>
+
+
+    </li>
+
+}
+
+
+

@@ -1,0 +1,1084 @@
+ {
+        "scanType": [
+            {
+                "scanName": "App Scan",
+                "value": "appscan",
+                "appType": [
+                    {
+                        "appName": "Putty",
+                        "value": "putty",
+                        "attributes": [
+                            {
+                                "attrsName": "Window Title",
+                                "value": "windowtitle"
+
+                            },
+                            {
+                                "attrsName": "Key Stroke",
+                                "value": "keystroke"
+                            },
+                            {
+                                "attrsName": "Key Event(Copy/Cut/Paste/Save/Quit/Undo/Enter/Print)",
+                                "value": "keyevent"
+                            }
+                        ],
+                        "operators": [
+                            {
+                                "opName": "Contains",
+                                "value": "contains"
+                            },
+                            {
+                                "opName": "Contains | Case sensitive",
+                                "value": "containscasesensitive"
+                            },
+                            {
+                                "opName": "Equals | Case sensitive",
+                                "value": "equalscasesensitive"
+                            },
+                            {
+                                "opName": "Equals",
+                                "value": "equals"
+                            },
+                            {
+                                "opName": "Not In",
+                                "value": "notin"
+                            },
+                            {
+                                "opName": "Not In | Case sensitive",
+                                "value": "notincasesensitive"
+                            },
+                            {
+                                "opName": "Not Equals",
+                                "value": "notequals"
+                            },
+                            {
+                                "opName": "Not Equals | Case sensitive",
+                                "value": "notequalscasesensitive"
+                            }
+                        ]
+                    },
+                    {
+                        "appName": "Microsoft Word",
+                        "value": "microsoftword",
+                        "attributes": [
+                            {
+                                "attrsName": "Window Title",
+                                "value": "windowtitle"
+
+                            },
+                            {
+                                "attrsName": "Key Stroke",
+                                "value": "keystroke"
+                            },
+                            {
+                                "attrsName": "Key Event(Copy/Cut/Paste/Save/Quit/Undo/Enter/Print)",
+                                "value": "keyevent"
+                            }
+                        ],
+                        "operators": [
+                            {
+                                "opName": "Contains",
+                                "value": "contains"
+                            },
+                            {
+                                "opName": "Contains | Case sensitive",
+                                "value": "containscasesensitive"
+                            },
+                            {
+                                "opName": "Equals | Case sensitive",
+                                "value": "equalscasesensitive"
+                            },
+                            {
+                                "opName": "Equals",
+                                "value": "equals"
+                            },
+                            {
+                                "opName": "Not In",
+                                "value": "notin"
+                            },
+                            {
+                                "opName": "Not In | Case sensitive",
+                                "value": "notincasesensitive"
+                            },
+                            {
+                                "opName": "Not Equals",
+                                "value": "notequals"
+                            },
+                            {
+                                "opName": "Not Equals | Case sensitive",
+                                "value": "notequalscasesensitive"
+                            }
+                        ]
+                    },
+                    {
+                        "appName": "Google Chrome",
+                        "value": "googlechrome",
+                        "attributes": [
+                            {
+                                "attrsName": "Window Title",
+                                "value": "windowtitle"
+
+                            },
+                            {
+                                "attrsName": "Key Stroke",
+                                "value": "keystroke"
+                            },
+                            {
+                                "attrsName": "Key Event(Copy/Cut/Paste/Save/Quit/Undo/Enter/Print)",
+                                "value": "keyevent"
+                            }
+                        ],
+                        "operators": [
+                            {
+                                "opName": "Contains",
+                                "value": "contains"
+                            },
+                            {
+                                "opName": "Contains | Case sensitive",
+                                "value": "containscasesensitive"
+                            },
+                            {
+                                "opName": "Equals | Case sensitive",
+                                "value": "equalscasesensitive"
+                            },
+                            {
+                                "opName": "Equals",
+                                "value": "equals"
+                            },
+                            {
+                                "opName": "Not In",
+                                "value": "notin"
+                            },
+                            {
+                                "opName": "Not In | Case sensitive",
+                                "value": "notincasesensitive"
+                            },
+                            {
+                                "opName": "Not Equals",
+                                "value": "notequals"
+                            },
+                            {
+                                "opName": "Not Equals | Case sensitive",
+                                "value": "notequalscasesensitive"
+                            }
+                        ]
+                    },
+                    {
+                        "appName": "Firefox",
+                        "value": "firefox",
+                        "attributes": [
+                            {
+                                "attrsName": "Window Title",
+                                "value": "windowtitle"
+
+                            },
+                            {
+                                "attrsName": "Key Stroke",
+                                "value": "keystroke"
+                            },
+                            {
+                                "attrsName": "Key Event(Copy/Cut/Paste/Save/Quit/Undo/Enter/Print)",
+                                "value": "keyevent"
+                            }
+                        ],
+                        "operators": [
+                            {
+                                "opName": "Contains",
+                                "value": "contains"
+                            },
+                            {
+                                "opName": "Contains | Case sensitive",
+                                "value": "containscasesensitive"
+                            },
+                            {
+                                "opName": "Equals | Case sensitive",
+                                "value": "equalscasesensitive"
+                            },
+                            {
+                                "opName": "Equals",
+                                "value": "equals"
+                            },
+                            {
+                                "opName": "Not In",
+                                "value": "notin"
+                            },
+                            {
+                                "opName": "Not In | Case sensitive",
+                                "value": "notincasesensitive"
+                            },
+                            {
+                                "opName": "Not Equals",
+                                "value": "notequals"
+                            },
+                            {
+                                "opName": "Not Equals | Case sensitive",
+                                "value": "notequalscasesensitive"
+                            }
+                        ]
+                    },
+                    {
+                        "appName": "Notepad",
+                        "value": "notepad",
+                        "attributes": [
+                            {
+                                "attrsName": "Window Title",
+                                "value": "windowtitle"
+
+                            },
+                            {
+                                "attrsName": "Key Stroke",
+                                "value": "keystroke"
+                            },
+                            {
+                                "attrsName": "Key Event(Copy/Cut/Paste/Save/Quit/Undo/Enter/Print)",
+                                "value": "keyevent"
+                            }
+                        ],
+                        "operators": [
+                            {
+                                "opName": "Contains",
+                                "value": "contains"
+                            },
+                            {
+                                "opName": "Contains | Case sensitive",
+                                "value": "containscasesensitive"
+                            },
+                            {
+                                "opName": "Equals | Case sensitive",
+                                "value": "equalscasesensitive"
+                            },
+                            {
+                                "opName": "Equals",
+                                "value": "equals"
+                            },
+                            {
+                                "opName": "Not In",
+                                "value": "notin"
+                            },
+                            {
+                                "opName": "Not In | Case sensitive",
+                                "value": "notincasesensitive"
+                            },
+                            {
+                                "opName": "Not Equals",
+                                "value": "notequals"
+                            },
+                            {
+                                "opName": "Not Equals | Case sensitive",
+                                "value": "notequalscasesensitive"
+                            }
+                        ]
+                    },
+                    {
+                        "appName": "IE",
+                        "value": "ie",
+                        "attributes": [
+                            {
+                                "attrsName": "Window Title",
+                                "value": "windowtitle"
+
+                            },
+                            {
+                                "attrsName": "Key Stroke",
+                                "value": "keystroke"
+                            },
+                            {
+                                "attrsName": "Key Event(Copy/Cut/Paste/Save/Quit/Undo/Enter/Print)",
+                                "value": "keyevent"
+                            }
+                        ],
+                        "operators": [
+                            {
+                                "opName": "Contains",
+                                "value": "contains"
+                            },
+                            {
+                                "opName": "Contains | Case sensitive",
+                                "value": "containscasesensitive"
+                            },
+                            {
+                                "opName": "Equals | Case sensitive",
+                                "value": "equalscasesensitive"
+                            },
+                            {
+                                "opName": "Equals",
+                                "value": "equals"
+                            },
+                            {
+                                "opName": "Not In",
+                                "value": "notin"
+                            },
+                            {
+                                "opName": "Not In | Case sensitive",
+                                "value": "notincasesensitive"
+                            },
+                            {
+                                "opName": "Not Equals",
+                                "value": "notequals"
+                            },
+                            {
+                                "opName": "Not Equals | Case sensitive",
+                                "value": "notequalscasesensitive"
+                            }
+                        ]
+                    },
+                    {
+                        "appName": "Microsoft PPT",
+                        "attributes": [
+                            {
+                                "attrsName": "Window Title",
+                                "value": "windowtitle"
+
+                            },
+                            {
+                                "attrsName": "Key Stroke",
+                                "value": "keystroke"
+                            },
+                            {
+                                "attrsName": "Key Event(Copy/Cut/Paste/Save/Quit/Undo/Enter/Print)",
+                                "value": "keyevent"
+                            }
+                        ],
+                        "operators": [
+                            {
+                                "opName": "Contains",
+                                "value": "contains"
+                            },
+                            {
+                                "opName": "Contains | Case sensitive",
+                                "value": "containscasesensitive"
+                            },
+                            {
+                                "opName": "Equals | Case sensitive",
+                                "value": "equalscasesensitive"
+                            },
+                            {
+                                "opName": "Equals",
+                                "value": "equals"
+                            },
+                            {
+                                "opName": "Not In",
+                                "value": "notin"
+                            },
+                            {
+                                "opName": "Not In | Case sensitive",
+                                "value": "notincasesensitive"
+                            },
+                            {
+                                "opName": "Not Equals",
+                                "value": "notequals"
+                            },
+                            {
+                                "opName": "Not Equals | Case sensitive",
+                                "value": "notequalscasesensitive"
+                            }
+                        ]
+                    },
+                    {
+                        "appName": "Microsoft Excel",
+                        "value": "microsoftexcel",
+                        "attributes": [
+                            {
+                                "attrsName": "Sheets Name (Excel Only) (Available in 2.9+)",
+                                "value": "sheetnameexcelonly2.9",
+                                "operators": [
+                                    { "opName": "Contains", "value": "contains" },
+                                    { "opName": "Contains | Case sensitive", "value": "containscasesensitive" },
+                                    { "opName": "Equals", "value": "equals" },
+                                    { "opName": "Equals | Case sensitive", "value": "equalscasesensitive" },
+                                    { "opName": "Not in", "value": "notin" },
+                                    { "opName": "Not in(Case Sensitive)", "value": "notincasesensitive" },
+                                    { "opName": "Not Equals", "value": "notequals" },
+                                    { "opName": "Not Equals (Case Sensitive)", "value": "notequalscasesensitive" }
+                                ]
+                            },
+                            {
+                                "attrsName": "Sheets(Excel Only) (Available in 3+)",
+                                "value": "sheetsexcelonly3plus",
+                                "operators": [
+                                    { "opName": "Contains", "value": "contains" },
+                                    { "opName": "Contains | Case sensitive", "value": "containscasesensitive" },
+                                    { "opName": "Equals", "value": "equals" },
+                                    { "opName": "Equals | Case sensitive", "value": "equalscasesensitive" },
+                                    { "opName": "Not in", "value": "notin" },
+                                    { "opName": "Not in(Case Sensitive)", "value": "notincasesensitive" },
+                                    { "opName": "Not Equals", "value": "notequals" },
+                                    { "opName": "Not Equals (Case Sensitive)", "value": "notequalscasesensitive" }
+                                ]
+                            },
+                            {
+                                "attrsName": "Sheets Count(Excel Only)(Availabel in 3+)",
+                                "value": "sheetcount3plus",
+                                "operators": [
+                                    { "opName": "Greater Than", "value": "greaterthan" },
+                                    { "opName": "Lesser Than", "value": "lesserthan" },
+                                    { "opName": "Equals", "value": "equals" },
+                                    { "opName": "Equals | Case sensitive", "value": "equalscasesensitive" },
+                                    { "opName": "Greather Than Equals", "value": "greaterthanequals" },
+                                    { "opName": "Lesser Than Equals", "value": "lesserthanequals" },
+                                    { "opName": "Not Equals", "value": "notequals" },
+                                    { "opName": "Not Equals (Case Sensitive)", "value": "notequalscasesensitive" }
+                                ]
+                            },
+                            {
+                                "attrsName": "Window Title",
+                                "value": "windowtitle",
+                                "operators": [
+                                    { "opName": "Contains", "value": "contains" },
+                                    { "opName": "Contains | Case sensitive", "value": "containscasesensitive" },
+                                    { "opName": "Equals", "value": "equals" },
+                                    { "opName": "Equals | Case sensitive", "value": "equalscasesensitive" },
+                                    { "opName": "Not in", "value": "notin" },
+                                    { "opName": "Not in(Case Sensitive)", "value": "notincasesensitive" },
+                                    { "opName": "Not Equals", "value": "notequals" },
+                                    { "opName": "Not Equals (Case Sensitive)", "value": "notequalscasesensitive" }
+                                ]
+                            },
+                            {
+                                "attrsName": "Key Stroke",
+                                "value": "keystroke",
+                                "operators": [
+                                    { "opName": "Contains", "value": "contains" },
+                                    { "opName": "Contains | Case sensitive", "value": "containscasesensitive" },
+                                    { "opName": "Equals", "value": "equals" },
+                                    { "opName": "Equals | Case sensitive", "value": "equalscasesensitive" },
+                                    { "opName": "Not in", "value": "notin" },
+                                    { "opName": "Not in(Case Sensitive)", "value": "notincasesensitive" },
+                                    { "opName": "Not Equals", "value": "notequals" },
+                                    { "opName": "Not Equals (Case Sensitive)", "value": "notequalscasesensitive" }
+                                ]
+                            },
+                            {
+                                "attrsName": "Key Event(Copy/Cut/Paste/Save/Quit/Undo/Enter/Print)",
+                                "value": "keyevent",
+                                "operators": [
+                                    { "opName": "Contains", "value": "contains" },
+                                    { "opName": "Contains | Case sensitive", "value": "containscasesensitive" },
+                                    { "opName": "Equals", "value": "equals" },
+                                    { "opName": "Equals | Case sensitive", "value": "equalscasesensitive" },
+                                    { "opName": "Not in", "value": "notin" },
+                                    { "opName": "Not in(Case Sensitive)", "value": "notincasesensitive" },
+                                    { "opName": "Not Equals", "value": "notequals" },
+                                    { "opName": "Not Equals (Case Sensitive)", "value": "notequalscasesensitive" }
+                                ]
+                            }
+
+                        ]
+                    }
+                ]
+            },
+            {
+                "scanName": "File System Scan",
+                "value": "filesystem",
+                "selectLoc": [
+                    {
+                        "locName": "Desktop(all Users)",
+                        "value": "desktopallusers",
+                        "attributes": [
+                            {
+                                "attrsName": "Folder",
+                                "value": "folder",
+                                "operators": [
+                                    { "opName": "Contains", "value": "contains" },
+                                    { "opName": "Contains | Case sensitive", "value": "containscasesensitive" },
+                                    { "opName": "Equals", "value": "equals" },
+                                    { "opName": "Equals | Case sensitive", "value": "equalscasesensitive" },
+                                    { "opName": "Not in", "value": "notin" },
+                                    { "opName": "Not in(Case Sensitive)", "value": "notincasesensitive" },
+                                    { "opName": "Not Equals", "value": "notequals" },
+                                    { "opName": "Not Equals (Case Sensitive)", "value": "notequalscasesensitive" }
+                                ]
+
+                            },
+                            {
+                                "attrsName": "File",
+                                "value": "file",
+                                "operators": [
+                                    { "opName": "Contains", "value": "contains" },
+                                    { "opName": "Contains | Case sensitive", "value": "containscasesensitive" },
+                                    { "opName": "Equals", "value": "equals" },
+                                    { "opName": "Equals | Case sensitive", "value": "equalscasesensitive" },
+                                    { "opName": "Not in", "value": "notin" },
+                                    { "opName": "Not in(Case Sensitive)", "value": "notincasesensitive" },
+                                    { "opName": "Not Equals", "value": "notequals" },
+                                    { "opName": "Not Equals (Case Sensitive)", "value": "notequalscasesensitive" }
+                                ]
+                            },
+                            {
+                                "attrsName": "Extension",
+                                "value": "extension",
+                                "operators": [
+                                    { "opName": "Contains", "value": "contains" },
+                                    { "opName": "Contains | Case sensitive", "value": "containscasesensitive" },
+                                    { "opName": "Equals", "value": "equals" },
+                                    { "opName": "Equals | Case sensitive", "value": "equalscasesensitive" },
+                                    { "opName": "Not in", "value": "notin" },
+                                    { "opName": "Not in(Case Sensitive)", "value": "notincasesensitive" },
+                                    { "opName": "Not Equals", "value": "notequals" },
+                                    { "opName": "Not Equals (Case Sensitive)", "value": "notequalscasesensitive" }
+                                ]
+                            },
+                            {
+                                "attrsName": "Nesting Level (o-n)",
+                                "value": "nestinglevel",
+                                "operators": [
+                                    { "opName": "Greater Than", "value": "greaterthan" },
+                                    { "opName": "Lesser Than", "value": "lesserthan" },
+                                    { "opName": "Equals", "value": "equals" },
+                                    { "opName": "Equals | Case sensitive", "value": "equalscasesensitive" },
+                                    { "opName": "Greather Than Equals", "value": "greaterthanequals" },
+                                    { "opName": "Lesser Than Equals", "value": "lesserthanequals" },
+                                    { "opName": "Not Equals", "value": "notequals" },
+                                    { "opName": "Not Equals (Case Sensitive)", "value": "notequalscasesensitive" }
+                                ]
+                            },
+                            {
+                                "attrsName": "Folder Event(create/modify)",
+                                "value": "folderevent",
+                                "operators": [
+                                    { "opName": "Contains", "value": "contains" },
+                                    { "opName": "Contains | Case sensitive", "value": "containscasesensitive" },
+                                    { "opName": "Equals", "value": "equals" },
+                                    { "opName": "Equals | Case sensitive", "value": "equalscasesensitive" },
+                                    { "opName": "Not in", "value": "notin" },
+                                    { "opName": "Not in(Case Sensitive)", "value": "notincasesensitive" },
+                                    { "opName": "Not Equals", "value": "notequals" },
+                                    { "opName": "Not Equals (Case Sensitive)", "value": "notequalscasesensitive" }
+                                ]
+                            },
+                            {
+                                "attrsName": "File Event(create/modify/delete)",
+                                "value": "fileevent",
+                                "operators": [
+                                    { "opName": "Contains", "value": "contains" },
+                                    { "opName": "Contains | Case sensitive", "value": "containscasesensitive" },
+                                    { "opName": "Equals", "value": "equals" },
+                                    { "opName": "Equals | Case sensitive", "value": "equalscasesensitive" },
+                                    { "opName": "Not in", "value": "notin" },
+                                    { "opName": "Not in(Case Sensitive)", "value": "notincasesensitive" },
+                                    { "opName": "Not Equals", "value": "notequals" },
+                                    { "opName": "Not Equals (Case Sensitive)", "value": "notequalscasesensitive" }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "locName": "Desktop(Current Users)",
+                        "value": "desktopcurrentusers",
+                        "attributes": [
+                            {
+                                "attrsName": "Folder",
+                                "value": "folder",
+                                "operators": [
+                                    { "opName": "Contains", "value": "contains" },
+                                    { "opName": "Contains | Case sensitive", "value": "containscasesensitive" },
+                                    { "opName": "Equals", "value": "equals" },
+                                    { "opName": "Equals | Case sensitive", "value": "equalscasesensitive" },
+                                    { "opName": "Not in", "value": "notin" },
+                                    { "opName": "Not in(Case Sensitive)", "value": "notincasesensitive" },
+                                    { "opName": "Not Equals", "value": "notequals" },
+                                    { "opName": "Not Equals (Case Sensitive)", "value": "notequalscasesensitive" }
+                                ]
+
+                            },
+                            {
+                                "attrsName": "File",
+                                "value": "file",
+                                "operators": [
+                                    { "opName": "Contains", "value": "contains" },
+                                    { "opName": "Contains | Case sensitive", "value": "containscasesensitive" },
+                                    { "opName": "Equals", "value": "equals" },
+                                    { "opName": "Equals | Case sensitive", "value": "equalscasesensitive" },
+                                    { "opName": "Not in", "value": "notin" },
+                                    { "opName": "Not in(Case Sensitive)", "value": "notincasesensitive" },
+                                    { "opName": "Not Equals", "value": "notequals" },
+                                    { "opName": "Not Equals (Case Sensitive)", "value": "notequalscasesensitive" }
+                                ]
+                            },
+                            {
+                                "attrsName": "Extension",
+                                "value": "extension",
+                                "operators": [
+                                    { "opName": "Contains", "value": "contains" },
+                                    { "opName": "Contains | Case sensitive", "value": "containscasesensitive" },
+                                    { "opName": "Equals", "value": "equals" },
+                                    { "opName": "Equals | Case sensitive", "value": "equalscasesensitive" },
+                                    { "opName": "Not in", "value": "notin" },
+                                    { "opName": "Not in(Case Sensitive)", "value": "notincasesensitive" },
+                                    { "opName": "Not Equals", "value": "notequals" },
+                                    { "opName": "Not Equals (Case Sensitive)", "value": "notequalscasesensitive" }
+                                ]
+                            },
+                            {
+                                "attrsName": "Nesting Level (o-n)",
+                                "value": "nestinglevel",
+                                "operators": [
+                                    { "opName": "Greater Than", "value": "greaterthan" },
+                                    { "opName": "Lesser Than", "value": "lesserthan" },
+                                    { "opName": "Equals", "value": "equals" },
+                                    { "opName": "Equals | Case sensitive", "value": "equalscasesensitive" },
+                                    { "opName": "Greather Than Equals", "value": "greaterthanequals" },
+                                    { "opName": "Lesser Than Equals", "value": "lesserthanequals" },
+                                    { "opName": "Not Equals", "value": "notequals" },
+                                    { "opName": "Not Equals (Case Sensitive)", "value": "notequalscasesensitive" }
+                                ]
+                            },
+                            {
+                                "attrsName": "Folder Event(create/modify)",
+                                "value": "folderevent",
+                                "operators": [
+                                    { "opName": "Contains", "value": "contains" },
+                                    { "opName": "Contains | Case sensitive", "value": "containscasesensitive" },
+                                    { "opName": "Equals", "value": "equals" },
+                                    { "opName": "Equals | Case sensitive", "value": "equalscasesensitive" },
+                                    { "opName": "Not in", "value": "notin" },
+                                    { "opName": "Not in(Case Sensitive)", "value": "notincasesensitive" },
+                                    { "opName": "Not Equals", "value": "notequals" },
+                                    { "opName": "Not Equals (Case Sensitive)", "value": "notequalscasesensitive" }
+                                ]
+                            },
+                            {
+                                "attrsName": "File Event(create/modify/delete)",
+                                "value": "fileevent",
+                                "operators": [
+                                    { "opName": "Contains", "value": "contains" },
+                                    { "opName": "Contains | Case sensitive", "value": "containscasesensitive" },
+                                    { "opName": "Equals", "value": "equals" },
+                                    { "opName": "Equals | Case sensitive", "value": "equalscasesensitive" },
+                                    { "opName": "Not in", "value": "notin" },
+                                    { "opName": "Not in(Case Sensitive)", "value": "notincasesensitive" },
+                                    { "opName": "Not Equals", "value": "notequals" },
+                                    { "opName": "Not Equals (Case Sensitive)", "value": "notequalscasesensitive" }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "locName": "Documents",
+                        "value": "documents",
+                        "attributes": [
+                            {
+                                "attrsName": "Folder",
+                                "value": "folder",
+                                "operators": [
+                                    { "opName": "Contains", "value": "contains" },
+                                    { "opName": "Contains | Case sensitive", "value": "containscasesensitive" },
+                                    { "opName": "Equals", "value": "equals" },
+                                    { "opName": "Equals | Case sensitive", "value": "equalscasesensitive" },
+                                    { "opName": "Not in", "value": "notin" },
+                                    { "opName": "Not in(Case Sensitive)", "value": "notincasesensitive" },
+                                    { "opName": "Not Equals", "value": "notequals" },
+                                    { "opName": "Not Equals (Case Sensitive)", "value": "notequalscasesensitive" }
+                                ]
+
+                            },
+                            {
+                                "attrsName": "File",
+                                "value": "file",
+                                "operators": [
+                                    { "opName": "Contains", "value": "contains" },
+                                    { "opName": "Contains | Case sensitive", "value": "containscasesensitive" },
+                                    { "opName": "Equals", "value": "equals" },
+                                    { "opName": "Equals | Case sensitive", "value": "equalscasesensitive" },
+                                    { "opName": "Not in", "value": "notin" },
+                                    { "opName": "Not in(Case Sensitive)", "value": "notincasesensitive" },
+                                    { "opName": "Not Equals", "value": "notequals" },
+                                    { "opName": "Not Equals (Case Sensitive)", "value": "notequalscasesensitive" }
+                                ]
+                            },
+                            {
+                                "attrsName": "Extension",
+                                "value": "extension",
+                                "operators": [
+                                    { "opName": "Contains", "value": "contains" },
+                                    { "opName": "Contains | Case sensitive", "value": "containscasesensitive" },
+                                    { "opName": "Equals", "value": "equals" },
+                                    { "opName": "Equals | Case sensitive", "value": "equalscasesensitive" },
+                                    { "opName": "Not in", "value": "notin" },
+                                    { "opName": "Not in(Case Sensitive)", "value": "notincasesensitive" },
+                                    { "opName": "Not Equals", "value": "notequals" },
+                                    { "opName": "Not Equals (Case Sensitive)", "value": "notequalscasesensitive" }
+                                ]
+                            },
+                            {
+                                "attrsName": "Nesting Level (o-n)",
+                                "value": "nestinglevel",
+                                "operators": [
+                                    { "opName": "Greater Than", "value": "greaterthan" },
+                                    { "opName": "Lesser Than", "value": "lesserthan" },
+                                    { "opName": "Equals", "value": "equals" },
+                                    { "opName": "Equals | Case sensitive", "value": "equalscasesensitive" },
+                                    { "opName": "Greather Than Equals", "value": "greaterthanequals" },
+                                    { "opName": "Lesser Than Equals", "value": "lesserthanequals" },
+                                    { "opName": "Not Equals", "value": "notequals" },
+                                    { "opName": "Not Equals (Case Sensitive)", "value": "notequalscasesensitive" }
+                                ]
+                            },
+                            {
+                                "attrsName": "Folder Event(create/modify)",
+                                "value": "folderevent",
+                                "operators": [
+                                    { "opName": "Contains", "value": "contains" },
+                                    { "opName": "Contains | Case sensitive", "value": "containscasesensitive" },
+                                    { "opName": "Equals", "value": "equals" },
+                                    { "opName": "Equals | Case sensitive", "value": "equalscasesensitive" },
+                                    { "opName": "Not in", "value": "notin" },
+                                    { "opName": "Not in(Case Sensitive)", "value": "notincasesensitive" },
+                                    { "opName": "Not Equals", "value": "notequals" },
+                                    { "opName": "Not Equals (Case Sensitive)", "value": "notequalscasesensitive" }
+                                ]
+                            },
+                            {
+                                "attrsName": "File Event(create/modify/delete)",
+                                "value": "fileevent",
+                                "operators": [
+                                    { "opName": "Contains", "value": "contains" },
+                                    { "opName": "Contains | Case sensitive", "value": "containscasesensitive" },
+                                    { "opName": "Equals", "value": "equals" },
+                                    { "opName": "Equals | Case sensitive", "value": "equalscasesensitive" },
+                                    { "opName": "Not in", "value": "notin" },
+                                    { "opName": "Not in(Case Sensitive)", "value": "notincasesensitive" },
+                                    { "opName": "Not Equals", "value": "notequals" },
+                                    { "opName": "Not Equals (Case Sensitive)", "value": "notequalscasesensitive" }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "locName": "Downloads",
+                        "value": "downloads",
+                        "attributes": [
+                            {
+                                "attrsName": "Folder",
+                                "value": "folder",
+                                "operators": [
+                                    { "opName": "Contains", "value": "contains" },
+                                    { "opName": "Contains | Case sensitive", "value": "containscasesensitive" },
+                                    { "opName": "Equals", "value": "equals" },
+                                    { "opName": "Equals | Case sensitive", "value": "equalscasesensitive" },
+                                    { "opName": "Not in", "value": "notin" },
+                                    { "opName": "Not in(Case Sensitive)", "value": "notincasesensitive" },
+                                    { "opName": "Not Equals", "value": "notequals" },
+                                    { "opName": "Not Equals (Case Sensitive)", "value": "notequalscasesensitive" }
+                                ]
+
+                            },
+                            {
+                                "attrsName": "File",
+                                "value": "file",
+                                "operators": [
+                                    { "opName": "Contains", "value": "contains" },
+                                    { "opName": "Contains | Case sensitive", "value": "containscasesensitive" },
+                                    { "opName": "Equals", "value": "equals" },
+                                    { "opName": "Equals | Case sensitive", "value": "equalscasesensitive" },
+                                    { "opName": "Not in", "value": "notin" },
+                                    { "opName": "Not in(Case Sensitive)", "value": "notincasesensitive" },
+                                    { "opName": "Not Equals", "value": "notequals" },
+                                    { "opName": "Not Equals (Case Sensitive)", "value": "notequalscasesensitive" }
+                                ]
+                            },
+                            {
+                                "attrsName": "Extension",
+                                "value": "extension",
+                                "operators": [
+                                    { "opName": "Contains", "value": "contains" },
+                                    { "opName": "Contains | Case sensitive", "value": "containscasesensitive" },
+                                    { "opName": "Equals", "value": "equals" },
+                                    { "opName": "Equals | Case sensitive", "value": "equalscasesensitive" },
+                                    { "opName": "Not in", "value": "notin" },
+                                    { "opName": "Not in(Case Sensitive)", "value": "notincasesensitive" },
+                                    { "opName": "Not Equals", "value": "notequals" },
+                                    { "opName": "Not Equals (Case Sensitive)", "value": "notequalscasesensitive" }
+                                ]
+                            },
+                            {
+                                "attrsName": "Nesting Level (o-n)",
+                                "value": "nestinglevel",
+                                "operators": [
+                                    { "opName": "Greater Than", "value": "greaterthan" },
+                                    { "opName": "Lesser Than", "value": "lesserthan" },
+                                    { "opName": "Equals", "value": "equals" },
+                                    { "opName": "Equals | Case sensitive", "value": "equalscasesensitive" },
+                                    { "opName": "Greather Than Equals", "value": "greaterthanequals" },
+                                    { "opName": "Lesser Than Equals", "value": "lesserthanequals" },
+                                    { "opName": "Not Equals", "value": "notequals" },
+                                    { "opName": "Not Equals (Case Sensitive)", "value": "notequalscasesensitive" }
+                                ]
+                            },
+                            {
+                                "attrsName": "Folder Event(create/modify)",
+                                "value": "folderevent",
+                                "operators": [
+                                    { "opName": "Contains", "value": "contains" },
+                                    { "opName": "Contains | Case sensitive", "value": "containscasesensitive" },
+                                    { "opName": "Equals", "value": "equals" },
+                                    { "opName": "Equals | Case sensitive", "value": "equalscasesensitive" },
+                                    { "opName": "Not in", "value": "notin" },
+                                    { "opName": "Not in(Case Sensitive)", "value": "notincasesensitive" },
+                                    { "opName": "Not Equals", "value": "notequals" },
+                                    { "opName": "Not Equals (Case Sensitive)", "value": "notequalscasesensitive" }
+                                ]
+                            },
+                            {
+                                "attrsName": "File Event(create/modify/delete)",
+                                "value": "fileevent",
+                                "operators": [
+                                    { "opName": "Contains", "value": "contains" },
+                                    { "opName": "Contains | Case sensitive", "value": "containscasesensitive" },
+                                    { "opName": "Equals", "value": "equals" },
+                                    { "opName": "Equals | Case sensitive", "value": "equalscasesensitive" },
+                                    { "opName": "Not in", "value": "notin" },
+                                    { "opName": "Not in(Case Sensitive)", "value": "notincasesensitive" },
+                                    { "opName": "Not Equals", "value": "notequals" },
+                                    { "opName": "Not Equals (Case Sensitive)", "value": "notequalscasesensitive" }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "locName": "Absolute Path",
+                        "value": "absolutepath",
+                        "attributes": [
+                            {
+                                "attrsName": "Folder",
+                                "value": "folder",
+                                "operators": [
+                                    { "opName": "Contains", "value": "contains" },
+                                    { "opName": "Contains | Case sensitive", "value": "containscasesensitive" },
+                                    { "opName": "Equals", "value": "equals" },
+                                    { "opName": "Equals | Case sensitive", "value": "equalscasesensitive" },
+                                    { "opName": "Not in", "value": "notin" },
+                                    { "opName": "Not in(Case Sensitive)", "value": "notincasesensitive" },
+                                    { "opName": "Not Equals", "value": "notequals" },
+                                    { "opName": "Not Equals (Case Sensitive)", "value": "notequalscasesensitive" }
+                                ]
+
+                            },
+                            {
+                                "attrsName": "File",
+                                "value": "file",
+                                "operators": [
+                                    { "opName": "Contains", "value": "contains" },
+                                    { "opName": "Contains | Case sensitive", "value": "containscasesensitive" },
+                                    { "opName": "Equals", "value": "equals" },
+                                    { "opName": "Equals | Case sensitive", "value": "equalscasesensitive" },
+                                    { "opName": "Not in", "value": "notin" },
+                                    { "opName": "Not in(Case Sensitive)", "value": "notincasesensitive" },
+                                    { "opName": "Not Equals", "value": "notequals" },
+                                    { "opName": "Not Equals (Case Sensitive)", "value": "notequalscasesensitive" }
+                                ]
+                            },
+                            {
+                                "attrsName": "Extension",
+                                "value": "extension",
+                                "operators": [
+                                    { "opName": "Contains", "value": "contains" },
+                                    { "opName": "Contains | Case sensitive", "value": "containscasesensitive" },
+                                    { "opName": "Equals", "value": "equals" },
+                                    { "opName": "Equals | Case sensitive", "value": "equalscasesensitive" },
+                                    { "opName": "Not in", "value": "notin" },
+                                    { "opName": "Not in(Case Sensitive)", "value": "notincasesensitive" },
+                                    { "opName": "Not Equals", "value": "notequals" },
+                                    { "opName": "Not Equals (Case Sensitive)", "value": "notequalscasesensitive" }
+                                ]
+                            },
+                            {
+                                "attrsName": "Nesting Level (o-n)",
+                                "value": "nestinglevel",
+                                "operators": [
+                                    { "opName": "Greater Than", "value": "greaterthan" },
+                                    { "opName": "Lesser Than", "value": "lesserthan" },
+                                    { "opName": "Equals", "value": "equals" },
+                                    { "opName": "Equals | Case sensitive", "value": "equalscasesensitive" },
+                                    { "opName": "Greather Than Equals", "value": "greaterthanequals" },
+                                    { "opName": "Lesser Than Equals", "value": "lesserthanequals" },
+                                    { "opName": "Not Equals", "value": "notequals" },
+                                    { "opName": "Not Equals (Case Sensitive)", "value": "notequalscasesensitive" }
+                                ]
+                            },
+                            {
+                                "attrsName": "Folder Event(create/modify)",
+                                "value": "folderevent",
+                                "operators": [
+                                    { "opName": "Contains", "value": "contains" },
+                                    { "opName": "Contains | Case sensitive", "value": "containscasesensitive" },
+                                    { "opName": "Equals", "value": "equals" },
+                                    { "opName": "Equals | Case sensitive", "value": "equalscasesensitive" },
+                                    { "opName": "Not in", "value": "notin" },
+                                    { "opName": "Not in(Case Sensitive)", "value": "notincasesensitive" },
+                                    { "opName": "Not Equals", "value": "notequals" },
+                                    { "opName": "Not Equals (Case Sensitive)", "value": "notequalscasesensitive" }
+                                ]
+                            },
+                            {
+                                "attrsName": "File Event(create/modify/delete)",
+                                "value": "fileevent",
+                                "operators": [
+                                    { "opName": "Contains", "value": "contains" },
+                                    { "opName": "Contains | Case sensitive", "value": "containscasesensitive" },
+                                    { "opName": "Equals", "value": "equals" },
+                                    { "opName": "Equals | Case sensitive", "value": "equalscasesensitive" },
+                                    { "opName": "Not in", "value": "notin" },
+                                    { "opName": "Not in(Case Sensitive)", "value": "notincasesensitive" },
+                                    { "opName": "Not Equals", "value": "notequals" },
+                                    { "opName": "Not Equals (Case Sensitive)", "value": "notequalscasesensitive" }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+
+            },
+            {
+                "scanName": "Email Scan",
+                "value": "emailscan",
+                "LookForPastEmail": [
+                    {
+                        "attributes": [
+                            {
+                                "attrsName": "From Email (Inbox)",
+                                "value": "fromemail",
+                                "operators": [
+                                    { "opName": "Contains", "value": "contains" },
+                                    { "opName": "Contains | Case sensitive", "value": "containscasesensitive" },
+                                    { "opName": "Equals", "value": "equals" },
+                                    { "opName": "Equals | Case sensitive", "value": "equalscasesensitive" },
+                                    { "opName": "Not in", "value": "notin" },
+                                    { "opName": "Not in(Case Sensitive)", "value": "notincasesensitive" },
+                                    { "opName": "Not Equals", "value": "notequals" },
+                                    { "opName": "Not Equals (Case Sensitive)", "value": "notequalscasesensitive" }
+                                ]
+                            },
+                            {
+                                "attrsName": "Subject (Inbox)",
+                                "value": "subjectinbox",
+                                "operators": [
+                                    { "opName": "Contains", "value": "contains" },
+                                    { "opName": "Contains | Case sensitive", "value": "containscasesensitive" },
+                                    { "opName": "Equals", "value": "equals" },
+                                    { "opName": "Equals | Case sensitive", "value": "equalscasesensitive" },
+                                    { "opName": "Not in", "value": "notin" },
+                                    { "opName": "Not in(Case Sensitive)", "value": "notincasesensitive" },
+                                    { "opName": "Not Equals", "value": "notequals" },
+                                    { "opName": "Not Equals (Case Sensitive)", "value": "notequalscasesensitive" }
+                                ]
+                            },
+                            {
+                                "attrsName": "Body (Inbox)",
+                                "value": "bodyinbox",
+                                "operators": [
+                                    { "opName": "Contains", "value": "contains" },
+                                    { "opName": "Contains | Case sensitive", "value": "containscasesensitive" },
+                                    { "opName": "Equals", "value": "equals" },
+                                    { "opName": "Equals | Case sensitive", "value": "equalscasesensitive" },
+                                    { "opName": "Not in", "value": "notin" },
+                                    { "opName": "Not in(Case Sensitive)", "value": "notincasesensitive" },
+                                    { "opName": "Not Equals", "value": "notequals" },
+                                    { "opName": "Not Equals (Case Sensitive)", "value": "notequalscasesensitive" }
+                                ]
+                            },
+                            {
+                                "attrsName": "Attachment (Inbox)",
+                                "value": "attachmentinbox",
+                                "operators": [
+                                    { "opName": "Greater Than", "value": "greaterthan" },
+                                    { "opName": "Lesser Than", "value": "lesserthan" },
+                                    { "opName": "Equals", "value": "equals" },
+                                    { "opName": "Equals | Case sensitive", "value": "equalscasesensitive" },
+                                    { "opName": "Greather Than Equals", "value": "greaterthanequals" },
+                                    { "opName": "Lesser Than Equals", "value": "lesserthanequals" },
+                                    { "opName": "Not Equals", "value": "notequals" },
+                                    { "opName": "Not Equals (Case Sensitive)", "value": "notequalscasesensitive" }
+                                ]
+                            },
+                            {
+                                "attrsName": "Attachment Count (Inbox)",
+                                "value": "attachmentcountinbox",
+                                "operators": [
+                                    { "opName": "Greater Than", "value": "greaterthan" },
+                                    { "opName": "Lesser Than", "value": "lesserthan" },
+                                    { "opName": "Equals", "value": "equals" },
+                                    { "opName": "Equals | Case sensitive", "value": "equalscasesensitive" },
+                                    { "opName": "Greather Than Equals", "value": "greaterthanequals" },
+                                    { "opName": "Lesser Than Equals", "value": "lesserthanequals" },
+                                    { "opName": "Not Equals", "value": "notequals" },
+                                    { "opName": "Not Equals (Case Sensitive)", "value": "notequalscasesensitive" }
+                                ]
+                            },
+                            {
+                                "attrsName": "To Email (Sent)",
+                                "value": "toemail",
+                                "operators": [
+                                    { "opName": "Contains", "value": "contains" },
+                                    { "opName": "Contains | Case sensitive", "value": "containscasesensitive" },
+                                    { "opName": "Equals", "value": "equals" },
+                                    { "opName": "Equals | Case sensitive", "value": "equalscasesensitive" },
+                                    { "opName": "Not in", "value": "notin" },
+                                    { "opName": "Not in(Case Sensitive)", "value": "notincasesensitive" },
+                                    { "opName": "Not Equals", "value": "notequals" },
+                                    { "opName": "Not Equals (Case Sensitive)", "value": "notequalscasesensitive" }
+                                ]
+                            },
+                            {
+                                "attrsName": "Subject (sent)",
+                                "value": "subjectsent",
+                                "operators": [
+                                    { "opName": "Contains", "value": "contains" },
+                                    { "opName": "Contains | Case sensitive", "value": "containscasesensitive" },
+                                    { "opName": "Equals", "value": "equals" },
+                                    { "opName": "Equals | Case sensitive", "value": "equalscasesensitive" },
+                                    { "opName": "Not in", "value": "notin" },
+                                    { "opName": "Not in(Case Sensitive)", "value": "notincasesensitive" },
+                                    { "opName": "Not Equals", "value": "notequals" },
+                                    { "opName": "Not Equals (Case Sensitive)", "value": "notequalscasesensitive" }
+                                ]
+                            },
+                            {
+                                "attrsName": "Body (Sent)",
+                                "value": "bodysent",
+                                "operators": [
+                                    { "opName": "Contains", "value": "contains" },
+                                    { "opName": "Contains | Case sensitive", "value": "containscasesensitive" },
+                                    { "opName": "Equals", "value": "equals" },
+                                    { "opName": "Equals | Case sensitive", "value": "equalscasesensitive" },
+                                    { "opName": "Not in", "value": "notin" },
+                                    { "opName": "Not in(Case Sensitive)", "value": "notincasesensitive" },
+                                    { "opName": "Not Equals", "value": "notequals" },
+                                    { "opName": "Not Equals (Case Sensitive)", "value": "notequalscasesensitive" }
+                                ]
+                            },
+                            {
+                                "attrsName": "Attachment (Sent)",
+                                "value": "attachmentsent",
+                                "operators": [
+                                    { "opName": "Greater Than", "value": "greaterthan" },
+                                    { "opName": "Lesser Than", "value": "lesserthan" },
+                                    { "opName": "Equals", "value": "equals" },
+                                    { "opName": "Equals | Case sensitive", "value": "equalscasesensitive" },
+                                    { "opName": "Greather Than Equals", "value": "greaterthanequals" },
+                                    { "opName": "Lesser Than Equals", "value": "lesserthanequals" },
+                                    { "opName": "Not Equals", "value": "notequals" },
+                                    { "opName": "Not Equals (Case Sensitive)", "value": "notequalscasesensitive" }
+                                ]
+                            },
+                            {
+                                "attrsName": "Attachment Count(Sent)",
+                                "value": "attachmentcountsent",
+                                "operators": [
+                                    { "opName": "Greater Than", "value": "greaterthan" },
+                                    { "opName": "Lesser Than", "value": "lesserthan" },
+                                    { "opName": "Equals", "value": "equals" },
+                                    { "opName": "Equals | Case sensitive", "value": "equalscasesensitive" },
+                                    { "opName": "Greather Than Equals", "value": "greaterthanequals" },
+                                    { "opName": "Lesser Than Equals", "value": "lesserthanequals" },
+                                    { "opName": "Not Equals", "value": "notequals" },
+                                    { "opName": "Not Equals (Case Sensitive)", "value": "notequalscasesensitive" }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+

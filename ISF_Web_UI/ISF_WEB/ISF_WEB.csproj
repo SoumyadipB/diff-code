@@ -1,0 +1,1560 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props" Condition="Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" />
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>
+    </ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{C0C65DE8-6BE6-43AA-A9F3-543B5143296D}</ProjectGuid>
+    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>ISF_WEB</RootNamespace>
+    <AssemblyName>ISF_WEB</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <MvcBuildViews>false</MvcBuildViews>
+    <UseIISExpress>true</UseIISExpress>
+    <IISExpressSSLPort>44393</IISExpressSSLPort>
+    <IISExpressAnonymousAuthentication />
+    <IISExpressWindowsAuthentication />
+    <IISExpressUseClassicPipelineMode />
+    <Use64BitIISExpress>
+    </Use64BitIISExpress>
+    <UseGlobalApplicationHostFile />
+    <TypeScriptToolsVersion>1.0</TypeScriptToolsVersion>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <IncludeIisSettings>false</IncludeIisSettings>
+    <LangVersion>default</LangVersion>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <LegacyPublishPropertiesPageEnabled>true</LegacyPublishPropertiesPageEnabled>
+    <PublishDatabaseSettings>
+      <Objects>
+      </Objects>
+    </PublishDatabaseSettings>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Antlr3.Runtime, Version=3.5.0.2, Culture=neutral, PublicKeyToken=eb42632606e9261f, processorArchitecture=MSIL">
+      <HintPath>..\packages\Antlr.3.5.0.2\lib\Antlr3.Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.Core, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Identity.Core.2.2.2\lib\net45\Microsoft.AspNet.Identity.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.EntityFramework, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Identity.EntityFramework.2.2.2\lib\net45\Microsoft.AspNet.Identity.EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.Owin, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Identity.Owin.2.2.2\lib\net45\Microsoft.AspNet.Identity.Owin.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.SessionState.SessionStateModule, Version=1.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.SessionState.SessionStateModule.1.1.0\lib\Net462\Microsoft.AspNet.SessionState.SessionStateModule.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.SignalR.Core, Version=2.4.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.SignalR.Core.2.4.1\lib\net45\Microsoft.AspNet.SignalR.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.SignalR.SystemWeb, Version=2.4.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.SignalR.SystemWeb.2.4.1\lib\net45\Microsoft.AspNet.SignalR.SystemWeb.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Azure.KeyVault, Version=3.0.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Azure.KeyVault.3.0.5\lib\net461\Microsoft.Azure.KeyVault.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Azure.KeyVault.WebKey, Version=3.0.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Azure.KeyVault.WebKey.3.0.5\lib\net461\Microsoft.Azure.KeyVault.WebKey.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=1.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Bcl.AsyncInterfaces.1.1.1\lib\net461\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CodeDom.Providers.DotNetCompilerPlatform, Version=2.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\lib\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.Identity.Client, Version=4.16.1.0, Culture=neutral, PublicKeyToken=0a613f4dd989e8ae, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Identity.Client.4.16.1\lib\net45\Microsoft.Identity.Client.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Identity.Client.Extensions.Msal, Version=2.12.0.0, Culture=neutral, PublicKeyToken=0a613f4dd989e8ae, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Identity.Client.Extensions.Msal.2.12.0\lib\net45\Microsoft.Identity.Client.Extensions.Msal.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.IdentityModel.Clients.ActiveDirectory, Version=5.2.8.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IdentityModel.Clients.ActiveDirectory.5.2.8\lib\net45\Microsoft.IdentityModel.Clients.ActiveDirectory.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.IdentityModel.JsonWebTokens, Version=5.4.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IdentityModel.JsonWebTokens.5.4.0\lib\net451\Microsoft.IdentityModel.JsonWebTokens.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.IdentityModel.Logging, Version=5.4.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IdentityModel.Logging.5.4.0\lib\net451\Microsoft.IdentityModel.Logging.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.IdentityModel.Protocols, Version=5.4.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IdentityModel.Protocols.5.4.0\lib\net451\Microsoft.IdentityModel.Protocols.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.IdentityModel.Protocols.OpenIdConnect, Version=5.4.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IdentityModel.Protocols.OpenIdConnect.5.4.0\lib\net451\Microsoft.IdentityModel.Protocols.OpenIdConnect.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.IdentityModel.Tokens, Version=5.4.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IdentityModel.Tokens.5.4.0\lib\net451\Microsoft.IdentityModel.Tokens.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin, Version=4.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.4.0.1\lib\net45\Microsoft.Owin.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Host.SystemWeb, Version=4.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.Host.SystemWeb.4.0.1\lib\net45\Microsoft.Owin.Host.SystemWeb.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security, Version=4.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.Security.4.0.1\lib\net45\Microsoft.Owin.Security.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security.Cookies, Version=4.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.Security.Cookies.4.0.1\lib\net45\Microsoft.Owin.Security.Cookies.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security.Facebook, Version=4.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.Security.Facebook.4.0.1\lib\net45\Microsoft.Owin.Security.Facebook.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security.Google, Version=4.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.Security.Google.4.0.1\lib\net45\Microsoft.Owin.Security.Google.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security.MicrosoftAccount, Version=4.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.Security.MicrosoftAccount.4.0.1\lib\net45\Microsoft.Owin.Security.MicrosoftAccount.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security.OAuth, Version=4.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.Security.OAuth.4.0.1\lib\net45\Microsoft.Owin.Security.OAuth.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security.OpenIdConnect, Version=4.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.Security.OpenIdConnect.4.0.1\lib\net45\Microsoft.Owin.Security.OpenIdConnect.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security.Twitter, Version=4.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.Security.Twitter.4.0.1\lib\net45\Microsoft.Owin.Security.Twitter.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Rest.ClientRuntime, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Rest.ClientRuntime.2.3.20\lib\net461\Microsoft.Rest.ClientRuntime.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Rest.ClientRuntime.Azure, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Rest.ClientRuntime.Azure.3.3.18\lib\net452\Microsoft.Rest.ClientRuntime.Azure.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Web.RedisSessionStateProvider, Version=4.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Web.RedisSessionStateProvider.4.0.1\lib\net462\Microsoft.Web.RedisSessionStateProvider.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.12.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="Pipelines.Sockets.Unofficial, Version=1.0.0.0, Culture=neutral, PublicKeyToken=42ea0a778e13fbe2, processorArchitecture=MSIL">
+      <HintPath>..\packages\Pipelines.Sockets.Unofficial.2.1.16\lib\net472\Pipelines.Sockets.Unofficial.dll</HintPath>
+    </Reference>
+    <Reference Include="Serilog, Version=2.0.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
+      <HintPath>..\packages\Serilog.2.10.0\lib\net46\Serilog.dll</HintPath>
+    </Reference>
+    <Reference Include="Serilog.Sinks.File, Version=2.0.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
+      <HintPath>..\packages\Serilog.Sinks.File.4.1.0\lib\net45\Serilog.Sinks.File.dll</HintPath>
+    </Reference>
+    <Reference Include="StackExchange.Redis, Version=2.0.0.0, Culture=neutral, PublicKeyToken=c219ff1ca8c2ce46, processorArchitecture=MSIL">
+      <HintPath>..\packages\StackExchange.Redis.2.1.58\lib\net472\StackExchange.Redis.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Buffers.4.5.1\lib\net461\System.Buffers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ComponentModel.Composition" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Diagnostics.PerformanceCounter, Version=4.0.2.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Diagnostics.PerformanceCounter.4.7.0\lib\net461\System.Diagnostics.PerformanceCounter.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.IdentityModel" />
+    <Reference Include="System.IdentityModel.Tokens.Jwt, Version=5.4.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.IdentityModel.Tokens.Jwt.5.4.0\lib\net451\System.IdentityModel.Tokens.Jwt.dll</HintPath>
+    </Reference>
+    <Reference Include="System.IO, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.IO.4.3.0\lib\net462\System.IO.dll</HintPath>
+      <Private>True</Private>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.IO.Compression, Version=4.1.2.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.IO.Compression.4.3.0\lib\net46\System.IO.Compression.dll</HintPath>
+      <Private>True</Private>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.IO.Pipelines, Version=4.0.2.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.IO.Pipelines.4.7.1\lib\netstandard2.0\System.IO.Pipelines.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Memory, Version=4.0.1.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Memory.4.5.3\lib\netstandard2.0\System.Memory.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net" />
+    <Reference Include="System.Net.Http, Version=4.1.1.3, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Net.Http.4.3.4\lib\net46\System.Net.Http.dll</HintPath>
+      <Private>True</Private>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Net.Http.Formatting, Version=5.2.7.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.2.7\lib\net45\System.Net.Http.Formatting.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Numerics.Vectors, Version=4.1.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Numerics.Vectors.4.5.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.4.3.0\lib\net462\System.Runtime.dll</HintPath>
+      <Private>True</Private>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.6.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.4.7.1\lib\net461\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Security" />
+    <Reference Include="System.Security.Cryptography.Algorithms, Version=4.2.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Security.Cryptography.Algorithms.4.3.0\lib\net463\System.Security.Cryptography.Algorithms.dll</HintPath>
+      <Private>True</Private>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Security.Cryptography.Encoding, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Security.Cryptography.Encoding.4.3.0\lib\net46\System.Security.Cryptography.Encoding.dll</HintPath>
+      <Private>True</Private>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Security.Cryptography.Primitives, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Security.Cryptography.Primitives.4.3.0\lib\net46\System.Security.Cryptography.Primitives.dll</HintPath>
+      <Private>True</Private>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Security.Cryptography.ProtectedData, Version=4.0.3.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Security.Cryptography.ProtectedData.4.5.0\lib\net461\System.Security.Cryptography.ProtectedData.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Security.Cryptography.X509Certificates, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Security.Cryptography.X509Certificates.4.3.0\lib\net461\System.Security.Cryptography.X509Certificates.dll</HintPath>
+      <Private>True</Private>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Text.Encodings.Web, Version=4.0.4.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Text.Encodings.Web.4.6.0\lib\netstandard2.0\System.Text.Encodings.Web.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Text.Json, Version=4.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Text.Json.4.6.0\lib\net461\System.Text.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Threading.Channels, Version=4.0.2.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Threading.Channels.4.7.1\lib\net461\System.Threading.Channels.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Threading.Tasks.Extensions.4.5.4\lib\net461\System.Threading.Tasks.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ValueTuple.4.5.0\lib\net47\System.ValueTuple.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.DynamicData" />
+    <Reference Include="System.Web.Entity" />
+    <Reference Include="System.Web.ApplicationServices" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.7\lib\net45\System.Web.Helpers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Http, Version=5.2.7.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Core.5.2.7\lib\net45\System.Web.Http.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Http.WebHost, Version=5.2.7.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.WebHost.5.2.7\lib\net45\System.Web.Http.WebHost.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Mvc, Version=5.2.7.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Mvc.5.2.7\lib\net45\System.Web.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Optimization, Version=1.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Web.Optimization.1.1.3\lib\net40\System.Web.Optimization.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Providers, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Providers.Core.1.0\lib\net40\System.Web.Providers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Razor.3.2.7\lib\net45\System.Web.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.7\lib\net45\System.Web.WebPages.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Deployment, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.7\lib\net45\System.Web.WebPages.Deployment.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.7\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Abstractions" />
+    <Reference Include="System.Web.Routing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.EnterpriseServices" />
+    <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http.WebRequest">
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="WebGrease, Version=1.6.5135.21930, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\WebGrease.1.6.0\lib\WebGrease.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Owin">
+      <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="App_Start\BundleConfig.cs" />
+    <Compile Include="App_Start\FilterConfig.cs" />
+    <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="App_Start\Startup.Auth.cs" />
+    <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\ActivityController.cs" />
+    <Compile Include="Controllers\ActivityMasterController.cs" />
+    <Compile Include="Controllers\AdminController.cs" />
+    <Compile Include="Controllers\ASPExplorerController.cs" />
+    <Compile Include="Controllers\BotsController.cs" />
+    <Compile Include="Controllers\CompetenceController.cs" />
+    <Compile Include="Controllers\CreateAutosenseRuleController.cs" />
+    <Compile Include="Controllers\DashboardController.cs" />
+    <Compile Include="Controllers\DataController.cs" />
+    <Compile Include="Controllers\DeliveryAcceptanceController.cs" />
+    <Compile Include="Controllers\DeliveryExecutionController.cs" />
+    <Compile Include="Controllers\DeliveryExecutionFeedbackController.cs" />
+    <Compile Include="Controllers\DeliveryIndexController.cs" />
+    <Compile Include="Controllers\DemandForecastController.cs" />
+    <Compile Include="Controllers\ErrorController.cs" />
+    <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\LoginController.cs" />
+    <Compile Include="Controllers\MonitoringController.cs" />
+    <Compile Include="Controllers\MSSLeaveController.cs" />
+    <Compile Include="Controllers\ProjectController.cs" />
+    <Compile Include="Controllers\ReportsController.cs" />
+    <Compile Include="Controllers\RequestApprovalController.cs" />
+    <Compile Include="Controllers\ResourceController.cs" />
+    <Compile Include="Controllers\RuleMigrationController.cs" />
+    <Compile Include="Controllers\ScopeController.cs" />
+    <Compile Include="Controllers\SelfServiceController.cs" />
+    <Compile Include="Controllers\TeamExplorerController.cs" />
+    <Compile Include="Controllers\VendorController.cs" />
+    <Compile Include="Controllers\WorkFlowController.cs" />
+    <Compile Include="Controllers\WorkOrderController.cs" />
+    <Compile Include="Filters\AzureAdAuthenticationAttribute.cs" />
+    <Compile Include="Filters\CustomAuthenticationAttribute.cs" />
+    <Compile Include="Filters\CustomAuthenticationForMqttAttribute.cs" />
+    <Compile Include="Filters\CustomAuthorizationAttribute.cs" />
+    <Compile Include="Filters\PageAccessByRole.cs" />
+    <Compile Include="Filters\SessionManager.cs" />
+    <Compile Include="Global.asax.cs">
+      <DependentUpon>Global.asax</DependentUpon>
+    </Compile>
+    <Compile Include="ModelsBinder\JavaScriptSerializerExt.cs" />
+    <Compile Include="ModelsBinder\JsonModelBinder.cs" />
+    <Compile Include="Models\AccountViewModels.cs" />
+    <Compile Include="Models\ActivityScope.cs" />
+    <Compile Include="Models\APIResponse.cs" />
+    <Compile Include="Models\AutoSenseCompleteData.cs" />
+    <Compile Include="Models\ConfigurationDetail.cs" />
+    <Compile Include="Models\DataFromAPIModel.cs" />
+    <Compile Include="Models\NotificationModel.cs" />
+    <Compile Include="Models\DesktopVersionResponseModal.cs" />
+    <Compile Include="Models\MqttDataModel.cs" />
+    <Compile Include="Models\ProfileDetails.cs" />
+    <Compile Include="Models\StepDetailsData.cs" />
+    <Compile Include="Models\UserDetailsForSignum.cs" />
+    <Compile Include="Models\UserLoginDetail.cs" />
+    <Compile Include="Models\ApiData.cs" />
+    <Compile Include="Models\Approval.cs" />
+    <Compile Include="Models\Certificate.cs" />
+    <Compile Include="Models\Company.cs" />
+    <Compile Include="Models\Competence.cs" />
+    <Compile Include="Models\Country.cs" />
+    <Compile Include="Models\Customer.cs" />
+    <Compile Include="Models\Employee.cs" />
+    <Compile Include="Models\FileDownloadInputDetail.cs" />
+    <Compile Include="Models\FileDownloadOutputDetail.cs" />
+    <Compile Include="Models\FileUploadInputDetail.cs" />
+    <Compile Include="Models\IdentityModels.cs" />
+    <Compile Include="Models\JobRole.cs" />
+    <Compile Include="Models\JobStage.cs" />
+    <Compile Include="Models\MarketArea.cs" />
+    <Compile Include="Models\OnsiteLocation.cs" />
+    <Compile Include="Models\Opportunity.cs" />
+    <Compile Include="Models\PageAccessDetailsByRoleOfSignum.cs" />
+    <Compile Include="Models\ProductArea.cs" />
+    <Compile Include="Models\Project.cs" />
+    <Compile Include="Models\ProjectDocument.cs" />
+    <Compile Include="Models\ProjectScope.cs" />
+    <Compile Include="Models\ProjectScopeDetail.cs" />
+    <Compile Include="Models\ResourcePosition.cs" />
+    <Compile Include="Models\ResourceRequest.cs" />
+    <Compile Include="Models\ResourceRequestCertification.cs" />
+    <Compile Include="Models\ResourceRequestCompetence.cs" />
+    <Compile Include="Models\ResourceRequestWorkEffort.cs" />
+    <Compile Include="Models\ResourceStatus.cs" />
+    <Compile Include="Models\RestApiUrl.cs" />
+    <Compile Include="Models\Role.cs" />
+    <Compile Include="Models\signalR.cs" />
+    <Compile Include="Models\AdfsUserClaim.cs" />
+    <Compile Include="Models\AdfsUserDetail.cs" />
+    <Compile Include="Models\UserLoginInfoId.cs" />
+    <Compile Include="Models\UserMenu.cs" />
+    <Compile Include="Models\UserRoleMapping.cs" />
+    <Compile Include="Models\UserSignumByEmail.cs" />
+    <Compile Include="Models\AutoSenseWorkOrderData.cs" />
+    <Compile Include="ServerPush\ISFConnectionClass.cs" />
+    <Compile Include="ServerPush\ISFConnectionsHub.cs" />
+    <Compile Include="ServerPush\Model\AdhocTaskStatus.cs" />
+    <Compile Include="ServerPush\Model\AuditDetailUserCommentWoDetail.cs" />
+    <Compile Include="ServerPush\Model\ConnectionMapping.cs" />
+    <Compile Include="ServerPush\Model\DecisionValueModel.cs" />
+    <Compile Include="ServerPush\Model\DesktopAppUserConnectionMapping.cs" />
+    <Compile Include="ServerPush\Model\WoAutoRunningTaskStatus.cs" />
+    <Compile Include="ServerPush\Model\WoAutoTaskInfo.cs" />
+    <Compile Include="ServerPush\Model\WorkOrderCloseData.cs" />
+    <Compile Include="ServerPush\SignalServer\AutoSenseNotifications.cs" />
+    <Compile Include="ServerPush\SignalServer\IsfWoData.cs" />
+    <Compile Include="ServerPush\SignalServer\ServerPushHub.cs" />
+    <Compile Include="ServerPush\StartUp.cs" />
+    <Compile Include="ServerPush\Utility\ConnectionUtil.cs" />
+    <Compile Include="Sessions\SessionData.cs" />
+    <Compile Include="Sessions\SessionDetail.cs" />
+    <Compile Include="Sessions\SessionEndedEventArgs.cs" />
+    <Compile Include="Sessions\SessionEndModule.cs" />
+    <Compile Include="Sessions\SessionToken.cs" />
+    <Compile Include="Sessions\SkipSessionManager.cs" />
+    <Compile Include="Startup.cs" />
+    <Compile Include="Util\WebConfigUrlConstant.cs" />
+    <Compile Include="Util\UIConfigurationKeysConstant.cs" />
+    <Compile Include="Util\UIConfigurationManager.cs" />
+    <Compile Include="Util\ConstantJavaApiControllerName.cs" />
+    <Compile Include="Util\ConstantKeywords.cs" />
+    <Compile Include="Util\CustomTelemetryInitializer.cs" />
+    <Compile Include="Util\DataFromAPi.cs" />
+    <Compile Include="Util\CreateLogs.cs" />
+    <Compile Include="Util\EncryptDecyptUtil.cs" />
+    <Compile Include="Util\FetchAPIResponse.cs" />
+    <Compile Include="Util\HeadersFromUrl.cs" />
+    <Compile Include="Util\JsonHelper.cs" />
+    <Compile Include="Util\KeysVaultHelper.cs" />
+    <Compile Include="Util\LogHelper.cs" />
+    <Compile Include="Util\Logs.cs" />
+    <Compile Include="Util\RandomGenerator.cs" />
+    <Compile Include="Util\RedisKeyspaceNotifications.cs" />
+    <Compile Include="Util\StringExtensions.cs" />
+    <Compile Include="Util\StringManipulation.cs" />
+    <Compile Include="Util\TokenGenerator.cs" />
+    <Compile Include="Util\TokenManager.cs" />
+    <Compile Include="Util\WebConfigDetail.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <AdditionalFiles Include="..\.sonarlint\isf_web_ui\CSharp\SonarLint.xml">
+      <Link>SonarLint.xml</Link>
+    </AdditionalFiles>
+    <Content Include="Content\CSS\bootstrap.min.css" />
+    <Content Include="Content\CSS\checbox_radio_style\chk_and_radio.css" />
+    <Content Include="Content\CSS\DashboardCSS.css" />
+    <Content Include="Content\CSS\DataTable\datatables.css" />
+    <Content Include="Content\CSS\datepicker\bootstrap-datepicker.min.css" />
+    <Content Include="Content\CSS\DeliveryExecution\DeliveryExecutionFeedback.css" />
+    <Content Include="Content\CSS\DeliveryExecution\execution.css" />
+    <Content Include="Content\CSS\EDS\EDSStyle.css" />
+    <Content Include="Content\CSS\edsBlackTheme.css" />
+    <Content Include="Content\CSS\ericssonCSS.css" />
+    <Content Include="Content\CSS\font-awesome.min.css" />
+    <Content Include="Content\CSS\fontStyle.css" />
+    <Content Include="Content\CSS\gantt\activityDaily.css" />
+    <Content Include="Content\CSS\gantt\dhtmlxgantt.css" />
+    <Content Include="Content\CSS\gantt\dhtmlxgantt_broadway.css" />
+    <Content Include="Content\CSS\gantt\dhtmlxgantt_meadow.css" />
+    <Content Include="Content\CSS\gantt\dhtmlxgantt_terrace.css" />
+    <Content Include="Content\CSS\iconic-font.min.css" />
+    <Content Include="Content\CSS\jquery-ui.min.css" />
+    <Content Include="Content\CSS\jquery-ui-weekpicker.css" />
+    <Content Include="Content\CSS\layoutTheme.css" />
+    <Content Include="Content\CSS\Resource\ResourceCalendar\dhtmlxscheduler_material.css" />
+    <Content Include="Content\CSS\Resource\ResourceCalendar\imgs_dhx_material\agenda-calendar-hov.svg" />
+    <Content Include="Content\CSS\Resource\ResourceCalendar\imgs_dhx_material\agenda-calendar.svg" />
+    <Content Include="Content\CSS\Resource\ResourceCalendar\imgs_dhx_material\agenda_bg.png" />
+    <Content Include="Content\CSS\Resource\ResourceCalendar\imgs_dhx_material\arrow_left.svg" />
+    <Content Include="Content\CSS\Resource\ResourceCalendar\imgs_dhx_material\arrow_left_hov.svg" />
+    <Content Include="Content\CSS\Resource\ResourceCalendar\imgs_dhx_material\arrow_right.svg" />
+    <Content Include="Content\CSS\Resource\ResourceCalendar\imgs_dhx_material\arrow_right_hov.svg" />
+    <Content Include="Content\CSS\Resource\ResourceCalendar\imgs_dhx_material\but_repeat.png" />
+    <Content Include="Content\CSS\Resource\ResourceCalendar\imgs_dhx_material\calendar.svg" />
+    <Content Include="Content\CSS\Resource\ResourceCalendar\imgs_dhx_material\clock_big.png" />
+    <Content Include="Content\CSS\Resource\ResourceCalendar\imgs_dhx_material\clock_small.png" />
+    <Content Include="Content\CSS\Resource\ResourceCalendar\imgs_dhx_material\close_icon.png" />
+    <Content Include="Content\CSS\Resource\ResourceCalendar\imgs_dhx_material\collapse_expand_icon.png" />
+    <Content Include="Content\CSS\Resource\ResourceCalendar\imgs_dhx_material\controls.png" />
+    <Content Include="Content\CSS\Resource\ResourceCalendar\imgs_dhx_material\databg.png" />
+    <Content Include="Content\CSS\Resource\ResourceCalendar\imgs_dhx_material\drag-horizontal.svg" />
+    <Content Include="Content\CSS\Resource\ResourceCalendar\imgs_dhx_material\drag-vertical.svg" />
+    <Content Include="Content\CSS\Resource\ResourceCalendar\imgs_dhx_material\export_ical.png" />
+    <Content Include="Content\CSS\Resource\ResourceCalendar\imgs_dhx_material\export_pdf.png" />
+    <Content Include="Content\CSS\Resource\ResourceCalendar\imgs_dhx_material\icon.png" />
+    <Content Include="Content\CSS\Resource\ResourceCalendar\imgs_dhx_material\menu-down.svg" />
+    <Content Include="Content\CSS\Resource\ResourceCalendar\imgs_dhx_material\resizing.png" />
+    <Content Include="Content\CSS\Resource\ResourceCalendar\imgs_dhx_material\Shape.svg" />
+    <Content Include="Content\CSS\Resource\ResourceCalendar\imgs_dhx_material\time.svg" />
+    <Content Include="Content\CSS\Resource\ResourceCalendar\imgs_dhx_material\tree_arrow.svg" />
+    <Content Include="Content\CSS\Resource\ResourceCalendar\imgs_dhx_terrace\arrow_left.png" />
+    <Content Include="Content\CSS\Resource\ResourceCalendar\imgs_dhx_terrace\arrow_right.png" />
+    <Content Include="Content\CSS\Resource\ResourceCalendar\imgs_dhx_terrace\but_repeat.gif" />
+    <Content Include="Content\CSS\Resource\ResourceCalendar\imgs_dhx_terrace\calendar.gif" />
+    <Content Include="Content\CSS\Resource\ResourceCalendar\imgs_dhx_terrace\clock_big.gif" />
+    <Content Include="Content\CSS\Resource\ResourceCalendar\imgs_dhx_terrace\clock_small.gif" />
+    <Content Include="Content\CSS\Resource\ResourceCalendar\imgs_dhx_terrace\close_icon.png" />
+    <Content Include="Content\CSS\Resource\ResourceCalendar\imgs_dhx_terrace\collapse_expand_icon.gif" />
+    <Content Include="Content\CSS\Resource\ResourceCalendar\imgs_dhx_terrace\controls.png" />
+    <Content Include="Content\CSS\Resource\ResourceCalendar\imgs_dhx_terrace\databg.png" />
+    <Content Include="Content\CSS\Resource\ResourceCalendar\imgs_dhx_terrace\databg_now.png" />
+    <Content Include="Content\CSS\Resource\ResourceCalendar\imgs_dhx_terrace\export_ical.png" />
+    <Content Include="Content\CSS\Resource\ResourceCalendar\imgs_dhx_terrace\export_pdf.png" />
+    <Content Include="Content\CSS\Resource\ResourceCalendar\imgs_dhx_terrace\resize_dots.png" />
+    <Content Include="Content\CSS\Resource\ResourceCalendar\imgs_dhx_terrace\resizing.png" />
+    <Content Include="Content\CSS\Resource\ResourceCalendar\Scheduler.css" />
+    <Content Include="Content\CSS\Resource\Site.css" />
+    <Content Include="Content\CSS\style.css" />
+    <Content Include="Content\CSS\jquery.treegrid.css" />
+    <Content Include="Content\fonts\EricssonCapitalTT.ttf" />
+    <Content Include="Content\fonts\Ericsson_ie.eot" />
+    <Content Include="Content\fonts\fontawesome-webfont.ttf" />
+    <Content Include="Content\fonts\fontawesome-webfont.woff" />
+    <Content Include="Content\fonts\fontawesome-webfont.woff2" />
+    <Content Include="Content\fonts\Material-Design-Iconic-Font.woff" />
+    <Content Include="Content\images\admin-sprite%402x.png" />
+    <Content Include="Content\images\admin-sprite.png" />
+    <Content Include="Content\images\avatar-female.jpg" />
+    <Content Include="Content\images\avatar-female.png" />
+    <Content Include="Content\images\avatar-male2.png" />
+    <Content Include="Content\images\bg\taipei.jpg" />
+    <Content Include="Content\images\calendar.svg" />
+    <Content Include="Content\images\Ericsson\Active BOT and Usage.jpg" />
+    <Content Include="Content\images\Ericsson\Agg productivity Def ID.JPG" />
+    <Content Include="Content\images\Ericsson\BOT Executed Hours Report Preview.PNG" />
+    <Content Include="Content\images\Ericsson\BOT Executed Status.PNG" />
+    <Content Include="Content\images\Ericsson\CapacityCommitted.PNG" />
+    <Content Include="Content\images\Ericsson\chatbot.png" />
+    <Content Include="Content\images\Ericsson\Delivery Rejection Report.JPG" />
+    <Content Include="Content\images\Ericsson\demand fulfillment executive view.PNG" />
+    <Content Include="Content\images\Ericsson\Demand fulfillment normal view.PNG" />
+    <Content Include="Content\images\Ericsson\Digital Hours.jpg" />
+    <Content Include="Content\images\Ericsson\Freshservice_icon.PNG" />
+    <Content Include="Content\images\Ericsson\FTE_Availability.PNG" />
+    <Content Include="Content\images\Ericsson\FTR - WO Rejection REPORT.JPG" />
+    <Content Include="Content\images\Ericsson\FTR1.png" />
+    <Content Include="Content\images\Ericsson\FTR2.png" />
+    <Content Include="Content\images\Ericsson\FTR3.png" />
+    <Content Include="Content\images\Ericsson\FTR_N.png" />
+    <Content Include="Content\images\Ericsson\HumanAutoHoursREPORT.JPG" />
+    <Content Include="Content\images\Ericsson\ISFDashboard.png" />
+    <Content Include="Content\images\Ericsson\LiveProject.PNG" />
+    <Content Include="Content\images\Ericsson\LOE Compliance Report Preview.PNG" />
+    <Content Include="Content\images\Ericsson\LOE Report Preview.PNG" />
+    <Content Include="Content\images\Ericsson\MissingNodeInformation.JPG" />
+    <Content Include="Content\images\Ericsson\modified_home1.png" />
+    <Content Include="Content\images\Ericsson\modified_home2.png" />
+    <Content Include="Content\images\Ericsson\modified_home3.jpg" />
+    <Content Include="Content\images\Ericsson\OnTimeCompletion.png" />
+    <Content Include="Content\images\Ericsson\Open Demand Report.PNG" />
+    <Content Include="Content\images\Ericsson\Open_Demand.PNG" />
+    <Content Include="Content\images\Ericsson\OperatorServed.PNG" />
+    <Content Include="Content\images\Ericsson\Parallel_LOE.png" />
+    <Content Include="Content\images\Ericsson\Productivity.png" />
+    <Content Include="Content\images\Ericsson\SLA - On Time Delivery Preview.png" />
+    <Content Include="Content\images\Ericsson\SP Engagement Report Preview.png" />
+    <Content Include="Content\images\Ericsson\SP_BLocking.PNG" />
+    <Content Include="Content\images\Ericsson\Top used BOTS.jpg" />
+    <Content Include="Content\images\Ericsson\WF Digitization.jpg" />
+    <Content Include="Content\images\Ericsson\WFMaturity.PNG" />
+    <Content Include="Content\images\Ericsson\WO Status Report Preview.PNG" />
+    <Content Include="Content\images\Ericsson\WOCreation.PNG" />
+    <Content Include="Content\images\Ericsson\WOInfo.PNG" />
+    <Content Include="Content\images\Ericsson\Zero Hours WO REPORT.jpg" />
+    <Content Include="Content\images\happy_ampvnc.svg" />
+    <Content Include="Content\images\notification-ring.png" />
+    <Content Include="Content\images\notification-ring.svg" />
+    <Content Include="Content\images\notification.png" />
+    <Content Include="Content\images\notification.svg" />
+    <Content Include="Content\images\runningLoader.gif" />
+    <Content Include="Content\images\sad_emoji.svg" />
+    <Content Include="Content\images\details_close.png" />
+    <Content Include="Content\images\details_open.png" />
+    <Content Include="Content\images\Ericssonlogo.png" />
+    <Content Include="Content\images\Ericsson\201712_OptimizeAEM_2.png" />
+    <Content Include="Content\images\Ericsson\all.svg" />
+    <Content Include="Content\images\Ericsson\happy_ampvnc.svg" />
+    <Content Include="Content\images\Ericsson\sad_emoji.svg" />
+    <Content Include="Content\images\Ericsson\CostPerSite.png" />
+    <Content Include="Content\images\Ericsson\CycleTime.PNG" />
+    <Content Include="Content\images\Ericsson\econ01.svg" />
+    <Content Include="Content\images\Ericsson\ericsson.jpg" />
+    <Content Include="Content\images\Ericsson\FAQs_small.png" />
+    <Content Include="Content\images\Ericsson\favicon.ico" />
+    <Content Include="Content\images\Ericsson\FTR.png" />
+    <Content Include="Content\images\Ericsson\icon_white.png" />
+    <Content Include="Content\images\Ericsson\isflogo.JPG" />
+    <Content Include="Content\images\Ericsson\isf_bg.png" />
+    <Content Include="Content\images\Ericsson\LeadTime.PNG" />
+    <Content Include="Content\images\Ericsson\LOE.png" />
+    <Content Include="Content\images\Ericsson\otrs.png" />
+    <Content Include="Content\images\Ericsson\People.png" />
+    <Content Include="Content\images\Ericsson\Peoplegrey.png" />
+    <Content Include="Content\images\Ericsson\Process.png" />
+    <Content Include="Content\images\Ericsson\ProcessCompilance.png" />
+    <Content Include="Content\images\Ericsson\ProcessComplianceTask.PNG" />
+    <Content Include="Content\images\Ericsson\Processgrey.png" />
+    <Content Include="Content\images\Ericsson\ReleaseNotes_small.png" />
+    <Content Include="Content\images\Ericsson\Sharepoint_small.png" />
+    <Content Include="Content\images\Ericsson\Tools.png" />
+    <Content Include="Content\images\Ericsson\Toolsgrey.png" />
+    <Content Include="Content\images\Ericsson\test.png" />
+    <Content Include="Content\images\Ericsson\TrainingVideo_small.png" />
+    <Content Include="Content\images\Ericsson\Yammer_small.png" />
+    <Content Include="Content\images\icons.png" />
+    <Content Include="Content\images\Ericsson\modified_home.png" />
+    <Content Include="Content\images\loading-1.gif" />
+    <Content Include="Content\images\loading.gif" />
+    <Content Include="Content\images\parallelogram.png" />
+    <Content Include="Content\images\profile.JPG" />
+    <Content Include="Content\images\pyramid.png" />
+    <Content Include="Content\images\rectangle.png" />
+    <Content Include="Content\images\collapse.png" />
+    <Content Include="Content\images\expand.png" />
+    <Content Include="Content\images\tasks.svg" />
+    <Content Include="Content\images\ui-icons_444444_256x240.png" />
+    <Content Include="Content\images\ui-icons_555555_256x240.png" />
+    <Content Include="Content\images\ui-icons_777620_256x240.png" />
+    <Content Include="Content\images\ui-icons_777777_256x240.png" />
+    <Content Include="Content\images\ui-icons_cc0000_256x240.png" />
+    <Content Include="Content\images\ui-icons_ffffff_256x240.png" />
+    <Content Include="Content\underMaintenance\underMaintenance.css" />
+    <Content Include="Content\underMaintenance\userNotFoundBanner.png" />
+    <Content Include="Content\underMaintenance\userNotFoundBanner_green.png" />
+    <Content Include="Content\underMaintenance\userNotFoundBanner_red.png" />
+    <Content Include="favicon.ico" />
+    <Content Include="Global.asax" />
+    <Content Include="Scripts\ActivityMaster\Customer.js" />
+    <Content Include="Scripts\ActivityMaster\DemandType.js" />
+    <Content Include="Scripts\ActivityMaster\InstantFeedback.js" />
+    <Content Include="Scripts\ActivityMaster\JsActMaster.js" />
+    <Content Include="Scripts\ActivityMaster\MDMGlobalURL.js" />
+    <Content Include="Scripts\ActivityMaster\SharePointConfig.js" />
+    <Content Include="Scripts\ActivityMaster\workInstructions.js" />
+    <Content Include="Scripts\ActivityMaster\ExternalActivityList.js" />
+    <Content Include="Scripts\Admin\AccessProfile.js" />
+    <Content Include="Scripts\Admin\ExternalKeyGenerator.js" />
+    <Content Include="Scripts\Admin\AddRole.js" />
+    <Content Include="Scripts\Admin\ASPConfigureVendorManager.js" />
+    <Content Include="Scripts\Admin\Capabilitiestable.js" />
+    <Content Include="Scripts\ActivityMaster\LocationType.js" />
+    <Content Include="Scripts\Admin\Message.js" />
+    <Content Include="Scripts\Admin\RoleCapability.js" />
+    <Content Include="Scripts\Admin\Capabilitiestable.js" />
+    <Content Include="Scripts\Admin\ToolKit.js" />
+    <Content Include="Scripts\ASPExplorer\aspExplorer.js" />
+    <Content Include="Scripts\Azure\azure-storage.blob.js" />
+    <Content Include="Scripts\Azure\azure-storage.blob.min.js" />
+    <Content Include="Scripts\Azure\azure-storage.file.js" />
+    <Content Include="Scripts\Azure\azure-storage.file.min.js" />
+    <Content Include="Scripts\Azure\azure-storage.queue.js" />
+    <Content Include="Scripts\Azure\azure-storage.queue.min.js" />
+    <Content Include="Scripts\Azure\azure-storage.table.js" />
+    <Content Include="Scripts\Azure\azure-storage.table.min.js" />
+    <Content Include="Scripts\bootstrap-datetimepicker.min.js" />
+    <Content Include="Scripts\bootstrap.bundle.js" />
+    <Content Include="Scripts\bootstrap.bundle.min.js" />
+    <Content Include="Scripts\bootstrap.js" />
+    <Content Include="Scripts\BotSaving\botSavingContants.js" />
+    <Content Include="Scripts\BotSaving\botSavingEmeCalculation.js" />
+    <Content Include="Scripts\Bots\AssignedBot.js" />
+    <Content Include="Scripts\Bots\BotApproval.js" />
+    <Content Include="Scripts\Bots\BotAudit.js" />
+    <Content Include="Scripts\Bots\BotDevRequests.js" />
+    <Content Include="Scripts\Bots\BotErrorDictionary.js" />
+    <Content Include="Scripts\Bots\botRepository.js" />
+    <Content Include="Scripts\Bots\BotStore.js" />
+    <Content Include="Scripts\Bots\DeployedBots.js" />
+    <Content Include="Scripts\Admin\JsconfigureDomainSpoc.js" />
+    <Content Include="Scripts\Admin\JsAssignAccess.js" />
+    <Content Include="Scripts\Admin\JsCreateAccess.js" />
+    <Content Include="Scripts\Admin\JsViewAccess.js" />
+    <Content Include="Scripts\App.js" />
+    <Content Include="Scripts\Bots\DeployedBOTSavings.js" />
+    <Content Include="Scripts\Bots\PythonExecutionScript.js" />
+    <Content Include="Scripts\commonJs\commonUtility.js" />
+    <Content Include="Scripts\commonJs\getSessionVars.js" />
+    <Content Include="Scripts\commonJs\ajaxRequest.js" />
+    <Content Include="Scripts\commonJs\downloadBotFiles.js" />
+    <Content Include="Scripts\commonJs\customConsole.js" />
+    <Content Include="Scripts\commonJs\downloadTemplates.js" />
+    <Content Include="Scripts\commonJs\gtag.js" />
+    <Content Include="Scripts\commonJs\sessionManagement.js" />
+    <Content Include="Scripts\Competence\competenceAndTraining.js" />
+    <Content Include="Scripts\Competence\mdmCompetenceUpload.js" />
+    <Content Include="Scripts\constants.js" />
+    <Content Include="Scripts\CreateAutosenseRule\autoSense.js" />
+    <Content Include="Scripts\CreateAutosenseRule\backbone.min.js" />
+    <Content Include="Scripts\CreateAutosenseRule\createAutosenseRule.js" />
+    <Content Include="Scripts\CreateAutosenseRule\createHTMLMarkups.js" />
+    <Content Include="Scripts\CreateAutosenseRule\css\autoSense.css" />
+    <Content Include="Scripts\CreateAutosenseRule\joint.min.css" />
+    <Content Include="Scripts\CreateAutosenseRule\joint.min.js" />
+    <Content Include="Scripts\CreateAutosenseRule\joint.shapes.html.js" />
+    <Content Include="Scripts\CreateAutosenseRule\jquery.min.js" />
+    <Content Include="Scripts\CreateAutosenseRule\lodash.min.js" />
+    <Content Include="Scripts\CreateAutosenseRule\main.js" />
+    <Content Include="Scripts\CreateAutosenseRule\navigator.js" />
+    <Content Include="Scripts\CreateAutosenseRule\rappid.min.css" />
+    <Content Include="Scripts\CreateAutosenseRule\rappid.min.js" />
+    <Content Include="Scripts\CreateAutosenseRule\validation_rule.js" />
+    <Content Include="Scripts\DeliveryExecutionFeedback\deliveryExecutionFeedback.js" />
+    <Content Include="Scripts\DeliveryExecution\AutoSense.js" />
+    <Content Include="Scripts\DeliveryExecution\PlannedAssignment.js" />
+    <Content Include="Scripts\DeliveryExecution\WebNotification.js" />
+    <Content Include="Scripts\MQTT\mqttConnection.js" />
+    <Content Include="Scripts\MQTT\paho.js" />
+    <Content Include="Scripts\MQTT\worker.js" />
+    <Content Include="Scripts\MQTT\worker.min.js" />
+    <Content Include="Scripts\NetworkElement\networkElementAddEdit.js" />
+    <Content Include="Scripts\signalr.min.js" />
+    <Content Include="Scripts\SignalRClient\SignalRAzureClientConfig.js" />
+    <Content Include="Scripts\SignalRClient\SignalRClient.js" />
+    <Content Include="Scripts\DeliveryExecution\WFFeedback.js" />
+    <Content Include="Scripts\DemandForecast\DemandForecastDetails.js" />
+    <Content Include="Scripts\esm\popper-utils.js" />
+    <Content Include="Scripts\esm\popper-utils.min.js" />
+    <Content Include="Scripts\esm\popper.js" />
+    <Content Include="Scripts\esm\popper.min.js" />
+    <Content Include="Scripts\FlowChartScripts\FlowChartEdit.js" />
+    <Content Include="Scripts\FlowChartScripts\FlowChartExecution.js" />
+    <Content Include="Scripts\FlowChartScripts\FlowChartScript.js" />
+    <Content Include="Scripts\FlowChartScripts\FlowChartView.js" />
+    <Content Include="Scripts\FlowChartScripts\FlViewWithoutComment.js" />
+    <Content Include="Scripts\ganttEnterprise\dhtmlxgantt_skyblue.css" />
+    <Content Include="Scripts\ganttEnterprise\dhtmlxgantt_skyblue.js" />
+    <Content Include="Scripts\gantt\activityDaily.js" />
+    <Content Include="Scripts\gantt\activityHourly.js" />
+    <Content Include="Scripts\gantt\activityMonthly.js" />
+    <Content Include="Scripts\Home\Index.js" />
+    <Content Include="Scripts\jquery-ui.min.js" />
+    <Content Include="Scripts\jquery.weekpicker.js" />
+    <Content Include="Scripts\AppNavigation.js" />
+    <Content Include="Scripts\bootstrap-datepicker.js" />
+    <Content Include="Scripts\bootstrap.min.js" />
+    <Content Include="Scripts\Bots\FlowChartBOTEdit.js" />
+    <Content Include="Scripts\DeliveryExecution\assignedTasksForTransfer.js" />
+    <Content Include="Scripts\DeliveryExecution\assignToMe.js" />
+    <Content Include="Scripts\DeliveryExecution\MyClosedWorkOrder.js" />
+    <Content Include="Scripts\DataTable\dataTables.rowsGroup.js" />
+    <Content Include="Scripts\DeliveryExecution\NonWorkingHour.js" />
+    <Content Include="Scripts\DeliveryIndex\DeliveryIndex.js" />
+    <Content Include="Scripts\DemandForecast\ganttChartZoomToFit.js" />
+    <Content Include="Scripts\DemandForecast\testdata.js" />
+    <Content Include="Scripts\bootstrap.min.js.map" />
+    <Content Include="Scripts\bootstrap.js.map" />
+    <Content Include="Scripts\bootstrap.bundle.min.js.map" />
+    <Content Include="Scripts\bootstrap.bundle.js.map" />
+    <Content Include="Scripts\esm\popper.min.js.map" />
+    <Content Include="Scripts\esm\popper.js.map" />
+    <Content Include="Scripts\esm\popper-utils.min.js.map" />
+    <Content Include="Scripts\esm\popper-utils.js.map" />
+    <Content Include="Content\templateFiles\vendor_details _template.xlsx" />
+    <Content Include="Content\images\Ericsson\modified_home2.webp" />
+    <Content Include="Scripts\CreateAutosenseRule\appInfo.json" />
+    <Content Include="envSetting\AppSetting.DevMajor.config" />
+    <Content Include="envSetting\AppSetting.DevMajorS1.config" />
+    <Content Include="envSetting\AppSetting.DevMajorS2.config" />
+    <Content Include="envSetting\AppSetting.DevMinor.config" />
+    <Content Include="envSetting\AppSetting.Local.config" />
+    <Content Include="envSetting\AppSetting.PP.config" />
+    <Content Include="envSetting\AppSetting.Prod.config" />
+    <Content Include="envSetting\AppSetting.PT.config" />
+    <Content Include="envSetting\AppSetting.POC.config" />
+    <Content Include="envSetting\AppSetting.SandboxMajor.config" />
+    <Content Include="envSetting\AppSetting.SandboxMinor.config" />
+    <Content Include="envSetting\AppSetting.SitMajor.config" />
+    <Content Include="envSetting\AppSetting.SitMinor.config" />
+    <Content Include="envSetting\AppSetting.TempTest.config" />
+    <None Include="Properties\PublishProfiles\P5InfrAppSrvUI01-Temptest - Web Deploy.pubxml" />
+    <None Include="Scripts\jquery-3.3.1.intellisense.js" />
+    <Content Include="Scripts\jquery-3.3.1.js" />
+    <Content Include="Scripts\jquery-3.3.1.min.js" />
+    <Content Include="Scripts\jquery-3.3.1.slim.js" />
+    <Content Include="Scripts\jquery-3.3.1.slim.min.js" />
+    <Content Include="Scripts\jquery-ajax-native.js" />
+    <Content Include="Scripts\DemandForecast\DemandForecast.js" />
+    <Content Include="Scripts\ganttEnterprise\dhtmlxgantt.css" />
+    <Content Include="Scripts\ganttEnterprise\dhtmlxgantt.js" />
+    <Content Include="Scripts\ganttEnterprise\dhtmlxgantt_auto_scheduling.js" />
+    <Content Include="Scripts\ganttEnterprise\dhtmlxgantt_broadway.css" />
+    <Content Include="Scripts\ganttEnterprise\dhtmlxgantt_critical_path.js" />
+    <Content Include="Scripts\ganttEnterprise\dhtmlxgantt_csp.js" />
+    <Content Include="Scripts\ganttEnterprise\dhtmlxgantt_fullscreen.js" />
+    <Content Include="Scripts\ganttEnterprise\dhtmlxgantt_grouping.js" />
+    <Content Include="Scripts\ganttEnterprise\dhtmlxgantt_keyboard_navigation.js" />
+    <Content Include="Scripts\ganttEnterprise\dhtmlxgantt_marker.js" />
+    <Content Include="Scripts\ganttEnterprise\dhtmlxgantt_multiselect.js" />
+    <Content Include="Scripts\ganttEnterprise\dhtmlxgantt_quick_info.js" />
+    <Content Include="Scripts\ganttEnterprise\dhtmlxgantt_smart_rendering.js" />
+    <Content Include="Scripts\ganttEnterprise\dhtmlxgantt_tooltip.js" />
+    <Content Include="Scripts\ganttEnterprise\dhtmlxgantt_undo.js" />
+    <Content Include="Scripts\gantt\dhtmlx.css" />
+    <Content Include="Scripts\gantt\dhtmlx.js" />
+    <Content Include="Scripts\jquery.signalR-2.4.1.js" />
+    <Content Include="Scripts\jquery.signalR-2.4.1.min.js" />
+    <Content Include="Scripts\jquery.treegrid.bootstrap3.js" />
+    <Content Include="Scripts\jquery.treegrid.js" />
+    <Content Include="Scripts\jquery.treegrid.min.js" />
+    <Content Include="Scripts\Dashboard\dashboardMainJS.js" />
+    <Content Include="Scripts\DataTable\button-visible-override.css" />
+    <Content Include="Scripts\DataTable\datatable-override.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\AutoFill-2.2.2\css\autoFill.bootstrap.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\AutoFill-2.2.2\css\autoFill.bootstrap.min.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\AutoFill-2.2.2\css\autoFill.bootstrap4.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\AutoFill-2.2.2\css\autoFill.bootstrap4.min.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\AutoFill-2.2.2\css\autoFill.dataTables.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\AutoFill-2.2.2\css\autoFill.dataTables.min.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\AutoFill-2.2.2\css\autoFill.foundation.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\AutoFill-2.2.2\css\autoFill.foundation.min.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\AutoFill-2.2.2\css\autoFill.jqueryui.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\AutoFill-2.2.2\css\autoFill.jqueryui.min.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\AutoFill-2.2.2\css\autoFill.semanticui.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\AutoFill-2.2.2\css\autoFill.semanticui.min.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\AutoFill-2.2.2\js\autoFill.bootstrap.js" />
+    <Content Include="Scripts\DataTable\DataTableApi\AutoFill-2.2.2\js\autoFill.bootstrap.min.js" />
+    <Content Include="Scripts\DataTable\DataTableApi\AutoFill-2.2.2\js\autoFill.bootstrap4.js" />
+    <Content Include="Scripts\DataTable\DataTableApi\AutoFill-2.2.2\js\autoFill.bootstrap4.min.js" />
+    <Content Include="Scripts\DataTable\DataTableApi\AutoFill-2.2.2\js\autoFill.foundation.js" />
+    <Content Include="Scripts\DataTable\DataTableApi\AutoFill-2.2.2\js\autoFill.foundation.min.js" />
+    <Content Include="Scripts\DataTable\DataTableApi\AutoFill-2.2.2\js\autoFill.jqueryui.js" />
+    <Content Include="Scripts\DataTable\DataTableApi\AutoFill-2.2.2\js\autoFill.jqueryui.min.js" />
+    <Content Include="Scripts\DataTable\DataTableApi\AutoFill-2.2.2\js\autoFill.semanticui.js" />
+    <Content Include="Scripts\DataTable\DataTableApi\AutoFill-2.2.2\js\autoFill.semanticui.min.js" />
+    <Content Include="Scripts\DataTable\DataTableApi\AutoFill-2.2.2\js\dataTables.autoFill.js" />
+    <Content Include="Scripts\DataTable\DataTableApi\AutoFill-2.2.2\js\dataTables.autoFill.min.js" />
+    <Content Include="Scripts\DataTable\DataTableApi\Buttons-1.5.1\css\buttons.bootstrap.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\Buttons-1.5.1\css\buttons.bootstrap.min.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\Buttons-1.5.1\css\buttons.bootstrap4.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\Buttons-1.5.1\css\buttons.bootstrap4.min.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\Buttons-1.5.1\css\buttons.dataTables.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\Buttons-1.5.1\css\buttons.dataTables.min.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\Buttons-1.5.1\css\buttons.foundation.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\Buttons-1.5.1\css\buttons.foundation.min.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\Buttons-1.5.1\css\buttons.jqueryui.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\Buttons-1.5.1\css\buttons.jqueryui.min.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\Buttons-1.5.1\css\buttons.semanticui.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\Buttons-1.5.1\css\buttons.semanticui.min.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\Buttons-1.5.1\css\common.scss" />
+    <Content Include="Scripts\DataTable\DataTableApi\Buttons-1.5.1\css\mixins.scss" />
+    <Content Include="Scripts\DataTable\DataTableApi\Buttons-1.5.1\js\buttons.bootstrap.js" />
+    <Content Include="Scripts\DataTable\DataTableApi\Buttons-1.5.1\js\buttons.bootstrap.min.js" />
+    <Content Include="Scripts\DataTable\DataTableApi\Buttons-1.5.1\js\buttons.bootstrap4.js" />
+    <Content Include="Scripts\DataTable\DataTableApi\Buttons-1.5.1\js\buttons.bootstrap4.min.js" />
+    <Content Include="Scripts\DataTable\DataTableApi\Buttons-1.5.1\js\buttons.colVis.js" />
+    <Content Include="Scripts\DataTable\DataTableApi\Buttons-1.5.1\js\buttons.colVis.min.js" />
+    <Content Include="Scripts\DataTable\DataTableApi\Buttons-1.5.1\js\buttons.flash.js" />
+    <Content Include="Scripts\DataTable\DataTableApi\Buttons-1.5.1\js\buttons.flash.min.js" />
+    <Content Include="Scripts\DataTable\DataTableApi\Buttons-1.5.1\js\buttons.foundation.js" />
+    <Content Include="Scripts\DataTable\DataTableApi\Buttons-1.5.1\js\buttons.foundation.min.js" />
+    <Content Include="Scripts\DataTable\DataTableApi\Buttons-1.5.1\js\buttons.html5.js" />
+    <Content Include="Scripts\DataTable\DataTableApi\Buttons-1.5.1\js\buttons.html5.min.js" />
+    <Content Include="Scripts\DataTable\DataTableApi\Buttons-1.5.1\js\buttons.jqueryui.js" />
+    <Content Include="Scripts\DataTable\DataTableApi\Buttons-1.5.1\js\buttons.jqueryui.min.js" />
+    <Content Include="Scripts\DataTable\DataTableApi\Buttons-1.5.1\js\buttons.print.js" />
+    <Content Include="Scripts\DataTable\DataTableApi\Buttons-1.5.1\js\buttons.print.min.js" />
+    <Content Include="Scripts\DataTable\DataTableApi\Buttons-1.5.1\js\buttons.semanticui.js" />
+    <Content Include="Scripts\DataTable\DataTableApi\Buttons-1.5.1\js\buttons.semanticui.min.js" />
+    <Content Include="Scripts\DataTable\DataTableApi\Buttons-1.5.1\js\dataTables.buttons.js" />
+    <Content Include="Scripts\DataTable\DataTableApi\Buttons-1.5.1\js\dataTables.buttons.min.js" />
+    <Content Include="Scripts\DataTable\DataTableApi\ColReorder-1.4.1\css\colReorder.bootstrap.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\ColReorder-1.4.1\css\colReorder.bootstrap.min.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\ColReorder-1.4.1\css\colReorder.bootstrap4.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\ColReorder-1.4.1\css\colReorder.bootstrap4.min.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\ColReorder-1.4.1\css\colReorder.dataTables.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\ColReorder-1.4.1\css\colReorder.dataTables.min.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\ColReorder-1.4.1\css\colReorder.foundation.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\ColReorder-1.4.1\css\colReorder.foundation.min.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\ColReorder-1.4.1\css\colReorder.jqueryui.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\ColReorder-1.4.1\css\colReorder.jqueryui.min.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\ColReorder-1.4.1\css\colReorder.semanticui.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\ColReorder-1.4.1\css\colReorder.semanticui.min.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\ColReorder-1.4.1\js\dataTables.colReorder.js" />
+    <Content Include="Scripts\DataTable\DataTableApi\ColReorder-1.4.1\js\dataTables.colReorder.min.js" />
+    <Content Include="Scripts\DataTable\DataTableApi\DataTables-1.10.16\css\dataTables.bootstrap.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\DataTables-1.10.16\css\dataTables.bootstrap.min.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\DataTables-1.10.16\css\dataTables.bootstrap4.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\DataTables-1.10.16\css\dataTables.bootstrap4.min.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\DataTables-1.10.16\css\dataTables.foundation.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\DataTables-1.10.16\css\dataTables.foundation.min.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\DataTables-1.10.16\css\dataTables.jqueryui.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\DataTables-1.10.16\css\dataTables.jqueryui.min.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\DataTables-1.10.16\css\dataTables.semanticui.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\DataTables-1.10.16\css\dataTables.semanticui.min.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\DataTables-1.10.16\css\jquery.dataTables.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\DataTables-1.10.16\css\jquery.dataTables.min.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\DataTables-1.10.16\images\sort_asc.png" />
+    <Content Include="Scripts\DataTable\DataTableApi\DataTables-1.10.16\images\sort_asc_disabled.png" />
+    <Content Include="Scripts\DataTable\DataTableApi\DataTables-1.10.16\images\sort_both.png" />
+    <Content Include="Scripts\DataTable\DataTableApi\DataTables-1.10.16\images\sort_desc.png" />
+    <Content Include="Scripts\DataTable\DataTableApi\DataTables-1.10.16\images\sort_desc_disabled.png" />
+    <Content Include="Scripts\DataTable\DataTableApi\DataTables-1.10.16\js\dataTables.bootstrap.js" />
+    <Content Include="Scripts\DataTable\DataTableApi\DataTables-1.10.16\js\dataTables.bootstrap.min.js" />
+    <Content Include="Scripts\DataTable\DataTableApi\DataTables-1.10.16\js\dataTables.bootstrap4.js" />
+    <Content Include="Scripts\DataTable\DataTableApi\DataTables-1.10.16\js\dataTables.bootstrap4.min.js" />
+    <Content Include="Scripts\DataTable\DataTableApi\DataTables-1.10.16\js\dataTables.foundation.js" />
+    <Content Include="Scripts\DataTable\DataTableApi\DataTables-1.10.16\js\dataTables.foundation.min.js" />
+    <Content Include="Scripts\DataTable\DataTableApi\DataTables-1.10.16\js\dataTables.jqueryui.js" />
+    <Content Include="Scripts\DataTable\DataTableApi\DataTables-1.10.16\js\dataTables.jqueryui.min.js" />
+    <Content Include="Scripts\DataTable\DataTableApi\DataTables-1.10.16\js\dataTables.semanticui.js" />
+    <Content Include="Scripts\DataTable\DataTableApi\DataTables-1.10.16\js\dataTables.semanticui.min.js" />
+    <Content Include="Scripts\DataTable\DataTableApi\DataTables-1.10.16\js\jquery.dataTables.js" />
+    <Content Include="Scripts\DataTable\DataTableApi\DataTables-1.10.16\js\jquery.dataTables.min.js" />
+    <Content Include="Scripts\DataTable\DataTableApi\datatables.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\datatables.js" />
+    <Content Include="Scripts\DataTable\DataTableApi\datatables.min.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\datatables.min.js" />
+    <Content Include="Scripts\DataTable\DataTableApi\FixedColumns-3.2.4\css\fixedColumns.bootstrap.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\FixedColumns-3.2.4\css\fixedColumns.bootstrap.min.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\FixedColumns-3.2.4\css\fixedColumns.bootstrap4.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\FixedColumns-3.2.4\css\fixedColumns.bootstrap4.min.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\FixedColumns-3.2.4\css\fixedColumns.dataTables.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\FixedColumns-3.2.4\css\fixedColumns.dataTables.min.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\FixedColumns-3.2.4\css\fixedColumns.foundation.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\FixedColumns-3.2.4\css\fixedColumns.foundation.min.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\FixedColumns-3.2.4\css\fixedColumns.jqueryui.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\FixedColumns-3.2.4\css\fixedColumns.jqueryui.min.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\FixedColumns-3.2.4\css\fixedColumns.semanticui.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\FixedColumns-3.2.4\css\fixedColumns.semanticui.min.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\FixedColumns-3.2.4\js\dataTables.fixedColumns.js" />
+    <Content Include="Scripts\DataTable\DataTableApi\FixedColumns-3.2.4\js\dataTables.fixedColumns.min.js" />
+    <Content Include="Scripts\DataTable\DataTableApi\FixedHeader-3.1.3\css\fixedHeader.bootstrap.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\FixedHeader-3.1.3\css\fixedHeader.bootstrap.min.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\FixedHeader-3.1.3\css\fixedHeader.bootstrap4.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\FixedHeader-3.1.3\css\fixedHeader.bootstrap4.min.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\FixedHeader-3.1.3\css\fixedHeader.dataTables.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\FixedHeader-3.1.3\css\fixedHeader.dataTables.min.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\FixedHeader-3.1.3\css\fixedHeader.foundation.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\FixedHeader-3.1.3\css\fixedHeader.foundation.min.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\FixedHeader-3.1.3\css\fixedHeader.jqueryui.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\FixedHeader-3.1.3\css\fixedHeader.jqueryui.min.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\FixedHeader-3.1.3\css\fixedHeader.semanticui.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\FixedHeader-3.1.3\css\fixedHeader.semanticui.min.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\FixedHeader-3.1.3\js\dataTables.fixedHeader.js" />
+    <Content Include="Scripts\DataTable\DataTableApi\FixedHeader-3.1.3\js\dataTables.fixedHeader.min.js" />
+    <Content Include="Scripts\DataTable\DataTableApi\Responsive-2.2.1\css\responsive.bootstrap.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\Responsive-2.2.1\css\responsive.bootstrap.min.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\Responsive-2.2.1\css\responsive.bootstrap4.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\Responsive-2.2.1\css\responsive.bootstrap4.min.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\Responsive-2.2.1\css\responsive.dataTables.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\Responsive-2.2.1\css\responsive.dataTables.min.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\Responsive-2.2.1\css\responsive.foundation.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\Responsive-2.2.1\css\responsive.foundation.min.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\Responsive-2.2.1\css\responsive.jqueryui.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\Responsive-2.2.1\css\responsive.jqueryui.min.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\Responsive-2.2.1\css\responsive.semanticui.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\Responsive-2.2.1\css\responsive.semanticui.min.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\Responsive-2.2.1\js\dataTables.responsive.js" />
+    <Content Include="Scripts\DataTable\DataTableApi\Responsive-2.2.1\js\dataTables.responsive.min.js" />
+    <Content Include="Scripts\DataTable\DataTableApi\Responsive-2.2.1\js\responsive.bootstrap.js" />
+    <Content Include="Scripts\DataTable\DataTableApi\Responsive-2.2.1\js\responsive.bootstrap.min.js" />
+    <Content Include="Scripts\DataTable\DataTableApi\Responsive-2.2.1\js\responsive.bootstrap4.js" />
+    <Content Include="Scripts\DataTable\DataTableApi\Responsive-2.2.1\js\responsive.bootstrap4.min.js" />
+    <Content Include="Scripts\DataTable\DataTableApi\Responsive-2.2.1\js\responsive.foundation.js" />
+    <Content Include="Scripts\DataTable\DataTableApi\Responsive-2.2.1\js\responsive.foundation.min.js" />
+    <Content Include="Scripts\DataTable\DataTableApi\Responsive-2.2.1\js\responsive.jqueryui.js" />
+    <Content Include="Scripts\DataTable\DataTableApi\Responsive-2.2.1\js\responsive.jqueryui.min.js" />
+    <Content Include="Scripts\DataTable\DataTableApi\Responsive-2.2.1\js\responsive.semanticui.js" />
+    <Content Include="Scripts\DataTable\DataTableApi\Responsive-2.2.1\js\responsive.semanticui.min.js" />
+    <Content Include="Scripts\DataTable\DataTableApi\RowGroup-1.0.2\css\rowGroup.bootstrap.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\RowGroup-1.0.2\css\rowGroup.bootstrap.min.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\RowGroup-1.0.2\css\rowGroup.bootstrap4.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\RowGroup-1.0.2\css\rowGroup.bootstrap4.min.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\RowGroup-1.0.2\css\rowGroup.dataTables.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\RowGroup-1.0.2\css\rowGroup.dataTables.min.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\RowGroup-1.0.2\css\rowGroup.foundation.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\RowGroup-1.0.2\css\rowGroup.foundation.min.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\RowGroup-1.0.2\css\rowGroup.jqueryui.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\RowGroup-1.0.2\css\rowGroup.jqueryui.min.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\RowGroup-1.0.2\css\rowGroup.semanticui.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\RowGroup-1.0.2\css\rowGroup.semanticui.min.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\RowGroup-1.0.2\js\dataTables.rowGroup.js" />
+    <Content Include="Scripts\DataTable\DataTableApi\RowGroup-1.0.2\js\dataTables.rowGroup.min.js" />
+    <Content Include="Scripts\DataTable\DataTableApi\RowReorder-1.2.3\css\rowReorder.bootstrap.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\RowReorder-1.2.3\css\rowReorder.bootstrap.min.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\RowReorder-1.2.3\css\rowReorder.bootstrap4.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\RowReorder-1.2.3\css\rowReorder.bootstrap4.min.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\RowReorder-1.2.3\css\rowReorder.dataTables.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\RowReorder-1.2.3\css\rowReorder.dataTables.min.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\RowReorder-1.2.3\css\rowReorder.foundation.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\RowReorder-1.2.3\css\rowReorder.foundation.min.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\RowReorder-1.2.3\css\rowReorder.jqueryui.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\RowReorder-1.2.3\css\rowReorder.jqueryui.min.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\RowReorder-1.2.3\css\rowReorder.semanticui.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\RowReorder-1.2.3\css\rowReorder.semanticui.min.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\RowReorder-1.2.3\js\dataTables.rowReorder.js" />
+    <Content Include="Scripts\DataTable\DataTableApi\RowReorder-1.2.3\js\dataTables.rowReorder.min.js" />
+    <Content Include="Scripts\DataTable\DataTableApi\Scroller-1.4.3\css\scroller.bootstrap.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\Scroller-1.4.3\css\scroller.bootstrap.min.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\Scroller-1.4.3\css\scroller.bootstrap4.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\Scroller-1.4.3\css\scroller.bootstrap4.min.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\Scroller-1.4.3\css\scroller.dataTables.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\Scroller-1.4.3\css\scroller.dataTables.min.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\Scroller-1.4.3\css\scroller.foundation.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\Scroller-1.4.3\css\scroller.foundation.min.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\Scroller-1.4.3\css\scroller.jqueryui.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\Scroller-1.4.3\css\scroller.jqueryui.min.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\Scroller-1.4.3\css\scroller.semanticui.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\Scroller-1.4.3\css\scroller.semanticui.min.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\Scroller-1.4.3\js\dataTables.scroller.js" />
+    <Content Include="Scripts\DataTable\DataTableApi\Scroller-1.4.3\js\dataTables.scroller.min.js" />
+    <Content Include="Scripts\DataTable\DataTableApi\Select-1.2.4\css\select.bootstrap.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\Select-1.2.4\css\select.bootstrap.min.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\Select-1.2.4\css\select.bootstrap4.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\Select-1.2.4\css\select.bootstrap4.min.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\Select-1.2.4\css\select.dataTables.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\Select-1.2.4\css\select.dataTables.min.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\Select-1.2.4\css\select.foundation.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\Select-1.2.4\css\select.foundation.min.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\Select-1.2.4\css\select.jqueryui.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\Select-1.2.4\css\select.jqueryui.min.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\Select-1.2.4\css\select.semanticui.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\Select-1.2.4\css\select.semanticui.min.css" />
+    <Content Include="Scripts\DataTable\DataTableApi\Select-1.2.4\js\dataTables.select.js" />
+    <Content Include="Scripts\DataTable\DataTableApi\Select-1.2.4\js\dataTables.select.min.js" />
+    <Content Include="Scripts\DataTable\jquery.dataTables.min.js" />
+    <Content Include="Scripts\DataTable\jszip.min.js" />
+    <Content Include="Scripts\DatePicker\icons.png" />
+    <Content Include="Scripts\DatePicker\zebra_datepicker.min.css" />
+    <Content Include="Scripts\DatePicker\zebra_datepicker.min.js" />
+    <Content Include="Scripts\DeliveryAcceptance\JsDelAcceptance.js" />
+    <Content Include="Scripts\DeliveryExecution\DeliveryExecution.js" />
+    <Content Include="Scripts\DeliveryExecution\WorkorderPanel.js" />
+    <Content Include="Scripts\DeliveryExecution\InprogressTasks.js" />
+    <Content Include="Scripts\DeliveryExecution\plannedWorkOrder.js" />
+    <Content Include="Scripts\DeliveryExecution\WorkorderAndTask.js" />
+    <Content Include="Scripts\flexmonster\flexmonster.css" />
+    <Content Include="Scripts\flexmonster\flexmonster.js" />
+    <Content Include="Scripts\flexmonster\flexmonster.min.css" />
+    <Content Include="Scripts\flexmonster\lib\canvg.min.js" />
+    <Content Include="Scripts\flexmonster\lib\d3.min.js" />
+    <Content Include="Scripts\flexmonster\lib\file.min.js" />
+    <Content Include="Scripts\flexmonster\lib\flexmonster.fusioncharts.js" />
+    <Content Include="Scripts\flexmonster\lib\flexmonster.googlecharts.js" />
+    <Content Include="Scripts\flexmonster\lib\html2canvas.min.js" />
+    <Content Include="Scripts\flexmonster\lib\jquery.min.js" />
+    <Content Include="Scripts\flexmonster\lib\jspdf.min.js" />
+    <Content Include="Scripts\flexmonster\lib\jszip.min.js" />
+    <Content Include="Scripts\flexmonster\lib\promise.min.js" />
+    <Content Include="Scripts\flexmonster\lib\sha1.min.js" />
+    <Content Include="Scripts\flexmonster\lib\zlib.min.js" />
+    <Content Include="Scripts\flexmonster\theme\assets\flexmonster-icons.svg" />
+    <Content Include="Scripts\flexmonster\theme\assets\flexmonster-icons.ttf" />
+    <Content Include="Scripts\flexmonster\theme\assets\flexmonster-icons.woff" />
+    <Content Include="Scripts\flexmonster\theme\dark\flexmonster.css" />
+    <Content Include="Scripts\flexmonster\theme\dark\flexmonster.less" />
+    <Content Include="Scripts\flexmonster\theme\dark\flexmonster.min.css" />
+    <Content Include="Scripts\flexmonster\theme\default\flexmonster.less" />
+    <Content Include="Scripts\flexmonster\theme\flexmonster-base.less" />
+    <Content Include="Scripts\flexmonster\theme\lightblue\flexmonster.css" />
+    <Content Include="Scripts\flexmonster\theme\lightblue\flexmonster.less" />
+    <Content Include="Scripts\flexmonster\theme\lightblue\flexmonster.min.css" />
+    <Content Include="Scripts\flexmonster\theme\old\flexmonster.css" />
+    <Content Include="Scripts\flexmonster\theme\old\flexmonster.less" />
+    <Content Include="Scripts\flexmonster\theme\old\flexmonster.min.css" />
+    <Content Include="Scripts\flexmonster\theme\orange\flexmonster.css" />
+    <Content Include="Scripts\flexmonster\theme\orange\flexmonster.less" />
+    <Content Include="Scripts\flexmonster\theme\orange\flexmonster.min.css" />
+    <Content Include="Scripts\flexmonster\theme\teal\flexmonster.css" />
+    <Content Include="Scripts\flexmonster\theme\teal\flexmonster.less" />
+    <Content Include="Scripts\flexmonster\theme\teal\flexmonster.min.css" />
+    <Content Include="Scripts\flexmonster\toolbar\flexmonster.toolbar.js" />
+    <Content Include="Scripts\gantt\ActivityDaywiseAjax.js" />
+    <Content Include="Scripts\gantt\bootstrap.min.js" />
+    <Content Include="Scripts\gantt\custom.js" />
+    <Content Include="Scripts\gantt\deliveryTracker.js" />
+    <Content Include="Scripts\gantt\dhtmlxgantt.js" />
+    <Content Include="Scripts\gantt\dhtmlxgantt_fullscreen.js" />
+    <Content Include="Scripts\gantt\dhtmlxgantt_undo.js" />
+    <Content Include="Scripts\gantt\workflow_new.js" />
+    <Content Include="Scripts\global.js" />
+    <Content Include="Scripts\jquery-2.2.4.min.js" />
+    <Content Include="Scripts\jquery.nanoscroller.js" />
+    <None Include="Scripts\jquery.validate-vsdoc.js" />
+    <Content Include="Scripts\jquery.validate.js" />
+    <Content Include="Scripts\jquery.validate.min.js" />
+    <Content Include="Scripts\jquery.validate.unobtrusive.js" />
+    <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
+    <Content Include="Scripts\layoutTheme.js" />
+    <Content Include="Scripts\lib\commentsjs\jquery-comments.css" />
+    <Content Include="Scripts\lib\commentsjs\jquery-comments.js" />
+    <Content Include="Scripts\lib\commentsjs\jquery-comments.min.js" />
+    <Content Include="Scripts\lib\formBuilder\custom_functions.js" />
+    <Content Include="Scripts\lib\formBuilder\form-builder.min.js" />
+    <Content Include="Scripts\lib\formBuilder\form-render.min.js" />
+    <Content Include="Scripts\lib\introjs\intro.min.js" />
+    <Content Include="Scripts\lib\introjs\introjs-rtl.min.css" />
+    <Content Include="Scripts\lib\introjs\introjs.min.css" />
+    <Content Include="Scripts\lib\introjs\V-2.7.txt" />
+    <Content Include="Scripts\lib\jquery-dateformat.min.js" />
+    <Content Include="Scripts\lib\tooltip\protip\protip.min.css" />
+    <Content Include="Scripts\lib\tooltip\protip\protip.min.js" />
+    <Content Include="Scripts\Login\AzureADLogin.js" />
+    <Content Include="Scripts\Login\Login.js" />
+    <Content Include="Scripts\Login\userLocation.js" />
+    <Content Include="Scripts\Login\RegisterASP.js" />
+    <Content Include="Scripts\modernizr-2.8.3.js" />
+    <Content Include="Scripts\Monitoring\Monitoring.js" />
+    <Content Include="Scripts\MSSLeave\mssLeaveUpload.js" />
+    <Content Include="Scripts\popper-utils.js" />
+    <Content Include="Scripts\popper-utils.min.js" />
+    <Content Include="Scripts\popper.js" />
+    <Content Include="Scripts\popper.min.js" />
+    <Content Include="Scripts\Project\ChangeRequest.js" />
+    <Content Include="Scripts\Project\createProject.js" />
+    <Content Include="Scripts\Project\deliverablePlan.js" />
+    <Content Include="Scripts\Project\DeliveryUnit.js" />
+    <Content Include="Scripts\Project\delivery_responsible.js" />
+    <Content Include="Scripts\Project\executionPlan.js" />
+    <Content Include="Scripts\Project\FlowchartJsonPlot.js" />
+    <Content Include="Scripts\Project\FlowChartWorkOrderView.js" />
+    <Content Include="Scripts\Project\JsNetworkElement.js" />
+    <Content Include="Scripts\Project\JsProject.js" />
+    <Content Include="Scripts\Project\JsResource.js" />
+    <Content Include="Scripts\Project\jsScope.js" />
+    <Content Include="Scripts\Project\JsWorkFlow.js" />
+    <Content Include="Scripts\Project\projectWorkOrder.js" />
+    <Content Include="Scripts\Project\project_approval.js" />
+    <Content Include="Scripts\Project\project_search.js" />
+    <Content Include="Scripts\Project\ResourceApproval.js" />
+    <Content Include="Scripts\Project\ViewProject.js" />
+    <Content Include="Scripts\Project\viewResource.js" />
+    <Content Include="Scripts\Project\workOrder.js" />
+    <Content Include="Scripts\Rappid\apps\KitchenSink\assets\fonts\Alegreya_Sans\AlegreyaSans-Bold.ttf" />
+    <Content Include="Scripts\Rappid\apps\KitchenSink\assets\fonts\Alegreya_Sans\AlegreyaSans-Light.ttf" />
+    <Content Include="Scripts\Rappid\apps\KitchenSink\assets\fonts\Alegreya_Sans\AlegreyaSans-Regular.ttf" />
+    <Content Include="Scripts\Rappid\apps\KitchenSink\assets\fonts\Alegreya_Sans\OFL.txt" />
+    <Content Include="Scripts\Rappid\apps\KitchenSink\assets\fonts\Averia_Libre\AveriaLibre-Bold.ttf" />
+    <Content Include="Scripts\Rappid\apps\KitchenSink\assets\fonts\Averia_Libre\AveriaLibre-Light.ttf" />
+    <Content Include="Scripts\Rappid\apps\KitchenSink\assets\fonts\Averia_Libre\AveriaLibre-Regular.ttf" />
+    <Content Include="Scripts\Rappid\apps\KitchenSink\assets\fonts\Averia_Libre\OFL.txt" />
+    <Content Include="Scripts\Rappid\apps\KitchenSink\assets\fonts\Roboto_Condensed\LICENSE.txt" />
+    <Content Include="Scripts\Rappid\apps\KitchenSink\assets\fonts\Roboto_Condensed\RobotoCondensed-Bold.ttf" />
+    <Content Include="Scripts\Rappid\apps\KitchenSink\assets\fonts\Roboto_Condensed\RobotoCondensed-Light.ttf" />
+    <Content Include="Scripts\Rappid\apps\KitchenSink\assets\fonts\Roboto_Condensed\RobotoCondensed-Regular.ttf" />
+    <Content Include="Scripts\Rappid\apps\KitchenSink\assets\image-icon1.svg" />
+    <Content Include="Scripts\Rappid\apps\KitchenSink\assets\image-icon2.svg" />
+    <Content Include="Scripts\Rappid\apps\KitchenSink\assets\image-icon3.svg" />
+    <Content Include="Scripts\Rappid\apps\KitchenSink\assets\image-icon4.svg" />
+    <Content Include="Scripts\Rappid\apps\KitchenSink\assets\member-female.png" />
+    <Content Include="Scripts\Rappid\apps\KitchenSink\assets\member-male.png" />
+    <Content Include="Scripts\Rappid\apps\KitchenSink\assets\toolbar-icons-dark.woff" />
+    <Content Include="Scripts\Rappid\apps\KitchenSink\assets\toolbar-icons-material.png" />
+    <Content Include="Scripts\Rappid\apps\KitchenSink\assets\toolbar-icons-modern.png" />
+    <Content Include="Scripts\Rappid\apps\KitchenSink\css\style.css" />
+    <Content Include="Scripts\Rappid\apps\KitchenSink\css\style.dark.css" />
+    <Content Include="Scripts\Rappid\apps\KitchenSink\css\style.material.css" />
+    <Content Include="Scripts\Rappid\apps\KitchenSink\css\style.modern.css" />
+    <Content Include="Scripts\Rappid\apps\KitchenSink\css\theme-picker.css" />
+    <Content Include="Scripts\Rappid\apps\KitchenSink\js\config\halo.js" />
+    <Content Include="Scripts\Rappid\apps\KitchenSink\js\config\inspector.js" />
+    <Content Include="Scripts\Rappid\apps\KitchenSink\js\config\sample-graphs.js" />
+    <Content Include="Scripts\Rappid\apps\KitchenSink\js\config\selection.js" />
+    <Content Include="Scripts\Rappid\apps\KitchenSink\js\config\stencil.js" />
+    <Content Include="Scripts\Rappid\apps\KitchenSink\js\config\toolbar.js" />
+    <Content Include="Scripts\Rappid\apps\KitchenSink\js\models\joint.shapes.app.js" />
+    <Content Include="Scripts\Rappid\apps\KitchenSink\js\views\main.js" />
+    <Content Include="Scripts\Rappid\apps\KitchenSink\js\views\navigator.js" />
+    <Content Include="Scripts\Rappid\apps\KitchenSink\js\views\theme-picker.js" />
+    <Content Include="Scripts\Rappid\build\rappid.css" />
+    <Content Include="Scripts\Rappid\build\rappid.js" />
+    <Content Include="Scripts\Rappid\build\rappid.min.css" />
+    <Content Include="Scripts\Rappid\build\rappid.min.js" />
+    <Content Include="Scripts\Rappid\LICENSE" />
+    <Content Include="Scripts\Rappid\node_modules\backbone\backbone.js" />
+    <Content Include="Scripts\Rappid\node_modules\dagre\dist\dagre.core.js" />
+    <Content Include="Scripts\Rappid\node_modules\graphlib\dist\graphlib.core.js" />
+    <Content Include="Scripts\Rappid\node_modules\jquery\dist\jquery.js" />
+    <Content Include="Scripts\Rappid\node_modules\lodash\index.js" />
+    <Content Include="Scripts\Rappid\our_custom.js" />
+    <Content Include="Scripts\Reports\addReports.js" />
+    <Content Include="Scripts\Reports\generateReports.js" />
+    <Content Include="Scripts\Reports\ReportFilter.js" />
+    <Content Include="Scripts\Reports\ReportIndex.js" />
+    <Content Include="Scripts\Reports\ReportIndexSP.js" />
+    <Content Include="Scripts\Reports\searchReport.js" />
+    <Content Include="Scripts\RequestApproval.js" />
+    <Content Include="Scripts\Resource\DemandFulfilment.js" />
+    <Content Include="Scripts\Resource\JsChangeManagement.js" />
+    <Content Include="Scripts\Resource\JsSearchAllocateResource.js" />
+    <Content Include="Scripts\Resource\ResourceCalendar\dhtmlxscheduler_active_links.js" />
+    <Content Include="Scripts\Resource\ResourceCalendar\dhtmlxscheduler_limit.js" />
+    <Content Include="Scripts\Resource\ResourceCalendar\dhtmlxscheduler_tooltip.js" />
+    <Content Include="Scripts\Resource\ResourceDailyTable.js" />
+    <Content Include="Scripts\Resource\ResourceCalendar\dhtmlxscheduler.js" />
+    <Content Include="Scripts\Resource\ResourceCalendar\Calendar.js" />
+    <Content Include="Scripts\respond.js" />
+    <Content Include="Scripts\respond.matchmedia.addListener.js" />
+    <Content Include="Scripts\respond.matchmedia.addListener.min.js" />
+    <Content Include="Scripts\respond.min.js" />
+    <Content Include="Scripts\Rich-Text-Editor-jQuery-RichText\.github\ISSUE_TEMPLATE\bug-report.md" />
+    <Content Include="Scripts\Rich-Text-Editor-jQuery-RichText\.github\ISSUE_TEMPLATE\feature-request.md" />
+    <Content Include="Scripts\Rich-Text-Editor-jQuery-RichText\.github\PULL_REQUEST_TEMPLATE.md" />
+    <Content Include="Scripts\Rich-Text-Editor-jQuery-RichText\.gitignore" />
+    <Content Include="Scripts\Rich-Text-Editor-jQuery-RichText\CONTRIBUTING.md" />
+    <Content Include="Scripts\Rich-Text-Editor-jQuery-RichText\examples\css\site.css" />
+    <Content Include="Scripts\Rich-Text-Editor-jQuery-RichText\examples\fontawesome5.html" />
+    <Content Include="Scripts\Rich-Text-Editor-jQuery-RichText\examples\index.html" />
+    <Content Include="Scripts\Rich-Text-Editor-jQuery-RichText\examples\multipleEditors.html" />
+    <Content Include="Scripts\Rich-Text-Editor-jQuery-RichText\info.json" />
+    <Content Include="Scripts\Rich-Text-Editor-jQuery-RichText\LICENSE" />
+    <Content Include="Scripts\Rich-Text-Editor-jQuery-RichText\README.md" />
+    <Content Include="Scripts\Rich-Text-Editor-jQuery-RichText\src\jquery.richtext.js" />
+    <Content Include="Scripts\Rich-Text-Editor-jQuery-RichText\src\jquery.richtext.min.js" />
+    <Content Include="Scripts\Rich-Text-Editor-jQuery-RichText\src\richtext.min.css" />
+    <Content Include="Scripts\Rich-Text-Editor-jQuery-RichText\src\richtext.scss" />
+    <Content Include="Scripts\RuleMigration\ruleMigration.js" />
+    <Content Include="Scripts\select2\select2.full.min.js" />
+    <Content Include="Scripts\select2\select2.min.css" />
+    <Content Include="Scripts\SelfService\selfService.js" />
+    <Content Include="Scripts\services\config.js" />
+    <Content Include="Scripts\services\mainPage.js" />
+    <Content Include="Scripts\services\profileRole.js" />
+    <Content Include="Scripts\TeamExplorer\profileAccess.js" />
+    <Content Include="Scripts\TeamExplorer\teamExplorer.js" />
+    <Content Include="Scripts\TimeZone\moment-timezone-with-data.js" />
+    <Content Include="Scripts\TimeZone\moment.js" />
+    <Content Include="Scripts\TimeZone\TimeZone.js" />
+    <Content Include="Scripts\TimeZone\TimeZoneColumnsConfigs.js" />
+    <Content Include="Scripts\umd\popper-utils.js" />
+    <Content Include="Scripts\umd\popper-utils.min.js" />
+    <Content Include="Scripts\umd\popper.js" />
+    <Content Include="Scripts\umd\popper.min.js" />
+    <Content Include="Scripts\UserMenu\UserMenu.js" />
+    <Content Include="Scripts\Vendor\Vendor.js" />
+    <Content Include="Scripts\WebWorkers\deliveryExecutionWorker.js" />
+    <Content Include="Scripts\WebWorkers\timerWebWorker.js" />
+    <Content Include="Scripts\WorkFlow\flowchart.js" />
+    <Content Include="Scripts\WorkFlow\wrkflow.js" />
+    <Content Include="Scripts\WorkOrder\workOrder.js" />
+    <Content Include="Scripts\WorkOrder\workOrderCreate.js" />
+    <Content Include="Scripts\zip\jszip.js" />
+    <Content Include="Scripts\zip\jszip.min.js" />
+    <Content Include="Views\Account\ExternalLoginConfirmation.cshtml" />
+    <Content Include="Views\Account\ExternalLoginFailure.cshtml" />
+    <Content Include="Views\Account\Login.cshtml" />
+    <Content Include="Views\Account\Manage.cshtml" />
+    <Content Include="Views\Account\Register.cshtml" />
+    <Content Include="Views\Account\_ChangePasswordPartial.cshtml" />
+    <Content Include="Views\Account\_ExternalLoginsListPartial.cshtml" />
+    <Content Include="Views\Account\_RemoveAccountPartial.cshtml" />
+    <Content Include="Views\Account\_SetPasswordPartial.cshtml" />
+    <Content Include="Views\ActivityMaster\Activity.cshtml" />
+    <Content Include="Views\ActivityMaster\Customer.cshtml" />
+    <Content Include="Views\ActivityMaster\ExternalActivityList.cshtml" />
+    <Content Include="Views\ActivityMaster\WorkInstructions.cshtml" />
+    <Content Include="Views\ActivityMaster\Domain.cshtml" />
+    <Content Include="Views\ActivityMaster\Index.cshtml" />
+    <Content Include="Views\ActivityMaster\ServiceArea.cshtml" />
+    <Content Include="Views\ActivityMaster\SubActivity.cshtml" />
+    <Content Include="Views\ActivityMaster\SubDomain.cshtml" />
+    <Content Include="Views\ActivityMaster\Technology.cshtml" />
+    <Content Include="Views\ActivityMaster\Vendor.cshtml" />
+    <Content Include="Views\ActivityMaster\ViewDeliveryCatalogue.cshtml" />
+    <Content Include="Views\Activity\Index.cshtml" />
+    <Content Include="Views\Admin\AssignRole.cshtml" />
+    <Content Include="Views\Admin\ConfigureDomainSPOC.cshtml" />
+    <Content Include="Views\Admin\CreateAccessProfile.cshtml" />
+    <Content Include="Views\Admin\Index.cshtml" />
+    <Content Include="Views\ActivityMaster\LocationType.cshtml" />
+    <Content Include="Views\Admin\ViewAccess.cshtml" />
+    <Content Include="Views\Bots\BOTSaving.cshtml">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="Views\Dashboard\Dashboard.cshtml" />
+    <Content Include="Views\DeliveryExecution\FlowChart.cshtml" />
+    <Content Include="Views\DeliveryExecution\FlowChartCreate.cshtml" />
+    <Content Include="Views\DeliveryExecution\FlowChartEdit.cshtml" />
+    <Content Include="Views\DeliveryExecution\FlowChartExecution.cshtml" />
+    <Content Include="Views\DeliveryExecution\FlowChartView.cshtml" />
+    <Content Include="Views\DeliveryExecution\PlannedAssignment.cshtml" />
+    <Content Include="Views\DeliveryExecution\ProgAssignments.cshtml" />
+    <Content Include="Views\Home\About.cshtml" />
+    <Content Include="Views\Home\Contact.cshtml" />
+    <Content Include="Views\Home\Index.cshtml" />
+    <Content Include="Views\Login\View1.cshtml" />
+    <Content Include="Views\Project\Add.cshtml" />
+    <Content Include="Views\Project\Approval.cshtml" />
+    <Content Include="Views\Project\DeliveryAcceptance.cshtml" />
+    <Content Include="Views\Project\DeliveryResponsible.cshtml" />
+    <Content Include="Views\Project\DemandRequest.cshtml" />
+    <Content Include="Views\Project\Detail.cshtml" />
+    <Content Include="Views\Project\FlowChartWorkOrderAdd.cshtml" />
+    <Content Include="Views\Project\FlowChartWorkOrderView.cshtml" />
+    <Content Include="Views\Project\Index.cshtml" />
+    <Content Include="Views\Project\NodeUpload.cshtml" />
+    <Content Include="Views\Project\ProjectView.cshtml" />
+    <Content Include="Views\Project\Scope.cshtml" />
+    <Content Include="Views\Project\Search.cshtml" />
+    <Content Include="Views\Project\ViewProject.cshtml" />
+    <Content Include="Views\Project\WfCreation.cshtml" />
+    <Content Include="Views\Project\WorkOrderCreation.cshtml" />
+    <Content Include="Views\Project\WorkOrderPlan.cshtml" />
+    <Content Include="Views\Reports\ConfigureReports.cshtml" />
+    <Content Include="Views\Reports\Index.cshtml" />
+    <Content Include="Views\Reports\ReportFilterView.cshtml" />
+    <Content Include="Views\Reports\_addReports.cshtml" />
+    <Content Include="Views\Reports\_generateReports.cshtml" />
+    <Content Include="Views\Reports\_searchReports.cshtml" />
+    <Content Include="Views\RequestApproval\RequestApproval.cshtml" />
+    <Content Include="Views\Resource\AllocatedResources.cshtml" />
+    <Content Include="Views\Resource\ChangeManagement.cshtml" />
+    <Content Include="Views\Resource\Request.cshtml" />
+    <Content Include="Views\Resource\ResourceEngagement.cshtml" />
+    <Content Include="Views\Resource\SearchAllocateResource.cshtml" />
+    <Content Include="Views\SelfService\Index.cshtml" />
+    <Content Include="Views\SelfService\profile.JPG" />
+    <Content Include="Views\Shared\Error.cshtml" />
+    <Content Include="Views\Shared\WorkOrderViews.cshtml" />
+    <Content Include="Views\Shared\_Layout.cshtml" />
+    <Content Include="Views\Shared\_LoginPartial.cshtml" />
+    <Content Include="Views\Shared\_BotSavingPopup.cshtml" />
+    <Content Include="Views\Shared\_MultipleVendorTechView.cshtml" />
+    <Content Include="Views\TeamExplorer\Index.cshtml" />
+    <Content Include="Views\TeamExplorer\Index.cshtml" />
+    <Content Include="Views\Vendor\Index.cshtml" />
+    <Content Include="Views\Web.config" />
+    <Content Include="Views\WorkFlow\Creation.cshtml" />
+    <Content Include="Views\WorkFlow\DeliveryScope.cshtml" />
+    <Content Include="Views\WorkFlow\Index.cshtml" />
+    <Content Include="Views\WorkFlow\WorkFlowView.cshtml" />
+    <Content Include="Views\WorkOrder\activityDaily.cshtml" />
+    <Content Include="Views\WorkOrder\activityHourly.cshtml" />
+    <Content Include="Views\WorkOrder\activityMonthly.cshtml" />
+    <Content Include="Views\WorkOrder\deliveryTracker.cshtml" />
+    <Content Include="Views\WorkOrder\ganttModal.cshtml" />
+    <Content Include="Views\WorkOrder\Index.cshtml" />
+    <Content Include="Views\WorkOrder\PlanLanding.cshtml" />
+    <Content Include="Views\_ViewStart.cshtml" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Web.Debug.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </Content>
+    <Content Include="Web.Release.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </Content>
+    <Content Include="Views\Login\SessionTimeout.cshtml" />
+    <Content Include="Views\TeamExplorer\ProfileAccess.cshtml" />
+    <Content Include="Views\Login\Logout.cshtml" />
+    <Content Include="Scripts\umd\popper.min.js.map" />
+    <Content Include="Scripts\umd\popper.js.map" />
+    <Content Include="Scripts\umd\popper-utils.min.js.map" />
+    <Content Include="Scripts\umd\popper-utils.js.map" />
+    <Content Include="Scripts\README.md" />
+    <Content Include="Scripts\popper.min.js.map" />
+    <Content Include="Scripts\popper.js.map" />
+    <Content Include="Scripts\popper-utils.min.js.map" />
+    <Content Include="Scripts\popper-utils.js.map" />
+    <Content Include="Views\Login\UnauthorizedWarning.cshtml" />
+    <Content Include="Views\Login\ErrorLogout.cshtml" />
+    <Content Include="Views\Bots\botRepository.cshtml" />
+    <Content Include="Views\Bots\botInfo.cshtml" />
+    <Content Include="Views\Monitoring\Monitoring.cshtml" />
+    <Content Include="Views\Admin\ExternalKeyGenerator.cshtml" />
+    <Content Include="Views\Competence\MDMCompetenceUpload.cshtml" />
+    <Content Include="Views\Competence\CompetenceAndTraining.cshtml" />
+    <Content Include="Views\Shared\userLocationView.cshtml" />
+    <Content Include="Views\Shared\_BotInputRequired.cshtml" />
+    <Content Include="Views\ActivityMaster\MDMGlobalURL.cshtml" />
+    <Content Include="Views\Login\_UserMenu.cshtml" />
+    <Content Include="Views\Login\HandleLoginException.cshtml" />
+    <Content Include="Views\DeliveryExecutionFeedback\Index.cshtml" />
+    <Content Include="Views\ActivityMaster\InstantFeedback.cshtml" />
+    <Content Include="Views\CreateAutosenseRule\AutoSenseIndex.cshtml" />
+    <Content Include="Views\CreateAutosenseRule\Index.cshtml" />
+    <Content Include="Views\RuleMigration\Index.cshtml" />
+    <Content Include="Views\MSSLeave\MSSLeaveUpload.cshtml" />
+    <Content Include="Views\Login\RedisLoadTest.cshtml" />
+    <Content Include="Views\Login\HealthCheck.cshtml" />
+    <Content Include="Views\Bots\BotErrorDictionary.cshtml" />
+    <Content Include="Views\Login\ZeroDowntimeDemo.cshtml" />
+    <Content Include="Views\Shared\_NetworkElementAddEdit.cshtml" />
+    <Content Include="Views\Shared\_NetworkElementsDuplicatePopUp.cshtml" />
+    <Content Include="Views\ActivityMaster\DemandType.cshtml" />
+    <Content Include="Views\ActivityMaster\SharePointConfig.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Scripts\Account\" />
+    <Folder Include="Scripts\Activity\" />
+    <Folder Include="Scripts\DataTable\DataTableApi\Editor\" />
+    <Folder Include="Scripts\lib\tooltip\tipr\" />
+    <Folder Include="Scripts\Rappid\apps\build\" />
+    <Folder Include="Views\ActivityMaster\NewFolder1\" />
+    <Folder Include="Views\Data\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="packages.config" />
+    <Content Include="Content\fonts\EricssonHilda-Bold.ttf" />
+    <Content Include="Content\fonts\EricssonHilda-Light.ttf" />
+    <Content Include="Content\fonts\EricssonHilda-Medium.ttf" />
+    <Content Include="Content\fonts\EricssonHilda-Regular.ttf" />
+    <Content Include="Content\CSS\checbox_radio_style\README.md" />
+    <Content Include="Content\templateFiles\NodeTemplate.xlsx" />
+    <Content Include="Content\templateFiles\WFSampleTemplate.xlsx" />
+    <Content Include="Content\templateFiles\WOCreationTemplate.xlsx" />
+    <Content Include="Content\templateFiles\MacroPython _Integration_Guide.pdf" />
+    <Content Include="Content\templateFiles\Logic.docx" />
+    <Content Include="Content\images\Ericsson\201712_OptimizeAEM_2.png_old" />
+    <Content Include="Content\templateFiles\ISF Guideline for Local BOTs integration.pptx" />
+    <Content Include="Content\templateFiles\AutoMail_AttachmentTemplate.xlsx" />
+    <None Include="Project_Readme.html" />
+    <None Include="Properties\PublishProfiles\ISF_DEPLO.pubxml" />
+    <None Include="Properties\PublishProfiles\TempPub.pubxml" />
+    <Content Include="Views\Project\ResourceApproval.cshtml" />
+    <Content Include="Views\Project\_ViewResource.cshtml" />
+    <Content Include="Views\Project\_ResourceApproval.cshtml" />
+    <Content Include="Views\Project\_ChangeRequest.cshtml" />
+    <Content Include="Views\Resource\ViewPositions.cshtml" />
+    <Content Include="Views\Admin\PivotReport.cshtml" />
+    <Content Include="Views\Project\FlowChartApprovalView.cshtml" />
+    <Content Include="Views\Project\PlannedWorkOrder.cshtml" />
+    <Content Include="Views\Project\FlowChartView.cshtml">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="Views\Project\FlowChartEditProject.cshtml" />
+    <Content Include="Views\Project\FlowChartExecutionProject.cshtml" />
+    <Content Include="Views\Project\FlowChartProject.cshtml" />
+    <Content Include="Views\Project\ExecutionPlan.cshtml" />
+    <Content Include="Views\Reports\ReportIndex.cshtml" />
+    <Content Include="Views\Project\FlowChartViewEP.cshtml" />
+    <Content Include="Views\ActivityMaster\ProjectDetails.cshtml" />
+    <Content Include="Views\DeliveryExecution\WorkorderAndTask.cshtml" />
+    <Content Include="Views\Login\IndexUm.cshtml" />
+    <Content Include="Views\Login\Index.cshtml" />
+    <Content Include="Views\Bots\BotStore.cshtml" />
+    <Content Include="Views\Bots\botRequests.cshtml" />
+    <Content Include="Views\Bots\botApproval.cshtml" />
+    <Content Include="Views\Bots\botDevRequest.cshtml" />
+    <Content Include="Views\Bots\botDeployed.cshtml" />
+    <Content Include="Views\Bots\AuditBot.cshtml" />
+    <Content Include="Views\Shared\BotStore.cshtml" />
+    <Content Include="Views\Bots\assignedbot.cshtml" />
+    <Content Include="Views\Error\PageNotFound.cshtml" />
+    <Content Include="Views\Admin\RoleCapability.cshtml" />
+    <Content Include="Views\Admin\AddRole.cshtml" />
+    <Content Include="Views\Login\AspLogin.cshtml" />
+    <Content Include="Views\Admin\Merlin.cshtml" />
+    <Content Include="Views\Admin\ToolKit.cshtml" />
+    <Content Include="Views\Project\WorkOrderCreatePopUp.cshtml" />
+    <Content Include="Views\Login\RegisterASP.cshtml" />
+    <Content Include="Views\Admin\AccessProfile.cshtml" />
+    <Content Include="Views\Login\EricssonLogin.cshtml">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="Views\ActivityMaster\FlowChartViewMaster.cshtml">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="Views\Admin\Capabilitiestable.cshtml" />
+    <Content Include="Views\Admin\Message.cshtml" />
+    <Content Include="Views\DeliveryExecution\RecordNonWorkingHourModelPopUp.cshtml" />
+    <Content Include="Views\DeliveryExecution\ResumeNonWorkingHourModelPopUp.cshtml" />
+    <Content Include="Scripts\Resource\ResourceCalendar\events.json" />
+    <Content Include="Views\Resource\Calendar.cshtml" />
+    <Content Include="Scripts\Resource\ResourceCalendar\events - Copy.json" />
+    <Content Include="Views\DeliveryIndex\DeliveryIndex.cshtml" />
+    <Content Include="Views\Reports\Tableau_Report.cshtml" />
+    <Content Include="Views\DeliveryExecution\FlViewWithoutComment.cshtml" />
+    <Content Include="Views\WorkOrder\dashboard.cshtml" />
+    <Content Include="Views\DemandForecast\DemandForecast.cshtml">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="Views\DemandForecast\DemandDetailsView.cshtml" />
+    <Content Include="Views\Bots\FlowChartBOTEdit.cshtml" />
+    <Content Include="Views\Reports\ReportIndexSP.cshtml" />
+    <Content Include="Views\Shared\shiftTimeView.cshtml" />
+    <Content Include="Views\ASPExplorer\ASPExplorer.cshtml" />
+    <Content Include="Views\Shared\userPreference.cshtml" />
+    <Content Include="Views\DemandForecast\ganttChartPositionView.cshtml" />
+    <Content Include="Views\ActivityMaster\DeliveryUnitlist.cshtml" />
+    <Content Include="Views\Project\DRBotCreation.cshtml" />
+    <Content Include="Views\Admin\ASPConfigureVendorManager.cshtml" />
+    <Content Include="Views\Login\AzureADLogin.cshtml" />
+    <Content Include="Scripts\jquery-3.3.1.slim.min.map" />
+    <Content Include="Scripts\jquery-3.3.1.min.map" />
+  </ItemGroup>
+  <ItemGroup>
+    <TypeScriptCompile Include="Scripts\index.d.ts" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ISF.AzureRedisCache\ISF.AzureRedisCache.csproj">
+      <Project>{73027999-f902-41d9-a86a-f11943b60525}</Project>
+      <Name>ISF.AzureRedisCache</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets')" />
+  <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
+  <Target Name="MvcBuildViews" AfterTargets="AfterBuild" Condition="'$(MvcBuildViews)'=='true'">
+    <AspNetCompiler VirtualPath="temp" PhysicalPath="$(WebProjectOutputDir)" />
+  </Target>
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>False</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>54539</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>http://localhost:54539/</IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>False</UseCustomServer>
+          <CustomServerUrl>
+          </CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props'))" />
+  </Target>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target> -->
+</Project>

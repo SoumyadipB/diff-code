@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ericsson.isf.mapper.AzureMapper">
+	<cache type="org.mybatis.caches.ehcache.EhcacheCache" />
+
+	<select id='getInfoByAzureAppName' resultType="com.ericsson.isf.model.AzureAppModel" parameterType="String">
+
+		select top 1 AzureAppID, AppName, TenantID, ClientID, ClientSecret, RedirectUrl, IsActive
+		from Refdata.TBL_AzureAppsInformation
+		where AppName =#{appName} order by AzureAppID asc
+
+	</select>
+	
+	<select id='getActiveSecretInfoByVaultNameAndSecretType' resultType="com.ericsson.isf.model.VaultModel" parameterType="String">
+
+		select VaultID, VaultName, SecretName, SecretType, IsActive 
+		from Refdata.TBL_VaultInformation
+		where IsActive = 1 and VaultName = #{vaultName} and SecretType=#{secretType}
+
+	</select>
+	
+	<select id='getAllSecretInfoByVaultNameAndSecretType' resultType="com.ericsson.isf.model.VaultModel" parameterType="String">
+
+		select VaultID, VaultName, SecretName, SecretType, IsActive 
+		from Refdata.TBL_VaultInformation
+		where VaultName = #{vaultName} and SecretType=#{secretType}
+
+	</select>
+	
+    <update id='activateVaultKey' parameterType="com.ericsson.isf.model.VaultModel">
+		update Refdata.TBL_VaultInformation set IsActive=1 where VaultID=#{vaultModel.vaultID}
+    </update>
+
+	<update id='inactivateVaultKey' parameterType="com.ericsson.isf.model.VaultModel">
+		update Refdata.TBL_VaultInformation set IsActive=0 where VaultID=#{vaultModel.vaultID}
+    </update>
+
+</mapper>
+

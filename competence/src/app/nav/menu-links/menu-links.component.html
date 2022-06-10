@@ -1,0 +1,40 @@
+<div class="{{classOnMenu}}">
+
+    <!-- <a mat-list-item routerLink="/competence" routerLinkActive="active">My Competence</a>  -->
+
+    <!-- <span>Third Line</span>
+    <span class="setLeft"></span>
+    <mat-icon class="example-icon" aria-hidden="false" aria-label="Example heart icon">favorite</mat-icon>
+    <mat-icon class="example-icon" aria-hidden="false" aria-label="Example delete icon">delete</mat-icon> -->
+
+        <!-- <span style="font-style: italic;font-weight: lighter;font-size: 14px;">
+                <mat-icon aria-hidden="false" >account_circle</mat-icon>
+             {{uName}} ({{signum}})
+        </span> -->
+        <button mat-button *ngIf="(UserName$ | async) as UserName" style="font-size: 13px; font-style: italic;font-weight: 300; cursor: auto;">
+            
+            <mat-icon aria-hidden="false" >account_circle</mat-icon>
+            {{UserName}} ({{signum$ | async}})
+        </button>
+
+
+    <li *ngIf="userRole$!='LM'">
+        <button mat-button routerLink="/competence" routerLinkActive="active">My Competence</button>
+    </li>
+    <li *ngIf="userRole$=='LM'">
+        <button mat-button routerLink="/competence-request">Competence Request</button>
+    </li>
+    <li>
+        <!-- <button mat-button (click)="onADFSLogout()">Logout</button> -->
+        <button mat-button (click)="logoutRedirect()">Logout</button>
+    </li>
+    <!-- <a mat-list-item routerLink="/login" routerLinkActive="active">Login</a>  -->
+    <!-- <li *ngIf="!userIsAuthenticated">
+        <button mat-button routerLink="/login">Login</button>
+    </li>
+    <li *ngIf="userIsAuthenticated">
+        <button mat-button (click)="onLogout()">Logout</button>
+    </li> -->
+    <!-- <a mat-list-item routerLink="/technologies" routerLinkActive="active">Technologies</a>  -->
+
+</div>

@@ -1,0 +1,721 @@
+﻿@{
+    Layout = "";
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Work Flow</title>
+    <link rel="icon" type="image/png" href="~/Content/images/Ericsson/favicon.ico" />
+    @Scripts.Render("~/bundles/rappid")
+    @Scripts.Render("~/bundles/jqueryui")
+    @Styles.Render("~/bundles/css/jqueryui")
+
+    @Scripts.Render("~/bundles/global")
+    @Scripts.Render("~/bundles/GetSessionVars")
+    @Scripts.Render("~/bundles/config")
+    @Scripts.Render("~/bundles/SessionManagement")
+    @Scripts.Render("~/bundles/bootstrap")
+    @Scripts.Render("~/bundles/datepicker")
+    @Styles.Render("~/bundles/css/rappid")
+    @Styles.Render("~/bundles/css/bootstrap")
+    @Scripts.Render("~/bundles/DataTableScript")
+    @Styles.Render("~/bundles/css/DataTableStyle")
+    @Scripts.Render("~/bundles/DataTablesAdvancedScript")
+    @Scripts.Render("~/bundles/rowsGroup")
+    @Styles.Render("~/bundles/css/select2")
+    @Scripts.Render("~/bundles/select2")
+    @Scripts.Render("~/bundles/formbuilder")
+
+
+    @Scripts.Render("~/bundles/ourCustom")
+
+    @*<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">*@
+
+    @Scripts.Render("~/bundles/FlowChartBOTEdit")
+    @Scripts.Render("~/bundles/customConsole")
+    @Scripts.Render("~/bundles/ajaxRequest")
+
+    @Scripts.Render("~/bundles/downloadBotFiles")
+    @Scripts.Render("~/bundles/downloadTemplates")
+
+
+    <style>
+        .joint-select-box-options {
+            max-height: 500px;
+        }
+
+        .joint-lightbox.modal {
+            display: block;
+        }
+
+        .icon-size {
+            font-size: 20px;
+        }
+
+        .paper-container {
+            height: 90%;
+        }
+
+        .joint-toolbar.joint-theme-material button {
+            height: 29px;
+        }
+
+        /*.navigator-container {
+            bottom: 50px;
+        }*/
+
+        .joint-popup.joint-theme-material {
+            background-color: lightcyan;
+            border: 2px solid #31d0c6;
+            border-radius: 10px;
+            padding: 10px;
+            font-family: lato-light,Arial,sans-serif;
+        }
+
+        .popover {
+            max-width: 100%;
+            // Max Width of the popover (depending on the container!);
+        }
+
+        .toolbar-container button.joint-widget[data-type="zoomIn"], .toolbar-container button.joint-widget[data-type="zoomOut"] {
+            display: block;
+        }
+
+        .joint-app.joint-theme-material .toolbar-container {
+            overflow-y: unset;
+        }
+
+
+        /*For Rappid overwrite*/
+        .app-title h1 {
+            font-size: 12px;
+            line-height: 33px !important;
+        }
+
+        .app-header {
+            height: 28px !important;
+        }
+
+        .joint-widget.joint-theme-material[data-type=zoomToFit]:after {
+            background-position: 0px -39px;
+        }
+
+        .joint-widget.joint-theme-material[data-type=zoomOut]:after {
+            background-position: -62px -4px;
+        }
+
+        .joint-widget.joint-theme-material[data-type=zoomIn]:after {
+            background-position: -27px -39px;
+        }
+
+        .joint-widget.joint-theme-material[data-type=fullscreen]:after {
+            background-position: -58px -33px;
+        }
+
+        .joint-widget.joint-theme-material[data-name=layout]:after {
+            background-position: -3px -72px;
+        }
+
+        .joint-widget.joint-theme-material[data-name=layout]:after, .joint-widget.joint-theme-material[data-type=undo]:after, .joint-widget.joint-theme-material[data-type=redo]:after, .joint-widget.joint-theme-material[data-type=zoomToFit]:after, .joint-widget.joint-theme-material[data-type=zoomIn]:after, .joint-widget.joint-theme-material[data-type=zoomOut]:after, .joint-widget.joint-theme-material[data-type=fullscreen]:after {
+            background-size: 92px;
+        }
+
+        .stencil-container {
+            max-height: 90%;
+        }
+        /*Navigater*/
+        .joint-navigator {
+            right: 18px !important;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            background-color: #fdfdfd;
+        }
+
+            .joint-navigator.joint-theme-material {
+                width: 166px !important;
+                padding: 0px;
+                padding-left: 57px;
+                // padding-left: 49px !important;
+            }
+
+        .navigator-container {
+            /*bottom: 156px !important;
+            right: 263px;*/
+            /*bottom: 81px !important;*/
+            right: 211px;
+            position: fixed;
+            /*right: 0;*/
+            bottom: 27px;
+            width: 240px;
+            height: 120px;
+        }
+
+        .inspector-container {
+            bottom: 0px;
+            max-height: 90%;
+        }
+
+        .joint-inspector.joint-theme-material {
+            font-family: 'Ericsson Hilda' !important;
+        }
+
+        .joint-select-button-group.joint-theme-material {
+            display: none;
+        }
+
+        .more-less {
+            float: right;
+            color: #212121;
+        }
+
+        .panel-default > .panel-heading + .panel-collapse > .panel-body {
+            border-top-color: #EEEEEE;
+        }
+
+        .validateArea {
+            position: absolute;
+            right: 263px;
+            z-index: 2;
+            top: 125%;
+            padding: 0 15px !important;
+        }
+
+        /*.validateBtnArea .validateWfBtn {
+                position: absolute;
+                right: 263px;
+                z-index: 2;
+                top: 125%;
+                padding:0 15px !important;
+            }*/
+
+        .selectwidth .select2-search__field {
+            width: 74px !important;
+        }
+
+        li.select2-selection__choice {
+            /*max-width: 100%;*/
+            overflow: hidden;
+            /*Altered two below to make word wrap work */
+            word-wrap: normal !important;
+            white-space: normal;
+        }
+
+        ul.select2-selection__rendered {
+            padding-right: 12px !important;
+            max-width: 100%;
+            height: 75px !important;
+        }
+
+        #botSavingTable table.dataTable tbody tr {
+            height: 100px !important
+        }
+
+        .select2-container .select2-selection--multiple .select2-selection__rendered {
+            overflow-y: scroll !important;
+            overflow-x: scroll !important;
+            width: 85px !important;
+        }
+    </style>
+
+</head>
+<body style="padding-top:0px !important">
+    <input type="hidden" id="max_id" />
+    <br/>
+    <div>
+        <span style="padding-left:17px" id="basic-addon3" class="">WF Name: </span>
+        <label class="" id="WFName" style="padding-right:17px"></label>
+        <input type="hidden" id="hiddenWfidBot" />
+        <div class="col-md-3 input-group" id="editReasonDiv">
+            <span class="input-group-addon" id="basic-addon3">Reason: </span>
+            <select id="editReasonDDBot" style="height:34px; width:212px" onchange="onChangeReason();"></select>
+        </div>
+        <span><button id="saveJSON" class="btn btn-success pull-right" onclick="savejson()">Validate and Save Work Flow</button></span>
+    </div>
+   
+   
+    <div class="container" style="max-width:1500px">
+        <br />
+        <div class="modal fade" id="viewExsistingWorkOrder" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document" style="width: 86%">
+                <div class="modal-content">
+                    <div class="modal-header" style="background-color:#d9edf7">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        <h4 class="modal-title text-center" id="myModalLabel">View Existing Sub Activities</h4>
+                    </div>
+                    <div class="modal-body" style="max-height: calc(110vh - 210px);overflow-y: auto;">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="dataTable_wrapper">
+                                    <table class="table table-striped table-bordered table-hover" id="exsistingSub"></table>
+                                </div>
+                            </div>
+                        </div> <!--//Table  -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="previewErrorDetials" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg" role="document" style="overflow-y: initial !important">
+                <div class="modal-content">
+                    <div class="modal-header" style="background-color:#d9edf7">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        <h4 class="modal-title text-center" id="myModalLabelpreviewErrorDetials">ERRORS</h4>
+                    </div>
+                    <div class="modal-body" style="max-height: calc(100vh - 210px);overflow-y: auto;">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="dataTable_wrapper">
+                                    <table class="table table-striped table-bordered table-hover" id="dataTablepreviewErrorDetials">
+                                        <thead>
+                                            <tr>
+                                                <th>Error Description</th>
+                                                <th>Error Details</th>
+                                                <th>How To Fix</th>
+
+                                            </tr>
+                                        </thead>
+                                        <tbody id="dataTablepreviewErrorDetials_tBody">
+                                            <tr><td colspan="10" align="center"><img src="~/Content/images/loading-1.gif" style="width:70px;height:70px;"></td></tr>
+                                        </tbody>
+
+                                    </table>
+                                </div>
+                            </div>
+                        </div> <!--//Table  -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+        <div class="row" id="saveAndaddStep"></div>
+        @*<br />*@
+        <div class="row">
+            <div class="col-md-2" id="editWF" style="display:none;"><span><a href="#" class="btn btn-sm btn-primary" onclick="flowChartOpenInNewWindow('FlowChartWorkOrderView?subId=' + subID + '&projID=' + projId + '&version=' + version)">Edit WorkFlow</a></span></div>
+        </div>
+
+
+
+        <div class="modal fade" id="saveVersionedWF" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <!--<h4 class="modal-title" id="scopeTitleModal">Work Order</h4>-->
+                    </div>
+                    <div class="modal-body" id="versionContentModal">
+                        <label>Do you want to Overwrite WorkFlow with same name?</label>
+                    </div>
+                    <div class="modal-footer">
+                        @*<button id="existingWFVersion" type="button" class="btn btn-default" onclick="ViewsaveJsonfromUI(projID, subID, subActivityDefID, version, $('#WFName').text(), true, '1')" data-dismiss="modal">Create new with exsisting name</button>*@
+                        <button id="" type="button" class="btn btn-default" onclick="saveJsonfromUI(projId, subID, subActivityDefID, false, version, flag, $('#WFName').val(),'updateexisting')">Yes</button>
+                        <button id="" type="button" class="btn btn-default" onclick="createNew()">No</button>
+                        @*<button id="existingWFVersion" type="button" class="btn btn-default" onclick="ViewsaveJsonfromUI(projID, subID, subActivityDefID, version, $('#WFName').text(), false,'3')" data-dismiss="modal">Update Existing</button>*@
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+   
+    <div class="modal fade" id="botConfigModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog modal-lg" role="document" style="width: 86%" ;overflow-y initial !important">
+            <div class="modal-content">
+                <div class="modal-header" style="background-color:#d9edf7">
+                    @*<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>*@
+                    <h4 class="modal-title text-center" id="">BOT Config</h4>
+                </div>
+                <div class="modal-body" style="max-height: calc(100vh - 210px);overflow-y: auto;">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <input type="hidden" id="currentCellID" />
+
+                            <form method="POST" enctype="" id="botConfigForm">
+                                <div class="dataTable_wrapper" id="botConfigBody">
+                                </div>
+                                <button type="submit" onclick="" class="btn btn-primary" id="saveBotConfigBtn">Save</button>
+
+                                @*<button type="submit" onclick="saveBotConfig()" id="saveBotConfigBtn">Save</button>*@
+                            </form>
+                        </div>
+                    </div> <!--//Table  -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="pdfDiv" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog modal-lg" role="document" style="width: 70%;">
+            <div class=" modal-content">
+                <div class="modal-header">
+                    @*<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>*@
+                    <h4 class="modal-title" id="scopeTitleModal">Work Instruction</h4>
+                </div>
+                <div class="modal-body" id="WFBody" style="height: 676px;">
+                    <br />
+
+                    <object id="objpdf" width="100%" height="100%" type="application/pdf" data="">
+                        @*<embed id="embedpdf" type="application/pdf" />*@
+                    </object>
+                </div>
+                <div class="modal-footer">
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @*<div class="modal fade" id="botDetailModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog modal-lg" role="document" style="width: 70%;">
+            <div class=" modal-content">
+                <div class="modal-header" style="background-color: lightgray;height: 40px;">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="deleteAllBotDetails()">
+                    <span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="scopeTitleModal" style="text-align:center">BOT SAVING DETAILS</h4>
+                </div>
+                <div class="modal-body" id="BotSavingDetails" style="height: 570px; overflow:auto">
+                    
+                    <label>Deleted Step Details</label>
+                    <table id="deletedStepTable" class="table table-striped table-bordered table-hover" style="width:100%"></table>
+                   
+                    <br />
+                    <label>New/Modified Step Details</label>
+                    <table id="newStepTable" class="table table-striped table-bordered table-hover" style="width:100%"></table>
+                    <br />
+                    <label style="font-size:10px; color:red">Note: Calculate all the savings from other project if available to calculate the final savings.</label><br />
+                    <div class="pull-right"><label>Choose Another WF: </label>&nbsp;&nbsp;<select id="wfVersionSelect" class="" style="margin-bottom:10px"><option value="208">208</option></select>&nbsp;&nbsp;<a class="icon-view lsp" onclick="viewVersionFlowChart()" title="View Workflow" href="#"><i class="fa fa-eye"></i></a>
+                    </div>
+                    <label>Bot Saving Details</label>
+                    <table id="botSavingTable" class="table table-striped table-bordered table-hover" style="width:100%; table-layout:fixed">
+                    </table>
+                   
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="saveBotDetailsBtn" class="btn-primary" onclick="saveAllBotDetails()" disabled>Save</button>
+                    <button id="cancelBotDetailsBtn" class="btn-default" data-dismiss="modal" onclick="deleteAllBotDetails()">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>*@
+<div>
+    @Html.Partial("_BotSavingPopup", "flowChartBotEdit");
+</div>
+
+
+
+    
+
+    <div class="container" id="app" style="max-width:1500px">
+        <div class="app-header" style="height:43px">
+            <div class="app-title">
+                <h1>WORK FLOW</h1>
+            </div>
+            <div class="toolbar-container"></div>
+        </div>
+        <div class="app-body">
+            <div class="stencil-container"></div>
+            <div class="paper-container"></div>
+            <div class="inspector-container"></div>
+            <div class="navigator-container"></div>
+        </div>
+    </div>
+
+    <script>
+
+        $(document).ready(function () {
+            //SVGElement.prototype.getTransformToElement = SVGElement.prototype.getTransformToElement || function (toElement) { return toElement.getScreenCTM().inverse().multiply(this.getScreenCTM()); }
+            let reloadAfterUpdate = false;
+
+            var urlParams = new URLSearchParams(window.location.search);
+            subID = urlParams.get("subId");
+            projID = urlParams.get("projID");
+            version = urlParams.get("version");
+            wfid = urlParams.get("wfid");
+            wfOwnerName = null;
+            wfOwnerName = urlParams.get("wfownername").split('[')[0];
+            if (wfOwnerName != "null") { $("#WFOwnerName").val(wfOwnerName); }
+            else { $("#WFOwnerName").val(signumGlobal); }
+            var subActivityDefID = null;
+            botForStepID = urlParams.get('stepId');
+            viewFlowChartWorkOrder(projID, subID, version, wfid);
+
+            $(document).ready(function () {
+
+                //$.ajaxSetup({
+                //    beforeSend: function (xhr) {
+                //      //  xhr.setRequestHeader("Authorization", "Bearer " + BearerKey);
+                //    }
+                //});
+                var createdBy;
+                var versionNameData;
+                //getTools();
+                getProjectSpecificTools();
+                getTasks(subID);
+                getViewTasks(subID);
+                getRPAId(projId);
+                getWorkInstruction(domain_id, tech_id);
+
+
+
+                $.isf.ajax({
+                    url: service_java_URL + "activityMaster/getActivityAndSubActivityDetailsByID/" + subID + '/' + signumGlobal,
+                    success: function (data) {
+                        for (var i = 0; i < data.length; i++) {
+                            createdBy = data[i].createdBy;
+                            //console.log(data[i]);
+                        }
+
+                    },
+                    error: function (xhr, status, statusText) {
+                        console.log("failed to fetch data");
+                    }
+                });
+
+            });
+            
+        
+
+            //retrivePMDRList(projID);
+            $('#editRep').on('show.bs.modal', function () {
+                $(this).find('.modal-content').css({
+                    width: 'auto', //probably not needed
+                    height: 'auto', //probably not needed
+                    'max-width': '50%',
+                    'margin': 'auto'
+                });
+            });
+
+            $('#botConfigForm').on('submit', function (e) {
+                e.preventDefault();
+                saveBotConfig();
+
+            });
+
+
+            setInterval(function () {
+                var isUserLoggedin = signumGlobal;
+                if (isUserLoggedin == null) {
+                    //window.location.href = UiRootDir + "/";
+                    window.close();
+                }
+            }, 2000);
+
+        });
+
+
+
+        function isPaste(e) {
+            setTimeout(function () {
+                //get the value of the input text
+                var data = $('#WFName').val();
+                //replace the special characters to ''
+                var dataFull = data.replace(/[^\w\s]/gi, '');
+                //set the new value of the input text without special characters
+                $('#WFName').val(dataFull);
+            });
+        }
+        function IsAlphaNumeric(e) {
+            var specialKeys = new Array();
+            specialKeys.push(8); //Backspace
+            specialKeys.push(9); //Tab
+            specialKeys.push(46); //Delete
+            specialKeys.push(36); //Home
+            specialKeys.push(35); //End
+            specialKeys.push(37); //Left
+            specialKeys.push(39); //Right
+            var keyCode = e.keyCode == 0 ? e.charCode : e.keyCode;
+            var ret = ((keyCode == 32) || (keyCode >= 48 && keyCode <= 57) || (keyCode >= 65 && keyCode <= 90) || (keyCode >= 97 && keyCode <= 122) || (specialKeys.indexOf(e.keyCode) != -1 && e.charCode != e.keyCode));
+            // document.getElementById("error").style.display = ret ? "none" : "inline";
+            return ret;
+
+            //  if (e.which === 39)
+            //    return false;
+        }
+        function retrivePMDRList(projID) {
+            $.isf.ajax({
+                url: service_java_URL + "flowchartController/getWFOwners/" + projID,
+                success: function (data) {
+                    $('#PMDRList').append('<option value="' + 0 + '"></option>');
+                    $.each(data, function (i, d) {
+                        $('#PMDRList').append('<option value="' + d.SignumID + '">' + d.SignumID + ' [' + d.EmployeeName + ']</option>');
+
+                    })
+                },
+                error: function (xhr, status, statusText) {
+                    console.log('An error occurred on get Access Profile ID');
+                }
+            });
+
+        }
+        function updateWfOwner(signumId, wfdefId) {
+
+            $.isf.ajax({
+                url: service_java_URL + 'flowchartController/updateWFOwner/' + wfdefId + '/' + signumId,
+                type: 'POST',
+                crossDomain: true,
+                context: this,
+                contentType: "application/json",
+
+                success: function () {
+                    $('#editRep').modal('hide');
+                    pwIsf.alert({ msg: 'Updated Workflow Owner', type: 'success' });
+                    $('#WFOwnerName').val($('#PMDRList').val());
+                    window.onunload = refreshParent;
+                    function refreshParent() {
+                        window.opener.location.reload();
+                    }
+                },
+                error: function (xhr, status, statusText) {
+                    pwIsf.alert({ msg: 'Failed to Update Workflow Owner', type: 'error' });
+                },
+            });
+        }
+
+        //For FireFox.
+        V.isSVGGraphicsElement = function (node) {
+            if (!node) return false;
+            node = V.toNode(node);
+            // IE/Edge does not implement SVGGraphicsElement interface, thus check for `getScreenCTM` below
+            return node instanceof SVGElement && typeof node.getScreenCTM === 'function';
+        };
+
+        V.prototype.getTransformToElement = function (target) {
+            var node = this.node;
+            if (V.isSVGGraphicsElement(target) && V.isSVGGraphicsElement(node)) {
+                var targetCTM = V.toNode(target).getScreenCTM();
+                var nodeCTM = node.getScreenCTM();
+                if (targetCTM && nodeCTM) {
+                    return targetCTM.inverse().multiply(nodeCTM);
+                }
+            }
+            // Could not get actual transformation matrix
+            return V.createSVGMatrix();
+        };
+        //End For Firefox
+        joint.setTheme('material');
+        app = new App.MainView({ el: '#app' });
+        themePicker = new App.ThemePicker({ mainView: app });
+        window.addEventListener('load', function () {
+        });
+
+        max_id = '';
+        newStepAddArray = [];
+
+        app.graph.on('change:attrs', function (cell) { autoResize(app, cell); }); // Call autoResize function on every text change with in step boxes.
+
+        app.paper.on('cell:pointerup', function (cellView) { callOnMouseUpOnElement(cellView); });
+        app.graph.on('add', function (cell, collection, opt) {
+            callAfterAddElementOnPaper(app, cell, collection, opt);
+            if (cell.attributes.attrs.tool != undefined) {
+                if (cell.attributes.execType == "Automatic") {
+
+                    newStepAddArray.push(cell.id);
+                }
+            }
+        });
+
+        app.graph.on('change:rpaid', function (cell, collection, opt) {
+            if (cell.attributes.execType == "Automatic" && cell.attributes.attrs.tool.RPAID == botID) {
+
+                if(newStepAddArray.findIndex(e => e == cell.id) == -1){  newStepAddArray.push(cell.id); }
+            }
+        })
+
+        //Add validate button on flowchart
+        if (showValidateAdjustBtn) {
+            let validationArea = $('<div class="validateArea"></div>');
+            let autoAlignCheck = '<label id="toggleAutoAlign" class="joint-widget joint-theme-material" data-type="toggle" data-name="toggle" style="color:#020202;margin-top:6px;font-size:14px;margin-left:-8px;"><span>With Auto Alignment</span><div class="toggle"><input id="autoAlignCheckBox" type="checkbox" class="toggle"><span><i></i></span></div></label>';
+            //let autoAlignCheck = $('<input type="checkbox" id="autoAlignment"><label for="autoAlignment">Auto Alignment</label>');
+            //let validationBtn = $('<button class="btn btn-danger validateWfBtn" > Validate Workflow Before Save</button >');
+
+            //validationArea.append(validationBtn);
+            validationArea.append(autoAlignCheck);
+            //let validateBtn = `<div class="validateBtnArea">< button class="btn btn-danger validateWfBtn" > Validate Workflow Before Save</button ></div >`;
+            $('#app').find('.toolbar-container .group-first').append(validationArea);
+
+            $('#toggleAutoAlign').on('change', function () {
+                if ($('#autoAlignCheckBox').attr('checked') == 'checked') {
+                    $('#autoAlignCheckBox').attr('checked', false);
+                } else {
+                    $('#autoAlignCheckBox').attr('checked', true);
+                }
+            });
+
+            $('.validateArea .validateWfBtn').on('click', function () {
+                validateAndAdjustFlowchart(app);
+            });
+        }
+
+
+        //workflow for Preview. FlowChartWorkOrderAdd
+        joint.setTheme('material');
+        app1 = new App.MainView({ el: '#app1' });
+        $('#app1').find(".stencil-container").css("display", "none");
+        $("#app1").find(".paper-container").css("width", "100%");
+        $("#app1").find(".paper-container").css("left", "0");
+        $("#app1").find(".paper-container").css("right", "0");
+        $('#app1').find('.joint-toolbar-group').find('#toggleEditMode').hide()
+
+        themePicker = new App.ThemePicker({ mainView: app1 });
+        themePicker.render().$el.appendTo(document.body);
+        var flag = '';
+        app.paper.on('cell:pointerclick', function (cellView, evt, x, y) {
+            //remove delete box handle when update attribute toggle is off.
+            if (!global_toggleFlag) {
+                $('.handles').find('.remove').hide();
+                $('.handles').find('.unlink').hide();
+                $($('*[data-attribute="responsible"]')[1]).prop('disabled', true); $($('*[data-attribute="responsible"]')[1]).parent().css('opacity', 0.4);
+            }
+        });
+
+    </script>
+
+    <!-- Local file warning: -->
+    <div id="message-fs" style="display: none;">
+        <p>The application was open locally using the file protocol. It is recommended to access it trough a <b>Web server</b>.</p>
+        <p>Please see <a href="README.md">instructions</a>.</p>
+    </div>
+    <script>
+        (function () {
+            var fs = (document.location.protocol === 'file:');
+            var ff = (navigator.userAgent.toLowerCase().indexOf('firefox') !== -1);
+            if (fs && !ff) {
+                (new joint.ui.Dialog({
+                    width: 300,
+                    type: 'alert',
+                    title: 'Local File',
+                    content: $('#message-fs').show()
+                })).open();
+            }
+        })();
+
+
+        //$.ajaxSetup({
+        //    beforeSend: function (xhr) {
+
+
+        //      //  xhr.setRequestHeader("Authorization", "Bearer " + BearerKey);
+        //    }
+        //});
+
+    </script>
+    <!-- Modal -->
+
+
+
+
+</body>
+
+</html>
+
+

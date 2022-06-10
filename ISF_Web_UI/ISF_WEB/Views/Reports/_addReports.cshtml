@@ -1,0 +1,242 @@
+﻿@Scripts.Render("~/bundles/Reports") 
+
+<script>
+    $(document).ready(function () {
+        getRptInitForAdd();
+        getFilterattributes();
+        $('#y_col_name').append('<option value="0" selected="true" disabled>Column Name</option>');
+        $('#y_col_name_mul').append('<option value="0" selected="true" disabled>Column Name</option>');
+        $('[data-toggle="tooltip"]').tooltip();   
+        
+    });
+</script>
+<style>
+    .label_required {
+        color: red;
+    }
+
+    .desc_dimensions {
+        min-width: 100%;
+        height: 70px;
+        resize: none;
+        border-radius: 5px;
+    }
+
+    .desc_dimensions_small {
+        min-width: 100%;
+        height: 40px;
+        resize: none;
+        border-radius: 5px;
+    }
+
+</style>
+<form action="">
+    <div class="col-lg-12">
+        <div class="panel-body">
+            <div class="col-lg-12" style="border: 1px solid #d0d0d0;">
+
+                <div class="panel-body">
+
+                    <form class="form-horizontal" role="form" id="projectViewForm">
+
+                        <div class="col-lg-4">
+                            <label><span class="label_required">*</span>Report Name</label>
+                            <input class="form-control" placeholder="Report Name" id="report_name">
+                        </div>
+                        <div class="col-lg-4">
+                            <label><span class="label_required">*</span>Module</label>
+                            <div>
+                                <select id="module"  class="form-control" required>
+                                    <option value="0">Select Module</option>
+                                </select>
+                            </div>
+                            <div class="row">
+                                <label id="module-Required" style="color: red; font-size: 10px; padding-left: 15px;"></label>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <label><span class="label_required">*</span>Sub Module</label>
+                            <div>
+                                <select id="subModule" class="form-control">
+                                    <option value="0">Select Sub Module</option>
+                                </select>
+                            </div>
+                            <div class="row">
+                                <label id="subModule-Required" style="color: red; font-size: 10px; padding-left: 15px;"></label>
+                            </div>
+                        </div>
+                        <div>
+                            <label><span class="label_required">*</span>Report Description</label>
+                            <textarea class="desc_dimensions_small" placeholder="Report Description" id="report_description"></textarea>
+                        </div>
+                        <div>
+                            <label><span class="label_required">*</span>Formula</label>
+                            <textarea class="desc_dimensions" placeholder="Formula" id="formula"></textarea>
+                        </div>
+                        <div>
+                            <label><span class="label_required">*</span>Technical Explanation</label>
+                            <textarea class="desc_dimensions_small" placeholder="Technical Explanation" id="technical_explanation"></textarea>
+                        </div>
+                        <div>
+                            <label><span class="label_required">*</span>Detail Query  (Format to be followed--> select EmployeeName,EmployeeEmailID,Signum,ManagerSignum from refData.TBL_Employees where IsLineManager ='NO' or IsLineManager is NULL)</label>
+                            <textarea class="desc_dimensions" placeholder="Detail Query" id="detail_query"></textarea>
+                        </div>
+                      
+                        <div style="text-align:right; padding-top:8px;">
+                            <button class="btn btn-primary" type="button" title="Validate" id="validate_query" onclick="validateQuery()">Validate Query</button>
+                            <button class="btn btn-primary" type="button" title="change" id="Change_query" onclick="ChangeQuery()" style="display:none">Change Query</button>
+                        </div>
+                        
+                            
+                        
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <label><span class="label_required">*</span>Group By</label>
+                                <div>
+                                    <select id="group_by" class="select2able" multiple="multiple" disabled></select>
+                                </div>
+                                <div class="row">
+                                    <label id="group_by-Required" style="color: red; font-size: 10px; padding-left: 15px;"></label>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                @*<label><span class="label_required">*</span>Filter Groups</label>*@
+                                <label>Filter Attribute</label>
+                                <div>
+                                    <select id="filter_attr" class="select2able" multiple="multiple" disabled></select>
+                                </div>
+                                <div class="row">
+                                    <label id="filter_attr-Required" style="color: red; font-size: 10px; padding-left: 15px;"></label>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <label><span class="label_required">*</span>Chart Query  (Format to be followed--> select  :selectGroupBy ,[Employee Count]=count(distinct signum)  from (select * from (:detailQuery) x :filterAttribute ) a group by :selectGroupBy)</label>
+                            <textarea class="desc_dimensions" placeholder="Chart Query" id="chart_query"></textarea>
+                        </div>
+                        <div style="text-align:right; padding-top:8px;">
+                            <button class="btn btn-primary" type="button" title="Validate" id="validateChartQuery_ForFilter" onclick="validateChartQueryForFilter()">Validate Chart Query</button>
+                            <button class="btn btn-primary" type="button" title="Validate" id="changeChartQuery_ForFilter" onclick="changeChartQueryForFilter()" style="display:none">Change Chart Query</button>
+                        </div>
+                    </form>
+
+                </div>
+
+            </div>
+            <div class="col-lg-12" style="border: 1px solid #d0d0d0;">
+                <div class="panel-body">
+
+                    <form class="form-horizontal" role="form" id="projectViewForm">
+
+                     
+                     
+                        <div class="col-lg-4">
+                            <label><span class="label_required">*</span>Chart Type</label>
+                            <div>
+                                <select id="chart_type" class="select2able" multiple="multiple" >
+                                    <option value="line">line</option>
+                                    <option value="column">column</option>
+                                    <option value="table">table</option>
+                                    <option value="bar">bar</option>
+                                    <option value="area">area</option>
+                                    <option value="stack">stack</option>
+                                </select>
+                            </div>
+                            <div class="row">
+                                <label id="chart_type-Required" style="color: red; font-size: 10px; padding-left: 15px;"></label>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <label><span class="label_required">*</span>Axis Type</label>
+                            <div>
+                                <select id="axis_type" class="select2able" required onchange="yAxisAdd();" >
+                                    <option selected="true" disabled="disabled" id="select0">-------Select-------</option> 
+                                    <option value="Single">Single</option>
+                                    <option value="Multiple">Multiple</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <label><span class="label_required">*</span>Active</label>
+                            <div>
+                                <select id="active" class="select2able" required>
+                                    <option selected="true" disabled="disabled">-------Select-------</option> 
+                                    <option value="1">True</option>
+                                    <option value="0">False</option>
+                                </select>
+                            </div>
+                            <div class="row">
+                                <label id="active-Required" style="color: red; font-size: 10px; padding-left: 15px;"></label>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <label data-toggle="tooltip" title="X axis label can be any string"><span class="label_required"></span>X-Axis Label</label>
+                            <input class="form-control" placeholder="X-Axis Label" id="x_label" required >
+                        </div>
+                        <div class="col-lg-4" id="y_axis_lab">
+                            <label data-toggle="tooltip" title="Provide y-side(integer 0/1),title(any string),Value Suffix(any string) ,Column Name(Select from drop down)" ><span class="label_required " ></span>Y-Axis Label</label>
+                            <input class="form-control" type="number" placeholder="Y-Side" id="y_side" title="" value="0" required readonly="readonly">
+                            <input class="form-control" placeholder="Title" id="y_title" title="" required>
+                            <input class="form-control" placeholder="Value suffix" id="y_val_suff" title="" required > 
+                           <br />
+                            <select id="y_col_name" class="select2able form-control" placeholder="Column Name" disabled></select>                         
+                        </div>
+                        <div class="col-lg-4" id="y_axis_lab_mul" style="display:none">
+                            <label><span class="label_required"></span>Y-Axis Label</label>
+                            <input class="form-control" type="number" placeholder="Y-Side" id="y_side_mul" title="" value="1" required readonly="readonly">
+                            <input class="form-control" placeholder="Title" id="y_title_mul" title="" required>
+                            <input class="form-control" placeholder="Value suffix" id="y_val_suff_mul" title="" required >
+                            <br />
+                            <select id="y_col_name_mul" class="select2able form-control" placeholder="Column Name" disabled>
+                                <option disabled></option>
+                            </select>
+                        </div>
+                        @*<div class="col-lg-4">
+                            <label>Column Chart</label>
+                            <input class="form-control" placeholder="Column Chart" id="col_chart">
+                        </div>
+                        <div class="col-lg-4">
+                            <label>Column Detail Query</label>
+                            <input class="form-control" placeholder="Column Detail Query" id="col_detail_query">
+                        </div>*@
+                    
+
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div style="text-align:right">
+            <button class="btn btn-primary" type="button" title="Submit"  onclick="submitReport()">Submit</button>
+            @*<button class="btn btn-primary" data-toggle="modal" data-target="#previewModal" onclick="previewReportForm()">Preview</button>*@
+            <button class="btn btn-primary" type="button" title="Cancel" onclick="cleanfields()">Cancel</button>
+        </div>
+
+        <div class="modal fade" id="previewModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    </div>
+                    <div class="modal-body" id="scopeContentModal">
+                        <div class="widget-container fluid-heightA clearfix">
+                            <div class="widget-content padded">
+                                <form action="#" class="form-horizontal">
+                                    <center>
+                                        <div class="form-group">
+
+                                        </div>
+                                    </center>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button id="cancelModal" type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</form>

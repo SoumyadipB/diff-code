@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ericsson.isf.mapper.DemandManagementMapper">
+    
+    
+     <select id='saveDemandResourceRequest' statementType="CALLABLE" resultType="int">
+        {call SaveDemandRequest(
+        	#{demandRequestModel.resourceType,mode=IN},
+	       	#{demandRequestModel.createdBy,mode=IN},
+	       	#{demandRequestModel.projScopeDetailId,mode=IN},
+	      	#{demandRequestModel.projectId,mode=IN},
+	      	#{demandRequestModel.jobRoleId,mode=IN},
+	       	#{demandRequestModel.jobStageId,mode=IN},
+	       	#{demandRequestModel.locationId,mode=IN},
+	       	#{demandRequestModel.remoteCount,mode=IN},
+	       	#{demandRequestModel.onsiteCount,mode=IN},
+	       	#{demandRequestModel.startDate,mode=IN},
+	       	#{demandRequestModel.endDate,mode=IN},
+	       	#{demandRequestModel.duration,mode=IN},
+	       	#{demandRequestModel.ftePercent,mode=IN},
+	       	#{demandRequestModel.hours,mode=IN},
+	       	#{demandRequestModel.resourceDescription,mode=IN},
+	       	#{demandRequestModel.remoteLocation,mode=IN},
+	       	#{demandRequestModel.onsiteLocation,mode=IN},
+	       	#{demandRequestModel.resourceCity,mode=IN},
+	       	#{demandRequestModel.resourceCountry,mode=IN},
+	       	#{demandRequestModel.resourceLat,mode=IN},
+	       	#{demandRequestModel.resourceLng,mode=IN},
+	       	#{demandRequestModel.resourceTimeZone,mode=IN}
+        )}
+    </select>
+    <select id='updateDemandResourceRequest' statementType="CALLABLE">
+        {call ModifyDemandRequest(
+		    #{demandRequestModel.resourceRequestId,mode=IN},
+			#{demandRequestModel.resourceRequestWorkEffortID,mode=IN},
+			#{demandRequestModel.jobRoleId,mode=IN},
+			#{demandRequestModel.jobStageId,mode=IN},
+			#{demandRequestModel.locationId,mode=IN},
+			#{demandRequestModel.projectId,mode=IN},
+			#{demandRequestModel.remoteCount,mode=IN},
+			#{demandRequestModel.onsiteCount,mode=IN},
+			#{demandRequestModel.startDate,mode=IN},
+			#{demandRequestModel.endDate,mode=IN},
+			#{demandRequestModel.resourceType,mode=IN},	
+			#{demandRequestModel.duration,mode=IN},
+			#{demandRequestModel.ftePercent,mode=IN},
+			#{demandRequestModel.hours,mode=IN},
+			#{demandRequestModel.createdBy,mode=IN},
+			#{demandRequestModel.resourceDescription,mode=IN},
+			#{demandRequestModel.remoteLocation,mode=IN},
+	       	#{demandRequestModel.onsiteLocation,mode=IN},
+	       	#{demandRequestModel.resourceCity,mode=IN},
+	       	#{demandRequestModel.resourceCountry,mode=IN},
+	       	#{demandRequestModel.resourceLat,mode=IN},
+	       	#{demandRequestModel.resourceLng,mode=IN},
+	       	#{demandRequestModel.resourceTimeZone,mode=IN}
+        )}
+        
+    </select>
+    <select id='getResourceRequests' resultType="com.ericsson.isf.model.DemandRequestModel">
+        
+		SELECT ResReq.ResourceRequestID
+          ,ResReq.ResourceType
+          ,ResReq.RequestType
+          ,ResReq.OnsiteCount
+          ,ResReq.RemoteCount
+          ,ResReq.CreatedBy
+          ,ResReq.CreatedOn
+          ,ResReq.LastModifiedBy
+          ,ResReq.LastModifiedOn
+          ,ResReq.JobRoleID
+          ,ResReq.JobStageID
+          ,ResReq.OnsiteLocationID
+          ,ResReq.ProjectID
+          ,ResReq.ProjectScopeDetailID
+          ,ResReq.ResourceDescription
+          ,ResReq.RemoteLocation
+          ,ResReq.OnsiteLocation
+          ,ResReq.City resourceCity
+		  ,ResReq.Country resourceCountry
+		  ,ResReq.Longitude resourceLng
+		  ,ResReq.Latitude resourceLat
+    	  ,ResReq.TimeZone resourceTimeZone
+    	  ,JR.JobRoleName
+          ,JS.JobStageName
+          ,RRWE.StartDate
+          ,RRWE.EndDate
+          ,RRWE.Duration
+          ,RRWE.FTEPercent
+          ,RRWE.Hours
+           FROM transactionalData.TBL_ResourceRequests ResReq
+           JOIN
+           refData.TBL_JobRoles JR on ResReq.JobRoleID = JR.JobRoleID
+           JOIN
+           refData.TBL_JobStages JS on ResReq.JobStageID = JS.JobStageID
+           JOIN
+           transactionalData.TBL_ResourceRequestWorkEfforts RRWE on ResReq.ResourceRequestID = RRWE.ResourceRequestID where ResReq.active=1 
+            and ResReq.ProjectID = #{projectId} 
+            and ResReq.ProjectScopeDetailID = #{projectScopeDetailId}
+    </select>
+    
+    <insert id="saveVendorsForDemandRequest" parameterType="com.ericsson.isf.model.DemandRequestModel">
+    	insert into [transactionalData].[TBL_DEMAND_VENDOR_MAPPING]([RRID],[VendorId])
+		  values
+		  <foreach collection="demandRequestModel.vendor" item="vendorid"  separator=","> 
+		  	(
+			#{demandRequestModel.resourceRequestId},#{vendorid}
+			)
+		  </foreach>
+    </insert>
+    
+    <insert id="deleteVendorsForDemandRequest" parameterType="com.ericsson.isf.model.DemandRequestModel">
+		  delete from [transactionalData].[TBL_DEMAND_VENDOR_MAPPING]
+		  where rrid=#{demandRequestModel.resourceRequestId}
+    </insert>
+    
+    <select id='getVendorsByRrid' resultType="String">
+		SELECT v.VendorID
+        FROM [transactionalData].[TBL_DEMAND_VENDOR_MAPPING] d
+		left join [refData].TBL_VENDOR v on v.VendorID=d.VendorId
+        where d.RRID=#{resourceRequestId}
+    </select>
+     <select id='getVendorNamesByRrid' resultType="String">
+		SELECT vendor
+        FROM [transactionalData].[TBL_DEMAND_VENDOR_MAPPING] d
+		left join [refData].TBL_VENDOR v on v.VendorID=d.VendorId
+        where d.RRID=#{resourceRequestId}
+    </select>
+</mapper>

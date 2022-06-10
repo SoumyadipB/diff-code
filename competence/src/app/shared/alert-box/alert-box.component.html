@@ -1,0 +1,10 @@
+<div>
+    <div mat-dialog-content>
+        <p>{{data.message}}</p>  
+      </div>
+      <div mat-dialog-actions align="center">
+        <button *ngFor="let button of data.allBtns; let i = index" mat-raised-button [color]="button.class ? button.class : 'primary'" (click)="alertAction.emit(i)" >{{button.name}}</button>
+        <!-- <button mat-button [mat-dialog-close]="data.animal" cdkFocusInitial>Ok</button> -->
+      </div>
+</div>
+

@@ -1,0 +1,55 @@
+﻿@{
+    ViewBag.Title = "RequestApproval";
+}
+@Scripts.Render("~/bundles/RequestApproval")
+@Scripts.Render("~/bundles/DataTableScript")
+
+@Styles.Render("~/bundles/css/DataTableStyle")
+@Styles.Render("~/bundles/css/Resource")
+
+<style>
+    .select2 .select2-container {
+        width: 100%;
+    }
+    tfoot {
+        display: table-header-group;
+    }
+</style>
+<script>
+    $(function () {
+        getRequestAccessProfileDetail();
+
+    });
+</script>
+
+<div id="content" class="panel-default">
+    <div class="panel-heading">
+        Access Request
+    </div>
+
+    <section>
+
+        <div id="page-wrapper">
+            <div class="row">
+                <div class="table-responsive" style="overflow-x: auto; ">
+                    <table id="dataTableManagerRelation" class="table table-striped table-bordered table-hover"></table>
+                </div>
+         
+                </div>
+            <div class="row">
+                <div id="requestApprovedSuccess" style="display:none" class="alert alert-danger">
+                    <strong>Success!</strong>
+                    Access to request profile has been allocated successfully
+                </div>
+                <div id="requestApprovedError" style="display:none" class="alert alert-danger">
+                    <strong>Error!</strong>
+                    Access to request profile could not be allocated
+                </div>
+                <div id="requestApprovedRejected" style="display:none" class="alert alert-danger">
+                   Access to the request profile has been rejected
+                </div>
+            </div>
+            </div>
+       
+    </section>
+</div>

@@ -1,0 +1,1002 @@
+﻿@Scripts.Render("~/bundles/DataTableScript")
+@Styles.Render("~/bundles/css/DataTableStyle")
+@Styles.Render("~/bundles/css/select2")
+@Scripts.Render("~/bundles/select2")
+@Scripts.Render("~/bundles/DataTablesAdvancedScript")
+<script src="~/Scripts/DataTable/dataTables.rowsGroup.js"></script>
+<script src="~/Scripts/DemandForecast/DemandForecast.js"></script>
+<script src="~/Scripts/DemandForecast/ganttChartZoomToFit.js"></script>
+<script src="~/Scripts/lib/jquery-dateformat.min.js"></script>
+<script src="~/Scripts/gantt/dhtmlx.js"></script>
+<link rel="stylesheet" type="text/css" href="~/Scripts/gantt/dhtmlx.css">
+<script type="text/javascript" src="~/Scripts/lib/commentsjs/jquery-comments.js"></script>
+<link rel="stylesheet" type="text/css" href="~/Scripts/lib/commentsjs/jquery-comments.css">
+
+@{
+    ViewBag.Title = "Demand Forecast";
+}
+
+<style type="text/css">
+    .tooltip {
+        position: relative;
+        display: inline-block;
+        opacity: 1;
+    }
+
+    .gantt_grid_scale {
+        pointer-events: auto !important;
+    }
+
+    #tooltiplegends .tooltiptext {
+        visibility: hidden;
+        width: 200px;
+        background-color: white;
+        color: black;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px 0;
+        position: absolute;
+        z-index: 11;
+        top: 46%;
+        right: 40px;
+        margin-left: -60px;
+        padding: 10px;
+        box-shadow: 0px 0px 20px 5px rgba(0, 0, 0, 0.2), 0px 0px 20px 5px rgba(0, 0, 0, 0.19);
+    }
+
+        #tooltiplegends .tooltiptext::after {
+            content: "";
+            position: absolute;
+            bottom: 100%;
+            right: 15px;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: transparent transparent black transparent;
+        }
+
+    .tooltip:hover .tooltiptext {
+        visibility: visible;
+    }
+
+    #tooltiplegends:hover .tooltiptext {
+        visibility: visible;
+    }
+
+    .fa-plus {
+        color: #328EA0;
+    }
+
+    .fa-times {
+        color: red;
+    }
+
+    .fa-edit {
+        color: green;
+    }
+
+    .fa_action {
+        cursor: pointer;
+        font-size: 14px;
+        text-align: center;
+        /*opacity: 0.2;*/
+        padding: 5px;
+    }
+
+    .savedBySPM {
+        background-color: greenyellow !important;
+    }
+
+    .sendToSPM {
+        background-color: pink !important;
+    }
+
+    .sendToRPMColor {
+        background-color: #e0bdc4 !important;
+    }
+
+    .submittedColor {
+        background-color: #b9cbd8 !important;
+    }
+
+    .draftColor {
+        background-color: #d8e496 !important;
+    }
+
+    .dhtmlx-customCss {
+        font-weight: bold !important;
+        color: darkgreen !important;
+        background-color: blue !important;
+    }
+
+    .btn-orange {
+        color: #0c0c0c;
+        background-color: #f5f5f5;
+        border-color: #dcd9d8;
+    }
+
+        .btn-orange:hover,
+        .btn-orange:focus,
+        .btn-orange:active,
+        .btn-orange.active,
+        .open .dropdown-toggle.btn-yellow {
+            color: #007aff;
+            background-color: #ffffff;
+            border-color: #007aff;
+        }
+
+        .btn-orange:active,
+        .btn-orange.active,
+        .open .dropdown-toggle.btn-orange {
+            background-image: none;
+        }
+
+    .btn-yellow {
+        color: #00983b;
+        background-color: #ffec2c;
+        border-color: #8F9903;
+    }
+
+        .btn-yellow:hover,
+        .btn-yellow:focus,
+        .btn-yellow:active,
+        .btn-yellow.active,
+        .open .dropdown-toggle.btn-yellow {
+            color: #8F9903;
+            background-color: #FFFFFF;
+            border-color: #8F9903;
+        }
+
+        .btn-yellow:active,
+        .btn-yellow.active,
+        .open .dropdown-toggle.btn-yellow {
+            background-image: none;
+        }
+
+    .btn-green {
+        color: #ffffff;
+        background-color: #00983b;
+        border-color: #216629;
+    }
+
+        .btn-green:hover,
+        .btn-green:focus,
+        .btn-green:active,
+        .btn-green.active,
+        .open .dropdown-toggle.btn-green {
+            color: #00983b;
+            background-color: #FFFFFF;
+            border-color: #00983b;
+        }
+
+        .btn-green:active,
+        .btn-green.active,
+        .open .dropdown-toggle.btn-green {
+            background-image: none;
+        }
+
+    tfoot {
+        display: table-header-group;
+    }
+
+    .calendar_panel {
+        position: fixed;
+        top: 8%;
+        width: 85%;
+        height: 95%;
+        background-color: #ffffff;
+        right: -3%;
+        opacity: 0;
+        margin-top: -10px;
+    }
+
+
+
+    /*FOR USER AVAILABILITY MODAL*/
+
+
+
+    #userAvailabilityModal .modal-header {
+        padding: 8px;
+    }
+
+    #userAvailabilityModal .modal-body .dt_availability_parent_div {
+        max-height: 250px;
+        overflow: scroll;
+        overflow-x: hidden;
+        background-color: #f1f1f163;
+        padding: 6px;
+        border: 1px solid #e6e4e4;
+    }
+
+
+    #userAvailabilityModal .modal-body .details_div {
+        margin-bottom: 10px;
+    }
+
+
+    #userAvailabilityModal .modal-body .month_name {
+        font-size: 14px;
+        font-weight: bold;
+        border-bottom: 1px solid #CCC;
+        margin-bottom: 5px;
+    }
+
+
+    #userAvailabilityModal .modal-body .dt_row {
+        display: flex;
+        margin-bottom: 8px;
+    }
+
+    #userAvailabilityModal .modal-body .dt_box {
+        border: 1px solid #CCC;
+        margin: 1px;
+        width: 3.4%;
+    }
+
+    #userAvailabilityModal .modal-body .dt_box_weekend {
+        width: 1px;
+        background-color: #e09d9d;
+    }
+
+
+    #userAvailabilityModal .modal-body .dt {
+        text-align: center;
+        font-size: 12px;
+        background-color: #CCD;
+        height: 27px;
+        font-weight: bold;
+        padding-top: 4px;
+    }
+
+    #userAvailabilityModal .modal-body .req_hr {
+        height: 31px;
+        background-color: #f1f1f1;
+        border-bottom: 1px solid #CCC;
+        text-align: center;
+        padding-top: 7px;
+        font-size: 13px;
+    }
+
+    #userAvailabilityModal .modal-body .avai_hr {
+        height: 34px;
+        background-color: #f1f1f1;
+        text-align: center;
+        padding-top: 5px;
+        font-size: 14px;
+    }
+
+        #userAvailabilityModal .modal-body .avai_hr.available { /*availabile*/
+            background-color: #4ed04c;
+        }
+
+        #userAvailabilityModal .modal-body .avai_hr.availableOutofRange {
+            background-color: #7ecc7d;
+        }
+
+        #userAvailabilityModal .modal-body .avai_hr.available.with_in_range {
+            border-bottom: 4px solid darkslategray;
+        }
+
+        #userAvailabilityModal .modal-body .avai_hr.available.start_slot {
+            border-bottom-left-radius: 20px;
+            border-top-left-radius: 20px;
+        }
+
+        #userAvailabilityModal .modal-body .avai_hr.available.end_slot {
+            border-bottom-right-radius: 20px;
+            border-top-right-radius: 20px;
+        }
+
+        #userAvailabilityModal .modal-body .avai_hr.notAvailable { /*not available*/
+            background-color: #f55a5a;
+            overflow: hidden;
+        }
+
+
+
+    #userAvailabilityModal .modal-body .dt_box_label {
+        padding: 10px;
+    }
+
+
+    #userAvailabilityModal .modal-body .req_hr_label {
+        height: 42px;
+        padding-top: 10px;
+    }
+
+    /*footer*/
+    #userAvailabilityModal .modal-footer {
+        padding: 2px 20px 30px;
+        display: flex;
+    }
+
+        #userAvailabilityModal .modal-footer .legends {
+            width: 70%;
+            text-align: left;
+        }
+
+            #userAvailabilityModal .modal-footer .legends .legend_row {
+                display: flex;
+                margin-bottom: 5px;
+            }
+
+            #userAvailabilityModal .modal-footer .legends .legend_icons {
+                width: 75px;
+            }
+
+            #userAvailabilityModal .modal-footer .legends .legend_caption {
+                width: 161px;
+            }
+
+            #userAvailabilityModal .modal-footer .legends .recommended_slot_icon {
+                background-color: #4ed04c;
+                width: 55px;
+                height: 25px;
+                border-bottom: 4px solid darkslategray;
+                border-bottom-right-radius: 14px;
+                border-bottom-left-radius: 14px;
+                border-top-right-radius: 13px;
+                border-top-left-radius: 13px;
+            }
+
+            #userAvailabilityModal .modal-footer .legends .available_icon {
+                background-color: #7ecc7d;
+                width: 23px;
+                height: 25px;
+                float: right;
+            }
+
+            #userAvailabilityModal .modal-footer .legends .not_available_icon {
+                background-color: #f55a5a;
+                width: 23px;
+                height: 25px;
+                margin-left: 19px;
+            }
+
+        #userAvailabilityModal .modal-footer .modalBtns {
+            text-align: right;
+            width: 100%;
+        }
+
+    .ui-autocomplete {
+        max-height: 100px;
+        overflow-y: auto;
+        overflow-x: hidden;
+        z-index: 2147483647 !important;
+    }
+
+    .ui-autocomplete-loading {
+        background: url('../../Content/images/loading.gif') no-repeat right center;
+    }
+
+    /*FOR USER AVAILABILITY MODAL*/
+
+    /*for progress bar*/
+
+    .progress {
+        overflow: visible;
+        margin-bottom: 26px;
+        height: 4px;
+    }
+
+    .progress-bar {
+        background-color: #5c4084;
+        position: relative;
+        border-radius: 4px;
+    }
+
+        .progress-bar span {
+            background-color: #5c4084;
+            position: absolute;
+            bottom: -20px;
+            font-size: 10px;
+            line-height: 10px;
+            padding: 2px 3px 2px 4px;
+            right: -1.4em;
+            border-radius: 2px;
+        }
+
+            .progress-bar span:after {
+                bottom: 100%;
+                left: 50%;
+                border: solid transparent;
+                content: " ";
+                height: 0;
+                width: 0;
+                position: absolute;
+                pointer-events: none;
+                border-color: rgba(255, 255, 255, 0);
+                border-bottom-color: #5c4084;
+                border-width: 5px;
+                margin-left: -5px;
+            }
+
+    .p_bar_red_color .progress-bar, .p_bar_red_color .progress-bar span {
+        background-color: #f55a5a;
+    }
+
+        .p_bar_red_color .progress-bar span:after {
+            border-bottom-color: #f55a5a;
+        }
+
+    .p_bar_green_color .progress-bar, .p_bar_green_color .progress-bar span {
+        background-color: #4ed04c;
+    }
+
+        .p_bar_green_color .progress-bar span:after {
+            border-bottom-color: #4ed04c;
+        }
+
+    .p_bar_yellow_color .progress-bar, .p_bar_yellow_color .progress-bar span {
+        background-color: #d6b40c;
+    }
+
+        .p_bar_yellow_color .progress-bar span:after {
+            border-bottom-color: #d6b40c;
+        }
+    /*for progress bar*/
+
+    .duplicateRowColor {
+        background-color: lightcoral !important;
+    }
+
+    .ganttRowColor {
+        background-color: #007aff !important;
+    }
+
+    /*gantt controlls*/
+    .ganttControlls {
+        text-align: right;
+        background-color: #f3f3f3;
+        padding: 0px 9px;
+        margin-bottom: 5px;
+    }
+
+
+    /*Legends*/
+    .gantt_custom_header {
+        background-color: #f3f3f3;
+        margin-bottom: 5px;
+        padding: 5px;
+        height: 35px;
+    }
+
+    .gantt_custom_legends {
+        display: flex;
+    }
+
+    .custom_legend_btn_area {
+        display: flex;
+    }
+
+    #demandURL a:hover {
+        color: blue;
+    }
+</style>
+
+<div class="col-lg-12" style="z-index:11">
+    <div class="panel panel-default">
+        <div class="panel-heading">Demand Forecast</div>
+        <div class="container-fluid panel-body">
+            <div class="pull-right">
+                <button class="saveDraft btn btn-success btn-primary" style="display:none;">
+                    Send to SPM&nbsp;<i class="fa fa-arrow-right"></i>
+                </button>
+                <button class="sendNext btn btn-info btn-primary" style="display:none">
+                    Save Draft&nbsp;<i class="fa fa-arrow-right"></i>
+                </button>
+            </div>
+            <div class="col-lg-5" style="width: 430px;padding-left: 0px;padding-right: 0px;margin-bottom: 0px;">
+                <div class="durationButtons btn-group btn-group-xs" style=" margin-bottom: 0px;width: 430px;height:25px;margin-right: 0px;padding-bottom: 0px;">
+                    <button type="button" style="width:150px; height:25px" class="previous3Months btn btn-orange removeActive"><i class="fa fa-angle-double-left"></i>&nbsp;<label class="fontS">Previous 3 Months</label></button>
+                    <button type="button" style="width:130px;height:25px" class="btn btn-orange removeActive currentDuration"><label class="fontS">Current Duration</label></button></span>
+                    <button type="button" style="width:150px; height:25px" class="btn btn-orange removeActive next6Months" style="border-right:0px;"><label class="fontS">Next 6 Months</label>&nbsp;<i class="fa fa-angle-double-right"></i></button>
+                </div>
+            </div>
+
+
+            <div class="demand_table_area" style="width:100%;overflow:auto;">
+                <table id="example" class="responsive table table-bordered table-hover" cellspacing="0" width="100%"></table>
+
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+<div id="userAvailabilityModal" class="modal fade" role="dialog">
+    <div class="modal-dialog" id="modalDialog_userAvailabilityModal" style="width:850px;">
+
+        <input type="hidden" value="0" id="hidId_ganttRowId" />
+        <input type="hidden" value="0" id="hidId_selectedSignum" />
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Modal Header</h4>
+            </div>
+            <div class="signums_for_proposal" style="padding: 4px;background-color: #c7c5c5;">
+                <input id="selectUserAllSignumForProposal" style='width:100%' placeholder="Enter signum's initials (Minimum 3 characters required)" title="Minimum 3 characters required!" autofocus />
+            </div>
+            <div class="modal-body">
+
+                <div class="details_div">
+                    <div class="progress p_bar_red_color">
+                        <div class="progress-bar" role="progressbar" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100" style="width: 100%;">
+                            <span>Availability 10.53%</span>
+                        </div>
+                    </div>
+
+                    <div class="date_range">
+                        <label>Between</label>
+                        <input class="datepicker" name="availability_sdate" id="availability_sdate" data-date-format="yyyy-mm-dd">
+                        <label> and </label>
+                        <input class="datepicker" name="availability_edate" id="availability_edate" data-date-format="yyyy-mm-dd">
+                    </div>
+
+                </div>
+
+                <div class="dt_availability_parent_div">
+                    <div class="month_name">MAR-2018</div>
+                    <div class="dt_row">
+                        <div class="dt_box_label">
+                            <div class="dt_label">Date</div>
+                            <div class="hr_part">
+                                <div class="req_hr_label">
+                                    <span class="hr_caption">Req. Hr</span>
+
+                                </div>
+                                <div class="avai_hr_label">
+                                    <span class="hr_caption">Ava. Hr</span>
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="dt_box">
+                            <div class="dt">1</div>
+                            <div class="hr_part">
+                                <div class="req_hr">
+
+                                    <span class="req_hr_value">8</span>
+                                </div>
+                                <div class="avai_hr available">
+
+                                    <span class="hr_value">8</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="dt_box">
+                            <div class="dt">2</div>
+                            <div class="hr_part">
+                                <div class="req_hr">
+
+                                    <span class="req_hr_value">8</span>
+                                </div>
+                                <div class="avai_hr">
+
+                                    <span class="hr_value">4</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="dt_box">
+                            <div class="dt">3</div>
+                            <div class="hr_part">
+                                <div class="req_hr">
+
+                                    <span class="req_hr_value">8</span>
+                                </div>
+                                <div class="avai_hr notAvailable">
+
+                                    <span class="hr_value">0</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="dt_box">
+                            <div class="dt">4</div>
+                            <div class="hr_part">
+                                <div class="req_hr">
+
+                                    <span class="req_hr_value">8</span>
+                                </div>
+                                <div class="avai_hr">
+
+                                    <span class="hr_value">4</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="dt_box">
+                            <div class="dt">5</div>
+                            <div class="hr_part">
+                                <div class="req_hr">
+
+                                    <span class="req_hr_value">8</span>
+                                </div>
+                                <div class="avai_hr">
+
+                                    <span class="hr_value">4</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="dt_box">
+                            <div class="dt">6</div>
+                            <div class="hr_part">
+                                <div class="req_hr">
+
+                                    <span class="req_hr_value">8</span>
+                                </div>
+                                <div class="avai_hr available start_slot">
+
+                                    <span class="hr_value">4</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="dt_box">
+                            <div class="dt">7</div>
+                            <div class="hr_part">
+                                <div class="req_hr">
+
+                                    <span class="req_hr_value">8</span>
+                                </div>
+                                <div class="avai_hr available">
+
+                                    <span class="hr_value">4</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="dt_box">
+                            <div class="dt">8</div>
+                            <div class="hr_part">
+                                <div class="req_hr">
+
+                                    <span class="req_hr_value">8</span>
+                                </div>
+                                <div class="avai_hr available">
+
+                                    <span class="hr_value">4</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="dt_box">
+                            <div class="dt">9</div>
+                            <div class="hr_part">
+                                <div class="req_hr">
+
+                                    <span class="req_hr_value">8</span>
+                                </div>
+                                <div class="avai_hr available end_slot">
+
+                                    <span class="hr_value">4</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="dt_box">
+                            <div class="dt">10</div>
+                            <div class="hr_part">
+                                <div class="req_hr">
+
+                                    <span class="req_hr_value">8</span>
+                                </div>
+                                <div class="avai_hr">
+
+                                    <span class="hr_value">4</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="dt_box">
+                            <div class="dt">11</div>
+                            <div class="hr_part">
+                                <div class="req_hr">
+
+                                    <span class="req_hr_value">8</span>
+                                </div>
+                                <div class="avai_hr">
+
+                                    <span class="hr_value">4</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="dt_box">
+                            <div class="dt">12</div>
+                            <div class="hr_part">
+                                <div class="req_hr">
+
+                                    <span class="req_hr_value">8</span>
+                                </div>
+                                <div class="avai_hr">
+
+                                    <span class="hr_value">4</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="dt_row">
+                        <div class="dt_box_label">
+                            <div class="dt_label">Date</div>
+                            <div class="hr_part">
+                                <div class="req_hr_label">
+                                    <span class="hr_caption">Req. Hr</span>
+
+                                </div>
+                                <div class="avai_hr_label">
+                                    <span class="hr_caption">Ava. Hr</span>
+
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="month_name">APR-2018</div>
+                    <div class="dt_row">
+                        <div class="dt_box_label">
+                            <div class="dt_label">Date</div>
+                            <div class="hr_part">
+                                <div class="req_hr_label">
+                                    <span class="hr_caption">Req. Hr</span>
+
+                                </div>
+                                <div class="avai_hr_label">
+                                    <span class="hr_caption">Ava. Hr</span>
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="dt_box">
+                            <div class="dt">1</div>
+                            <div class="hr_part">
+                                <div class="req_hr">
+
+                                    <span class="req_hr_value">8</span>
+                                </div>
+                                <div class="avai_hr available">
+
+                                    <span class="hr_value">8</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="dt_box">
+                            <div class="dt">2</div>
+                            <div class="hr_part">
+                                <div class="req_hr">
+
+                                    <span class="req_hr_value">8</span>
+                                </div>
+                                <div class="avai_hr">
+
+                                    <span class="hr_value">4</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="month_name">May-2018</div>
+                    <div class="dt_row">
+                        <div class="dt_box_label">
+                            <div class="dt_label">Date</div>
+                            <div class="hr_part">
+                                <div class="req_hr_label">
+                                    <span class="hr_caption">Req. Hr</span>
+
+                                </div>
+                                <div class="avai_hr_label">
+                                    <span class="hr_caption">Ava. Hr</span>
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="dt_box">
+                            <div class="dt">1</div>
+                            <div class="hr_part">
+                                <div class="req_hr">
+
+                                    <span class="req_hr_value">8</span>
+                                </div>
+                                <div class="avai_hr available">
+
+                                    <span class="hr_value">8</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="dt_box">
+                            <div class="dt">2</div>
+                            <div class="hr_part">
+                                <div class="req_hr">
+
+                                    <span class="req_hr_value">8</span>
+                                </div>
+                                <div class="avai_hr">
+
+                                    <span class="hr_value">4</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+
+                <div class="legends">
+                    <div class="legend_row">
+                        <div class="legend_icons">
+                            <div class="not_available_icon"></div>
+
+                        </div>
+                        <div class="legend_caption">Not Available as Requested</div>
+                        <div class="legend_icons">
+
+                            <div class="available_icon"></div>
+                        </div>
+                        <div class="legend_caption" style="padding-left: 9px;">Available</div>
+                    </div>
+                    <div class="legend_row">
+
+                        <div class="legend_icons">
+                            <div class="recommended_slot_icon"></div>
+                        </div>
+                        <div class="legend_caption">Recommended Available Slot</div>
+                        <div class="legend_icons" style="padding-right: 10px;">
+                            <div style="width: 3px; background-color: #e09d9d; height: 25px; float: right;"></div>
+                        </div>
+                        <div class="legend_caption" style="padding-left: 9px;">Weekend</div>
+                    </div>
+                </div>
+                <div class="modalBtns">
+
+                    <button type="button" class="btn btn-default pull-right" data-dismiss="modal">Close</button>
+                </div>
+
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div class="modal fade modalDialog_allInfo" id="modalDialog_allPositionInfo" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog modal-lg" role="document" style="width: 95%;">
+        <div class=" modal-content">
+            <div class="modal-header" style="background-color: lightgray;height: 40px;">
+
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h5>More Info</h5>
+            </div>
+            <div class="modal-body" id="allInfoDetails" style="height: auto; overflow-x:auto;">
+                <div class="panel panel-default">
+                    <div class="panel panel-heading">
+                        <h5 style="margin-top: 5px;font-weight:600">Deliverable Details</h5><!--class="panel-title"-->
+
+                    </div>
+                    <div class="panel panel-body">
+                        <div id="divForProjectScopeDetails" style="height:130px;overflow:scroll;">
+                            <table class="table table-striped table-bordered table-hover" id="tabProjectScopeDetails">
+                                <thead>
+                                    <tr>
+                                        <th><b>Deliverable Name</b></th>
+                                        <th><b>Deliverable Unit</b></th>
+                                        <th><b>Request Type</b></th>
+                                        <th><b>Start Date</b></th>
+                                        <th><b>End Date</b></th>
+                                        <th><b>Domain</b></th>
+                                        <th><b>Sub Domain</b></th>
+                                        <th><b>Service Area</b></th>
+                                        <th><b>Sub Service Area</b></th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel panel-default">
+                    <div class="panel panel-heading">
+                        <h5 style="margin-top: 5px;font-weight:600">Position Details</h5><!--class="panel-title"-->
+
+                    </div>
+                    <div class="panel panel-body" style="overflow: scroll;">
+                        <table id="allPositionInfoTable" class="table table-striped table-bordered table-hover" style="width:100%"></table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modal_showProjectDocs" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title text-center">Document Details View</h4>
+
+            </div>
+            <div class="modal-body">
+                <table class="table table-striped table-bordered table-hover" id="table_project_documents">
+                    <thead>
+                        <tr>
+                            <th class="col-sm-3">Document Type</th>
+                            <th class="col-sm-6">Document URL</th>
+
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div id="calendar_view" class="calendar_panel">
+    <div class="panel panel-default" style="width: 100%; margin-bottom:35px;background-color: #ffffff; height:100%">
+        <div class="panel panel-heading" style="width: 100%;display: -webkit-inline-box;margin-bottom:0px">
+            <h5 id="calendar_title" style="margin-top: 5px;font-weight:600"></h5><!--class="panel-title"-->
+            <input type="hidden" value="0" id="hidId_selectedProjectId" />
+
+            <button type="button" class="btn btn-default btn-xs" onclick="CloseDetailsView();" style="right:0px; position:absolute">
+                <span class="fa fa-remove" aria-hidden="true"></span>
+            </button>
+        </div>
+        <div class="panel panel-body" style="padding: 5px; height:90%;">
+            @Html.Partial("DemandDetailsView")
+        </div>
+    </div>
+</div>
+
+<div id="historyDialogue" title="History">
+
+</div>
+
+<div class="modal fade" id="demandFMModal" role="dialog" tabindex="-1" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" style="margin-top: 150px;width:90%;">
+        <div class="modal-content" style="margin-top:-107px;">
+            <div class="modal-header" style="padding-bottom:0px;">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h5 id="calendar_title_Modal" style="margin-bottom:1px; margin-top: 5px;font-weight:600; text-align:center"></h5>
+            </div>
+            <div class="modal-body" style="padding-top:1px;">
+                <input type="hidden" id="DV_projectId" />
+                <div class="row gantt_custom_header">
+                    <div class="col-md-12 gantt_custom_legends">
+                        <div class="col-md-10 btn-group btn-group-xs custom_legend_btn_area"></div>
+                    </div>
+                </div>
+                <div class="row col-lg-12 ganttControlls">
+                    <label>
+                        <input class="dayInput_PositionView" data-ganttpopup="true" name='scales_positionView' onchange="callGanttZoom(this)" type='radio' value='yearAndmonthAndDays'>
+                        <span>Months-Days</span>
+                    </label>
+                    <label>
+                        <input class="monthInput_PositionView" data-ganttpopup="true" name='scales_positionView' onchange="callGanttZoom(this)" type='radio' value='yearAndmonthAndweek' checked='checked'>
+                        <span>Months-Weeks</span>
+                    </label>
+                </div>
+
+                <div id="demandBody"> </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal to show multiple selected vendor-tech combinations -->
+<div class="modal fade" id="multiVendorTechView" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" data-backdrop="false">
+    <div class="modal-dialog">
+        @Html.Partial("_MultipleVendorTechView")
+    </div>
+</div>

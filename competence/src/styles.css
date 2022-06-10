@@ -1,0 +1,71 @@
+/* You can add global styles to this file, and also import other style files */
+@import "~@angular/material/prebuilt-themes/indigo-pink.css";
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; font-size: 12px;}
+
+.alertBoxCSS .mat-dialog-container{
+   /* background-color : #2b323a;
+   color : white; */
+   font-size : 15px
+}
+/*Mat Table Header CSS*/
+
+tr.mat-header-row{
+   height: 35px !important;
+}
+
+/* Table border css */
+table {
+   border-collapse: collapse; 
+}
+
+table td, table th {
+   border: 1px solid;
+   border-color: rgba(0,0,0,.12);
+   padding-left : 5px !important;
+   padding-right: 5px !important; 
+ }
+
+/* Table header color */
+th.mat-header-cell {
+    background-color: #a2caa1;
+    /* font-size: 14px; */
+}
+
+/* Table row font size */
+.mat-cell, .mat-footer-cell { 
+   font-size: inherit;
+}
+
+.mat-grid-tile .mat-figure {
+    justify-content: flex-start !important ;
+    align-items: flex-start !important;
+ }
+
+ .breadcrumb{
+    padding: 4px;
+    color: gray;
+    font-size: 11px;
+ }
+
+ .pageHeading{
+    
+    height: 43px;
+    /* font-size: 20px; */
+    display: flex;
+    box-sizing: border-box;
+    
+    width: 100%;
+    flex-direction: row;
+    align-items: center;
+    white-space: nowrap;
+ }
+
+ /*override wrapper - komal*/
+ .mat-tab-body-wrapper{
+   padding-top:10px;
+ }
+
+ .mat-toolbar{
+   z-index: 2 !important;
+ }

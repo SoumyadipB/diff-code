@@ -1,0 +1,2534 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ericsson.isf.mapper.ResourceRequestMapper">
+    
+  
+    
+    
+
+     <resultMap type='ProjectsModel' id='ProjectsModelResult'>
+         <id property='projectID' column='ProjectID'/>
+        <result property='projectName' column='ProjectName'/>
+    </resultMap>
+ 
+    <resultMap type='com.ericsson.isf.model.ResoucePositionFmModel'
+ id='resoucePositionFMResult'>
+ <id property='workEffortID' column='WorkEffortID' />
+ <result property='pid_Weid' column='PID_WEID' />
+ <result property='resourcePositionId' column='resourcePositionId' />
+ <result property='resourceRequestID' column='ResourceRequestID' />
+ <result property='projectid' column='projectid' />
+ <result property='positionStatus' column='PositionStatus' />
+ <result property='start_date' column='start_date' />
+ <result property='end_date' column='end_date' />
+ <result property='workEffortStatus' column='WorkEffortStatus' />
+ <result property='signum' column='signum' />
+ <result property='availability' column='availability' />
+ <result property='jobStage' column='JobStage' />
+ <result property='managerName' column='managerName' />
+ <result property='domain_Subdomain' column='Domain/Subdomain' />
+ <result property='serviceArea_SubServiceArea' column='ServiceArea/SubServiceArea' />
+ <result property='technology' column='Technology' />
+ <result property='text' column='text' />
+ <result property='status' column='status' />
+ <result property='crid' column='CRID' />
+ <result property='isPendingCR' column='isPendingCR' />
+ 
+
+ <collection property='vendor_tech'
+               ofType='java.lang.String' javaType="ArrayList">
+               <result property="vendor_tech" column="vendor_tech" />
+ </collection>     
+ <collection property='vendor_techID'
+               ofType='java.lang.String' javaType="ArrayList">
+               <result property="vendor_techID" column="vendor_techID" />
+ </collection>                 
+</resultMap>
+
+
+   
+    <select id='getProjectByFilters' parameterType="ProjectFilterModel" resultMap='ProjectsModelResult' >
+       select ProjectID,ProjectName from transactionalData.TBL_Projects a  join 
+           transactionalData.TBL_OPPORTUNITY b on(a.OpportunityID =b.OpportunityID)
+          <where>
+          <if test ="projectFilterModel.projectID != null and projectFilterModel.projectID != 0"> 
+              ProjectID=#{projectFilterModel.projectID}
+          </if> 
+           <if test ="projectFilterModel.status != null"> 
+              and Status=#{projectFilterModel.status}
+          </if> 
+           <if test ="projectFilterModel.countryID != null and projectFilterModel.countryID != 0"> 
+              and CountryID=#{projectFilterModel.countryID}
+          </if> 
+           <if test ="projectFilterModel.customerID != null and projectFilterModel.customerID != 0"> 
+              and CustomerID=#{projectFilterModel.customerID}
+          </if> 
+           <if test ="projectFilterModel.marketAreaID != null and projectFilterModel.marketAreaID != 0"> 
+              and MarketAreaID=#{projectFilterModel.marketAreaID}
+          </if> 
+          </where>
+    </select>
+    
+   	 <select id='getPositionsAndAllocatedResources' resultMap='resoucePositionFMResult'>
+
+select distinct
+a.WorkEffortID,a.resourcePositionId,a.ResourceRequestID,a.projectid,a.PositionStatus,a.start_date,a.end_date,a.WorkEffortStatus,a.signum,a.availability,a.JobStage,a.managerName,a.[Domain/Subdomain],a.[ServiceArea/SubServiceArea],a.Technology,a.text,a.vendor,a.vendor_tech,a.vendor_techID
+,b.status,b.CRID as crId,CASE WHEN b.Status = 'OPEN' THEN 1 ELSE 0 END AS isPendingCR
+from (
+select t3.WorkEffortID,t1.resourcePositionId,t1.ResourceRequestID,t2.projectid,t1.PositionStatus,
+convert(nvarchar(MAX), t3.startDate, 23) as start_date
+,convert(nvarchar(MAX), t3.endDate, 23) as end_date ,t3.WorkEffortStatus,
+CONCAT(V.Vendor,'-',t8.Technology) as vendor_tech,CONCAT(V.VendorID,'-',t8.TechnologyID) as vendor_techID,
+t3.signum+'/'+t4.EmployeeName signum,t3.FTE_Percent as availability,
+js.JobStageName as JobStage,t4.ManagerSignum+'/'+t9.employeeName as managerName,t6.Domain+'/'+t6.SubDomain as [Domain/Subdomain]
+,t7.ServiceArea+'/'+t7.SubServiceArea as [ServiceArea/SubServiceArea],t8.Technology,t3.signum+'/'+t4.EmployeeName as text, v.Vendor as vendor
+from
+transactionalData.TBL_ResourcePosition t1
+left join transactionalData.TBL_ResourceRequests t2 on (t1.ResourceRequestID=t2.ResourceRequestID)
+left join transactionalData.TBL_WorkEffort t3 on (t1.ResourcePositionID=t3.resourcePositionId)
+left join refData.TBL_Employees t4 on (t3.signum=t4.signum)
+left join transactionalData.TBL_PROJECTSCOPEDETAIL t5 on (t5.ProjectScopeDetailID=t2.ProjectScopeDetailID)
+left join refData.TBL_DOMAIN t6 on (t6.DomainID=t5.DomainID)
+left join refData.TBL_SERVICEAREA t7 on (t7.ServiceAreaID=t5.ServiceAreaID)
+left join refData.tbl_employees t9 on (t4.ManagerSignum=t9.signum)
+left join transactionalData.TBL_PROJECTS t10 on (t10.ProjectID=t2.ProjectID)
+left join refData.TBL_jobstages js on (js.jobstageID=t2.jobstageID)
+left JOIN [transactionalData].[TBL_DEMAND_VENDOR_MAPPING] dv on (dv.RRID=t2.ResourceRequestID) and dv.Active=1
+left join refData.TBL_VENDOR v on (v.VendorID=dv.VendorId)
+left join refData.tbl_technology t8 on (t8.TechnologyID=dv.TechnologyID)
+
+
+
+
+
+left join (SELECT DISTINCT DOMAINID,spoc FROM [refData].[TBL_DomainSpoc] ) DS on t6.domainid = Ds.domainid and t5.domainid = Ds.domainid
+
+
+
+
+
+where t5.Active = 1 and t1.IsActivie = 1 and t3.signum is not null and js.active = 1 and
+
+
+
+
+
+(
+(t3.IsActive = 0 and t3.PositionStatus in ('Proposal Pending','Proposed') )
+
+
+
+
+
+OR
+(t3.IsActive = 1 and t3.PositionStatus in ('Resource Allocated','Deployed') )
+)
+
+
+
+
+
+
+<if test ="RRID != null">
+and t2.ResourceRequestID=#{RRID}
+</if>
+<if test ="positionStatus != null">
+and t1.PositionStatus=#{positionStatus}
+</if>
+<if test ="marketArea !='All'"> 
+and t10.ProjectName like '%${marketArea}%'
+</if>
+<if test ="spoc != null">
+and ds.spoc=#{spoc}
+</if>
+<if test ="marketArea !='All'">
+and t10.ProjectName like '%${marketArea}%'
+</if>
+<if test ="ProjectID !=null">
+and t2.ProjectID = #{ProjectID}
+</if>
+
+
+
+
+
+) a
+left join
+
+
+
+
+
+( select CRID, ResourcePositionID, STATUS from transactionalData.TBL_ChangeRequestPosition where status not in ('WITHDRAW', 'CLOSED', 'REJECTED','ACCEPTED') ) b on a.ResourcePositionID = b.ResourcePositionID
+</select>
+    
+  
+    
+    
+    <select id='getAllPositions'  resultMap='resoucePositionFMResult'>
+     select distinct 
+a.PID_WEID,a.WorkEffortID,a.resourcePositionId,a.ResourceRequestID,a.projectid,a.PositionStatus,a.start_date,a.end_date,a.WorkEffortStatus,a.signum,a.availability,a.JobStage,a.managerName,a.[Domain/Subdomain],a.[ServiceArea/SubServiceArea],a.Technology,a.text,a.vendor
+,a.vendor_tech,a.vendor_techID,b.status,b.CRID as crId,CASE WHEN b.Status = 'OPEN' THEN 1 ELSE 0 END AS isPendingCR from (
+
+ 
+
+
+select concat(t1.resourcePositionId,'/',t3.WorkEffortID) as PID_WEID,t3.WorkEffortID,t1.resourcePositionId,t1.ResourceRequestID,t2.projectid
+, upper(t3.PositionStatus) PositionStatus,
+convert(nvarchar(MAX), t3.startDate, 105) as start_date
+,convert(nvarchar(MAX), t3.endDate, 105) as end_date ,t3.WorkEffortStatus,
+CONCAT(V.Vendor,'-',t8.Technology) as vendor_tech,CONCAT(V.VendorID,'-',t8.TechnologyID) as vendor_techID,
+t3.signum+'/'+t4.EmployeeName signum,t3.FTE_Percent as availability,
+js.JobStageName as JobStage,t4.ManagerSignum+'/'+t9.employeeName as managerName,t6.Domain+'/'+t6.SubDomain as [Domain/Subdomain]
+,t7.ServiceArea+'/'+t7.SubServiceArea as [ServiceArea/SubServiceArea],t8.Technology,isnull(t3.signum+'/'+t4.EmployeeName,'') as text, v.Vendor as vendor 
+
+ 
+
+
+from 
+transactionalData.TBL_ResourcePosition t1 
+left join transactionalData.TBL_ResourceRequests t2 on (t1.ResourceRequestID=t2.ResourceRequestID)
+left join transactionalData.TBL_WorkEffort t3 on (t1.ResourcePositionID=t3.resourcePositionId)
+left join refData.TBL_Employees t4 on (t3.signum=t4.signum)
+left join transactionalData.TBL_PROJECTSCOPEDETAIL t5 on (t5.ProjectScopeDetailID=t2.ProjectScopeDetailID)
+left join refData.TBL_DOMAIN t6 on (t6.DomainID=t5.DomainID)
+left join refData.TBL_SERVICEAREA t7 on (t7.ServiceAreaID=t5.ServiceAreaID)
+left join refData.tbl_employees t9 on (t4.ManagerSignum=t9.signum)
+left join transactionalData.TBL_PROJECTS t10 on (t10.ProjectID=t2.ProjectID)
+left join refData.TBL_jobstages js on (js.jobstageID=t2.jobstageID)
+left JOIN [transactionalData].[TBL_DEMAND_VENDOR_MAPPING] dv on (dv.RRID=t2.ResourceRequestID) and dv.Active=1
+left join refData.tbl_technology t8 on (t8.TechnologyID=dv.TechnologyID)
+left join refData.TBL_VENDOR v on (v.VendorID=dv.VendorId)
+where t5.Active = 1 
+and (t1.IsActivie = 1 or (t1.IsActivie=0 and t1.PositionStatus in ('Rejected_NO_CAPACITY','Rejected_NO_COMPETENCE')) )
+and js.active = 1 
+and t1.PositionStatus not in ('Cancelled') and t3.PositionStatus not in ('DELETED')
+and
+
+ 
+
+( 
+(t3.IsActive = 0 and t3.PositionStatus in ('Proposal Pending','Proposed','capacityNotAvailable','competenceNotAvailable') ) 
+
+ 
+
+OR 
+(t3.IsActive = 1 and t3.PositionStatus in ('Resource Allocated','Deployed','Position Completion','Proposal Pending') ) 
+
+ 
+
+OR (t1.PositionStatus in ('Position Completion') and t1.IsActivie=1 and t3.IsActive=1 and t3.positionstatus not in ('Pre-Closure','Post-Closure'))
+
+ 
+
+)
+<if test ="RRID != null"> 
+and t2.ResourceRequestID=#{RRID} 
+</if> 
+<if test ="marketArea !='All'"> 
+and t10.ProjectName like '%${marketArea}%'
+</if>
+<if test ="ProjectID !=null"> 
+and t2.ProjectID = #{ProjectID}
+</if>
+
+ 
+
+) a
+left join
+
+ 
+
+( select CRID, ResourcePositionID, STATUS from transactionalData.TBL_ChangeRequestPosition where status not in ('WITHDRAW', 'CLOSED', 'REJECTED','ACCEPTED') ) b on a.ResourcePositionID = b.ResourcePositionID
+<if test ="positionStatus != null"> 
+where a.PositionStatus =#{positionStatus}
+</if>
+    </select>
+
+
+	<select id='getAllPositionsCount'
+		resultType='java.util.LinkedHashMap'>
+		select
+		upper(t3.PositionStatus) positionStatus, count(1) count
+		from transactionalData.TBL_ResourceRequests t2
+		left join transactionalData.TBL_ResourcePosition t1 on
+		t1.ResourceRequestID=t2.ResourceRequestID
+		left join transactionalData.TBL_WorkEffort t3 on t3.ResourcePositionID=
+		t1.ResourcePositionID
+		left join transactionalData.TBL_PROJECTSCOPEDETAIL t5 on
+		(t5.ProjectScopeDetailID=t2.ProjectScopeDetailID)
+		left join refData.TBL_jobstages js on (js.jobstageID=t2.jobstageID)
+
+
+		where t5.Active = 1
+		and (t1.IsActivie = 1 or (t1.IsActivie=0 and t1.PositionStatus in
+		('Rejected_NO_CAPACITY','Rejected_NO_COMPETENCE')) )
+		and js.active = 1
+		and t1.PositionStatus not in ('Cancelled') and t3.PositionStatus not in
+		('DELETED')
+		and
+
+		(
+		(t3.IsActive = 0 and t3.PositionStatus in ('Proposal Pending','Proposed','capacityNotAvailable','competenceNotAvailable') )
+
+		OR
+		(t3.IsActive = 1 and t3.PositionStatus in ('Resource Allocated','Deployed','Position Completion','Proposal Pending') )
+
+		OR (t1.PositionStatus in ('Position Completion') and t1.IsActivie=1 and
+		t3.IsActive=1 and t3.positionstatus not in ('Pre-Closure','Post-Closure'))
+
+		)
+        <if test ="projectID !=null"> 
+ 		    and t2.projectID = #{projectID}
+ 		    </if>
+		group by t3.PositionStatus
+
+	</select>
+    
+    <resultMap type='ResourcePositionWorkEffortModel' id='ResourcePositionWorkEffortModel'>
+       <id property='resourceRequestID'           column='resourceRequestID'/>
+         		<result property='duration' column='duration'/>
+        			 <result property='fte_percent' column='fte_percent'/>
+        			 <result property='issuedBy' column='issuedBy'/>
+        			 <result property='totalHours' column='totalHours'/>
+        			 <result property='remote_onsite' column='remote_onsite'/>
+        			<result property='startDate' column='startDate'/>
+        			 <result property='endDate' column='endDate'/>
+        			 <result property='employeeName' column='employeeName'/>
+        				<result property='managerSignum' column='managerSignum'/>
+        				<result property='managerName' column='managerName'/>
+        				<result property='remoteCount' column='remoteCount'/>
+        				<result property='onsiteCount' column='onsiteCount'/>
+        				
+    </resultMap>
+    
+	    <resultMap type='ResourceRequestModel' id='ResourceRequestModel'>
+       <id property='resourceRequestID'           column='resourceRequestID'/>
+        <result property='jobRoleName'        column='jobRoleName'/>
+        <result property='jobStageName'        column='jobStageName'/>
+       <!--  <result property='onsiteCount'        column='onsiteCount'/>
+        --> <result property='onsiteLocationID'        column='onsiteLocationID'/>
+        <result property='projectID'        column='projectID'/>
+        <result property='projectScopeDetailID' column='projectScopeDetailID'/>
+        <result property='remoteCount' column='remoteCount'/>
+        <result property='requestType' column='requestType'/>
+        <result property='resourceType' column='resourceType'/>
+        <result property='createdBy' column='CreatedBy'/>
+        <result property='createdOn' column='CreatedOn'/>
+        <result property='lastModifiedBy' column='LastModifiedBy'/>
+        <result property='lastModifiedOn' column='LastModifiedOn'/>
+        <result property='active' column='Active'/>
+<!--         <result property='certificateID' column='certificateID'/>
+        <result property='certificateName' column='certificateName'/>
+        <result property='certificateType' column='certificateType'/> -->
+        <result property='domain' column='domain'/>
+        <result property='serviceArea' column='serviceArea'/>
+        <result property='technology' column='technology'/>
+        <result property='subDomain' column='subDomain'/>
+        <result property='subServiceArea' column='subServiceArea'/>
+         <result property='subServiceArea' column='subServiceArea'/>
+          <result property='jobStageID' column='jobStageID'/>
+          <result property='domainID' column='domainID'/>
+          <result property='serviceAreaID' column='serviceAreaID'/>
+          <result property='technologyID' column='technologyID'/>
+          <result property='subServiceAreaId' column='subServiceAreaId'/>
+           <result property='remoteLocation' column='RemoteLocation'/>
+           <result property='ftePercent' column='FtePercent'/>
+          
+        
+        
+<!--         <result property='competenceLevel' column='competenceLevel'/> -->
+        <!-- <result property='competenceName' column='competenceName'/>
+        <result property='competenceType' column='competenceType'/>
+       	 -->	 <collection property="rpefList" ofType="ResourcePositionWorkEffortModel">
+       				 <result property="id" column="resourcePositionID"/>
+       				 <result property='duration' column='duration'/>
+        			 <result property='fte_percent' column='fte_percent'/>
+        			 <result property='issudeBy' column='issudeBy'/>
+        			 <result property='totalHours' column='totalHours'/>
+       				 <result property='remote_onsite' column='remote_onsite'/>
+       				 <result property='startDate' column='startDate'/>
+        				<result property='endDate' column='endDate'/>
+        				<result property='employeeName' column='employeeName'/>
+        				<result property='managerSignum' column='managerSignum'/>
+        				<result property='managerName' column='managerName'/>
+        				<result property='remoteCount' column='remoteCount'/>
+        				<result property='onsiteCount' column='onsiteCount'/>
+        				
+    		</collection>
+        
+    </resultMap>
+    
+      <resultMap type='ModifyDemandModel' id='ModifyDemandModel'>
+       <id property='actionType'           column='actionType'/>
+        <result property='CRStatus'        column='CRStatus'/>
+        <result property='domainId'        column='domainId'/>
+        <result property='endDate'        column='endDate'/>
+        <result property='isActivie'        column='isActivie'/>
+        <result property='positionStatus'        column='positionStatus'/>
+        <result property='resourcePositionId' column='resourcePositionId'/>
+        <result property='resourceSignum' column='resourceSignum'/>
+        <result property='serviceAreaId' column='serviceAreaId'/>
+        <result property='startDate' column='startDate'/>
+        <result property='technologyId' column='technologyId'/>
+    </resultMap>
+
+<!-- 	<select id='getDemandRequestDetail'   parameterType="int"   resultType='hashmap'> -->
+		<select id='getDemandRequestDetail'   parameterType="int"   resultType='ResourceRequestModel'>
+	
+	<!-- 
+	 select t1.resourceRequestID,t1.resourceType,t1.requestType,t1.onsiteCount,t1.remoteCount,t1.createdBy,
+	convert(nvarchar(MAX), t1.createdOn, 23) as createdOn,t1.lastModifiedBy,
+	convert(nvarchar(MAX), t1.lastModifiedOn, 23) as lastModifiedOn,t1.jobRoleID,
+	t1.jobStageID,t1.onsiteLocationID,t1.projectID,t1.projectScopeDetailID,t1.active,
+	 t2.CompetenceLevel,t3.CompetenceName,t3.CompetenceType,
+	 t5.CertificateName,t5.CertificateID,t5.CertificateType,
+	 t8.Duration,t8.Hours as hoursPerDay,
+	 t7.FTE_Percent,t7.signum as issuedBy,
+	 t9.LocationName as DeliveryLocation
+	 from transactionalData.TBL_ResourceRequests t1
+	 left join transactionalData.TBL_ResourceRequestCompetences t2 
+	 on(t1.ResourceRequestID=t2.ResourceRequestID)
+	 left join refData.TBL_Competences t3 on (t2.CompetenceID=t3.CompetenceID)
+	 left join transactionalData.TBL_ResourceRequestCertifications t4 on (t1.ResourceRequestID=t4.ResourceRequestID)
+	 left join refData.TBL_Certificates t5 on (t4.CertificateID=t5.CertificateID)
+	 left join transactionalData.TBL_ResourcePosition t6 on (t1.ResourceRequestID=t6.ResourceRequestID)
+	 left join transactionalData.TBL_WorkEffort t7 on (t6.ResourcePositionID=t7.ResourcePositionID)
+	 left join transactionalData.TBL_ResourceRequestWorkEfforts t8 on (t1.ResourceRequestID=t8.ResourceRequestID)
+	 left join refData.TBL_OnsiteLocations t9 on (t9.OnsiteLocationID=t1.OnsiteLocationID)
+	 where t1.resourceRequestID=#{RRID,jdbcType=INTEGER}
+     -->
+     
+     select 
+   --  distinct t3.CompetenceId, 
+  		distinct t1.resourceRequestID,t1.RemoteLocation,t1.resourceType,t1.requestType,
+    t1.onsiteCount,t1.remoteCount,
+     t1.createdBy,
+	convert(nvarchar(MAX), t1.createdOn, 23) as createdOn,t1.lastModifiedBy,
+	convert(nvarchar(MAX), t1.lastModifiedOn, 23) as lastModifiedOn,
+	t1.jobRoleID,t1.jobStageID,
+	t10.jobRoleName,t11.jobStageName,
+	t1.onsiteLocationID,t1.projectID,t1.projectScopeDetailID,t1.active,
+	-- t2.CompetenceLevel,
+	-- t3.CompetenceName,t3.CompetenceType,
+	-- t5.CertificateName,t5.CertificateID,t5.CertificateType,
+	-- t8.Duration,t8.Hours as hoursPerDay,
+	-- t7.FTE_Percent,t7.signum as issuedBy,
+	 t9.LocationName as DeliveryLocation,
+	 t10.JobRoleName,t11.JobStageName
+	 ,t13.domain,t13.SubDomain ,t14.SubServiceArea,t15.technology
+	 ,t16.ServAreaID as serviceAreaId  ,t16.ServiceArea as serviceArea
+	 ,t13.DomainID,t14.ServiceAreaID as subServiceAreaId,t15.TechnologyID, t8.FTEPercent
+	 from transactionalData.TBL_ResourceRequests t1
+	-- left join transactionalData.TBL_ResourceRequestCompetences t2 
+--	 on(t1.ResourceRequestID=t2.ResourceRequestID)
+	-- left join refData.TBL_Competences t3 on (t2.CompetenceID=t3.CompetenceID)
+	-- left join transactionalData.TBL_ResourceRequestCertifications t4 on (t1.ResourceRequestID=t4.ResourceRequestID)
+	-- left join refData.TBL_Certificates t5 on (t4.CertificateID=t5.CertificateID)
+	--left join transactionalData.TBL_ResourcePosition t6 on (t1.ResourceRequestID=t6.ResourceRequestID)
+	--left join transactionalData.TBL_WorkEffort t7 on (t6.ResourcePositionID=t7.ResourcePositionID)
+	 left join transactionalData.TBL_ResourceRequestWorkEfforts t8 on (t1.ResourceRequestID=t8.ResourceRequestID)
+	 left join refData.TBL_OnsiteLocations t9 on (t9.OnsiteLocationID=t1.OnsiteLocationID)
+	 left join refData.TBL_JobRoles t10 on (t10.JobRoleID=t1.JobRoleID)
+	 left join refData.TBL_JobStages t11 on (t11.jobStageID =t1.jobStageId )
+	left join transactionalData.TBL_PROJECTSCOPEDETAIL t12 on (t12.ProjectScopeDetailID=t1.ProjectScopeDetailID)
+	 left join refData.TBL_DOMAIN t13 on(t13.domainId=t12.domainId)
+	 left join refData.TBL_SERVICEAREA t14 on (t14.ServiceAreaID=t12.ServiceAreaID)
+	 left join refData.TBL_SERVAREA t16 on (t16.ServAreaID=t14.ServAreaID)
+	 left join refData.tbl_technology t15 on (t15.technologyId=t12.technologyId)
+	  left join transactionalData.TBL_ProjectApprovals t17 on(t17.projectId=t1.ProjectID)
+	 
+	 where t1.resourceRequestID=#{RRID,jdbcType=INTEGER}
+      and t17.ApprovedOrRejected='1'
+    </select>
+    
+    
+        <resultMap type='CompetenceSubModel' id='CompetenceSubModel'>
+        		<result property='competenceId' column='competenceId'/>
+        			 <result property='competenceName' column='competenceName'/>
+        			 <result property='competenceType' column='competenceType'/>
+        			 <result property='competenceLevel' column='competenceLevel'/>
+        			 <result property='resourceRequestCompetenceId' column='resourceRequestCompetenceId'/>
+        				
+    </resultMap>
+    
+    <select id='getCompetenceSubDetails' resultType="CompetenceSubModel" parameterType="int">
+  <!-- select t1.resourceRequestCompetenceId, t1.competenceId,t2.competenceName,t2.competenceType,
+       t1.competenceLevel
+		from transactionalData.TBL_ResourceRequestCompetences t1
+		left join refData.TBL_Competences t2 on (t2.CompetenceID=t1.CompetenceID)
+		
+		where resourceRequestId=#{RRID,jdbcType=INTEGER} -->
+		<!-- select 
+	t1.resourceRequestCompetenceId, 
+		distinct t1.competenceId,
+		t2.competenceName,t2.competenceType
+       t1.competenceLevel
+		from transactionalData.TBL_ResourceRequestCompetences t1
+		left join refData.TBL_Competences t2 on (t2.CompetenceID=t1.CompetenceID)
+		where resourceRequestId=#{RRID,jdbcType=INTEGER}
+		 -->select 
+distinct t1.competenceId,
+	t1.resourceRequestCompetenceId, 
+		t2.competenceName,t2.competenceType,
+      t1.competenceLevel
+		from transactionalData.TBL_ResourceRequestCompetences t1
+		left join refData.TBL_Competences t2 on (t2.CompetenceID=t1.CompetenceID)
+		where resourceRequestId=#{RRID,jdbcType=INTEGER}
+	  </select>
+    
+    <select id='getCompetenceLevel' resultType="hashmap" parameterType="int">
+ <!--  select t1.resourceRequestCompetenceId, t1.competenceId,t2.competenceName,t2.competenceType,
+       t1.competenceLevel
+		from transactionalData.TBL_ResourceRequestCompetences t1
+		left join refData.TBL_Competences t2 on (t2.CompetenceID=t1.CompetenceID)
+		where resourceRequestId=#{RRID,jdbcType=INTEGER}
+        --> 
+        select resourceRequestCompetenceId,competenceLevel
+		from transactionalData.TBL_ResourceRequestCompetences
+		where competenceID=#{competenceId,jdbcType=INTEGER}
+    </select>
+    
+    <select id='getResourcePositionSubList' resultType="hashmap">
+ 	select 
+    distinct t1.resourcePositionId, t1.remote_onsite,t2.WorkEffortID
+	  from 
+	  transactionalData.TBL_ResourcePosition t1 
+	join transactionalData.TBL_ResourceRequests t3 on (t3.ResourceRequestID=t1.ResourceRequestID)
+	left join transactionalData.TBL_WorkEffort t2 on (t2.ResourcePositionID=t1.ResourcePositionID)
+	where t3.resourceRequestID=#{RRID,jdbcType=INTEGER}
+	and t2.hours =#{rpefModel.totalHours}
+	and t2.startDate=#{rpefModel.startDate}
+	and t2.endDate=#{rpefModel.endDate}
+	and t2.signum is NULL and t2.isactive = 1
+
+    </select>
+    
+    <select id='getCertificateSubDetails' resultType="hashmap" parameterType="int">
+         select distinct t5.CertificateID,t5.CertificateName,t5.CertificateType
+from 	transactionalData.TBL_ResourceRequestCertifications t4 
+	 left join refData.TBL_Certificates t5 on (t4.CertificateID=t5.CertificateID)
+	 where t4.ResourceRequestID=#{RRID,jdbcType=INTEGER}
+        
+    </select>
+    
+    
+ 
+    
+    <select id='getResourceRequestWEffort'   parameterType="int"   resultType='ResourcePositionWorkEffortModel'>
+
+	select sum(t.OnsiteBit) as onsiteCount, sum(t.RemoteBit) as remoteCount, t.StartDate, t.EndDate, t.Hours as totalHours from (
+		select t1.*, 
+		case p1.Remote_Onsite 
+		when 'Remote' then 1
+		else 0 END as RemoteBit,
+		case p1.Remote_Onsite 
+		when 'Onsite' then 1
+		else 0
+		end as OnsiteBit, 
+		p1.Remote_Onsite from transactionalData.tbl_workeffort t1
+		join transactionalData.TBL_ResourcePosition p1 on t1.ResourcePositionID = p1.ResourcePositionID
+		join transactionalData.TBL_ResourceRequests t2 on t2.ResourceRequestID=p1.ResourceRequestID
+		where t2.ResourceRequestID=#{RRID,jdbcType=INTEGER} 
+		 and t1.Signum is null
+		) t
+		group by t.startDate,t.endDate,t.hours
+	
+    </select>
+    
+    
+    <select id='getResourceRequestWEffortDetails'   parameterType="int"   resultType='ResourcePositionWorkEffortModel'>
+
+	select sum(t.OnsiteBit) as onsiteCount, sum(t.RemoteBit) as remoteCount, t.StartDate, t.EndDate, t.Hours as totalHours from (
+		select t1.StartDate , t1.EndDate , t1.Duration , t1.FTE_Percent , t1.Hours , t1.WorkEffortID ,  
+		case p1.Remote_Onsite 
+		when 'Remote' then 1
+		else 0 END as RemoteBit,
+		case p1.Remote_Onsite 
+		when 'Onsite' then 1
+		else 0
+		end as OnsiteBit, 
+		p1.Remote_Onsite from transactionalData.tbl_workeffort t1
+		join transactionalData.TBL_ResourcePosition p1 on t1.ResourcePositionID = p1.ResourcePositionID
+		join transactionalData.TBL_ResourceRequests t2 on t2.ResourceRequestID=p1.ResourceRequestID
+		where t1.IsActive = 1 and  t2.ResourceRequestID=#{RRID,jdbcType=INTEGER} 
+		) t
+		group by t.startDate,t.endDate,t.hours
+
+	
+	
+    </select>
+	   
+        <resultMap type='ResourceRequestByFilterModel' id='ResourceRequestByFilterModelResult'>
+	       <id property='projectID' column='projectID'/>
+        <result property='projectName' column='ProjectName'/>
+        <result property='resourceRequestID' column='ResourceRequestID'/>
+        <result property='Domain' column='Domain/SubDomain'/>
+        <result property='ServiceArea' column='ServiceArea/SubServiceArea'/>
+        <result property='Technology' column='Technology'/>
+        <result property='JobStage' column='jobStagename'/>
+        <result property='fte' column='FTEPercent'/>
+        <result property='onsiteCount' column='OnsiteCount'/>
+        <result property='remoteCount' column='RemoteCount'/>
+        <result property='startDate' column='startDate'/>
+        <result property='endDate' column='endDate'/>
+       
+    </resultMap>
+     <resultMap type='hashmap' id='hashmap'>
+	           
+    </resultMap>
+      <resultMap type='java.util.LinkedHashMap' id='linkedhashmap'>
+	           
+    </resultMap>
+    
+    <select id='getResourceRequestsByFilter'  resultMap='linkedhashmap' >
+		select ProjectName,projectId ,ResourceRequestID ,SubServiceArea,Domain_SubDomain,Technology ,JobStageName,FTEPercent,max(OnsiteCount) as [OnSiteCount],max(RemoteCount) as [RemoteCount],cast(100*(cast(((max(OnsiteCount)+max(RemoteCount))-sum([Signum_count])) as decimal(10,2))/cast((max(OnsiteCount)+max(RemoteCount)) as decimal(10,2))) as decimal(10,2)) [AllocatePercentage] ,[StartDate],[EndDate] ,ResourceDescription   from (select distinct we.WorkEffortID, we.PositionStatus, p.ProjectName, rr.projectId,rr.ResourceRequestID,concat(sa.ServiceArea,'/',sa.SubServiceArea) as 'SubServiceArea', concat(dom.Domain,'/',dom.SubDomain) as 'Domain_SubDomain', te.Technology,js.JobStageName,
+		FTEPercent,OnsiteCount,RemoteCount,case when we.PositionStatus = 'Proposal Pending' and we.isactive = 1 then 1 else 0 end as [Signum_count],
+		convert(VARCHAR(11),rre.StartDate,101) as [StartDate],convert(VARCHAR(11),rre.EndDate,101) as [EndDate],rr.ResourceDescription,rp.ResourcePositionID
+		from transactionalData.TBL_ResourceRequests rr
+		join transactionalData.TBL_PROJECTSCOPEDETAIL psd on psd.ProjectScopeDetailID=rr.ProjectScopeDetailID
+		join transactionalData.TBL_ResourceRequestWorkEfforts rre on rr.ResourceRequestID=rre.ResourceRequestID
+		join transactionalData.TBL_ResourcePosition  rp on rp.ResourceRequestID=rr.ResourceRequestID
+		join transactionalData.TBL_WorkEffort  we on we.ResourcePositionID = rp.ResourcePositionID
+		join transactionalData.TBL_PROJECTS p on rr.projectid=p.projectid
+		join refdata.TBL_DOMAIN dom on dom.domainid=psd.domainid
+		join transactionalData.TBL_OPPORTUNITY oo on oo.OpportunityID = p.OpportunityID
+		join [refData].[TBL_MARKETAREAS] ma on ma.MarketAreaID = oo.MarketAreaID
+		join [refData].[TBL_DomainSpoc] ds on ma.MarketAreaID = ds.MarketAreaID and p.ServAreaID = ds.ServAreaID
+		join refData.TBL_SERVICEAREA sa on sa.ServiceAreaID=psd.ServiceAreaID
+		join refData.TBL_TECHNOLOGY te on te.TechnologyID= psd.TechnologyID
+		join refData.TBL_jobstages js on js.jobstageID=rr.jobstageID
+		where rr.active=1 and p.isdeleted=0 and p.status = 'Approved' and psd.active=1 and te.active=1 and js.active=1 and sa.active=1 and ds.active = 1  
+		<if test ="ProjectID != null and ProjectID != 0"> 
+              and p.projectID=#{ProjectID} and p.ProjectID is not null
+          </if>
+		 <if test ="DomainID != null and DomainID != 0"> 
+              and dom.Domainid=#{DomainID}
+          </if> 
+           <if test ="SubServiceAreaID != null and SubServiceAreaID != 0"> 
+              and sa.ServiceAreaID=#{SubServiceAreaID}
+          </if> 
+          
+          <if test ="TechnologyID != null and TechnologyID != 0"> 
+              and te.TechnologyID=#{TechnologyID}
+          </if> 
+          
+           <if test ="PositionStatus != null and PositionStatus !=0"> 
+              and rp.PositionStatus=#{PositionStatus}
+          </if> 
+          <if test ="AllocatedResource != null and AllocatedResource!=0" > 
+              and we.signum=#{AllocatedResource}
+          </if> 
+           <if test ="spoc != null" > 
+              and ds.spoc=#{spoc}
+          </if> 
+          <if test ="marketArea !='All'"> 
+ 		    and ma.MarketAreaName=#{marketArea}
+ 		</if>
+          
+		  ) a
+		group by ProjectName,projectId ,ResourceRequestID ,SubServiceArea,Domain_SubDomain,Technology ,JobStageName,FTEPercent ,[StartDate],[EndDate] ,ResourceDescription
+    </select>
+    
+    <select id="searchResourcesByEmployeeManager" resultMap='hashmap' parameterType="SearchResourceByFilterModel">
+    
+    select distinct t1.Signum, employeeName,managerSignum ,managerName,JobStage, case when Availability > 100 or Availability is null then 100 when Availability &lt;  0 then 0 else Availability end as  Availability 
+ from (select distinct a.signum,a.employeename,a.managersignum,b.employeename as managername,a.jobstage  from refData.TBL_Employees a left join refData.TBL_Employees b on(a.managersignum=b.signum) 
+ )t1 
+ left join
+  (select round(((#{searchResourceByFilterModel.hours}-sum(BlockedHrs))/#{searchResourceByFilterModel.hours})*100,2) as Availability,signum 
+     from transactionalData.TBL_Booked_Resource   
+    where date between #{searchResourceByFilterModel.startDate} and #{searchResourceByFilterModel.endDate} group by signum )t2 on 
+	( t1.Signum=t2.Signum)
+	where 1=1  
+	  <if test ="searchResourceByFilterModel.signum != null and searchResourceByFilterModel.signum != ''"> 
+              and t1.Signum=#{searchResourceByFilterModel.signum}
+          </if> 
+           <if test ="searchResourceByFilterModel.managerSignum != null and searchResourceByFilterModel.managerSignum != ''"> 
+              and managerSignum=#{searchResourceByFilterModel.managerSignum}
+          </if> 
+  
+    </select>
+
+	<!-- <select id='searchResourcesByFilter' resultMap='hashmap'
+		parameterType="SearchResourceByFilterModel">
+		select distinct t1.Signum, employeeName,managerSignum ,managerName,JobStage,
+		case when Availability >100 or Availability is null then 100 else
+		Availability end as Availability
+		from
+		(select distinct a.signum,a.employeename,b.employeename as
+		managername,a.jobstage,a.ManagerSignum
+		from refData.TBL_Employees a left join refData.TBL_Employees b
+		on a.managersignum=b.signum 
+		join refdata.TBL_EmployeesCompetence c on a.signum=c.signum
+		join refdata.TBL_Competences d on c.MerlinExtID = d.MerlinExtID
+		left join transactionalData.TBL_WorkEffort wf on wf.signum = a.signum
+		left join transactionalData.TBL_ResourcePosition rp on rp.ResourcePositionID = wf.ResourcePositionID
+		left join transactionalData.TBL_ResourceRequests rr on rr.ResourceRequestID = rp.ResourceRequestID
+
+		where 1=1
+		<if
+			test="searchResourceByFilterModel.resourceRequestID != null and searchResourceByFilterModel.resourceRequestID != ''">
+			and rr.ResourceRequestID=#{searchResourceByFilterModel.resourceRequestID}
+		</if>
+		<if
+			test="searchResourceByFilterModel.resourceRequestID != null and searchResourceByFilterModel.resourceRequestID != ''">
+			and rr.ResourceDescription like '%${searchResourceByFilterModel.resourceRequestID}%'
+		</if>
+		<if
+			test="searchResourceByFilterModel.domain != null and searchResourceByFilterModel.domain != ''">
+			and a.Domain=#{searchResourceByFilterModel.domain}
+		</if>
+		<if
+			test="searchResourceByFilterModel.subDomain != null and searchResourceByFilterModel.subDomain != ''">
+			and a.SubDomain=#{searchResourceByFilterModel.subDomain}
+		</if>
+		<if
+			test="searchResourceByFilterModel.serviceArea != null and searchResourceByFilterModel.serviceArea != ''">
+			and a.ServiceArea=#{searchResourceByFilterModel.serviceArea}
+		</if>
+		<if
+			test="searchResourceByFilterModel.jobStage != null and searchResourceByFilterModel.jobStage != ''">
+			and a.JobStage=#{searchResourceByFilterModel.jobStage}
+		</if>
+		<if
+			test="searchResourceByFilterModel.jobName != null and searchResourceByFilterModel.jobName != ''">
+			and a.JobName=#{searchResourceByFilterModel.jobName}
+		</if>
+		
+		<if test="searchResourceByFilterModel.competenceString != null">
+			and d.competenceid in
+			<foreach item="sId" collection="searchResourceByFilterModel.competenceString" separator="," open="(" close=")">
+   	   		  #{sId}
+ 	 	    </foreach>
+		</if>
+		
+		<if test="searchResourceByFilterModel.competenceLevel != null">
+			and c.CompetenceAssessedLevel in
+			<foreach item="sId" collection="searchResourceByFilterModel.competenceLevel" separator="," open="(" close=")">
+   	   		  #{sId}
+ 	 	    </foreach>
+		</if>
+		) t1
+		left join
+		(select
+		round(((#{searchResourceByFilterModel.hours}-sum(BlockedHrs))/#{searchResourceByFilterModel.hours})*100,2)
+		as Availability,ProjectID,Positionid,WFID,signum
+		from transactionalData.TBL_Booked_Resource where date between
+		#{searchResourceByFilterModel.startDate} and
+		#{searchResourceByFilterModel.endDate}
+		group by ProjectID,Positionid,WFID,signum )t2 on
+		( t1.Signum=t2.Signum)
+		order by Availability desc
+
+	</select> -->
+		<select id='searchResourcesByFilter' resultMap='hashmap' parameterType="SearchResourceByFilterModel">
+		select distinct t1.Signum, employeeName,managerSignum ,managerName,JobStage,
+		case when Availability >100 or Availability is null then 100 else
+		Availability end as Availability
+		from
+		(select distinct a.signum,a.employeename,b.employeename as
+		managername,a.jobstage,a.ManagerSignum
+		from refData.TBL_Employees a left join refData.TBL_Employees b
+		on a.managersignum=b.signum 
+		 join refdata.TBL_EmployeesCompetence c on a.signum=c.signum
+		 <!--  join refdata.TBL_Competences d on c.MerlinExtID = d.MerlinExtID -->
+		where 1=1
+		
+	
+		<if
+			test="searchResourceByFilterModel.domain != null and searchResourceByFilterModel.domain != ''">
+			and a.Domain=#{searchResourceByFilterModel.domain}
+		</if>
+		<if
+			test="searchResourceByFilterModel.subDomain != null and searchResourceByFilterModel.subDomain != ''">
+			and a.SubDomain=#{searchResourceByFilterModel.subDomain}
+		</if>
+		<if
+			test="searchResourceByFilterModel.serviceArea != null and searchResourceByFilterModel.serviceArea != ''">
+			and a.ServiceArea=#{searchResourceByFilterModel.serviceArea}
+		</if>
+		<if
+			test="searchResourceByFilterModel.jobStage != null and searchResourceByFilterModel.jobStage != ''">
+			and a.JobStage=#{searchResourceByFilterModel.jobStage}
+		</if>
+		<if
+			test="searchResourceByFilterModel.jobName != null and searchResourceByFilterModel.jobName != ''">
+			and a.JobName=#{searchResourceByFilterModel.jobName}
+		</if>
+		
+		<!-- if test="searchResourceByFilterModel.competenceString != null">
+			and d.competenceid in
+			<foreach item="sId" collection="searchResourceByFilterModel.competenceString" separator="," open="(" close=")">
+   	   		  #{sId}
+ 	 	    </foreach>
+		</if-->
+		
+		<!-- <if test="searchResourceByFilterModel.competenceLevel != null">
+			and c.CompetenceAssessedLevel in
+			<foreach item="sId" collection="searchResourceByFilterModel.competenceLevel" separator="," open="(" close=")">
+   	   		  #{sId}
+ 	 	    </foreach>
+		</if> -->
+		) t1
+		left join
+		(select
+		round(((#{searchResourceByFilterModel.hours}-sum(BlockedHrs))/#{searchResourceByFilterModel.hours})*100,2)
+		as Availability,signum
+		from transactionalData.TBL_Booked_Resource where date between
+		#{searchResourceByFilterModel.startDate} and
+		#{searchResourceByFilterModel.endDate}
+		group by signum )t2 on
+		( t1.Signum=t2.Signum)
+		order by Availability desc
+
+	</select>
+	
+	<select id='searchResourcesByFilters' resultMap='hashmap'
+		parameterType="SearchResourceByFilterModel">
+		select distinct t1.Signum, employeeName
+		from
+		(select distinct a.signum,a.employeename,b.employeename as
+		managername,a.jobstage,a.ManagerSignum
+		from refData.TBL_Employees a left join refData.TBL_Employees b
+		on a.managersignum=b.signum 
+		 <!-- join refdata.TBL_EmployeesCompetence c on a.signum=c.signum -->
+		 <!--  join refdata.TBL_Competences d on c.MerlinExtID = d.MerlinExtID -->
+		where 1=1
+		
+		<!-- <if
+			test="searchResourceByFilterModel.jobStage != null and searchResourceByFilterModel.jobStage != ''">
+			and a.JobStage=#{searchResourceByFilterModel.jobStage}
+		</if> -->
+		<if
+			test="searchResourceByFilterModel.domain != null and searchResourceByFilterModel.domain != ''">
+			and a.Domain=#{searchResourceByFilterModel.domain}
+		</if>
+
+		<if
+			test="searchResourceByFilterModel.serviceArea != null and searchResourceByFilterModel.serviceArea != ''">
+			and a.ServiceArea=#{searchResourceByFilterModel.serviceArea}
+		</if>
+		
+		<if
+			test="searchResourceByFilterModel.jobName != null and searchResourceByFilterModel.jobName != ''">
+			and a.JobName=#{searchResourceByFilterModel.jobName}
+		</if>
+		
+		<if test="searchResourceByFilterModel.competenceString != null">
+			and d.competenceid in
+			<foreach item="sId" collection="searchResourceByFilterModel.competenceString" separator="," open="(" close=")">
+   	   		  #{sId}
+ 	 	    </foreach>
+		</if>
+				<if
+			test="searchResourceByFilterModel.subDomain != null and searchResourceByFilterModel.subDomain != ''">
+			and a.SubDomain=#{searchResourceByFilterModel.subDomain}
+		</if>
+<!-- 		<if test="searchResourceByFilterModel.competenceLevel != null">
+			and c.CompetenceAssessedLevel in
+			<foreach item="sId" collection="searchResourceByFilterModel.competenceLevel" separator="," open="(" close=")">
+   	   		  #{sId}
+ 	 	    </foreach>
+		</if> -->
+		) t1 
+		left join
+		(select
+		round(((#{searchResourceByFilterModel.hours}-sum(BlockedHrs))/#{searchResourceByFilterModel.hours})*100,2)
+		as Availability,ProjectID,Positionid,WFID,signum
+		from transactionalData.TBL_Booked_Resource where date between
+		#{searchResourceByFilterModel.startDate} and
+		#{searchResourceByFilterModel.endDate}
+		group by ProjectID,Positionid,WFID,signum )t2 on
+		( t1.Signum=t2.Signum)
+		where (Availability >=100 or Availability is null )
+
+	</select>
+    
+    
+        <resultMap type='ResourcePositionModel' id='ResourcePositionModel'>
+       <id property='resourcePositionID'           column='resourcePositionID'/>
+        <result property='resourceRequestID'        column='resourceRequestID'/>
+        <result property='cRStatus'        column='cRStatus'/>
+        <result property='inActivatedOn'        column='inActivatedOn'/>
+         <!-- <result property='allocatedBy'        column='allocatedBy'/> -->
+         <result property='isActivie'        column='isActivie'/>
+        <result property='positionStatus'        column='positionStatus'/>
+        <result property='requestedBy'        column='requestedBy'/>
+        <result property='requestedOn' column='requestedOn'/>
+        <result property='lastModifiedBy' column='lastModifiedBy'/>
+        <result property='lastModifiedOn' column='lastModifiedOn'/>
+    </resultMap>
+    
+   <!-- //TODO code cleanup
+    <update id='changePositionStatus' parameterType="ResourcePositionModel">
+  
+        UPDATE transactionalData.TBL_ResourcePosition set         		
+        lastModifiedOn=getDate(),
+        lastModifiedBy=#{resourcePositionModel.lastModifiedBy,jdbcType=VARCHAR},
+        positionStatus='Resource Proposal'
+        where resourcePositionID=#{resourcePositionModel.resourcePositionID,jdbcType=INTEGER};
+    </update> -->
+    
+    <!-- //TODO code cleanup 
+    <select id='searchDemandPositions'  resultMap='ResourcePositionModel' >
+	select 
+	distinct 
+	t1.ResourcePositionID, t1.ResourceRequestID,t1.PositionStatus, IsActivie,
+	convert(nvarchar(MAX), t1.InActivatedOn, 23) as InActivatedOn ,CRStatus,RequestedBy,
+	convert(nvarchar(MAX), t1.RequestedOn, 23) as RequestedOn,convert(nvarchar(MAX), t1.LastModifiedOn, 23) as LastModifiedOn,t1.LastModifiedBy
+	from transactionalData.TBL_ResourcePosition t1
+	left join transactionalData.TBL_ResourceRequests t2 on (t1.ResourceRequestID=t2.resourceRequestID)
+	left join transactionalData.TBL_ChangeRequestPosition t3 on (t3.ResourceRequestID= t2.resourceRequestId 
+	and t3.ResourcePositionID=t1.ResourcePositionID)
+	left join transactionalData.TBL_PROJECTSCOPEDETAIL t4 on(t4.projectScopeDetailId=t2.projectScopeDetailId)
+     where 1='1'
+          <if test ="domainID != null and domainID != 0"> 
+             and t4.domainID=#{domainID}
+          </if> 
+           <if test ="serviceAreaID != null and serviceAreaID != 0"> 
+              and t4.serviceAreaID=#{serviceAreaID}
+          </if> 
+          <if test ="technologyID != null and technologyID != 0"> 
+              and t4.technologyID=#{technologyID}
+          </if> 
+		  <if test ="positionStatus != null "> 
+              and t1.positionStatus=#{positionStatus,jdbcType=VARCHAR}
+          </if> 
+           <if test ="resourceSignum != null "> 
+              and t3.signum=#{resourceSignum,jdbcType=VARCHAR}
+          </if> 
+     
+    </select> -->
+    
+    <!--   //TODO Code Cleanup
+    <select id='SearchDemandRequests'  resultMap='hashmap' >
+       select ResourceRequestID,Domain,ServiceArea,Technology,JobStageName,FTEPercent,OnsiteCount,RemoteCount,StartDate,EndDate
+ from (select a.ResourceRequestID,DomainID,ServiceAreaID,TechnologyID,JobStageID,FTEPercent,OnsiteCount,RemoteCount,StartDate,EndDate from transactionalData.TBL_ResourceRequests a 
+join transactionalData.TBL_PROJECTSCOPEDETAIL b on(a.ProjectScopeDetailID=b.ProjectScopeDetailID)
+join transactionalData.TBL_ResourceRequestWorkEfforts c on(a.ResourceRequestID=c.ResourceRequestID))t1
+join refdata.TBL_DOMAIN t2 on(t1.DomainID =t2.DomainID)
+join refData.TBL_SERVICEAREA t3 on(t1.ServiceAreaID=t3.ServiceAreaID)
+join refData.TBL_TECHNOLOGY t4 on(t1.TechnologyID=t4.TechnologyID)
+join refData.TBL_JobStages t5  on(t1.JobStageID=t5.JobStageID)
+          <where>
+          <if test ="ProjectScopeID != null and ProjectScopeID != 0"> 
+              b.ProjectScopeID=#{ProjectScopeID}
+          </if> 
+           <if test ="DomainID != null and DomainID != 0"> 
+              and t1.Domainid=#{DomainID}
+          </if> 
+           <if test ="SubServiceAreaID != null and SubServiceAreaID != 0"> 
+              and t1.ServiceAreaID=#{SubServiceAreaID}
+          </if> 
+           <if test ="TechnologyID != null and TechnologyID != 0"> 
+              and t1.TechnologyID=#{TechnologyID}
+          </if> 
+          </where>
+    </select> -->
+    
+     <update id = 'ModifyDemandRequest' parameterType="ResourceModel">
+update transactionalData.TBL_ResourceRequestWorkEfforts set StartDate=#{resourceModel.startDate} ,
+EndDate=#{resourceModel.endDate},Duration=#{resourceModel.duration},FTEPercent=#{resourceModel.fte},Hours=#{resourceModel.hours}
+where ResourceRequestID = #{resourceModel.resourceRequestID};
+    </update>
+    
+    <!-- //TODO code cleanup 
+  <select id='searchChangeRequests'  resultMap='hashmap' >
+       select ChangeRequestID,t1.ResourcePositionID,t1.ResourceRequestID,t1.Signum as view_resource,t1.CR_Status,t1.Comments,ActionType,t1.PositionStatus,
+t1.CreatedBy,convert(nvarchar(MAX), t1.CreatedOn, 23) as CreatedOn,t1.LastModifiedBy,
+convert(nvarchar(MAX), t1.LastModifiedon, 23) as LastModifiedon
+,t3.signum as allocatedResource
+from transactionalData.TBL_ChangeRequestPosition t1
+join  transactionalData.TBL_ResourceRequests t2 on (t2.resourceRequestId=t1.resourceRequestId)
+join transactionalData.TBL_WORKEffort t3 on (t3.ResourcePositionID=t1.resourcePositionId)
+join transactionalData.TBL_PROJECTSCOPEDETAIL t5 on (t5.ProjectScopeDetailID=t2.ProjectScopeDetailID)
+join transactionalData.TBL_PROJECTSCOPE t6 on (t6.ProjectScopeID=t5.ProjectScopeID)
+          <where>
+          <if test ="projectID!= null and projectID!=0"> 
+              t6.projectID=#{projectID}
+          </if> 
+           <if test ="changeRequestType!= null"> 
+              and t1.ActionType=#{changeRequestType,jdbcType=VARCHAR}
+          </if> 
+           <if test ="positionStatus!= null "> 
+              and t1.positionStatus=#{positionStatus,jdbcType=VARCHAR}
+          </if> 
+           <if test ="resourceSignum!= null "> 
+              and t3.signum=#{resourceSignum,jdbcType=VARCHAR}
+          </if> 
+          </where>
+    </select> -->
+    
+         <update id = 'modifyWorkEffort' parameterType="ResourceModel">
+update transactionalData.TBL_ResourceRequestWorkEfforts set StartDate=#{resourceModel.startDate} ,
+EndDate=#{resourceModel.endDate},Duration=#{resourceModel.duration},FTEPercent=#{resourceModel.fte},Hours=#{resourceModel.hours}
+where ResourceRequestID = #{resourceModel.resourceRequestID};
+
+    </update>
+    <update id = 'modifyDemandRequest' parameterType="ResourceModel">
+update transactionalData.TBL_ResourceRequests set jobRoleID=#{jobRoleID} ,jobstageID=#{jobStageID},ResourceType=#{resourceType},
+requestType =#{requestType} ,OnsiteCount=#{onsiteCount},RemoteCount=#{remoteCount}
+where ResourceRequestID = #{resourceRequestID};
+    </update>
+   <!-- //TODO code cleanup
+     <insert id = 'CreateResourceReplacement' parameterType="ChangeRequestPositionModel">
+  insert into  [transactionalData].[TBL_ChangeRequestPosition] values
+  (#{changeRequestPositionModel.resourcePositionID},#{changeRequestPositionModel.resourceRequestID},#{changeRequestPositionModel.signum},
+  #{changeRequestPositionModel.CR_Status},#{changeRequestPositionModel.comments},#{changeRequestPositionModel.actionType},
+  #{changeRequestPositionModel.positionStatus},#{changeRequestPositionModel.createdBy},getDate(),#{changeRequestPositionModel.lastModifiedBy},getdate())
+    </insert> -->
+    
+    <select id='checkIfResourceExists' resultType="Boolean" parameterType="ChangeRequestPositionModel">
+        IF Exists(select * from transactionalData.TBL_ChangeRequestPosition where resourcePositionID = #{changeRequestPositionModel.resourcePositionID} and 
+        resourceRequestID =#{changeRequestPositionModel.resourceRequestID} and signum =#{changeRequestPositionModel.signum} )
+        Begin
+        Select 1 as 'Result'
+        End
+        else
+        Begin
+        Select 0 as 'Result'
+        End
+    </select>  
+    
+   <!-- //TODO code cleanup
+     <update id = 'modifyDemandPositionRP' parameterType="ModifyDemandModel">
+		UPDATE 
+	 	t1
+	 	 <set>
+      <if test="inputMap.positionStatus != null">t1.positionStatus=#{inputMap.positionStatus},</if>
+      <if test="inputMap.isActivie != null">t1.isActivie=#{inputMap.isActivie},</if>
+      <if test="inputMap.CRStatus != null">t1.CRStatus=#{inputMap.CRStatus}</if>
+      
+    </set>
+	 	 from transactionalData.TBL_ResourcePosition t1  join transactionalData.TBL_ResourceRequests t2
+		on (t1.ResourceRequestID=t2.ResourceRequestID)
+ 		left join transactionalData.TBL_WorkEffort t3 on (t1.ResourcePositionID=t3.resourcePositionId)
+		left join refData.TBL_Employees t4 on (t3.signum=t4.signum)
+		left join transactionalData.TBL_PROJECTSCOPEDETAIL t5 on (t5.ProjectScopeDetailID=t2.ProjectScopeDetailID)
+		left join refData.TBL_DOMAIN t6 on (t6.DomainID=t5.DomainID)
+		left join refData.TBL_SERVICEAREA t7 on (t7.ServiceAreaID=t5.ServiceAreaID)
+		left join refData.tbl_technology t8 on (t8.TechnologyID=t5.TechnologyID)
+		left join refData.tbl_employees t9 on (t4.ManagerSignum=t9.signum)
+		left join transactionalData.TBL_ChangeRequestPosition t10 on (t10.ResourcePositionID=t1.ResourcePositionID
+		and t10.ResourceRequestID=t2.ResourceRequestID)
+		where 
+		t1.resourcePositionId=#{inputMap.resourcePositionId}
+    </update> -->
+  	
+  	<!--  //TODO code cleanup
+  	<update id = 'modifyDemandPositionPSD' parameterType="ModifyDemandModel">
+	update   
+	t5
+
+	 <set>
+      <if test="inputMap.domainId != null">t5.domainId=#{inputMap.domainId},</if>
+      <if test="inputMap.serviceAreaId != null">t5.serviceAreaId=#{inputMap.serviceAreaId},</if>
+      <if test="inputMap.technologyId != null"> t5.technologyId=#{inputMap.technologyId} </if>
+      
+    </set>
+	from transactionalData.TBL_ResourcePosition t1  join transactionalData.TBL_ResourceRequests t2
+		on (t1.ResourceRequestID=t2.ResourceRequestID)
+ 		left join transactionalData.TBL_WorkEffort t3 on (t1.ResourcePositionID=t3.resourcePositionId)
+		left join refData.TBL_Employees t4 on (t3.signum=t4.signum)
+		left join transactionalData.TBL_PROJECTSCOPEDETAIL  t5 on (t5.ProjectScopeDetailID=t2.ProjectScopeDetailID)
+		left join refData.TBL_DOMAIN t6 on (t6.DomainID=t5.DomainID)
+		left join refData.TBL_SERVICEAREA t7 on (t7.ServiceAreaID=t5.ServiceAreaID)
+		left join refData.tbl_technology t8 on (t8.TechnologyID=t5.TechnologyID)
+		left join refData.tbl_employees t9 on (t4.ManagerSignum=t9.signum)
+		left join transactionalData.TBL_ChangeRequestPosition t10 on (t10.ResourcePositionID=t1.ResourcePositionID
+		and t10.ResourceRequestID=t2.ResourceRequestID)
+		where 
+		t1.resourcePositionId=#{inputMap.resourcePositionId}
+    </update> -->
+    
+   <!--  //TODO code cleanup
+     <update id = 'modifyDemandPositionWE' parameterType="ModifyDemandModel">
+		update  
+ 		t3
+		 <set>
+      <if test="inputMap.resourceSignum != null">t3.signum=#{inputMap.resourceSignum},</if>
+      <if test="inputMap.startDate != null">t3.startDate=#{inputMap.startDate},</if>
+      <if test="inputMap.endDate != null"> t3.endDate=#{inputMap.endDate} </if>
+      
+    </set>
+		
+		from transactionalData.TBL_ResourcePosition t1  join transactionalData.TBL_ResourceRequests t2
+		on (t1.ResourceRequestID=t2.ResourceRequestID)
+ 		left join transactionalData.TBL_WorkEffort t3 on (t1.ResourcePositionID=t3.resourcePositionId)
+		left join refData.TBL_Employees t4 on (t3.signum=t4.signum)
+		left join transactionalData.TBL_PROJECTSCOPEDETAIL t5 on (t5.ProjectScopeDetailID=t2.ProjectScopeDetailID)
+		left join refData.TBL_DOMAIN t6 on (t6.DomainID=t5.DomainID)
+		left join refData.TBL_SERVICEAREA t7 on (t7.ServiceAreaID=t5.ServiceAreaID)
+		left join refData.tbl_technology t8 on (t8.TechnologyID=t5.TechnologyID)
+		left join refData.tbl_employees t9 on (t4.ManagerSignum=t9.signum)
+		left join transactionalData.TBL_ChangeRequestPosition t10 on (t10.ResourcePositionID=t1.ResourcePositionID
+		and t10.ResourceRequestID=t2.ResourceRequestID)
+		where 
+		t1.resourcePositionId=#{inputMap.resourcePositionId}
+    </update> -->
+    
+    <!-- //TODO code cleanup
+       <update id = 'modifyDemandPositionCRP' parameterType="ModifyDemandModel">
+		update  
+		t10
+		
+		<set>
+      		<if test="inputMap.actionType != null"> t10.ActionType=#{inputMap.actionType}</if>
+      
+    	</set>
+
+		from transactionalData.TBL_ResourcePosition t1  join transactionalData.TBL_ResourceRequests t2
+		on (t1.ResourceRequestID=t2.ResourceRequestID)
+ 		left join transactionalData.TBL_WorkEffort t3 on (t1.ResourcePositionID=t3.resourcePositionId)
+		left join refData.TBL_Employees t4 on (t3.signum=t4.signum)
+		left join transactionalData.TBL_PROJECTSCOPEDETAIL t5 on (t5.ProjectScopeDetailID=t2.ProjectScopeDetailID)
+		left join refData.TBL_DOMAIN t6 on (t6.DomainID=t5.DomainID)
+		left join refData.TBL_SERVICEAREA t7 on (t7.ServiceAreaID=t5.ServiceAreaID)
+		left join refData.tbl_technology t8 on (t8.TechnologyID=t5.TechnologyID)
+		left join refData.tbl_employees t9 on (t4.ManagerSignum=t9.signum)
+		left join transactionalData.TBL_ChangeRequestPosition t10 on (t10.ResourcePositionID=t1.ResourcePositionID
+		and t10.ResourceRequestID=t2.ResourceRequestID)
+		where 
+		t1.resourcePositionId=#{inputMap.resourcePositionId}
+
+    </update> -->
+    
+    <select id='getBookedResourceBySignum' resultType='java.util.LinkedHashMap'>
+        SELECT  convert(varchar(25), [Date], 120) as date, sum([BlockedHrs]) BlockedHrs FROM [transactionalData].[TBL_Booked_Resource]
+        WHERE Signum=#{signum} AND DATE BETWEEN #{startDate} AND #{endDate} 
+		group by convert(varchar(25), [Date], 120)
+  		ORDER BY convert(varchar(25), [Date], 120) DESC
+    </select>  
+    
+    
+   <!--//TODO code cleanup
+     <select id='getAllCertifications' resultType='HashMap'>
+        select CertificateID,CertificateName,Issuer,CertificateType,CreatedBy,CreatedOn,LastModifiedBy,LastModifiedOn 
+        from refData.TBL_Certificates 
+		<if test ="issuer != null"> 
+             where Issuer = #{issuer}
+        </if> 
+
+    </select>  -->
+    
+   <!--  //TODO code cleanup
+     <select id='getJobRoles' resultType='HashMap'>
+       select JobRoleID,JobRoleName,CreatedBy,CreatedOn,LastModifiedBy,LastModifiedOn 
+       from refData.TBL_JobRoles
+
+    </select>  -->
+    <select id='getJobStages' resultType='HashMap'>
+       select JobStageID,JobStageName,CreatedBy,CreatedOn,LastModifiedBy,LastModifiedOn 
+    from refData.TBL_JobStages order by JobStageName
+    </select>
+   <!-- //TODO code cleanup
+    <select id='getOnsiteLocations' resultType='HashMap'>
+       select OnsiteLocationID,LocationName,CreatedBy,CreatedOn,LastModifiedBy,LastModifiedOn 
+       from refData.TBL_OnsiteLocations
+    </select> -->
+    <select id='getDomainDetailsByPorjectScopeId' resultType='HashMap'>
+        SELECT d.Domain,d.SubDomain
+		  FROM [transactionalData].[TBL_PROJECTSCOPEDETAIL] ps
+		  join [refData].[TBL_DOMAIN] d on d.DomainID=ps.DomainID
+		  where ProjectScopeDetailID=#{projectScopeDetailID}
+    </select>
+    
+     <select id='getResourceCalander' resultType='com.ericsson.isf.model.ResourceCalandarModel'>
+                      declare @startdate DateTime=#{startdate}  
+                      declare @enddate DateTime=#{enddate}
+                      declare @signum varchar(10)=#{signum}
+             
+                    select  t1.WOID as ID,t1.WOName as Text, t1.ProjectID
+                , Type='WorkOrder',t1.Status
+                    ,convert(nvarchar(max),case when (t1.Status='CLOSED' or t1.status='COMPLETED' or t1.status='INPROGRESS') then t1.ActualStartDate else t1.PlannedStartDate end,21)
+                    as start_date
+                    ,convert(nvarchar(MAX),case when (t1.Status='CLOSED' or t1.status='COMPLETED' ) then t1.ActualEndDate 
+                    when (t1.status='INPROGRESS' and t1.ActualStartDate>=t1.PlannedEndDate) then DATEADD(minute, t1.SLAHrs*60, t1.ActualStartDate)
+                    else t1.PlannedEndDate end,21) as end_date 
+                    from transactionalData.TBL_WORK_ORDER t1 join
+                 transactionalData.TBL_WORK_ORDER_PLAN as t2 on t1.WOPlanID=t2.WOPlanID
+                    join
+                    transactionalData.TBL_PROJECTS as t3 on t2.ProjectID=t3.ProjectID
+                     inner join transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF t4
+                                                                 ON t4.subactivityflowchartdefId=t1.flowchartdefId and t4.projectid = t1.projectid
+                                                                  AND t4.subactivityid = t1.subactivityid
+                      where t1.signumID=@signum and
+                    ((( t1.PlannedStartDate between @Startdate and @EndDate or t1.PlannedEndDate between @Startdate and @EndDate)
+                                    and not(t1.Status='CLOSED' or t1.status='COMPLETED' or t1.Status='INPROGRESS'))
+                    or
+                    ( (t1.ActualStartDate between @Startdate and @EndDate or t1.ActualEndDate between @Startdate and @EndDate) 
+                                     and (t1.Status='CLOSED' or t1.status='COMPLETED' or t1.Status='INPROGRESS'))) 
+                    and t1.Active=1
+                    UNION ALL
+                    select t1.ADHOCBOOKINGACTIVITYID as ID,(t1.Type+'-'+t1.Activity) as
+                    Text,  0 as ProjectID , Type,t1.Status,convert(nvarchar(MAX),t2.StartDate,21)
+                    as start_date,convert(nvarchar(MAX),t2.ActualEndDate,21) as end_date 
+                    from refData.TBL_ADHOC_BOOKING_ACTIVITY as t1 join
+                    transactionalData.TBL_ADHOC_BOOKING as t2 on
+                    t1.ADHOCBOOKINGACTIVITYID=t2.ADHOCBOOKINGACTIVITYID
+                    where
+                    t2.SignumID=@signum and t2.ActualEndDate is not null
+                    and (t2.StartDate between @Startdate and @EndDate or t2.ActualEndDate
+                    between @Startdate and @EndDate ) and t1.Status='Active' and t2.active=1
+                    UNION ALL
+                    select t1.LeavePlanID as ID,t1.Type as Text, 0 as ProjectID, 'Leave' as Type,'Active' AS Status,
+            convert(nvarchar(MAX),DATEADD(day, DATEDIFF(day, 0, t1.StartDate), 
+                      Cast(case when st.ShiftStarttime is null then '08:00:00' else st.ShiftStarttime end as varchar)),21) as start_date,
+           CASE WHEN LeaveHours = 0 THEN      CONVERT(NVARCHAR(max), Dateadd(day, Datediff(day, 0, t1.enddate), 
+      Cast( CASE WHEN st.shiftendtime IS NULL THEN '17:00:00'  ELSE st.shiftendtime
+       END AS VARCHAR)), 21)
+             ELSE  CONVERT(NVARCHAR(max), DATEADD(Second,t1.LeaveHours *60*60, 
+                           CONVERT(NVARCHAR(max), Dateadd(day, Datediff(day, 0, t1.startdate), 
+                              Cast(CASE WHEN  st.shiftstarttime IS NULL 
+                                   THEN '08:00:00'  ELSE   st.shiftstarttime 
+                                   END AS   VARCHAR)), 21) ),21) 
+        END  AS 
+       end_date  
+            from transactionalData.TBL_Leave_Plan as t1
+            LEFT JOIN( 
+                          SELECT st.ShiftStarttime,st.ShiftEndTime,st.Signum,st.isActive ,st.StartDate
+                          from  transactionalData.[TBL_Shift_Timmings] st
+                          LEFT JOIN transactionalData.TBL_User_Preferences up 
+                          on up.UserSignum=st.Signum and up.DefaultName='timezone' and up.IsActive=1
+                          where st.Signum=@signum and st.isActive=1 and st.StartDate =@startdate 
+            ) st on st.Signum=t1.Signum
+            where 
+            (t1.StartDate between @Startdate and @EndDate 
+                    or t1.EndDate between @Startdate and @EndDate 
+                    or t1.LeaveDate between @Startdate and @EndDate
+                    or t1.StartDate  &lt;= @startDate 
+                    or t1.EndDate>= @enddate ) 
+ 
+                    and t1.isActive=1 and t1.Signum=@signum
+                  
+
+			
+			<!-- select t1.LeavePlanID as ID,t1.Type as Text,0 AS ProjectID,'Leave Plan' AS ProjectName,'Leave' as Type,'Active' AS Status,convert(nvarchar(MAX),t1.StartDate,21) as start_date,
+			convert(nvarchar(MAX),t1.EndDate,21) as end_date
+			from transactionalData.TBL_Leave_Plan as t1
+			where (t1.StartDate between @Startdate and @EndDate or t1.EndDate between @Startdate and @EndDate) and t1.isActive=1 and t1.Signum=@signum -->
+			
+            <!-- select t1.LeavePlanID as ID,t1.Type as Text,0 AS ProjectID,
+            'Leave Plan' AS ProjectName,'Leave' as Type,'Active' AS Status,
+            convert(nvarchar(MAX),DATEADD(day, DATEDIFF(day, 0, t1.StartDate), Cast(case when st.ShiftStarttime is null then
+            '08:00:00' else st.ShiftStarttime end as varchar)),21) as start_date,
+            convert(nvarchar(MAX),DATEADD(day, DATEDIFF(day, 0, t1.EndDate), Cast(case when st.ShiftEndtime is null then
+             '17:00:00' else st.ShiftEndTime end as varchar)),21) as end_date
+            from transactionalData.TBL_Leave_Plan as t1
+            LEFT JOIN( 
+				SELECT st.ShiftStarttime,st.ShiftEndTime,st.Signum,st.isActive ,st.StartDate
+				from  transactionalData.[TBL_Shift_Timmings] st
+				LEFT JOIN transactionalData.TBL_User_Preferences up 
+				on up.UserSignum=st.Signum and up.DefaultName='timezone' and up.IsActive=1
+				where st.Signum=@signum and st.isActive=1 and st.StartDate =@startdate 
+            ) st on st.Signum=t1.Signum
+            where 
+            (t1.StartDate between @Startdate and @EndDate 
+			or t1.EndDate between @Startdate and @EndDate 
+			or t1.LeaveDate between @Startdate and @EndDate
+			or t1.StartDate &lt; @startDate 
+			or t1.EndDate &gt; @enddate ) 
+ 
+			and t1.isActive=1 and t1.Signum=@signum -->
+	 </select>
+
+	<!-- <select id='getWOResourceLevelDetailsX' resultType='com.ericsson.isf.model.ResourceEngagementModel'>
+	
+		SELECT  
+			DISTINCT WO.WOID,bookinghours,WO.flowchartDefId,bh.startdate bookingStartDate,bh.enddate bookingEndDate, UPPER(WO.SignumID) AS SignumID,wo.PlannedStartDate AS plannedStartDate,
+			wo.PlannedEndDate plannedEndDate,wo.status, wo.SLAHrs,'Planned' AS [type], EM.EmployeeName
+			from transactionalData.TBL_WORK_ORDER (nolock) wo
+				inner join transactionalData.TBL_WORK_ORDER_PLAN (nolock) wop on wop.WOPlanID=wo.WOPlanID
+				INNER JOIN transactionalData.TBL_PROJECTS p ON wop.[ProjectID] = p.ProjectID  
+				<if test ="projectID != 0"> 
+					left join transactionalData.TBL_DELIVERY_RESPONSIBLE dr on dr.ProjectID = p.ProjectID
+					and dr.active=1
+					INNER join (
+					select DISTINCT SIGNUM from transactionalData.TBL_Booked_Resource br
+					
+					WHERE br.ProjectID=#{projectID} and  br.Date &gt;= #{startDate} and br.Date &lt;= #{endDate} and br.Active != 0
+					union all
+					select DISTINCT SignumID as SIGNUM from transactionalData.TBL_WORK_ORDER where ((CONVERT(DATE, PlannedStartDate) between #{startDate} and #{endDate}  
+					) or (CONVERT(DATE, PlannedEndDate) between #{startDate} and #{endDate} ))  and PROJECTID = #{projectID}
+				) s on s.Signum=WO.SignumID
+				</if> 
+				left join 
+				(	
+				
+				select startdate,enddate,woid,hours bookinghours from
+					 transactionalData.TBL_WORK_ORDER_BOOKING_DETAILS b 
+					 where Type='BOOKING' and hours is not null and hours!=0
+					 and StartDate &gt;=#{startDate} and EndDate &lt;=#{endDate} 
+				) bh on bh.WOID=wo.WOID
+				left join refData.TBL_Employees EM on UPPER(WO.SignumID) = UPPER(EM.Signum)
+
+			where wop.Active=1 and wo.Active=1 
+			<if test ="projectID != 0"> 
+				and wo.PROJECTID= #{projectID}  and ( p.CPM = #{signumID} or p.ProjectCreator =#{signumID} OR dr.SignumID=#{signumID}) 
+			</if>
+			<if test ="projectID == 0">
+				and  wo.SignumID= #{signumID}
+			</if>
+				and ((CONVERT(DATE, wo.PlannedStartDate) between #{startDate} and #{endDate}) OR 
+					(CONVERT(DATE, wo.PlannedEndDate) between #{startDate} and #{endDate})
+					 OR
+				   (CONVERT(DATE, wo.PlannedEndDate) &lt;= #{startDate} ) OR
+				    (CONVERT(DATE, wo.PlannedStartDate) &lt;= #{startDate} ) 
+					)
+				and p.isdeleted=0 and p.Status !='REJECTED' 
+		union ALL
+			SELECT  distinct ab.ADHOCBOOKINGID ,0 bookinghours,0 flowchartDefId,null bookingStartDate,null bookingEndDate,UPPER(AB.[SignumID]) AS SignumID,
+			AB.[StartDate] AS plannedStartDate,
+			AB.[ActualEndDate] AS plannedEndDate,AB.Status, 1 sla, ABA.Type+' '+ABA.Activity AS [type], EM.EmployeeName
+			FROM [transactionalData].[TBL_ADHOC_BOOKING] AB 
+			  left join refData.TBL_ADHOC_BOOKING_ACTIVITY ABA on AB.ADHOCBOOKINGACTIVITYID	=	ABA.ADHOCBOOKINGACTIVITYID
+			  left join refData.TBL_Employees EM on UPPER(AB.[SignumID]) = UPPER(EM.Signum)
+			 
+			<if test ="projectID != 0"> 
+				INNER join (
+					select DISTINCT SIGNUM from transactionalData.TBL_Booked_Resource br
+					
+					WHERE br.ProjectID=#{projectID} and  br.Date &gt;= #{startDate} and br.Date &lt;= #{endDate} and br.Active != 0
+					union all
+					select DISTINCT SignumID as SIGNUM from transactionalData.TBL_WORK_ORDER where ((CONVERT(DATE, PlannedStartDate) between #{startDate} and #{endDate}  
+					) or (CONVERT(DATE, PlannedEndDate) between #{startDate} and #{endDate} )) and PROJECTID = #{projectID}
+					union all
+					select DISTINCT TDR.SignumID from  [transactionalData].[TBL_DELIVERY_RESPONSIBLE] TDR where TDR.ProjectID=#{projectID} and TDR.Active!=0
+				) s on AB.SignumID=s.Signum
+			</if>
+			where
+			<if test ="projectID == 0">
+				  AB.[SignumID]= #{signumID} and
+			</if>
+			((CONVERT(DATE, AB.StartDate) between #{startDate} and #{endDate})  OR 
+			(CONVERT(DATE, AB.ActualEndDate) between #{startDate} and #{endDate}))
+			and AB.active = 1 and AB.Status = 'COMPLETED' and ABA.Status='Active'
+		<if test ="projectID != 0"> 
+		union all
+			 Select distinct  we.WorkEffortID as WOID,we.Hours bookinghours, 0 flowchartDefId,null bookingStartDate,null bookingEndDate, 
+				UPPER(We.Signum) AS SignumID, 
+				we.StartDate AS plannedStartDate, we.EndDate plannedEndDate,we.PositionStatus as status, 0 sla,'Planned' AS [type], EM.EmployeeName 
+			from  transactionalData.TBL_WorkEffort we 
+			join transactionaldata.TBL_ResourcePosition rp on rp.ResourcePositionID=we.ResourcePositionID
+			join transactionalData.TBL_ResourceRequests rr on rr.ResourceRequestID= rp.ResourceRequestID
+			left join refData.TBL_Employees EM on UPPER(We.Signum) = UPPER(EM.Signum)
+			WHERE ProjectID=#{projectID} and 
+			(CONVERT(DATE, we.StartDate) between #{startDate} and #{endDate}) 
+			((#{startDate} between WE.startdate and WE.enddate) or (#{endDate} BETWEEN WE.STARTDATE AND WE.ENDDATE) )
+			and  we.IsActive=1 and we.Signum is not null
+		</if>
+			
+
+	</select> -->
+	<select id='getAvgLoeForWoID' resultType='Map'>
+		<!-- Old Query -->
+		<!-- select flowchartdefid, SUM(Hours)/COUNT(distinct WO.WOID) as AVGHours 
+			from transactionalData.TBL_WORK_ORDER WO left join transactionalData.TBL_WORK_ORDER_BOOKING_DETAILS 
+			WO_BD on WO.WOID = WO_BD.WOID Where wo.WOID IN (${woID}) and ActualStartDate 
+			is not null and ActualEndDate is not null and WO_BD.Hours is not null and 
+			WO_BD.Type = 'BOOKING' group by flowchartdefid -->
+
+
+		Create Table #temp(WOID int)
+
+		insert into #temp
+		SELECT
+		DISTINCT WO.WOID
+		from transactionalData.TBL_WORK_ORDER (nolock) wo
+		inner join transactionalData.TBL_WORK_ORDER_PLAN (nolock) wop on
+		wop.WOPlanID=wo.WOPlanID
+		INNER JOIN transactionalData.TBL_PROJECTS p ON wop.[ProjectID] =
+		p.ProjectID
+		<if test="projectID != 0">
+			left join transactionalData.TBL_DELIVERY_RESPONSIBLE dr on dr.ProjectID =
+			p.ProjectID
+			and dr.active=1
+			INNER join (
+			select DISTINCT SIGNUM from transactionalData.TBL_Booked_Resource br
+
+			WHERE br.ProjectID=#{projectID} and br.Date &gt;= #{startDate} and br.Date
+			&lt;= #{endDate} and br.Active != 0
+			union all
+			select DISTINCT SignumID as SIGNUM from transactionalData.TBL_WORK_ORDER
+			where ((CONVERT(DATE, PlannedStartDate) between #{startDate} and
+			#{endDate}
+			) or (CONVERT(DATE, PlannedEndDate) between #{startDate} and
+			#{endDate} )) and PROJECTID = #{projectID}
+			) s on s.Signum=WO.SignumID
+		</if>
+		left join
+		(
+
+		select startdate,enddate,woid,hours bookinghours from
+		transactionalData.TBL_WORK_ORDER_BOOKING_DETAILS b
+		where Type='BOOKING' and hours is not null and hours!=0
+		and StartDate &gt;=#{startDate} and EndDate &lt;=#{endDate}
+		) bh on bh.WOID=wo.WOID
+		left join refData.TBL_Employees EM on UPPER(WO.SignumID) =
+		UPPER(EM.Signum)
+
+		where wop.Active=1 and wo.Active=1
+		<if test="projectID != 0">
+			and wo.PROJECTID= #{projectID} and ( p.CPM = #{signumID} or
+			p.ProjectCreator =#{signumID} OR dr.SignumID=#{signumID})
+		</if>
+		<if test="projectID == 0">
+			and wo.SignumID= #{signumID}
+		</if>
+		and ((CONVERT(DATE, wo.PlannedStartDate) between #{startDate} and
+		#{endDate}) OR
+		(CONVERT(DATE, wo.PlannedEndDate) between #{startDate} and #{endDate})
+		OR
+		(CONVERT(DATE, wo.PlannedEndDate) &lt;= #{startDate} ) OR
+		(CONVERT(DATE, wo.PlannedStartDate) &lt;= #{startDate} )
+		)
+		and p.isdeleted=0 and p.Status !='REJECTED'
+		union ALL
+		SELECT distinct ab.ADHOCBOOKINGID
+		FROM [transactionalData].[TBL_ADHOC_BOOKING] AB
+		left join refData.TBL_ADHOC_BOOKING_ACTIVITY ABA on
+		AB.ADHOCBOOKINGACTIVITYID = ABA.ADHOCBOOKINGACTIVITYID
+		left join refData.TBL_Employees EM on UPPER(AB.[SignumID]) =
+		UPPER(EM.Signum)
+
+		<if test="projectID != 0">
+			INNER join (
+			select DISTINCT SIGNUM from transactionalData.TBL_Booked_Resource br
+
+			WHERE br.ProjectID=#{projectID} and br.Date &gt;= #{startDate} and br.Date
+			&lt;= #{endDate} and br.Active != 0
+			union all
+			select DISTINCT SignumID as SIGNUM from transactionalData.TBL_WORK_ORDER
+			where ((CONVERT(DATE, PlannedStartDate) between #{startDate} and
+			#{endDate}
+			) or (CONVERT(DATE, PlannedEndDate) between #{startDate} and
+			#{endDate} )) and PROJECTID = #{projectID}
+			union all
+			select DISTINCT TDR.SignumID from
+			[transactionalData].[TBL_DELIVERY_RESPONSIBLE] TDR where
+			TDR.ProjectID=#{projectID} and TDR.Active!=0
+			) s on AB.SignumID=s.Signum
+		</if>
+		where
+		<if test="projectID == 0">
+			AB.[SignumID]= #{signumID} and
+		</if>
+		((CONVERT(DATE, AB.StartDate) between #{startDate} and #{endDate}) OR
+		(CONVERT(DATE, AB.ActualEndDate) between #{startDate} and #{endDate}))
+		and AB.active = 1 and AB.Status = 'COMPLETED' and ABA.Status='Active'
+		<if test="projectID != 0">
+			union all
+			Select distinct we.WorkEffortID as WOID
+			from transactionalData.TBL_WorkEffort we
+			join transactionaldata.TBL_ResourcePosition rp on
+			rp.ResourcePositionID=we.ResourcePositionID
+			join
+			transactionalData.TBL_ResourceRequests rr on rr.ResourceRequestID=
+			rp.ResourceRequestID
+			left join refData.TBL_Employees EM on
+			UPPER(We.Signum) = UPPER(EM.Signum)
+			WHERE ProjectID=#{projectID} and
+			<!-- (CONVERT(DATE, we.StartDate) between #{startDate} and #{endDate}) -->
+			((#{startDate} between WE.startdate and WE.enddate) or (#{endDate}
+			BETWEEN WE.STARTDATE AND WE.ENDDATE) )
+			and we.IsActive=1 and we.Signum
+			is not null
+		</if>
+		union all
+		select distinct wo.woid
+		from transactionalData.TBL_WORK_ORDER wo
+		LEFT join (
+		select DISTINCT SIGNUM from transactionalData.TBL_Booked_Resource
+		WHERE ProjectID=348
+		) s on wo.SignumID=s.Signum
+		where PlannedStartDate &lt;= dbo.GetDateIST() and status in ('ASSIGNED')
+		and SignumID is not null and ProjectID=#{projectID}
+
+		Create Clustered Index CI_WOID on #temp(WOID)
+
+		SELECT WO_BD.flowchartdefid,
+		Sum(hours) / Count(DISTINCT WO.woid) AS AVGHours
+		FROM transactionaldata.tbl_work_order WO
+		LEFT JOIN transactionaldata.tbl_work_order_booking_details WO_BD
+		ON WO.woid = WO_BD.woid
+		Join #temp t on t.woid = wo.WOID
+		AND actualstartdate IS NOT NULL
+		AND actualenddate IS NOT NULL
+		AND WO_BD.hours IS NOT NULL
+		AND WO_BD.type = 'BOOKING'
+		GROUP BY WO_BD.flowchartdefid
+
+	</select>
+	
+	<select id='getFlowchartdefID'  resultType='Integer'>
+		select distinct flowchartdefid
+			from transactionalData.TBL_WORK_ORDER
+		where WOID IN (#{woID})
+    </select>
+	<select id='getBacklogWorkOrders' resultType='HashMap'>
+		DECLARE @Assessedproficiencyid TINYINT, @ExperiencedProficiencyid TINYINT,
+        @ProficiencyName       VARCHAR(15) ,@ExpProficiencyName  VARCHAR(15) ,@KPI_ID int
+        
+		select TOP 1 @KPI_ID=KpiID from REFDATA.TBL_WF_PROFICIENCY_KPI where KpiName ='Qualify Count'
+		SELECT @Assessedproficiencyid = proficiencyid, 
+       	@ProficiencyName = proficiencyname 
+		FROM   refdata.tbl_wf_proficiency_type 
+		WHERE  proficiencyname = 'Assessed' 
+		SELECT @ExperiencedProficiencyid = proficiencyid, 
+       @ExpProficiencyName = proficiencyname 
+		FROM   refdata.tbl_wf_proficiency_type 
+		WHERE  proficiencyname = 'Experienced' 
+	SET
+     TRANSACTION ISOLATION LEVEL READ UNCOMMITTED
+       select   wo.projectId,wo.woid, wo.woName,  wo.Priority,wo.status,
+                nodes.nodeNames,wo.plannedStartDate,wo.PlannedEndDate, wo.flowchartdefid,
+                CASE 
+         			WHEN wo.status IN ( 'ASSIGNED', 'PLANNED', 'REOPENED' ) AND Isnull(tt.kpivalue, -1) = 0 THEN @ExperiencedProficiencyid
+         			WHEN wo.Status NOT IN ( 'ASSIGNED', 'PLANNED', 'REOPENED' ) AND Isnull(tt.kpivalue, -1) = 0 THEN ISNULL(wo.proficiencyid, @ExperiencedProficiencyid)
+		 			WHEN wo.status IN ( 'ASSIGNED', 'PLANNED', 'REOPENED' ) AND Isnull(tt.kpivalue, -1) != 0 THEN @Assessedproficiencyid
+         			ELSE ISNULL(wo.proficiencyid, @Assessedproficiencyid) 
+       			END 
+       				ProficiencyID, 
+       			CASE 
+       				WHEN wo.Status  IN ( 'ASSIGNED', 'PLANNED', 'REOPENED' ) AND ISNULL(tt.kpivalue, -1) = 0 THEN @ExpProficiencyName
+		 			WHEN wo.Status NOT IN ( 'ASSIGNED', 'PLANNED', 'REOPENED' ) AND ISNULL(tt.kpivalue, -1) = 0 THEN ISNULL(twpt.ProficiencyName, @ExpProficiencyName)
+         			WHEN wo.status IN ( 'ASSIGNED', 'PLANNED', 'REOPENED' ) AND ISNULL(tt.kpivalue, -1) != 0 THEN @ProficiencyName
+                    ELSE ISNULL(twpt.ProficiencyName, @ProficiencyName)
+         			
+       			END ProficiencyName
+          from transactionalData.TBL_WORK_ORDER  wo
+              INNER JOIN transactionaldata.tbl_projects p 
+               ON wo.projectid = p.projectid 
+            LEFT JOIN [transactionalData].[tbl_subactivity_flowchart_def] f 
+               ON wo.flowchartdefid = f.subactivityflowchartdefid 
+               LEFT JOIN(
+             Select projectid,wfid,KPIValue,SubActivityID 
+              from( select projectid,wfid,KPIValue,SubActivityID,
+               ROW_NUMBER() over(partition by kpiid,ProjectID,wfid,SubactivityID order by modifiedDate desc)rn
+                from transactionaldata.TBL_SubactivityFlowChart_Kpi_Value
+                where KpiID=@KPI_ID and IsActive=1 )kk
+                WHERE kk.rn=1
+              ) tt  on tt.projectid=p.projectid and  tt.wfid=f.WFID and tt.SubactivityID=f.SubActivityID 
+          left join (
+             select distinct woid,NodeType,
+				CASE 
+				WHEN LEN(NodeNames) != 0
+					THEN 
+					 SUBSTRING(NodeNames, 1, LEN(NodeNames)-1)
+					ELSE
+					 NodeNames
+				END as nodeNames
+				 from(
+                          select distinct woNode.WOID as WOID, woNode.NodeType as NodeType, substring(
+                                       (
+                                       select n1.NodeNames + ',' as [text()]
+                                       from transactionalData.TBL_WORK_ORDER_NODES (NOLOCK) n1
+                                       where n1.WOId = woNode.WOID
+                                       and n1.NodeType = woNode.NodeType
+                                       order by n1.WOID
+                                       for xml path('')
+                          ), 1, 1000
+                          ) as NodeNames
+                                 from transactionalData.TBL_WORK_ORDER_NODES (NOLOCK) woNode
+                          ) as node
+             )as nodes on nodes.WOID = wo.WOID
+             LEFT JOIN refdata.tbl_wf_proficiency_type twpt
+              ON twpt.proficiencyid = wo.proficiencyid
+			where wo.active=1 and wo.signumid=#{signum} and  wo.status in ('ASSIGNED')
+			and PlannedStartDate   &lt; convert(varchar(10),dbo.GetDateIST(),120)
+    </select> 
+
+   <select id='getBacklogWorkOrdersForProject' resultType='HashMap'>
+       select  distinct  wo.woid
+	   from transactionalData.TBL_WORK_ORDER  wo
+		LEFT join (
+		
+		select DISTINCT SIGNUM from transactionalData.TBL_Booked_Resource
+		
+		WHERE ProjectID=#{projectID}
+		) s on wo.SignumID=s.Signum
+		
+		where PlannedStartDate &lt; dbo.GetDateIST()  and status in ('ASSIGNED') and SignumID is not null and ProjectID=#{projectID}
+
+    </select>  
+    <select id='getSubServiceAreaPCode' resultType='HashMap'>
+    	select ServAreaID,PCode from refData.TBL_SERVAREA where ServAreaID = #{serviceAreaID};
+    </select>
+    
+    <select id='getJobRoles' resultType='HashMap'>
+		select JobRoleID,JobRoleName,CreatedBy,CreatedOn,LastModifiedBy,LastModifiedOn from refData.TBL_JobRoles;
+	</select>
+	
+	<select id='getAllCertifications' resultType='HashMap'>
+		<if test ="Issuer == null">
+			select CertificateID,CertificateName from refData.TBL_Certificates
+		</if>
+
+		<if test ="Issuer != null">
+			select CertificateID,CertificateName,Issuer,CertificateType,CreatedBy,CreatedOn,LastModifiedBy,LastModifiedOn from refData.TBL_Certificates
+			where Issuer = #{Issuer}
+		</if>
+	</select>
+    <select id='getUniqueIssuer' resultType='HashMap'>
+		select distinct Issuer from refData.TBL_Certificates where Issuer is not null;
+    </select>
+    
+    <select id='getOnsiteLocations' resultType='HashMap'>
+    	select OnsiteLocationID,LocationName,CreatedBy,CreatedOn,LastModifiedBy,LastModifiedOn 
+    	from refData.TBL_OnsiteLocations
+    </select>
+    
+    <select id='getPositionStatus' resultType='HashMap'>
+		select distinct Positionstatus from transactionaldata.tbl_resourcePosition
+	</select>
+    
+    <select id='getFilteredCompetences' resultType='HashMap'>
+		select CompetenceID,CompetenceName,CompetenceType,ParentCompetenceID,CreatedBy,CreatedOn,
+		LastModifiedBy,LastModifiedOn 
+		from refData.TBL_Competences 
+		where CompetenceName like '%${competenceString}%'
+    </select>
+    
+    <select id="getSignumsWorkingInProject" resultType="HashMap"> 
+    	declare @startdate datetime = CONVERT(datetime, #{startDate})
+		declare @enddate datetime = Convert(datetime,#{endDate})
+		
+		
+		select emp.Signum, COUNT(1) OVER() TOTALCNT 
+		from refData.TBL_Employees emp
+		                    inner join (
+		                    select DISTINCT UPPER(br.Signum) AS Signum from transactionalData.TBL_Booked_Resource br
+							WHERE br.ProjectID=#{projectID} and  br.Date &gt;= @startdate and br.Date &lt;= @enddate
+							union all
+		                    SELECT  
+		                    DISTINCT UPPER(WO.SignumID) AS Signum from transactionalData.TBL_WORK_ORDER (nolock) wo
+		                    left join (
+		                       select startdate,enddate,woid,hours bookinghours from
+		                       transactionalData.TBL_WORK_ORDER_BOOKING_DETAILS b 
+		                       where Type='BOOKING' and hours is not null and hours!=0
+		                       and StartDate &lt;= @startdate and EndDate &gt;= @enddate
+		                     ) bh 
+		                    on bh.WOID=wo.WOID
+		                    where  wo.Active=1 
+		                    and wo.PROJECTID= #{projectID} and (( wo.PlannedStartDate between @startdate and @enddate) OR 
+		                                 ( wo.PlannedEndDate between @startdate and @enddate)
+		                                    <!--     OR
+		                                 	
+		                                 	( wo.PlannedEndDate &lt;= @startdate ) OR
+		                                 	(wo.PlannedStartDate &gt;= @startdate ) -->
+		                                 )
+		                           
+		                    ) book on book.Signum=emp.Signum
+		                    where emp.Status !='RESIGNED'
+		                    <if test="term !='' and term != null">
+							and UPPER(book.Signum) = UPPER(#{term})
+							</if>
+		                    ORDER BY emp.Signum
+		                    <if test="term ==''">
+								<if test ='dataTableReq.length != -1'>
+									OFFSET ${dataTableReq.start} ROWS
+									FETCH NEXT ${dataTableReq.length} ROWS ONLY
+								</if>
+							</if>
+    	
+    </select>
+    
+	    <!-- <select id="getSignumsWorkingInProject" resultType="HashMap">    	
+		    select emp.Signum, COUNT(*) OVER() TOTALCNT from refData.TBL_Employees emp
+			inner join (
+			SELECT  
+			DISTINCT UPPER(WO.SignumID) AS Signum from transactionalData.TBL_WORK_ORDER (nolock) wo
+				inner join transactionalData.TBL_WORK_ORDER_PLAN (nolock) wop on wop.WOPlanID=wo.WOPlanID
+				INNER JOIN transactionalData.TBL_PROJECTS p ON wop.[ProjectID] = p.ProjectID  
+				left join transactionalData.TBL_DELIVERY_RESPONSIBLE dr on dr.ProjectID = p.ProjectID and dr.active=1 
+				left join 
+				(
+				select startdate,enddate,woid,hours bookinghours from
+						transactionalData.TBL_WORK_ORDER_BOOKING_DETAILS b 
+						where Type='BOOKING' and hours is not null and hours!=0
+						and StartDate &gt;= #{startDate} and EndDate &lt;= #{endDate}
+				) bh on bh.WOID=wo.WOID
+				where wop.Active=1 and wo.Active=1 
+ 			and wo.PROJECTID= #{projectID}  and ( p.CPM = #{signumID} or p.ProjectCreator =#{signumID} OR dr.SignumID=#{signumID})
+				and ((CONVERT(DATE, wo.PlannedStartDate) between #{startDate} and #{endDate}) OR 
+					(CONVERT(DATE, wo.PlannedEndDate) between #{startDate} and #{endDate})
+						OR
+					(CONVERT(DATE, wo.PlannedEndDate) &lt;= #{startDate} ) OR
+					(CONVERT(DATE, wo.PlannedStartDate) &lt;= #{startDate} ) 
+					)
+				and p.isdeleted=0 and p.Status !='REJECTED' 
+				<if test="term !='' and term != null">
+					and UPPER(WO.SignumID) = UPPER(#{term})
+				</if>
+				union  ALL 
+						    Select distinct  UPPER(We.Signum) AS signum
+								from  transactionalData.TBL_WorkEffort we 
+								join transactionaldata.TBL_ResourcePosition rp on rp.ResourcePositionID=we.ResourcePositionID
+								join transactionalData.TBL_ResourceRequests rr on rr.ResourceRequestID= rp.ResourceRequestID
+								left join refData.TBL_Employees EM on UPPER(We.Signum) = UPPER(EM.Signum)
+								WHERE ProjectID= #{projectID} and 
+								((#{startDate} between WE.startdate and WE.enddate) or (#{endDate} BETWEEN WE.STARTDATE AND WE.ENDDATE) )
+								and  we.IsActive=1 and we.Signum is not null
+								<if test="term !=''">
+									and UPPER(We.Signum) = UPPER(#{term})
+								</if>
+			) book on book.Signum=emp.Signum
+			where emp.Status !='RESIGNED'
+			ORDER BY emp.Signum
+			<if test="term ==''">
+			<if test ='dataTableReq.length != -1'>
+				OFFSET ${dataTableReq.start} ROWS
+				FETCH NEXT ${dataTableReq.length} ROWS ONLY
+			</if>
+			</if>
+	    </select> -->
+	    
+	    
+	    <select id='getWOResourceLevelDetails' resultType='com.ericsson.isf.model.ResourceEngagementModel'>
+	    	declare @startdate datetime = CONVERT(datetime, #{startDate})
+			declare @enddate datetime = Convert(datetime,#{endDate})
+			
+		<if test ="projectID != 0">
+			DROP TABLE IF EXISTS #tem
+			Select wop.WOPlanID,p.ProjectID,p.CPM,p.ProjectCreator
+			into #tem 
+			from transactionalData.TBL_WORK_ORDER_PLAN WOP
+			inner join  transactionalData.TBL_PROJECTS p
+			on  wop.[ProjectID] = p.ProjectID
+			where WOP.Active = 1 and wop.ProjectID=#{projectID}
+			
+			SELECT DISTINCT WO.WOID,bookinghours,WO.flowchartDefId,bh.startdate bookingStartDate,bh.enddate bookingEndDate, UPPER(WO.SignumID) AS SignumID,wo.PlannedStartDate AS plannedStartDate,
+			       wo.PlannedEndDate plannedEndDate,wo.status, wo.SLAHrs,'Planned' AS [type], EM.EmployeeName
+			       from transactionalData.TBL_WORK_ORDER (nolock) wo
+			       inner join #tem tem on tem.WOPlanID = wo.WOPlanID
+			       left join refData.TBL_Employees EM on UPPER(WO.SignumID) = UPPER(EM.Signum)
+                   left join
+                   (select startdate,enddate,woid,hours bookinghours from
+                          transactionalData.TBL_WORK_ORDER_BOOKING_DETAILS b 
+                          where Type='BOOKING' and hours is not null and hours!=0
+                          and StartDate &gt;=@Startdate and EndDate &lt;=@enddate 
+                   ) bh on bh.WOID=wo.WOID
+                   where  wo.Active=1 
+                          and wo.PROJECTID=#{projectID} and (( wo.PlannedStartDate between @Startdate and @enddate) OR 
+                                 ( wo.PlannedEndDate between @Startdate and @enddate)
+                                 OR
+                             ( wo.PlannedEndDate &lt;= @Startdate ) OR
+                              ( wo.PlannedStartDate &lt;= @Startdate ) 
+                 ) and wo.SignumID in
+                 <foreach item="item" index="index" collection="signumForProject" open="(" separator="," close=")">
+	        			#{item}
+	    			</foreach>
+          </if>
+          
+          <if test ="projectID == 0">
+          SELECT  
+			DISTINCT WO.WOID,bookinghours,WO.flowchartDefId,bh.startdate bookingStartDate,bh.enddate bookingEndDate, UPPER(WO.SignumID) AS SignumID,wo.PlannedStartDate AS plannedStartDate,
+			wo.PlannedEndDate plannedEndDate,wo.status, wo.SLAHrs,'Planned' AS [type], EM.EmployeeName
+			from transactionalData.TBL_WORK_ORDER (nolock) wo
+				inner join transactionalData.TBL_WORK_ORDER_PLAN (nolock) wop on wop.WOPlanID=wo.WOPlanID
+				left join refData.TBL_Employees EM on UPPER(WO.SignumID) = UPPER(EM.Signum)
+				left join 
+				(	
+				
+				select startdate,enddate,woid,hours bookinghours from
+					 transactionalData.TBL_WORK_ORDER_BOOKING_DETAILS b 
+					 where Type='BOOKING' and hours is not null and hours!=0
+					 and StartDate &gt;=@Startdate and EndDate &lt;=@enddate
+				) bh on bh.WOID=wo.WOID
+			where wop.Active=1 and wo.Active=1 
+				and  wo.SignumID= #{signumID}
+				and ((CONVERT(DATE, wo.PlannedStartDate) between @Startdate and @enddate) OR 
+					(CONVERT(DATE, wo.PlannedEndDate) between @Startdate and @enddate)
+					 OR
+				   (CONVERT(DATE, wo.PlannedEndDate) &lt;= @Startdate ) OR
+				    (CONVERT(DATE, wo.PlannedStartDate) &lt;= @Startdate ) 
+					)
+          </if>
+                                 
+            union ALL
+            
+                    SELECT  distinct ab.ADHOCBOOKINGID ,0 bookinghours,0 flowchartDefId,null bookingStartDate,null bookingEndDate,UPPER(AB.[SignumID]) AS SignumID,
+                    AB.[StartDate] AS plannedStartDate,
+                    AB.[ActualEndDate] AS plannedEndDate,AB.Status, 1 sla, ABA.Type+' '+ABA.Activity AS [type], EM.EmployeeName
+                    FROM [transactionalData].[TBL_ADHOC_BOOKING] AB
+                    inner join refData.TBL_Employees EM on UPPER(AB.[SignumID]) = UPPER(EM.Signum)
+                      left join refData.TBL_ADHOC_BOOKING_ACTIVITY ABA on AB.ADHOCBOOKINGACTIVITYID =      ABA.ADHOCBOOKINGACTIVITYID
+                          where
+                    ((AB.StartDate between @Startdate and @enddate)  OR 
+                    (AB.ActualEndDate between @Startdate and @enddate))
+                    and AB.active = 1 and AB.Status = 'COMPLETED' and ABA.Status='Active' 
+	                 <if test ="projectID != 0 ">
+					and AB.[SignumID] IN 
+					  <foreach item="item" index="index" collection="signumForProject" open="(" separator="," close=")">
+	        		#{item}
+	    			</foreach>
+	    			</if>
+					<if test ="projectID == 0">
+						and  AB.SignumID= #{signumID}
+					</if>
+					
+			<if test ="projectID != 0"> 
+			union all
+				 Select distinct  we.WorkEffortID as WOID,we.Hours bookinghours, 0 flowchartDefId,null bookingStartDate,null bookingEndDate, 
+					UPPER(We.Signum) AS SignumID, 
+					we.StartDate AS plannedStartDate, we.EndDate plannedEndDate,we.PositionStatus as status, 0 sla,'Planned' AS [type], EM.EmployeeName 
+				from  transactionalData.TBL_WorkEffort we 
+				join transactionaldata.TBL_ResourcePosition rp on rp.ResourcePositionID=we.ResourcePositionID
+				join transactionalData.TBL_ResourceRequests rr on rr.ResourceRequestID= rp.ResourceRequestID
+				left join refData.TBL_Employees EM on UPPER(We.Signum) = UPPER(EM.Signum)
+				WHERE ProjectID=#{projectID} and 
+				<!-- (CONVERT(DATE, we.StartDate) between #{startDate} and #{endDate})  -->
+				((@Startdate between WE.startdate and WE.enddate) or (@enddate BETWEEN WE.STARTDATE AND WE.ENDDATE) )
+				and  we.IsActive=1 and we.Signum is not null
+				<if test ="projectID != 0 ">
+				and we.Signum IN 
+				  <foreach item="item" index="index" collection="signumForProject" open="(" separator="," close=")">
+        		#{item}
+    			</foreach>
+			</if>
+			</if>
+	    	
+	    </select>
+	    
+        <select id='getWOResourceLevelDetailsY' resultType='com.ericsson.isf.model.ResourceEngagementModel'>
+		SELECT  
+			DISTINCT WO.WOID,bookinghours,WO.flowchartDefId,bh.startdate bookingStartDate,bh.enddate bookingEndDate, UPPER(WO.SignumID) AS SignumID,wo.PlannedStartDate AS plannedStartDate,
+			wo.PlannedEndDate plannedEndDate,wo.status, wo.SLAHrs,'Planned' AS [type], EM.EmployeeName
+			from transactionalData.TBL_WORK_ORDER (nolock) wo
+				inner join transactionalData.TBL_WORK_ORDER_PLAN (nolock) wop on wop.WOPlanID=wo.WOPlanID
+				INNER JOIN transactionalData.TBL_PROJECTS p ON wop.[ProjectID] = p.ProjectID  
+				left join transactionalData.TBL_DELIVERY_RESPONSIBLE dr on dr.ProjectID = p.ProjectID and dr.active=1 
+				left join 
+				(	
+				
+				select startdate,enddate,woid,hours bookinghours from
+					 transactionalData.TBL_WORK_ORDER_BOOKING_DETAILS b 
+					 where Type='BOOKING' and hours is not null and hours!=0
+					 and StartDate &gt;=#{startDate} and EndDate &lt;=#{endDate} 
+				) bh on bh.WOID=wo.WOID
+				left join refData.TBL_Employees EM on UPPER(WO.SignumID) = UPPER(EM.Signum)
+
+			where wop.Active=1 and wo.Active=1 
+			<if test ="projectID != 0"> 
+				and wo.PROJECTID= #{projectID}  and ( p.CPM = #{signumID} or p.ProjectCreator =#{signumID} OR dr.SignumID=#{signumID}) 
+			</if>
+			<if test ="projectID == 0">
+				and  wo.SignumID= #{signumID}
+			</if>
+				and ((CONVERT(DATE, wo.PlannedStartDate) between #{startDate} and #{endDate}) OR 
+					(CONVERT(DATE, wo.PlannedEndDate) between #{startDate} and #{endDate})
+					 OR
+				   (CONVERT(DATE, wo.PlannedEndDate) &lt;= #{startDate} ) OR
+				    (CONVERT(DATE, wo.PlannedStartDate) &lt;= #{startDate} ) 
+					)
+				and p.isdeleted=0 and p.Status !='REJECTED' 
+				<if test ="projectID != 0 ">
+					and wo.SignumID in 
+					<foreach item="item" index="index" collection="signumForProject" open="(" separator="," close=")">
+	        			#{item}
+	    			</foreach>
+				</if>
+			union ALL
+			SELECT  distinct ab.ADHOCBOOKINGID ,0 bookinghours,0 flowchartDefId,null bookingStartDate,null bookingEndDate,UPPER(AB.[SignumID]) AS SignumID,
+			AB.[StartDate] AS plannedStartDate,
+			AB.[ActualEndDate] AS plannedEndDate,AB.Status, 1 sla, ABA.Type+' '+ABA.Activity AS [type], EM.EmployeeName
+			FROM [transactionalData].[TBL_ADHOC_BOOKING] AB
+			inner join refData.TBL_Employees EM on UPPER(AB.[SignumID]) = UPPER(EM.Signum)
+			  left join refData.TBL_ADHOC_BOOKING_ACTIVITY ABA on AB.ADHOCBOOKINGACTIVITYID	=	ABA.ADHOCBOOKINGACTIVITYID
+				where
+			((CONVERT(DATE, AB.StartDate) between #{startDate} and #{endDate})  OR 
+			(CONVERT(DATE, AB.ActualEndDate) between #{startDate} and #{endDate}))
+			and AB.active = 1 and AB.Status = 'COMPLETED' and ABA.Status='Active'
+			<if test ="projectID != 0 ">
+				and AB.[SignumID] IN 
+				  <foreach item="item" index="index" collection="signumForProject" open="(" separator="," close=")">
+        		#{item}
+    			</foreach>
+			</if>
+			<if test ="projectID == 0">
+				and  AB.SignumID= #{signumID}
+			</if>
+			<!-- data from transactionalData.TBL_WorkEffort -->
+			<if test ="projectID != 0"> 
+			union all
+				 Select distinct  we.WorkEffortID as WOID,we.Hours bookinghours, 0 flowchartDefId,null bookingStartDate,null bookingEndDate, 
+					UPPER(We.Signum) AS SignumID, 
+					we.StartDate AS plannedStartDate, we.EndDate plannedEndDate,we.PositionStatus as status, 0 sla,'Planned' AS [type], EM.EmployeeName 
+				from  transactionalData.TBL_WorkEffort we 
+				join transactionaldata.TBL_ResourcePosition rp on rp.ResourcePositionID=we.ResourcePositionID
+				join transactionalData.TBL_ResourceRequests rr on rr.ResourceRequestID= rp.ResourceRequestID
+				left join refData.TBL_Employees EM on UPPER(We.Signum) = UPPER(EM.Signum)
+				WHERE ProjectID=#{projectID} and 
+				<!-- (CONVERT(DATE, we.StartDate) between #{startDate} and #{endDate})  -->
+				((#{startDate} between WE.startdate and WE.enddate) or (#{endDate} BETWEEN WE.STARTDATE AND WE.ENDDATE) )
+				and  we.IsActive=1 and we.Signum is not null
+				<if test ="projectID != 0 ">
+				and we.Signum IN 
+				  <foreach item="item" index="index" collection="signumForProject" open="(" separator="," close=")">
+        		#{item}
+    			</foreach>
+			</if>
+				
+			</if>
+	</select>
+	
+		<select id="getBacklogWorkOrdersForProjectWithSignum" resultType='HashMap'>
+		   select  distinct  woid
+		   from transactionalData.TBL_WORK_ORDER 
+		   where PlannedStartDate &lt; getdate()  
+		   and status in ('ASSIGNED') 
+		   and ProjectID=#{projectID}
+		   <if test ="projectID != 0 ">
+			   and SignumID in 
+			   <foreach item="item" index="index" collection="signumForProject" open="(" separator="," close=")">
+		     		#{item}
+		 		</foreach>
+	 		</if>
+		</select>
+	
+		  <select id="getSignumsFilteredForEngEngagement" resultType="HashMap">
+	    		select emp.Signum, emp.employeeName from refData.TBL_Employees emp
+				inner join (
+				SELECT  
+				DISTINCT UPPER(WO.SignumID) AS Signum from transactionalData.TBL_WORK_ORDER (nolock) wo
+					inner join transactionalData.TBL_WORK_ORDER_PLAN (nolock) wop on wop.WOPlanID=wo.WOPlanID
+					INNER JOIN transactionalData.TBL_PROJECTS p ON wop.[ProjectID] = p.ProjectID  
+					left join transactionalData.TBL_DELIVERY_RESPONSIBLE dr on dr.ProjectID = p.ProjectID and dr.active=1 
+					left join 
+					(
+					select startdate,enddate,woid,hours bookinghours from
+							transactionalData.TBL_WORK_ORDER_BOOKING_DETAILS b 
+							where Type='BOOKING' and hours is not null and hours!=0
+							and StartDate &gt;= #{startDate} and EndDate &lt;= #{endDate}
+					) bh on bh.WOID=wo.WOID
+					where wop.Active=1 and wo.Active=1 
+	 			and wo.PROJECTID= #{projectID}  
+	<!--		and ( p.CPM = #{signumID} or p.ProjectCreator =#{signumID} OR dr.SignumID=#{signumID})  -->
+					and ((CONVERT(DATE, wo.PlannedStartDate) between #{startDate} and #{endDate}) OR 
+						(CONVERT(DATE, wo.PlannedEndDate) between #{startDate} and #{endDate})
+							OR
+						(CONVERT(DATE, wo.PlannedEndDate) &lt;= #{startDate} ) OR
+						(CONVERT(DATE, wo.PlannedStartDate) &lt;= #{startDate} ) 
+						)
+					and p.isdeleted=0 and p.Status !='REJECTED' 
+				) book on book.Signum=emp.Signum
+				where emp.Status !='RESIGNED' AND ( emp.signum like '%${term}%' or emp.employeeName like '%${term}%' )
+				ORDER BY emp.Signum	
+	    </select>
+     
+     <select id="getAllSignumForProject" resultType="hashmap">
+	    	declare @startdate datetime = CONVERT(datetime, #{startDate})
+			declare @enddate datetime = Convert(datetime,#{endDate})
+			declare @project int = #{projectID}
+
+			select emp.Signum, emp.EmployeeName, COUNT(1) OVER() TOTALCNT 
+			from refData.TBL_Employees emp
+				inner join (
+				select DISTINCT UPPER(br.Signum) AS Signum from transactionalData.TBL_Booked_Resource br
+				WHERE br.ProjectID=@project and  br.Date &gt;= @startdate and br.Date &lt;= @enddate
+				<if test ="term != ''">
+					and  br.Signum= #{term}
+				</if>
+				
+				union
+				SELECT  
+				DISTINCT UPPER(WO.SignumID) AS Signum from transactionalData.TBL_WORK_ORDER (nolock) wo
+				left join (
+					select startdate,enddate,woid,hours bookinghours from
+					transactionalData.TBL_WORK_ORDER_BOOKING_DETAILS b 
+					where Type='BOOKING' and hours is not null and hours!=0
+					and StartDate &lt;= @startdate and EndDate &gt;= @enddate
+					) bh 
+				on bh.WOID=wo.WOID
+				where  wo.Active=1 
+				and wo.PROJECTID= @project 
+				<if test ="term != ''">
+					and wo.SignumID= #{term}
+				</if>
+				
+				and (( wo.PlannedStartDate between @startdate and @enddate) OR 
+					( wo.PlannedEndDate between @startdate and @enddate))
+				) book on book.Signum=emp.Signum
+				where emp.Status !='RESIGNED'
+                   ORDER BY emp.Signum
+			
+<!-- 			
+			declare @startdate datetime = CONVERT(datetime, #{startDate})
+		declare @enddate datetime = Convert(datetime,#{endDate})
+		
+		
+		select emp.Signum, emp.employeeName 
+		from refData.TBL_Employees emp
+		                    inner join (
+		                    select DISTINCT UPPER(br.Signum) AS Signum from transactionalData.TBL_Booked_Resource br
+							WHERE br.ProjectID=#{projectID} and  br.Date &gt;= @startdate and br.Date &lt;= @enddate
+							union all
+		                    SELECT  
+		                    DISTINCT UPPER(WO.SignumID) AS Signum from transactionalData.TBL_WORK_ORDER (nolock) wo
+		                    left join (
+		                       select startdate,enddate,woid,hours bookinghours from
+		                       transactionalData.TBL_WORK_ORDER_BOOKING_DETAILS b 
+		                       where Type='BOOKING' and hours is not null and hours!=0
+		                       and StartDate &lt;= @startdate and EndDate &gt;= @enddate
+		                     ) bh 
+		                    on bh.WOID=wo.WOID
+		                    where  wo.Active=1 
+		                    and wo.PROJECTID= #{projectID} and (( wo.PlannedStartDate between @startdate and @enddate) OR 
+		                                 ( wo.PlannedEndDate between @startdate and @enddate)
+		                                        OR
+		                                 	
+		                                 	( wo.PlannedEndDate &lt;= @startdate ) OR
+		                                 	(wo.PlannedStartDate &gt;= @startdate )
+		                                 )
+		                           
+		                    ) book on book.Signum=emp.Signum
+		                    where emp.Status !='RESIGNED'
+		                    ORDER BY emp.Signum
+ -->		                    
+    </select>
+ 
+   <select id="getSignumsWorkingInProjectSecond" resultType="HashMap"> 
+    	declare @startdate datetime = CONVERT(datetime, #{startDate})
+		declare @enddate datetime = Convert(datetime,#{endDate})
+		
+		
+		select emp.Signum, COUNT(1) OVER() TOTALCNT 
+		from refData.TBL_Employees emp
+		                    inner join (
+		                    select DISTINCT UPPER(br.Signum) AS Signum from transactionalData.TBL_Booked_Resource br
+							WHERE br.ProjectID=#{projectID} and  br.Date &gt;= @startdate and br.Date &lt;= @enddate
+							union all
+		                    SELECT  
+		                    DISTINCT UPPER(WO.SignumID) AS Signum from transactionalData.TBL_WORK_ORDER (nolock) wo
+		                    left join (
+		                       select startdate,enddate,woid,hours bookinghours from
+		                       transactionalData.TBL_WORK_ORDER_BOOKING_DETAILS b 
+		                       where Type='BOOKING' and hours is not null and hours!=0
+		                       and StartDate &lt;= @startdate and EndDate &gt;= @enddate
+		                     ) bh 
+		                    on bh.WOID=wo.WOID
+		                    where  wo.Active=1 
+		                    and wo.PROJECTID= #{projectID} and (( wo.PlannedStartDate between @startdate and @enddate) OR 
+		                                 ( wo.PlannedEndDate between @startdate and @enddate)
+		                                    <!--     OR
+		                                 	
+		                                 	( wo.PlannedEndDate &lt;= @startdate ) OR
+		                                 	(wo.PlannedStartDate &gt;= @startdate ) -->
+		                                 )
+		                           
+		                    ) book on book.Signum=emp.Signum
+		                    where emp.Status !='RESIGNED'
+		                  
+		                    ORDER BY emp.Signum	                   
+    	
+    </select>
+    	<select id="getEmployeesInProject" resultType="HashMap">
+	    	declare @startdate datetime = CONVERT(datetime, #{startDate})
+			declare @enddate datetime = Convert(datetime,#{endDate})
+			declare @project int = #{projectID}
+
+			select emp.Signum, emp.EmployeeName, COUNT(1) OVER() TOTALCNT 
+			from refData.TBL_Employees emp
+				inner join (
+				select DISTINCT UPPER(br.Signum) AS Signum from transactionalData.TBL_Booked_Resource br
+				WHERE br.ProjectID=@project and  br.Date &gt;= @startdate and br.Date &lt;= @enddate
+				union 
+				SELECT  
+				DISTINCT UPPER(WO.SignumID) AS Signum from transactionalData.TBL_WORK_ORDER (nolock) wo
+				left join (
+					select startdate,enddate,woid,hours bookinghours from
+					transactionalData.TBL_WORK_ORDER_BOOKING_DETAILS b 
+					where Type='BOOKING' and hours is not null and hours!=0
+					and StartDate &lt;= @startdate and EndDate &gt;= @enddate
+					) bh 
+				on bh.WOID=wo.WOID
+				where  wo.Active=1 
+				and wo.PROJECTID= @project 
+				and wo.SignumID is not null
+				and (( wo.PlannedStartDate between @startdate and @enddate) OR 
+					( wo.PlannedEndDate between @startdate and @enddate))
+				) book on book.Signum=emp.Signum
+				where emp.Status !='RESIGNED'
+               	<if test="term !='' and term != null">
+					and UPPER(book.Signum) = UPPER(#{term})
+				</if>
+                   ORDER BY emp.Signum
+                   <if test="term ==''">
+					<if test ='dataTableReq.length != -1'>
+						OFFSET ${dataTableReq.start} ROWS
+						FETCH NEXT ${dataTableReq.length} ROWS ONLY
+					</if>
+				</if>    		
+    	</select>
+    
+		<select id="getBacklogWOCounts" resultType='HashMap'>
+			select SIGNUMID ,count(DISTINCT WOID) AS COUNTS
+			from transactionalData.TBL_WORK_ORDER 
+			where PlannedStartDate &lt; getdate()
+			and status in ('ASSIGNED', 'Reopened') 
+		   	and Active = 1
+		   <if test ="projectID != 0 ">
+				and ProjectID=#{projectID}
+	 		</if>
+
+		   	and SignumID in 
+		   <foreach item="item" index="index" collection="signums" open="(" separator="," close=")">
+	     		#{item}
+	 		</foreach>
+		 	GROUP BY SignumID
+		</select>
+		
+		<select id="getClosedWOCounts" resultType='HashMap'>
+			declare @startdate datetime = CONVERT(datetime, #{startDate})
+			declare @enddate datetime = Convert(datetime,#{endDate})
+			
+			select CONVERT(varchar, convert(Date,ActualEndDate)) as Date, Count(woid) as Counts from transactionalData.TBL_WORK_ORDER
+			where status in ('Closed', 'Rejected') 
+		   <if test ="projectID != 0 ">
+			and ProjectID = #{projectID}
+	 		</if>
+			and ActualEndDate between @Startdate and @enddate
+			and SignumID = #{signum} and Active = 1
+			group by CONVERT(varchar, convert(Date,ActualEndDate))
+			 
+		</select>
+		
+		<select id="getManualHours" resultType='HashMap'>
+		
+		declare
+		@datechar varchar(30) = #{date},
+		@signum varchar(20) = #{signumID} ,
+		@projectId int = #{projectID},
+		@date date
+
+		set @date = cast(@datechar as date )
+			
+		;with CTEx
+		as
+		(
+		select wb.BookingID, wb.StartDate,
+		wb.StartDate as NewStartDate,
+		wb.EndDate,
+
+		case when cast(wb.StartDate as date) = cast(wb.EndDate as date) then
+		wb.EndDate
+		when wb.EndDate is null and cast(wb.StartDate as date)=
+		cast(dbo.getdateist() as date) then dbo.getdateist()
+		when wb.EndDate is null and cast(wb.StartDate as date) &lt;
+		cast(dbo.getdateist() as date) then
+		cast(convert(varchar(10),wb.StartDate,120) + ' 23:59:59' as datetime)
+		else cast(convert(varchar(10),wb.startdate,120) + ' 23:59:59' as
+		datetime) End as NewEndDate,
+
+		Case when cast(wb.StartDate as date) = cast(wb.EndDate as date)
+		then Round((datediff(SECOND,wb.StartDate,wb.EndDate)/60.00)/60.00,4)
+		when wb.EndDate is null and cast(wb.StartDate as date)=
+		cast(dbo.getdateist() as date) then
+		((datediff(second,wb.startdate,dbo.getdateist())/60.00)/60)
+		when wb.EndDate is null and cast(wb.StartDate as date) &lt;
+		cast(dbo.getdateist() as date) then
+		((datediff(second,wb.startdate,cast(convert(varchar(10),wb.startdate,120)
+		+ ' 23:59:59' as datetime))/60.00)/60)
+		else
+		((datediff(second,wb.startdate,cast(convert(varchar(10),wb.startdate,120)
+		+ ' 23:59:59' as datetime))/60.00)/60) end [hour]
+		from
+		transactionalData.TBL_WORK_ORDER_FLOWCHART_STEP_DETAILS WOFS
+		INNER JOIN
+		transactionalData.TBL_WORK_ORDER_BOOKING_DETAILS wb on WOFS.WOID=wb.WOID
+		and WOFS.BookingID = wb.BookingID
+		join transactionalData.TBL_WORK_ORDER WO on wo.woid=wb.woid
+		Join transactionalData.TBL_Projects P on P.Projectid=wo.Projectid
+		where wb.Type = 'BOOKING'
+		and WOFS.ExecutionType  in ('Manual','ManualDisabled')
+		and wb.SignumID = @signum
+		and (convert(Date,wb.startDate) = @date or convert(Date,wb.EndDate) = @date or wb.EndDate is null)
+		
+		--<!-- and wo.woid = 23687677 -->
+		<if test="projectID != 0 ">
+			and wo.Projectid = @projectId
+		</if>
+
+		union all
+		select a.bookingid, dateadd(day,1,b.StartDate ),
+
+		cast(convert(varchar(10),dateadd(day,1,b.StartDate ),120) + ' 00:00:00' as datetime) NewStartDate,
+
+		a.EndDate ,
+
+		case when cast(dateadd(day,1,b.StartDate ) as date) = cast(a.EndDate as
+		date)
+		then a.EndDate
+
+		when cast(dateadd(day,1,b.StartDate ) as date) = cast(dbo.GetDateIST() as
+		date) and a.EndDate is null then dbo.getdateist()
+		when cast(dateadd(day,1,b.StartDate ) as date) &lt; cast(dbo.GetDateIST() as
+		date) and a.EndDate is null then
+		cast(convert(varchar(10),dateadd(day,1,b.StartDate ),120) + ' 23:59:59' as datetime)
+		else cast(convert(varchar(10),dateadd(day,1,b.StartDate ),120) + ' 23:59:59' as datetime) End as NewEndDate,
+
+
+		Case when cast(dateadd(day,1,b.StartDate ) as date) = cast(a.EndDate as
+		date)
+		then Round((datediff(SECOND,convert(varchar(10),dateadd(day,1,b.StartDate
+		),120)+ ' 00:00:00',a.EndDate)/60.00)/60.00,4)
+		when cast(dateadd(day,1,b.StartDate ) as date) = cast(dbo.GetDateIST() as
+		date) and a.EndDate is null then
+		((datediff(second,cast(dateadd(day,1,b.StartDate ) as
+		date),dbo.getdateist())/60.00)/60)
+		when cast(dateadd(day,1,b.StartDate ) as date) &lt; cast(dbo.GetDateIST() as
+		date) and a.EndDate is null then
+		((datediff(second,cast(dateadd(day,1,b.StartDate ) as
+		date),cast(convert(varchar(10),cast(dateadd(day,1,b.StartDate ) as
+		date),120) + ' 23:59:59' as datetime))/60.00)/60)
+		else ((datediff(second,convert(varchar(10),dateadd(day,1,b.StartDate
+		),120)+ ' 00:00:00',cast(convert(varchar(10),dateadd(day,1,b.StartDate
+		),120) + ' 23:59:59' as datetime))/60.00)/60) end [hour]
+		from transactionalData.TBL_WORK_ORDER_BOOKING_DETAILS a
+		join CTEx b on a.BookingID = b.BookingID and
+		cast(dateadd(day,1,b.StartDate ) as date) &lt;=
+		cast(isnull(b.EndDate,dbo.getdateist()) as date)
+		)
+		select
+		CONVERT(float, Round(sum([hour]),2)) [ManualHours]
+		from CTEx
+		where cast(NewStartDate as date) = @date
+		Group by cast(NewStartDate as date)
+					
+		</select>
+		
+		<select id="getAutomaticHours" resultType='HashMap'>
+		
+		declare
+		@datechar varchar(30) = #{date},
+		@signumID varchar(20) = #{signumID} ,
+		@projectID int = #{projectID},
+		@date date
+
+		set @date = cast(@datechar as date )
+		
+		;with CTEx
+		as
+		(
+		select wb.BookingID, wb.StartDate,
+		wb.StartDate as NewStartDate,
+		wb.EndDate,
+
+		case when cast(wb.StartDate as date) = cast(wb.EndDate as date) then
+		wb.EndDate
+		when wb.EndDate is null and cast(wb.StartDate as date)=
+		cast(dbo.getdateist() as date) then dbo.getdateist()
+		when wb.EndDate is null and cast(wb.StartDate as date) &lt;
+		cast(dbo.getdateist() as date) then
+		cast(convert(varchar(10),wb.StartDate,120) + ' 23:59:59' as datetime)
+		else cast(convert(varchar(10),wb.startdate,120) + ' 23:59:59' as
+		datetime) End as NewEndDate,
+
+		Case when cast(wb.StartDate as date) = cast(wb.EndDate as date)
+		then Round((datediff(SECOND,wb.StartDate,wb.EndDate)/60.00)/60.00,4)
+		when wb.EndDate is null and cast(wb.StartDate as date)=
+		cast(dbo.getdateist() as date) then
+		((datediff(second,wb.startdate,dbo.getdateist())/60.00)/60)
+		when wb.EndDate is null and cast(wb.StartDate as date) &lt;
+		cast(dbo.getdateist() as date) then
+		((datediff(second,wb.startdate,cast(convert(varchar(10),wb.startdate,120)
+		+ ' 23:59:59' as datetime))/60.00)/60)
+		else
+		((datediff(second,wb.startdate,cast(convert(varchar(10),wb.startdate,120)
+		+ ' 23:59:59' as datetime))/60.00)/60) end [hour]
+		from
+		transactionalData.TBL_WORK_ORDER_FLOWCHART_STEP_DETAILS WOFS
+		INNER JOIN
+		transactionalData.TBL_WORK_ORDER_BOOKING_DETAILS wb on WOFS.WOID=wb.WOID
+		and WOFS.BookingID = wb.BookingID
+		join transactionalData.TBL_WORK_ORDER WO on wo.woid=wb.woid
+		Join transactionalData.TBL_Projects P on P.Projectid=wo.Projectid
+		where wb.Type = 'BOOKING'
+		and WOFS.ExecutionType = 'Automatic'
+		and wb.SignumID = @signumID
+		and (convert(Date,wb.startDate) = @date or convert(Date,wb.EndDate) = @date or wb.EndDate is null)
+		
+		--<!-- and wo.woid = 23687677 -->
+		<if test="projectID != 0 ">
+			and wo.Projectid = @projectID
+		</if>
+
+		union all
+		select a.bookingid, dateadd(day,1,b.StartDate ),
+
+		cast(convert(varchar(10),dateadd(day,1,b.StartDate ),120) + ' 00:00:00' as datetime) NewStartDate,
+
+		a.EndDate ,
+
+		case when cast(dateadd(day,1,b.StartDate ) as date) = cast(a.EndDate as
+		date)
+		then a.EndDate
+
+		when cast(dateadd(day,1,b.StartDate ) as date) = cast(dbo.GetDateIST() as
+		date) and a.EndDate is null then dbo.getdateist()
+		when cast(dateadd(day,1,b.StartDate ) as date) &lt; cast(dbo.GetDateIST() as
+		date) and a.EndDate is null then
+		cast(convert(varchar(10),dateadd(day,1,b.StartDate ),120) + ' 23:59:59' as datetime)
+		else cast(convert(varchar(10),dateadd(day,1,b.StartDate ),120) + ' 23:59:59' as datetime) End as NewEndDate,
+
+
+		Case when cast(dateadd(day,1,b.StartDate ) as date) = cast(a.EndDate as
+		date)
+		then Round((datediff(SECOND,convert(varchar(10),dateadd(day,1,b.StartDate
+		),120)+ ' 00:00:00',a.EndDate)/60.00)/60.00,4)
+		when cast(dateadd(day,1,b.StartDate ) as date) = cast(dbo.GetDateIST() as
+		date) and a.EndDate is null then
+		((datediff(second,cast(dateadd(day,1,b.StartDate ) as
+		date),dbo.getdateist())/60.00)/60)
+		when cast(dateadd(day,1,b.StartDate ) as date) &lt; cast(dbo.GetDateIST() as
+		date) and a.EndDate is null then
+		((datediff(second,cast(dateadd(day,1,b.StartDate ) as
+		date),cast(convert(varchar(10),cast(dateadd(day,1,b.StartDate ) as
+		date),120) + ' 23:59:59' as datetime))/60.00)/60)
+		else ((datediff(second,convert(varchar(10),dateadd(day,1,b.StartDate
+		),120)+ ' 00:00:00',cast(convert(varchar(10),dateadd(day,1,b.StartDate
+		),120) + ' 23:59:59' as datetime))/60.00)/60) end [hour]
+		from transactionalData.TBL_WORK_ORDER_BOOKING_DETAILS a
+		join CTEx b on a.BookingID = b.BookingID and
+		cast(dateadd(day,1,b.StartDate ) as date) &lt;=
+		cast(isnull(b.EndDate,dbo.getdateist()) as date)
+		)
+		select
+		CONVERT(float, Round(sum([hour]),2)) [AutomatedHours]
+		from CTEx
+		where cast(NewStartDate as date) = @date
+		Group by cast(NewStartDate as date)
+			
+		</select>
+		
+		<select id="getProjectAdhocHours" resultType='HashMap'>
+		
+		declare
+		@datechar varchar(30) = #{date},
+		@signumID varchar(20) = #{signum} ,
+		@projectID int = #{projectID},
+		@date date
+
+		set @date = cast(@datechar as date )
+		
+	;with CTEx
+	as
+	(select bk.ADHOCBOOKINGID,
+	bk.StartDate,
+	bk.StartDate as NewStartDate,
+	bk.ActualEndDate,
+	case when cast(bk.StartDate as date) = cast(bk.ActualEndDate as date) then
+	bk.ActualEndDate
+	when bk.ActualEndDate is null and cast(bk.startdate as date)=
+	cast(dbo.getdateist() as date) then dbo.getdateist()
+	when bk.ActualEndDate is null and cast(bk.startdate as date) &lt;
+	cast(dbo.getdateist() as date) then
+	cast(convert(varchar(10),bk.startdate,120) + ' 23:59:59' as datetime)
+	else cast(convert(varchar(10),bk.startdate,120) + ' 23:59:59' as
+	datetime) End as NewEndDate,
+
+	Case when cast(bk.StartDate as date) = cast(bk.ActualEndDate as date)
+	then Round((datediff(SECOND,bk.StartDate,bk.ActualEndDate)/60.00)/60.00,4)
+	when bk.ActualEndDate is null and cast(bk.startdate as date) = cast(dbo.getdateist() as date) then
+	((datediff(second,bk.startdate,dbo.getdateist())/60.00)/60)
+	when bk.ActualEndDate is null and cast(bk.startdate as date) &lt; cast(dbo.getdateist() as date) then
+	((datediff(second,bk.startdate,cast(convert(varchar(10),bk.startdate,120)
+	+ ' 23:59:59' as datetime))/60.00)/60)
+	else
+	((datediff(second,bk.startdate,cast(convert(varchar(10),bk.startdate,120)
+	+ ' 23:59:59' as datetime))/60.00)/60) end [hour]
+
+	from
+	transactionalData.TBL_ADHOC_BOOKING bk
+	INNER JOIN
+	refData.TBL_ADHOC_BOOKING_ACTIVITY ac on bk.ADHOCBOOKINGACTIVITYID = ac.ADHOCBOOKINGACTIVITYID
+	where
+	ac.Type = 'Project'
+	and bk.SignumID = @signumID
+
+	<if test="projectID != 0 ">
+		and bk.ProjectID = @projectID
+	</if>
+
+	and (convert(Date,bk.startDate) = @date or
+	convert(Date,bk.ActualEndDate) = @date or bk.ActualEndDate is null)
+
+	union all
+
+	select a.ADHOCBOOKINGID, dateadd(day,1,b.StartDate ),
+
+	cast(convert(varchar(10),dateadd(day,1,b.StartDate ),120) + ' 00:00:00'
+	as datetime) NewStartDate,
+
+	a.ActualEndDate ,
+
+	case when cast(dateadd(day,1,b.StartDate ) as date) = cast(a.ActualEndDate
+	as date) then a.ActualEndDate
+	when cast(dateadd(day,1,b.StartDate ) as date) = cast(dbo.GetDateIST() as
+	date) and a.ActualEndDate is null then dbo.getdateist()
+	when cast(dateadd(day,1,b.StartDate ) as date) &lt; cast(dbo.GetDateIST()
+	as date) and a.ActualEndDate is null then
+	cast(convert(varchar(10),dateadd(day,1,b.StartDate ),120) + ' 23:59:59'
+	as datetime)
+	else cast(convert(varchar(10),dateadd(day,1,b.StartDate ),120) + ' 23:59:59' as datetime) End as NewEndDate,
+
+	Case when cast(dateadd(day,1,b.StartDate ) as date) = cast(a.ActualEndDate
+	as date)
+	then Round((datediff(SECOND,convert(varchar(10),dateadd(day,1,b.StartDate
+	),120)+ ' 00:00:00',a.ActualEndDate)/60.00)/60.00,4)
+	when cast(dateadd(day,1,b.StartDate ) as date) = cast(dbo.GetDateIST() as
+	date) and a.ActualEndDate is null then
+	((datediff(second,cast(dateadd(day,1,b.StartDate ) as
+	date),dbo.getdateist())/60.00)/60)
+	when cast(dateadd(day,1,b.StartDate ) as date) &lt; cast(dbo.GetDateIST()
+	as date) and a.ActualEndDate is null then
+	((datediff(second,cast(dateadd(day,1,b.StartDate ) as
+	date),cast(convert(varchar(10),cast(dateadd(day,1,b.StartDate ) as
+	date),120) + ' 23:59:59' as datetime))/60.00)/60)
+	else ((datediff(second,convert(varchar(10),dateadd(day,1,b.StartDate
+	),120)+ ' 00:00:00',cast(convert(varchar(10),dateadd(day,1,b.StartDate
+	),120) + ' 23:59:59' as datetime))/60.00)/60) end [hour]
+	from transactionalData.TBL_ADHOC_BOOKING a
+	join CTEx b on a.ADHOCBOOKINGID = b.ADHOCBOOKINGID
+	and cast(dateadd(day,1,b.StartDate ) as date) &lt;=
+	cast(isnull(b.ActualEndDate,dbo.getdateist()) as date)
+	)
+
+	select
+	CONVERT(float, Round(sum([hour]),2)) [ProjectAdhocHours]
+	from CTEx
+	where cast(NewStartDate as date) = @date
+	Group by cast(NewStartDate as date)
+			
+			
+		</select>
+		
+		
+		<select id="getInternalAdhocHours" resultType='HashMap'>
+		declare
+		@datechar varchar(30) = #{date},
+		@signumID varchar(20) = #{signum} ,
+		@projectID int = #{projectID},
+		@date date
+
+		set @date = cast(@datechar as date )
+		
+		;with CTEx
+	as
+	(select bk.ADHOCBOOKINGID,
+	bk.StartDate,
+	bk.StartDate as NewStartDate,
+	bk.ActualEndDate,
+	case when cast(bk.StartDate as date) = cast(bk.ActualEndDate as date) then
+	bk.ActualEndDate
+	when bk.ActualEndDate is null and cast(bk.startdate as date)=
+	cast(dbo.getdateist() as date) then dbo.getdateist()
+	when bk.ActualEndDate is null and cast(bk.startdate as date) &lt;
+	cast(dbo.getdateist() as date) then
+	cast(convert(varchar(10),bk.startdate,120) + ' 23:59:59' as datetime)
+	else cast(convert(varchar(10),bk.startdate,120) + ' 23:59:59' as
+	datetime) End as NewEndDate,
+
+	Case when cast(bk.StartDate as date) = cast(bk.ActualEndDate as date)
+	then Round((datediff(SECOND,bk.StartDate,bk.ActualEndDate)/60.00)/60.00,4)
+	when bk.ActualEndDate is null and cast(bk.startdate as date) = cast(dbo.getdateist() as date) then
+	((datediff(second,bk.startdate,dbo.getdateist())/60.00)/60)
+	when bk.ActualEndDate is null and cast(bk.startdate as date) &lt; cast(dbo.getdateist() as date) then
+	((datediff(second,bk.startdate,cast(convert(varchar(10),bk.startdate,120)
+	+ ' 23:59:59' as datetime))/60.00)/60)
+	else
+	((datediff(second,bk.startdate,cast(convert(varchar(10),bk.startdate,120)
+	+ ' 23:59:59' as datetime))/60.00)/60) end [hour]
+
+	from
+	transactionalData.TBL_ADHOC_BOOKING bk
+	INNER JOIN
+	refData.TBL_ADHOC_BOOKING_ACTIVITY ac on bk.ADHOCBOOKINGACTIVITYID = ac.ADHOCBOOKINGACTIVITYID
+	where
+	ac.Type = 'Internal'
+	and bk.SignumID = @signumID
+
+	<if test="projectID != 0 ">
+		and bk.ProjectID = @projectID
+	</if>
+
+	and (convert(Date,bk.startDate) = @date or
+	convert(Date,bk.ActualEndDate) = @date or bk.ActualEndDate is null)
+
+	union all
+
+	select a.ADHOCBOOKINGID, dateadd(day,1,b.StartDate ),
+
+	cast(convert(varchar(10),dateadd(day,1,b.StartDate ),120) + ' 00:00:00'
+	as datetime) NewStartDate,
+
+	a.ActualEndDate ,
+
+	case when cast(dateadd(day,1,b.StartDate ) as date) = cast(a.ActualEndDate
+	as date) then a.ActualEndDate
+	when cast(dateadd(day,1,b.StartDate ) as date) = cast(dbo.GetDateIST() as
+	date) and a.ActualEndDate is null then dbo.getdateist()
+	when cast(dateadd(day,1,b.StartDate ) as date) &lt; cast(dbo.GetDateIST()
+	as date) and a.ActualEndDate is null then
+	cast(convert(varchar(10),dateadd(day,1,b.StartDate ),120) + ' 23:59:59'
+	as datetime)
+	else cast(convert(varchar(10),dateadd(day,1,b.StartDate ),120) + ' 23:59:59' as datetime) End as NewEndDate,
+
+	Case when cast(dateadd(day,1,b.StartDate ) as date) = cast(a.ActualEndDate
+	as date)
+	then Round((datediff(SECOND,convert(varchar(10),dateadd(day,1,b.StartDate
+	),120)+ ' 00:00:00',a.ActualEndDate)/60.00)/60.00,4)
+	when cast(dateadd(day,1,b.StartDate ) as date) = cast(dbo.GetDateIST() as
+	date) and a.ActualEndDate is null then
+	((datediff(second,cast(dateadd(day,1,b.StartDate ) as
+	date),dbo.getdateist())/60.00)/60)
+	when cast(dateadd(day,1,b.StartDate ) as date) &lt; cast(dbo.GetDateIST()
+	as date) and a.ActualEndDate is null then
+	((datediff(second,cast(dateadd(day,1,b.StartDate ) as
+	date),cast(convert(varchar(10),cast(dateadd(day,1,b.StartDate ) as
+	date),120) + ' 23:59:59' as datetime))/60.00)/60)
+	else ((datediff(second,convert(varchar(10),dateadd(day,1,b.StartDate
+	),120)+ ' 00:00:00',cast(convert(varchar(10),dateadd(day,1,b.StartDate
+	),120) + ' 23:59:59' as datetime))/60.00)/60) end [hour]
+	from transactionalData.TBL_ADHOC_BOOKING a
+	join CTEx b on a.ADHOCBOOKINGID = b.ADHOCBOOKINGID
+	and cast(dateadd(day,1,b.StartDate ) as date) &lt;=
+	cast(isnull(b.ActualEndDate,dbo.getdateist()) as date)
+	)
+
+	select
+	CONVERT(float, Round(sum([hour]),2)) [InternalAdhocHours]
+	from CTEx
+	where cast(NewStartDate as date) = @date
+	Group by cast(NewStartDate as date)
+		</select>
+		
+		
+		<select id="getPlannedAssignedWOCount" resultType='HashMap'>
+		   select count(woid) as PlannedAssignedWOCount from transactionalData.TBL_WORK_ORDER  where status in  ('Planned' , 'Assigned')
+			  and SignumID = #{signum}  and   convert(Date,plannedStartDate) =  #{date}   and active=1 
+			  <if test ="projectID != 0 ">
+			  and  PROJECTID = #{projectID}
+			   </if>
+		</select>
+		
+		<select id="getInProgressWOcount" resultType='HashMap'>
+		 select count(woid) as InProgressWOCount from transactionalData.TBL_WORK_ORDER  where status = 'Inprogress'
+			  and SignumID = #{signum} and active=1
+			  <if test ="projectID != 0 ">
+			  and  PROJECTID = #{projectID}
+			   </if>
+		</select>
+		
+		<select id="getLeaveHours" resultType='LeavePlanModel'>
+		  	  Declare @projectdate date = #{date}
+select LeaveHours from
+transactionalData.[TBL_Leave_Plan]
+where Signum = #{signum}
+and @projectdate between StartDate and EndDate and isActive = 1
+		  
+		  
+		</select>
+		
+</mapper>

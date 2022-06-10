@@ -1,0 +1,1214 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ericsson.isf.mapper.RpaMapper">
+    
+     <insert id='startTask_bookingDetails'>
+        insert into transactionalData.TBL_WORK_ORDER_BOOKING_DETAILS 
+        (WOID, TaskID, StartDate, Type, Status, ParentBookingDetailsID,parallelCount, SignumID,CreatedBy,CreatedDate,ModifiedBy,ModifiedDate,source_id,botplatform,REASON) 
+        values (
+        #{woID}, 
+        #{taskID}, 
+        dbo.GetDateIST() , 
+        'BOOKING', 
+        'STARTED', 
+        #{maxBookingID},
+        1, 
+		#{signumID},
+		#{signumID},
+		dbo.GetDateIST(),
+		#{signumID},
+		dbo.GetDateIST(),
+		#{sourceID},
+		#{botplatform},
+		#{reason})
+     </insert>
+     
+     <update id = 'updateWOStatus'>
+         update transactionalData.TBL_WORK_ORDER
+         set
+         ActualStartDate = dbo.GetDateIST(),ActualEndDate = null,Status = 'INPROGRESS'
+         where WOID = #{woID} AND ActualStartDate is NULL
+     </update>
+     
+     <select id='getBookingID' resultType="String">
+        
+         select max(BookingID) from transactionalData.TBL_WORK_ORDER_BOOKING_DETAILS where WOID = #{woID} and Type not in ('LEADTIME')
+         
+     </select>	
+     
+     <select id='checkIFWOIDExists' resultType="Boolean">
+        IF Exists(SELECT 1 FROM transactionalData.TBL_WORK_ORDER where WOID = #{woID} and Active=1)
+        Begin
+        Select 1 as 'Result'
+        End
+        else
+        Begin
+        Select 0 as 'Result'
+        End
+    </select>
+    
+    <select id='closeRpaWO' resultType="Integer">
+        
+        update transactionalData.TBL_WORK_ORDER set Status='CLOSED', ClosedOn=dbo.GetDateIST(), LastModifiedBy=#{signumID}, ActualEndDate = dbo.GetDateIST(),
+        LastModifiedDate=dbo.GetDateIST()
+        <if test ="actualEndDate != null and actualEndDate != ''">
+		,ActualStartDate=dbo.GetDateIST()
+        </if>
+         where WOID=#{woID}
+        
+     </select>
+     
+     <select id='getProjAndSubActivityID' resultType="java.util.Map">
+         select p.ProjectID,w.SubActivityID,w.flowchartdefid,w.WorkFlowVersion from transactionalData.TBL_WORK_ORDER_PLAN p (NOLOCK)
+         Inner Join transactionalData.TBL_WORK_ORDER w (NOLOCK) on p.WOPlanID = w.WOPlanID
+         where w.WOID=#{woID}
+     </select>
+   
+      <select id='getTaskID' resultType="Integer">
+        select taskID from refData.TBL_TASK 
+        where subActivityID = #{subActivityID} 
+        and task = #{task}
+        and active = 1
+     </select>
+
+     <resultMap type='RPABookingModel' id='RPABookingModelResult'>
+        <result property='wOID' column='WOID'/>
+        <result property='taskID' column='TaskID'/>
+        <result property='hours' column='Hours'/>
+        <result property='bookingID' column='BookingID'/>
+        <result property='status' column='Status'/>
+        <result property='outputLink' column='OutputLink'/>
+        <result property='startDate' column='StartDate'/>
+        <result property='endDate' column='EndDate'/>
+        <result property='signumID' column='SignumID'/>
+        <result property='reason' column='Reason'/>
+        <result property='type' column='Type'/>
+        <result property='parentBookingID' column='ParentBookingDetailsID'/>        
+    </resultMap>
+     
+    <select id='getRPATaskID' resultMap="RPABookingModelResult" statementType="CALLABLE">
+	{call USP_GetRPaTaskID(#{woID,mode=IN, jdbcType=INTEGER},
+        						    #{task,mode =IN, jdbcType=VARCHAR})};
+        						  
+    </select>
+    
+    <update id='updateHoursForRPA'>
+        update transactionalData.TBL_WORK_ORDER_BOOKING_DETAILS
+        set Hours = #{hours},
+        Status = 'COMPLETED',
+        EndDate = convert(varchar(25), #{endDate}, 120),
+        reason = #{reason},
+        ModifiedBy = #{signumID},
+        ModifiedDate = dbo.GetDateIST()
+        <if test="botPlateform!=''">
+        	 ,botplatform = #{botPlateform}
+        </if>
+        where BookingID = #{bookingID}
+    </update> 
+      	
+     <resultMap type='RPAWorkOrderDetails' id='RPAWorkOrderDetailsResult'>
+        <id property='woPlanID' column='WOPlanID'/>
+        <result property='woName' column='WOName'/>
+        <result property='projectID' column='ProjectID'/>
+        <result property='domainID' column='DomainID'/>
+        <result property='serviceAreaID' column='ServiceAreaID'/>
+        <result property='technologyID' column='TechnologyID'/>
+        <result property='subActivityID' column='SubActivityID'/>
+        <result property='startDate' column='StartDate'/>
+        <result property='startTime' column='StartTime'/>
+        <result property='avgEstdEffort' column='AvgEstdEffort'/>
+        <result property='priority' column='AdhocPriority'/>
+        <result property='assignedTO' column='AssignedTO'/>
+        <result property='createdBy' column='CreatedBy'/>
+        <result property='createdDate' column='CreatedDate'/>
+        <result property='active' column='Active'/>
+        <result property='activity' column='Activity'/>
+        <result property='subActivity' column='SubActivity'/>
+        <collection property='listOfWorkOrder' ofType='WorkOrderModel'>
+            <id property="wOID" column="WOID" />
+            <result property='wOPlanID' column='WOPlanID'/>
+            <result property="plannedStartDate" column="PlannedStartDate" />
+            <result property="plannedEndDate" column="PlannedEndDate" />
+            <result property="actualStartDate" column="ActualStartDate" />
+            <result property="actualEndDate" column="ActualEndDate" />
+            <result property="signumID" column="AssignedTO" />
+            <result property="status" column="Status" />
+            <result property="reason" column="Reason" />
+            <result property="closedOn" column="ClosedOn"/>
+            <result property="active" column="Active" />
+            <result property="priority" column="WoPriority"/>
+            <result property="wfVersion" column="WorkFlowVersion"/>
+            <result property="wfVersionName" column="WorkFlowName"/>
+            <collection property='listOfNode' ofType='WorkOrderNodesModel'>
+                <id property='wNID' column='WoWNID'/>
+                <result property="wOID" column="WOID" />
+                <result property='nodeType' column='WoNodeType'/>
+                <result property='nodeNames' column='WoNodeNames'/>
+            </collection>        
+        </collection>  
+    </resultMap>
+     
+     <select id='getRPAWorkOrderDetails' resultMap='RPAWorkOrderDetailsResult'>
+         SELECT  ad.WOPlanID,ad.ProjectID, wOrder.SubActivityID, 
+         ad.StartDate,ad.StartTime, workOrder.SignumID as AssignedTO,ad.CreatedDate,ad.CreatedBy,
+         ad.Priority as AdhocPriority,wOrder.WOName,wOrder.WOID,wOrder.PlannedStartDate, wOrder.PlannedEndDate, wOrder.ActualStartDate, 
+         wOrder.ActualEndDate,ad.Active,ad.CreatedBy, ad.CreatedDate,wOrder.SignumID as WoSignumID,
+         wOrder.Status, da.Reason, wOrder.ClosedOn, wOrder.Active, wOrder.Priority as WoPriority,
+         wONodes.WNID as woWNID, wONodes.NodeType as WoNodeType, wONodes.NodeNames as WoNodeNames,sub.Activity, sub.SubActivity, 
+         wOrder.WorkFlowVersion,def.WorkFlowName
+         FROM transactionalData.TBL_WORK_ORDER_PLAN ad 
+         inner join transactionalData.TBL_WORK_ORDER wOrder on  ad.WOPlanID = wOrder.WOPlanID and ad.Type = 'ADHOC'
+         left join(
+         select woPlan.WOPlanID, 
+             substring(
+                        (
+                        Select distinct ','+ worder.SignumID  AS [text()]
+                        From transactionalData.TBL_WORK_ORDER worder
+                        Where woPlan.WOPlanID = worder.WOPlanID
+                        For XML PATH ('')
+                        ), 2, 1000) signumID
+         from transactionalData.TBL_WORK_ORDER_PLAN  (NOLOCK) woPlan
+         )as workOrder on workOrder.WOPlanID = wOrder.WOPlanID
+         LEFT JOIN transactionalData.TBL_WORK_ORDER_NODES wONodes on wONodes.WOID = wOrder.WOID
+         INNER JOIN refData.[TBL_SUBACTIVITY] sub on ad.SubActivityID = sub.SubActivityID
+         LEFT JOIN transactionaldata.tbl_work_order_delivery_acceptance da on da.woID= wOrder.woID and wOrder.status in ('CLOSED','REJECTED')
+         INNER JOIN transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF DEF ON DEF.ProjectID=ad.ProjectID and DEF.SubActivityID = ad.SubActivityID
+	 AND DEF.VersionNumber = wOrder.WorkFlowVersion
+         where ad.Active=1 and wOrder.Active =1
+         and ad.ProjectID =#{projectID}
+    </select>
+    
+    <select id= 'getScopeID' resultType="Integer">
+        select top 1 ps.ProjectScopeID  from transactionalData.TBL_PROJECTS  p
+        inner join transactionalData.TBL_PROJECTSCOPE ps on p.ProjectID = ps.ProjectID and ps.Active = 1
+        inner join transactionalData.TBL_PROJECTSCOPEDETAIL pd on pd.ProjectScopeID =ps.ProjectScopeID and pd.Active = 1
+        inner join transactionalData.TBL_ACTIVITYSCOPE a on a.ProjectScopeDetailID =pd.ProjectScopeDetailID 
+        where p.ProjectID=#{projectID} and a.SubActivityID=#{subActivityID} and a.Active=1 and p.isDeleted =0 
+    </select>    
+    
+    <select id='getWOVersionNo' resultType="Integer">
+        select WorkFlowVersion from transactionalData.TBL_WORK_ORDER (NOLOCK) where WOID =#{woID} 
+    </select>
+    
+    <select id='getFlowChartDefID' resultType='Integer'>
+        select SubActivityFlowChartDefID from transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF (NOLOCK)
+               where projectID= #{projectID}
+               and subactivityID =#{subActivityID}
+               and versionNumber = #{versionNo}
+               and Active =1 
+    </select>
+    
+
+    <select id='getFlowChartStepID' resultType ="String">
+        select distinct StepID from transactionalData.TBL_FLOWCHART_STEP_DETAILS where SubActivityFlowChartDefID=#{flowchartDefID} 
+                                                                                 and taskID=#{taskID}
+    </select>
+    
+    <select id='getWOSignumID' resultType='String'>
+        select SignumID from transactionalData.TBL_WORK_ORDER where WOID = #{woID}
+    </select>
+    
+     <resultMap type='SoftHumanDumpModel' id='SoftHumanDumpModelResult'>
+        <result property='bOTName' column='BOTName'/>
+        <result property='automation_Plugin' column='Automation_Plugin'/>          
+    </resultMap>
+    
+        
+    <select id='getRPADeployedDetails' resultMap='SoftHumanDumpModelResult'>
+		 SELECT BOTID as BOTName, CONCAT(BOTID,'-',BOTName) as 'Automation_Plugin'  FROM [transactionalData].[TBL_RPA_DeployedBOT]
+		 where isActive = 1 and isnull(BOTLanguage,'')!='MACRO'
+    </select>
+    
+    <select id='getWorkOrderID' resultType='Integer'>
+        select w.WOID from transactionalData.TBL_WORK_ORDER_PLAN p
+        INNER JOIN transactionalData.TBL_WORK_ORDER w ON w.WOPlanID = p.WOPlanID
+        where p.ProjectID =#{projectID} and w.subActivityID =#{subActivityID} and p.ScopeID = #{scopeID}
+        and w.WOName =#{woName} and p.Type = #{type} and w.woPlanID =#{woPlanID}
+       
+    </select>
+    
+    <select id ='getWorkFlowData' resultType='java.util.HashMap'>
+        select distinct d1.VersionNumber,d1.SubActivityFlowChartDefID,d1.WorkFlowName 
+        from transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF d1
+        inner join 
+        (
+        select ProjectID, SubActivityID, MAX(VersionNumber) as MaxVersionNumber
+        from transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF where FlowChartJSON is not null
+        group by ProjectID, SubActivityID
+        ) as d2 on d1.VersionNumber = d2.MaxVersionNumber
+        and d1.ProjectID = d2.ProjectID
+        and d1.SubActivityID = d2.SubActivityID
+        where d1.ProjectID = #{projectID} and d1.SubActivityID = #{subActivityID}
+        and d1.FlowChartJSON is not null 
+    </select> 
+    
+    
+    <select id='checkIFWOExists' resultType='Boolean'>
+        IF EXISTS (select *  from transactionalData.TBL_WORK_ORDER_PLAN PLN 
+					 JOIN transactionalData.TBL_WORK_ORDER WO on WO.WOPlanID =PLN.WOPlanID
+					 JOIN transactionalData.TBL_WORK_ORDER_NODES WON on WO.WOID = WON.WOID
+					 WHERE  PLN.Active = 1  AND WO.Active = 1 AND PLN.ProjectID = #{projectID}
+					 AND PLN.SCOPEID = #{scopeID} 
+					 AND WO.SubActivityID =#{subActivityID}  
+					 AND WO.flowchartdefid =#{wfDefID}
+					 AND WON.NodeNames = #{nodeNames} 
+					 AND WO.Status not in('CLOSED'))
+			BEGIN
+			  select 1 as 'Result'
+			END
+		ELSE
+			BEGIN
+			 select 0 as 'Result'
+			END 			 
+    </select>
+    
+    <select id='getExternalSource' resultType='Integer'>
+    
+      IF EXISTS(select 1 from [refData].[TBL_IntegrationSources] where sourceName=#{sourceName})
+		BEGIN
+		  select SourceID from [refData].[TBL_IntegrationSources] where sourceName=#{sourceName}
+        END
+		ELSE
+		BEGIN
+		select 0 as SourceID
+		END
+    </select>
+    
+     <select id='getExecutionPlan' resultType='Integer'>
+    
+      IF EXISTS(select 1 from transactionalData.TBL_ExecutionPlan_master where planName=#{executionPlan} and isactive=1)
+		BEGIN
+		  select executionPlanId from transactionalData.TBL_ExecutionPlan_master where planName=#{executionPlan} AND projectID = #{projectID} and isactive=1
+        END
+		ELSE
+		BEGIN
+		select 0 as executionPlanId
+		END
+    </select>
+    
+    <insert id='insertBulkWorkOrderDetails' parameterType="com.ericsson.isf.model.BulkWorkOrderCreationModel"
+		useGeneratedKeys="true" keyProperty="bulkModel.woCreationID"
+		keyColumn="WOCreationID">
+		INSERT into [transactionalData].TBL_BULK_WORK_ORDER_CREATION
+		(ProjectID,SubserviceArea,Domain,SubDomain,Technology,WOID,ScopeName,SubActivityID,SubActivityName,
+		Priority,SLAHours,AssignTo,StartDate,StartTime,WorkOrderName,WorkFlowName,NodeType,NodeNames,CreatedBy,CreatedDate,LastModifiedBy,
+		LastModifiedDate,ExternalSourceID,ExternalSourceName,UploadedBy,ExecutionPlanID,ExternalProjectID,ForecastStartDate,ForecastEndDate,
+		ExternalActivityID,ExternalActivityName,ParentWorkPlanId,ParentWorkPlanName,Status,ErisiteBusinessObject,HasFault,SystemRecordId,
+		RecordName,ParentProjectIntegratedScoping,AssignedGroup,source_system_id,message_batch_id,transaction_id,businessentityid,ParentWorkPlanRecordID,comments,InputName,InputUrl)
+		values(
+		#{bulkModel.projectID},
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		0,
+		#{bulkModel.executionPlan},
+		#{bulkModel.subActivityID},
+		NULL,
+		#{bulkModel.priority},
+		#{bulkModel.sla},
+		#{bulkModel.assignTO},
+		#{bulkModel.startDate},
+		#{bulkModel.startTime},
+		#{bulkModel.woName},
+		#{bulkModel.workFlowName},
+		#{bulkModel.nodeType},
+		#{bulkModel.nodeNames},
+		#{bulkModel.createdBy},
+		dbo.GetDateIST(),
+		NULL,
+		NULL,
+		#{sourceID},
+		#{bulkModel.source},
+		#{bulkModel.uploadedBy},
+		#{executionPlanID},
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		#{bulkModel.comment},
+		#{bulkModel.inputName},
+		#{bulkModel.inputUrl}
+		);
+	</insert>
+	
+	<insert id='insertBulkWorkOrderHistory' parameterType="com.ericsson.isf.model.BulkWorkOrderCreationModel">
+	INSERT
+		into [transactionalData].[TBL_BULK_WORK_ORDER_CREATION_HISTORY] (
+		WOCreationFromID,
+		WOCreationToID,
+		UploadedBy,
+		UploadedDate,
+		UploadStatus,
+		ProcessedON,
+		 CreatedBy,
+		CreatedDate,
+		ModifiedBy,
+		ModifiedDate
+		)
+		values(
+		#{bulkModel.woCreationID},
+		#{bulkModel.woCreationID},
+		#{bulkModel.uploadedBy},
+		dbo.GetDateIST(),
+		'INPROGRESS',
+		dbo.GetDateIST(),
+		#{bulkModel.uploadedBy},
+		dbo.GetDateIST(),
+		#{bulkModel.uploadedBy},
+		dbo.GetDateIST()
+		);
+	</insert>
+	
+	<insert id='saveBotConfig' parameterType="com.ericsson.isf.model.BotConfig">
+		INSERT INTO [transactionalData].[TBL_BOT_CONFIG]
+           ([Type]
+           ,[ReferenceId]
+           ,[Json]
+           ,[Description]
+           ,[CreatedBy]
+           ,[CreatedDate]
+           ,[Active]
+           ,[LastModifiedBy]
+           ,[LastModifiedDate])
+     VALUES
+           (#{botData.type}
+           ,#{botData.referenceId}
+           ,#{botData.json}
+           ,#{botData.description}
+           ,#{botData.signum}
+           ,dbo.GetDateIST()
+           ,1
+           ,#{botData.signum}
+           ,dbo.GetDateIST());
+      </insert>
+      
+       <select id='getBotConfig' resultType='com.ericsson.isf.model.BotConfig'>
+        <!--  SELECT * FROM [transactionalData].[TBL_BOT_CONFIG] where Type=#{type} and ReferenceId=#{referenceId} and active=1 -->
+ 			 SELECT Top 1  A.Json, B.BOTLanguage as botType, ISNULL(C.referenceBotId, 0) as refBotId,C.isInputRequired FROM [transactionalData].[TBL_BOT_CONFIG] as A 
+			left join [transactionalData].[TBL_RPA_BOTSTAGING] as B on A.ReferenceId=B.rpaRequestID
+			left join [transactionalData].[TBL_RPA_REQUEST] as C on A.ReferenceId=C.rpaRequestID
+ 			where Type=#{type} and ReferenceId=#{referenceId} and active=1
+ 	   </select>
+  
+   	<select id='getBookingsByReferenceId' resultType="com.ericsson.isf.model.BookingDetailsModel">
+	
+	
+		select bd.WOID, wosd.TaskID, bd.SignumID, bd.status, bd.type, bd.reason, bd.BookingID,
+ wosd.FlowChartStepID,wosd.FlowChartDefID,wosd.ExecutionType,bd.OutputLink, bd.parallelcount
+  from [transactionalData].TBL_WORK_ORDER_BOOKING_DETAILS bd (nolock)
+	    join transactionalData. TBL_WORK_ORDER_FLOWCHART_STEP_DETAILS wosd (nolock) on 
+	    bd.BookingID = wosd.BookingID and 
+	    bd.WOID = wosd.WOID 
+	    where referenceId=#{referenceId}
+    </select>
+    
+    <update id='updateBotConfig' parameterType="com.ericsson.isf.model.BotConfig">
+		update [transactionalData].[TBL_BOT_CONFIG] set
+           [Json]=#{botData.json}
+           ,[LastModifiedBy]=#{botData.signum}
+           ,[LastModifiedDate]=dbo.GetDateIST()
+           where Type=#{botData.type} and ReferenceId=#{botData.referenceId};
+      </update>
+      
+	  <select id='getBoTsForExplore' resultType='java.util.HashMap'>
+			<if test="taskId != -1">
+
+   Declare @Task varchar(255),@Technologyid int, @Activity varchar(255), @Subactivity varchar(255)
+
+   Select @Task=tbltask.Task, @Technologyid=subact.TechnologyID, @Activity = subact.Activity, @Subactivity = subact.SubActivity
+   from refData.TBL_SUBACTIVITY subact
+   join refData.TBL_TASK tbltask on tbltask.SubActivityID = subact.SubActivityID
+   where TaskID =#{taskId}
+
+   </if>
+
+  Select 
+  rpaRequestID,    
+  createdOn,    
+  BOTID,    
+  CurrentAvgExecutionTime,
+  RPAExecutionTime,    
+  isAuditPass,    
+  BOTName,    
+  ReuseFactor,    
+  isRunOnServer,    
+  isActive,    
+  projectName,    
+  MarketAreaName,    
+  WorkFlowName,    
+  Activity,    
+  SubActivity,    
+  Task,
+  TechnologyID,    
+  Technology,    
+  SubActivityID
+  <if test="taskId != -1">
+  ,_Rank
+  </if>
+  from (
+    select distinct main_table.rpaRequestID,
+    convert(nvarchar(max),main_table.createdOn,22)as createdOn, 
+    valid_bots.BOTID, 
+    valid_bots.CurrentAvgExecutionTime,
+    valid_bots.RPAExecutionTime,
+    valid_bots.isAuditPass, 
+    valid_bots.BOTName,
+    valid_bots.ReuseFactor, 
+    valid_bots.isRunOnServer, 
+    valid_bots.isActive,
+    proj.projectName, 
+    MA.MarketAreaName, 
+    wf.WorkFlowName,
+    subact.Activity,
+    subact.SubActivity,
+    step.Task,
+    tech.TechnologyID,
+    tech.Technology,
+    subact.SubActivityID
+    <if test="taskId != -1">
+    ,CASE
+       When step.Task = @Task and tech.TechnologyID = @Technologyid and subact.Activity = @Activity and subact.SubActivity = @Subactivity Then '1'
+       When step.Task= @Task AND tech.TechnologyID=@Technologyid AND subact.SubActivity = @Subactivity Then '2'
+       When step.Task= @Task AND tech.TechnologyID=@Technologyid Then '3'
+    
+    END AS _Rank
+   -- </if>
+    from transactionalData.TBL_RPA_REQUEST main_table
+    RIGHT JOIN transactionalData.TBL_RPA_DeployedBOT valid_bots ON main_table.rpaRequestID=valid_bots.rpaRequestID
+    JOIN refData.TBL_SUBACTIVITY subact on main_table.SubactivityID = subact.SubActivityID
+    join [transactionalData].[TBL_FLOWCHART_STEP_DETAILS] step on main_table.TaskID = step.TaskID
+    JOIN refData.TBL_TECHNOLOGY tech ON subact.TechnologyID =tech.TechnologyID
+    join [transactionalData].[TBL_PROJECTS] proj on main_table.ProjectID = proj.ProjectID
+    join transactionalData.TBL_OPPORTUNITY opp on proj.OpportunityID = opp.OpportunityID
+    join refData.TBL_MARKETAREAS MA on opp.MarketAreaID = MA.MarketAreaID
+    join [transactionalData].[TBL_SUBACTIVITY_FLOWCHART_DEF] wf on main_table.WorkflowDEFID=wf.SubActivityFlowChartDefID
+    <if test="taskId != -1">
+    where step.Task = @Task and  isnull(valid_bots.BOTLanguage,'') NOT IN ('MACRO','PENGUIN')
+    </if>
+) T
+<if test="taskId != -1">
+where T._Rank is not null order by _Rank, rparequestID
+</if>
+</select>	
+     
+          <select id='getTemplateFile' resultType='java.util.HashMap'>
+        select templateName, templateFile,active,uploadedBy,uploadedOn,  templateID from refData.TBL_ISF_TEMPLATE_FILE where templateName=#{templateName}
+     </select>
+      
+     <insert id='uploadTemplateFile' >
+     
+     	IF EXISTS (Select 1 from refData.TBL_ISF_TEMPLATE_FILE where templateName = #{templateName})
+        BEGIN
+        	Update refData.TBL_ISF_TEMPLATE_FILE
+        	set templateFile = #{inputDataFile},modifiedBy =#{signum}, modifiedOn = dbo.GetDateIST()
+        	where templateName = #{templateName} 
+        END
+        ELSE
+        BEGIN
+        	insert into refData.TBL_ISF_TEMPLATE_FILE
+			(templateName,templateFile,active,uploadedBy,uploadedOn,modifiedBy,modifiedOn,CreatedBy,CreatedDate)
+         	values(#{templateName},#{inputDataFile},1,#{signum},dbo.GetDateIST(),#{signum},dbo.GetDateIST(),#{signum},dbo.GetDateIST())
+        END
+      </insert> 
+      
+      <select id='getExecutionPlanByName' resultType='com.ericsson.isf.model.ExecutionPlanDetail'>
+		 select epd.* from transactionalData.TBL_ExecutionPlan_details epd inner join transactionalData.TBL_ExecutionPlan_master epm
+		on epd.executionPlanId = epm.executionPlanId where epm.projectId =  #{projectID} and epm.planName = #{executionPlanName} and epm.isactive=1
+      </select>
+      
+        <select id='getWOPlanbyWOID' resultType="String">
+         select WOName from transactionalData.TBL_WORK_ORDER where WOID=#{woID}
+         </select>	
+         
+      <select id='getRPASubactivity' resultType='java.util.HashMap'>
+			Select distinct suba.SubActivityID, Activity+' / '+ SubActivity as SubActivity
+              from transactionalData.TBL_RPA_DeployedBOT dBOT
+              inner join transactionalData.TBL_RPA_REQUEST (NOLOCK) req on req.rpaRequestID = dBOT.BOTID
+              left join refData.TBL_SUBACTIVITY (NOLOCK) suba on suba.SubActivityID = req.SubactivityID
+              left join refData.TBL_TASK (NOLOCK) task on task.TaskID=req.TaskID and task.SubActivityID = req.SubactivityID
+              left join refdata.tbl_domain (NOLOCK) do on do.DomainID = suba.DomainID
+              left join refData.TBL_TECHNOLOGY (NOLOCK) tec on tec.TechnologyID = suba.TechnologyID
+              left join transactionalData.TBL_PROJECTS (NOLOCK) proj on proj.ProjectID = req.ProjectID
+              left join transactionalData.TBL_OPPORTUNITY (NOLOCK) opp on opp.OpportunityID=proj.OpportunityID
+              left join refData.TBL_MARKETAREAS (NOLOCK) marea on marea.MarketAreaID=opp.MarketAreaID
+              where dBOT.isActive=1 
+			  <if test ="marketarea != null and marketarea != ''">
+				and marea.MarketAreaName = #{marketarea}
+			  </if>
+			  <if test ="domainId != null ">
+				and do.DomainID = #{domainId}
+			  </if>
+			  
+			  order by suba.SubActivityID
+     </select>
+     
+     <select id='getRPADomain' resultType='java.util.HashMap'>
+			Select distinct do.DomainID, do.Domain+' / '+ do.SubDomain as Domain
+              from transactionalData.TBL_RPA_DeployedBOT dBOT
+              inner join transactionalData.TBL_RPA_REQUEST (NOLOCK) req on req.rpaRequestID = dBOT.BOTID
+              left join refData.TBL_SUBACTIVITY (NOLOCK) suba on suba.SubActivityID = req.SubactivityID
+              left join refData.TBL_TASK (NOLOCK) task on task.TaskID=req.TaskID and task.SubActivityID = req.SubactivityID
+              left join refdata.tbl_domain (NOLOCK) do on do.DomainID = suba.DomainID
+              left join refData.TBL_TECHNOLOGY (NOLOCK) tec on tec.TechnologyID = suba.TechnologyID
+              left join transactionalData.TBL_PROJECTS (NOLOCK) proj on proj.ProjectID = req.ProjectID
+              left join transactionalData.TBL_OPPORTUNITY (NOLOCK) opp on opp.OpportunityID=proj.OpportunityID
+              left join refData.TBL_MARKETAREAS (NOLOCK) marea on marea.MarketAreaID=opp.MarketAreaID
+              where dBOT.isActive=1 
+			  <if test ="marketarea != null and marketarea != ''">
+				and marea.MarketAreaName = #{marketarea}
+			  </if>
+			  order by do.DomainID
+     </select>
+     
+     <select id='getRPATechnology' resultType='java.util.HashMap'>
+		Select distinct tec.TechnologyID,tec.Technology
+		from transactionalData.TBL_RPA_DeployedBOT dBOT
+		inner join transactionalData.TBL_RPA_REQUEST (NOLOCK) req on req.rpaRequestID = dBOT.BOTID
+		left join transactionalData.TBL_PROJECTS (NOLOCK) proj on proj.ProjectID = req.ProjectID and proj.IsDeleted=0 
+		left join transactionalData.TBL_OPPORTUNITY (NOLOCK) opp on opp.OpportunityID=proj.OpportunityID 
+		left join refData.TBL_MARKETAREAS (NOLOCK) marea on marea.MarketAreaID=opp.MarketAreaID
+		left join refData.TBL_SUBACTIVITY (NOLOCK) suba on suba.SubActivityID = req.SubactivityID and suba.Active=1 
+		left join refdata.tbl_domain (NOLOCK) do on do.DomainID = suba.DomainID and do.Active=1 
+		left join refData.TBL_TECHNOLOGY (NOLOCK) tec on tec.TechnologyID = suba.TechnologyID and tec.Active=1
+		where 
+		do.DomainID=#{domainId}
+		<if test ="market != null and market != ''">
+		and marea.MarketAreaName =#{market}
+		</if>
+		and suba.SubActivityID=#{subActivityId}     
+	</select>
+     
+      <select id='getRPATask' resultType='java.util.HashMap'>
+			Select distinct task.TaskID, task.Task
+              from transactionalData.TBL_RPA_DeployedBOT dBOT
+              inner join transactionalData.TBL_RPA_REQUEST (NOLOCK) req on req.rpaRequestID = dBOT.BOTID
+              left join refData.TBL_SUBACTIVITY (NOLOCK) suba on suba.SubActivityID = req.SubactivityID
+              left join refData.TBL_TASK (NOLOCK) task on task.TaskID=req.TaskID and task.SubActivityID = req.SubactivityID
+              left join refdata.tbl_domain (NOLOCK) do on do.DomainID = suba.DomainID
+              left join refData.TBL_TECHNOLOGY (NOLOCK) tec on tec.TechnologyID = suba.TechnologyID
+              left join transactionalData.TBL_PROJECTS (NOLOCK) proj on proj.ProjectID = req.ProjectID
+              left join transactionalData.TBL_OPPORTUNITY (NOLOCK) opp on opp.OpportunityID=proj.OpportunityID
+              left join refData.TBL_MARKETAREAS (NOLOCK) marea on marea.MarketAreaID=opp.MarketAreaID
+              where dBOT.isActive=1 and suba.Active=1 and do.Active=1 and tec.Active=1 and proj.IsDeleted=0
+              <if test ="market != null and market != ''">
+			  and marea.MarketAreaName =#{market} 
+			  </if>
+			  and do.DomainID=#{domainId} and suba.SubActivityID=#{subActivityId}
+			  and tec.TechnologyID=#{technologyId}
+			  order by task.TaskID 
+     </select>
+     
+     <select id='getRPABOTDetails' resultType='java.util.HashMap'>
+     select BOTID, BOTName, BOTLanguage,isInputRequired, Activity+' / '+ SubActivity as SubActivity, Task, TaskID, Domain, Technology, MarketAreaName,
+              BOTExecutedCount,  BOTExecutionHours, EME, videoURL,
+              BOTExecutionFailCount,WFCount=sum([WFActive]),
+              ProjectName,  DeployedOn , LanguageBaseVersionID , LanguageBaseVersion
+              from ( 
+              Select distinct  dBOT.BOTID, dBOT.BOTName, dBOT.BOTLanguage,dBOT.isInputRequired, suba.Activity, suba.SubActivity, task.Task, task.TaskID, do.Domain, tec.Technology, marea.MarketAreaName,
+              isnull(rep.BOTExecutedCount,0) as BOTExecutedCount, isnull(rep.BOTExecutionHours,0) as BOTExecutionHours, 
+              isnull(rep.BOTExecutionFailCount,0) as BOTExecutionFailCount,sfd.SubActivityFlowChartDefID,[WFActive]=case when sfd.active=1 then 1 else 0 end, 
+              proj.ProjectName, eme.EME, req.VideoURL,dBOT.CreatedOn as DeployedOn  ,dBOT.LanguageBaseVersionID , lbv.LanguageBaseVersion
+              from transactionalData.TBL_RPA_DeployedBOT dBOT
+              inner join transactionalData.TBL_RPA_REQUEST (NOLOCK) req on req.rpaRequestID = dBOT.BOTID
+              left join refData.TBL_SUBACTIVITY (NOLOCK) suba on suba.SubActivityID = req.SubactivityID         
+  
+              left join refData.TBL_LanguageBaseVersion lbv  on lbv.LanguageBaseVersionID = dBOT.LanguageBaseVersionID and lbv.IsActive = 1
+              
+              left join refData.TBL_TASK (NOLOCK) task on task.TaskID=req.TaskID and task.SubActivityID = req.SubactivityID
+              left join refdata.tbl_domain (NOLOCK) do on do.DomainID = suba.DomainID
+              left join refData.TBL_TECHNOLOGY (NOLOCK) tec on tec.TechnologyID = suba.TechnologyID
+              left join transactionalData.TBL_PROJECTS (NOLOCK) proj on proj.ProjectID = req.ProjectID
+              left join transactionalData.TBL_OPPORTUNITY (NOLOCK) opp on opp.OpportunityID=proj.OpportunityID
+              left join refData.TBL_MARKETAREAS (NOLOCK) marea on marea.MarketAreaID=opp.MarketAreaID
+              left join transactionalData.TBL_DETAILDUMP_DEOPLYED_BOTS (NOLOCK) rep  on rep.BOTID=dBOT.BOTID
+              left join transactionalData.TBL_FLOWCHART_STEP_DETAILS (NOLOCK) fsd on fsd.RpaID = dBOT.BOTID
+              left join transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF (NOLOCK) sfd on fsd.SubActivityFlowChartDefID=sfd.SubActivityFlowChartDefID 
+              and fsd.VersionNumber=sfd.VersionNumber
+              left join
+              (
+                      Select cast(avg(fsd.Savings)  as decimal(10,2)) as EME, fsd.RpaID  
+                      from transactionalData.TBL_RPA_DeployedBOT dBOT
+                      inner join transactionalData.TBL_RPA_REQUEST req on req.rpaRequestID = dBOT.BOTID
+                      left join refData.TBL_TASK task on task.TaskID=req.TaskID and task.SubActivityID = req.SubactivityID
+                      left join transactionalData.TBL_FLOWCHART_STEP_DETAILS fsd on fsd.RpaID = dBOT.BOTID
+                      left join transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF  sfd on fsd.SubActivityFlowChartDefID=sfd.SubActivityFlowChartDefID 
+                      where 1=1
+					  <if test ="taskId != null ">
+						and task.TaskID = #{taskId}
+					 </if>
+                      group by fsd.RpaID
+              )eme on eme.RpaID = fsd.RpaID
+              where dBOT.isActive=1 
+        <if test ="domainid != null ">
+		</if>
+		<if test ="technologyId != null ">
+			and tec.TechnologyID = #{technologyId}
+		</if>
+		<if test ="subactivityId != null ">
+			and suba.SubActivityID = #{subactivityId}
+		</if>
+		<if test ="taskId != null ">
+			and task.TaskID = #{taskId}
+		</if>
+		<if test ="marketarea != null and marketarea != ''">
+			and marea.MarketAreaName = #{marketarea}
+		</if>
+              ) xx
+              Group By BOTID, BOTName, BOTLanguage,isInputRequired, Activity, SubActivity, Task, TaskID, Domain, Technology, MarketAreaName,
+              BOTExecutedCount,  BOTExecutionHours,  
+               BOTExecutionFailCount,ProjectName, VideoURL, DeployedOn,LanguageBaseVersionID, LanguageBaseVersion ,EME order by BOTID
+     </select>
+      
+     
+     
+     
+     <select id="getTestingBotDetails" resultType='com.ericsson.isf.model.TestingBotDetailsModel'>
+		
+		
+		select rr.rpaRequestID,
+			sfd.WorkFlowName as wfName,
+			p.ProjectName,
+			cus.CustomerName as customerName,
+			'Market_Test' as market,
+			'Node_Test' as node,
+			dbo.GetDateIST() as currentDate,
+			DATEADD(DAY, 1, dbo.GetDateIST()) as endDate,
+			CONVERT(TIME, dbo.GetDateIST()) as currentTime,
+			'WO_Test' as woName,
+			p.ProjectID as projectId
+		from transactionalData.TBL_RPA_REQUEST rr
+		join transactionalData.TBL_PROJECTS p on rr.ProjectID = p.ProjectID
+		join transactionalData.TBL_OPPORTUNITY opp on p.OpportunityID=opp.OpportunityID
+		join refData.TBL_CUSTOMERS cus on opp.CustomerID=cus.CustomerID
+		join transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF sfd on sfd.SubActivityFlowChartDefID = rr.WorkflowDEFID
+		where rr.rpaRequestID = #{rpaRequestId}
+		
+     </select> 
+     
+     <insert id='saveExceptionLog' parameterType='com.ericsson.isf.model.ExceptionLogModel'>
+     	INSERT INTO transactionaldata.tbl_desktop_exception_logs
+            (
+                        woid,
+                        taskid,
+                        botid,
+                        bookingid,
+                        signum,
+                        createdby,
+                        createddate,
+                        modifiedby,
+                        modifieddate,
+                        LoggedOn,
+                        LoggedBy,
+                        ErrorCode,
+                        ExceptionMessage
+            )
+            VALUES
+            (
+                        #{exceptionLog.wOID},
+                        #{exceptionLog.taskID},
+                        #{exceptionLog.botID},
+                        #{exceptionLog.bookingID},
+                        #{exceptionLog.signum},
+                        #{exceptionLog.signum},
+                        dbo.Getdateist(),
+                        #{exceptionLog.signum},
+                        dbo.Getdateist(),
+                        dbo.Getdateist(),
+                        #{exceptionLog.signum},
+                        #{exceptionLog.errorCode},
+                        #{exceptionLog.errorMsg}
+     	)
+     		
+     </insert>
+     
+     <insert id='SaveSHExceptionLog' parameterType='com.ericsson.isf.model.ExceptionLogModel'>
+     	insert into transactionalData.TBL_DESKTOP_EXCEPTION_LOGS(WOID, TaskID, BotID, BookingID, Signum, ExceptionLevel, ExceptionType, ExceptionMessage, LoggedOn, LoggedBy,CreatedBy,CreatedDate,ModifiedBy,ModifiedDate) values(
+     	#{SHExceptionLog.wOID},
+     	#{SHExceptionLog.taskID},
+     	#{SHExceptionLog.botID},
+     	#{SHExceptionLog.bookingID},
+     	#{SHExceptionLog.signum},
+     	#{SHExceptionLog.exceptionLevel},
+     	#{SHExceptionLog.exceptionType},
+     	#{SHExceptionLog.exceptionMessage},
+     	#{SHExceptionLog.loggedOn},
+     	#{SHExceptionLog.loggedBy},
+     	 #{SHExceptionLog.signum},
+        dbo.GetDateIST(),
+        #{SHExceptionLog.signum},
+         dbo.GetDateIST()
+     	)
+     		
+     </insert>
+     
+     <insert id='SaveBotExceptionLog' parameterType='com.ericsson.isf.model.ExceptionLogModel'>
+     	insert into transactionalData.TBL_DESKTOP_EXCEPTION_LOGS(WOID, TaskID, BotID, BookingID, Signum, ExceptionLevel, ExceptionType, ExceptionMessage, LoggedOn, LoggedBy,CreatedBy,CreatedDate,ModifiedBy,ModifiedDate) values(
+     	#{BotExceptionLog.wOID},
+     	#{BotExceptionLog.taskID},
+     	#{BotExceptionLog.botID},
+     	#{BotExceptionLog.bookingID},
+     	#{BotExceptionLog.signum},
+     	#{BotExceptionLog.exceptionLevel},
+     	#{BotExceptionLog.exceptionType},
+     	#{BotExceptionLog.exceptionMessage},
+     	#{BotExceptionLog.loggedOn},
+     	#{BotExceptionLog.loggedBy},
+     	 #{BotExceptionLog.signum},
+        dbo.GetDateIST(),
+        #{BotExceptionLog.signum},
+        dbo.GetDateIST()
+     	)
+     		
+     </insert>
+     
+     <select id="WOMaxBookingID" resultType='Integer'>
+     	select max(bookingID)as bookingID
+		from transactionalData.TBL_WORK_ORDER_BOOKING_DETAILS(nolock) bd
+		where WOID = #{wOID} and taskID =#{taskID} and signumID =#{signum}
+		group by woid,TaskID,signumID
+     </select>
+     
+    <select id='getAllRPARequestDetails' resultType='java.util.HashMap'>
+	Set transaction Isolation level Read uncommitted 
+drop table if exists #TempData
+select 
+ISNULL(dep.BOTExecutedCount,0)BOTExecutedCount,
+ISNULL(dep.BOTExecutionHours,0)BOTExecutionHours,
+t.Technology,
+sa.Activity,
+sa.SubActivity,
+proj.ProjectName ,
+inv.Tool as ToolName,
+inv.ToolType,
+task.Task as TaskName,
+Concat(emp.EmployeeName,'/',emp.Signum) as SPOC,
+rr.Description,
+Concat(do.Domain,'/',do.SubDomain) as Domain,
+fsd.Savings as EME
+,am.AccessMethod,
+rr.VideoURL,
+rr.rpaRequestID  as BOTID,
+rr.requestname as BOTName,
+rr.isInputRequired as IsInputRequired,
+rr.WorkflowDEFID,
+fsd.StepID,
+fsd.StepName,
+sfd.WorkFlowName,
+sfd.WFID,
+fsd.FCStepDetailsID,
+inv.ToolID,
+fsd.RpaID,
+bots.LanguageBaseVersionID,
+lbv.LanguageBaseVersion
+into #TempData
+from transactionalData.TBL_RPA_REQUEST rr
+left join refData.TBL_Employees emp on emp.Signum=rr.SPOCSignum
+left join transactionalData.TBL_RPA_BOTSTAGING bots on bots.rpaRequestID=rr.rpaRequestID
+left join refData.TBL_LanguageBaseVersion lbv  on lbv.LanguageBaseVersionID = bots.LanguageBaseVersionID AND lbv.isactive =1
+left join transactionalData.TBL_RPA_DeployedBOT dbot on dbot.rpaRequestID=rr.rpaRequestID
+left join transactionalData.TBL_FLOWCHART_STEP_DETAILS fsd on fsd.RpaID = dBOT.BOTID
+left join transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF sfd on sfd.SubActivityFlowChartDefID=fsd.SubActivityFlowChartDefID
+left join transactionalData.TBL_DETAILDUMP_DEOPLYED_BOTS dep on dep.BOTID=dbot.BOTID
+left join transactionalData.TBL_PROJECTS proj on proj.ProjectID = rr.ProjectID
+left join refData.TBL_SUBACTIVITY sa on sa.SubActivityID=rr.SubactivityID
+left join refData.TBL_TECHNOLOGY t on t.TechnologyID=sa.TechnologyID
+left join refdata.tbl_domain do on do.DomainID = sa.DomainID
+left join transactionalData.TBL_PROJECT_TOOL_MAPPING ptm on ptm.ProjectID = proj.ProjectID
+left join refdata.TBL_ACCESS_METHOD am on am.AccessMethodID = ptm.AccessMethodID
+left join [refData].[TBL_TASK] task on task.TaskID=rr.TaskID
+left join [refData].[TBL_TASK_TOOL] tt on tt.TaskID=rr.TaskID
+left join [refData].[TBL_TOOL_INVENTORY] inv on inv.ToolID= tt.ToolID
+Where rr.rpaRequestID = #{rpaRequestID}
+group by  BOTExecutedCount,
+BOTExecutionHours,
+t.Technology,
+sa.Activity,
+sa.SubActivity,
+proj.ProjectName ,
+inv.Tool  ,
+inv.ToolType,
+task.Task ,
+emp.EmployeeName,emp.Signum ,
+rr.Description,
+do.Domain ,do.SubDomain   ,
+fsd.Savings  
+,am.AccessMethod,
+rr.VideoURL,
+rr.rpaRequestID  ,
+rr.requestname  ,
+rr.isInputRequired  ,
+rr.WorkflowDEFID,
+fsd.StepID,
+fsd.StepName,
+sfd.WorkFlowName,
+sfd.WFID,
+fsd.FCStepDetailsID,
+inv.ToolID,
+fsd.RpaID,
+bots.LanguageBaseVersionID,
+lbv.LanguageBaseVersion
+
+Drop table if exists #BotReuseCount
+
+
+select rpaid,count( FCStepDetailsID) BotReuseCount into #BotReuseCount 
+from #TempData group by rpaid
+
+Drop table if exists #BotExecutionCount
+select count(distinct wofsd.WOFCStepDetailsID)BotExecutionCount,
+fsd.RpaID
+into #BotExecutionCount
+FROM #tempdata fsd
+join transactionalData.TBL_WORK_ORDER_FLOWCHART_STEP_DETAILS wofsd with (nolock) on fsd.StepID = wofsd.FlowChartStepID
+join transactionalData.TBL_WORK_ORDER_BOOKING_DETAILS  wobd with (nolock) on wobd.BookingID = wofsd.BookingID
+where wobd.Type = 'booking'
+and wobd.Status='COMPLETED'
+and wobd.Reason='SUCCESS'
+group by fsd.RpaID
+
+
+select top 1
+ToolName,
+ToolType,
+BOTExecutedCount,
+BOTExecutionHours,
+Technology,
+Activity,
+SubActivity,
+ProjectName,
+a.RpaID,
+TaskName,
+SPOC,
+Description,
+Domain,
+EME,
+AccessMethod,
+VideoURL,
+BotReuseCount,
+BotExecutionCount,
+BOTID,
+BOTName,
+IsInputRequired,
+WorkflowDEFID,
+StepID,
+StepName,
+WorkFlowName,
+WFID,
+LanguageBaseVersionID,
+LanguageBaseVersion
+from #TempData a
+left join #BotReuseCount b on a.RpaID = b.RpaID
+left join #BotExecutionCount c on c.RpaID = b.RpaID         
+	
+    </select> 
+     
+     <update id = 'updateVideoURL'>
+        update transactionalData.TBL_RPA_REQUEST set videoURL=#{videoUrlModel.videoURL}  where rpaRequestID=#{videoUrlModel.rpaRequestID}
+     </update>
+
+	<select id='getTaskDetails' resultType="java.util.HashMap">
+		    select concat(TaskName,'(',TaskID,')')as Task, TaskID from  transactionalData.TBL_RPA_REQUEST
+		    where SubActivityID=#{subActivityID}  and TaskID!=0
+	</select>
+    <select id='getRPAIsRunOnServer' resultType="java.util.HashMap">
+		Select isRunOnServer, BOTLanguage as BotType from transactionalData.TBL_RPA_DeployedBOT WITH (NOLOCK)
+		where isActive=1 and rpaRequestID= #{rpaId} and isRunOnServer=1
+    </select>
+      <select id="getWorkOrderBookingDetailsById" resultType='com.ericsson.isf.model.WorkOrderBookingDetailsModel'>	  
+        select status from transactionalData.TBL_WORK_ORDER_BOOKING_DETAILS where WOID=#{woekOrderdId}
+      </select>
+	  
+	  <select id='getProjectScopeActive' resultType='Boolean'>
+        IF EXISTS (select 1 from transactionalData.TBL_PROJECTSCOPE where ProjectID=#{projectID} and ScopeName=#{executionPlanName} and Active=1)
+			BEGIN
+			  select 1 as 'Result'
+			END
+		ELSE
+			BEGIN
+			 select 0 as 'Result'
+			END 			 
+    </select>
+        
+     <select id='getFlowChartDefinitionID' resultType='Integer'>
+        select SubActivityFlowChartDefID from transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF tsfd (NOLOCK)
+        inner join transactionalData.TBL_WORK_ORDER wo on wo.flowchartdefId=tsfd.subActivityFlowChartDefId
+               where tsfd.projectID= #{projectID}
+               and tsfd.subactivityID =#{subActivityID}
+               and tsfd.versionNumber = #{versionNo}
+               and wo.woID=#{woID}
+    </select>
+    
+     <select id='getIsUserValidForBotChanges' resultType='Boolean'>
+        IF EXISTS (select AssignedTo from transactionalData.TBL_RPA_BOTSTAGING where rpaRequestID=#{botID} and Status ='Assigned' and AssignedTo=#{signum}
+					union
+					select proj.ProjectCreator from transactionalData.TBL_RPA_REQUEST  req
+					inner join transactionalData.TBL_PROJECTS proj on proj.ProjectID= req.ProjectID and proj.IsDeleted=0
+					left join transactionalData.TBL_DELIVERY_RESPONSIBLE dr on proj.ProjectID=dr.ProjectID and dr.Active=1
+					where rpaRequestID=#{botID} and (proj.ProjectCreator=#{signum} or dr.SignumID=#{signum})
+					)
+			BEGIN
+			  select 1 as 'Result'
+			END
+		ELSE
+			BEGIN
+			 select 0 as 'Result'
+			END 			 
+    </select>
+
+	<insert id='saveInputZipFile'>
+	
+		insert into
+		transactionalData.Server_Bot_Details
+		(Woid,
+		TaskID,
+		StepID,
+		Signum,
+		DetailType,
+		FileName,
+		Bookingid,
+		CreatedON,
+		CreatedBy,
+		UpdatedON,
+		UpdatedBy,
+		server_bot_input_url,
+		server_bot_output_url)
+		values(
+        #{serverBotModel.wOID},
+        #{serverBotModel.taskID},
+        #{serverBotModel.stepID},
+        #{serverBotModel.signumID},
+        #{type},
+        #{fileName},
+        #{serverBotModel.qBookingId},
+        dbo.GetDateIST(),
+        #{serverBotModel.signumID},
+        dbo.GetDateIST(),
+        #{serverBotModel.signumID},
+        #{serverBotInputUrl},
+        #{serverBotOutputUrl}
+        
+		)
+
+	</insert>
+	
+	<select id="getBotInputFile"
+	resultType='com.ericsson.isf.model.BotInputFileModel'>
+	select top 1 Woid woid,TaskID taskid,StepID stepid,Signum signum,
+	DetailType detailType,FileName fileName,Bookingid bookingid,ServerBotDetailsID serverBotDetailsId
+	from
+	transactionalData.Server_Bot_Details
+	where Woid=#{woid} and TaskID=#{taskid} and StepID=#{stepid} and Signum=#{signum}
+	and Bookingid=#{bookingid}
+	order by SystemID desc
+</select>
+    
+    
+     <select id='getServerModelData' resultType='java.util.HashMap'>
+      select top 1 fsd.ExecutionType,tw.Status,wbd.Type from transactionalData.TBL_WORK_ORDER  tw
+		left join transactionalData.TBL_WORK_ORDER_BOOKING_DETAILS  wbd
+		on tw.WOID=wbd.WOID
+		left join transactionalData.TBL_FLOWCHART_STEP_DETAILS fsd
+		on fsd.SubActivityFlowChartDefID=tw.flowchartdefid and wbd.TaskID=fsd.TaskID
+		where tw.WOID=#{WOID} and tw.SignumID=#{signumID} order by wbd.BookingID desc
+    </select>
+   <select id="getBOTsForExploreAuditData" 
+	resultType='com.ericsson.isf.model.TblRpaDeployedBotModel'>
+	SELECT     trdb.botid,trr.rpaRequestID, 
+           tp.projectid as projectId, 
+           tmar.marketareaname as marketAreaName, 
+           tp.projectname as projectName, 
+           trr.subactivityid as subactivityId, 
+           trr.currentexecutioncountweekly as currentExecutioncountWeekly, 
+           trr.currentavgexecutiontime as currentAvgExecutiontime, 
+           trr.workflowname as workFlowName, 
+           trr.subactivityname as subactivityName, 
+           trr.taskname as taskName,  
+           trdb.botname as botname, 
+           trdb.rpaexecutiontime as rpaexecutionTime, 
+           trdb.createdby as createdBy, 
+           trdb.createdon as createdOn, 
+           trdb.modifiedby as modifiedBy, 
+           trdb.modifiedon as modifiedOn, 
+           trdb.isactive as isActive, 
+           trdb.isrunonserver as isRunOnServer, 
+           trdb.isauditpass as isAuditPass, 
+           trdb.isinputrequired as isInputRequired,
+           trdb.reuseFactor,trr.spocsignum as spocSignum,
+           Count(*) OVER()  totalCount
+FROM       transactionaldata.tbl_rpa_deployedbot trdb 
+INNER JOIN transactionaldata.tbl_rpa_request trr 
+ON         trdb.rparequestid = trr.rparequestid 
+INNER JOIN transactionaldata.tbl_projects tp 
+ON         tp.projectid = trr.projectid 
+INNER JOIN transactionaldata.tbl_opportunity topp 
+ON         topp.opportunityid = tp.opportunityid 
+INNER JOIN refdata.tbl_marketareas tmar 
+ON         tmar.marketareaid = topp.marketareaid
+where Isnull(trdb.BOTLanguage, '') NOT IN ( 'MACRO', 'PENGUIN' )
+ORDER BY   botid   
+    <!-- OFFSET 1 ROWS FETCH NEXT 100 ROWS ONLY -->
+	</select>
+	<select id="getBotIdByStepId"  resultType="int">
+	SELECT top 1 RpaID 
+    FROM   transactionaldata.tbl_flowchart_step_details 
+    WHERE  stepid = (SELECT wfsld.flowchartsourceid 
+                 FROM 
+       transactionaldata.tbl_work_order_flowchart_step_link_details 
+       wfsld 
+                 WHERE 
+              wfsld.flowcharttargetid = #{stepId} 
+              AND wfsld.subactivityflowchartdefid = #{flowChartDefID}) 
+       AND subactivityflowchartdefid = #{flowChartDefID} 
+	</select>
+	
+	<select id="getRpaIDByStepID" resultType="Integer">
+		SELECT top 1 RpaID 
+	    FROM   transactionaldata.tbl_flowchart_step_details 
+	    WHERE  stepid=#{stepid}
+	</select>
+  <select id='getFlowChartStepDetails'
+	resultType="com.ericsson.isf.model.WorkOrderCurrentStepDetailsModel" statementType="CALLABLE">
+	{call dbo.usp_getStepHierarchy(#{flowchartdefid},#{woid},#{taskID})};  						  
+	</select>
+	
+	
+	<select id = 'getAllErrorDetails' resultType="com.ericsson.isf.model.ErrorDetailsModel">
+     select errorCode ,errorType ,errorMessage ,ed.sourceID ,sourceName as externalReference ,
+     COUNT(*) OVER() totalCounts 
+       
+    from  [refData].[TBL_ErrorDictionaryMaster]  ed
+  	INNER JOIN  [refData].[TBL_External_Sources] es on es.sourceID=ed.sourceID 
+  	
+  	<if test ='sourceID!=null'>
+  	where ed.sourceID=#{sourceID} 
+  	</if>
+  	
+  	<if test="dataTableReq != null">
+ 	       <foreach item="column" index="index" collection="dataTableReq.columns">
+	      		 <if test ="column.search != ''"> 
+	      		 	<if test ="column.data == 'externalReference'">
+						and (sourceName like #{column.search})
+	      		 	</if>
+	      		 	<if test ="column.data == 'errorCode'">
+						and (errorCode like #{column.search})
+	      		 	</if>
+	      		 	<if test ="column.data == 'errorType'">
+		              	and (errorType like #{column.search})
+	      		 	</if>
+	      		 	<if test ="column.data == 'errorMessage'">
+		              	and (errorMessage like #{column.search})
+	      		 	</if>
+	          	 </if> 
+	  		</foreach>
+	  		
+	  	  <if test ='dataTableReq.search != null and dataTableReq.search != ""'> 
+  			and (
+  			sourceName like #{dataTableReq.search}
+  			or errorCode like  #{dataTableReq.search}
+  			or errorType like  #{dataTableReq.search}
+  			or errorMessage like #{dataTableReq.search} 	
+          
+  		      ) 
+  		   </if>
+  		   
+          <choose>
+			  <when test ="dataTableReq.order != null and dataTableReq.order.sortDir!=null">
+			    order by ${dataTableReq.order.data} ${dataTableReq.order.sortDir}
+			  </when>
+          <otherwise>
+			 order by ed.sourceID desc
+ 		  </otherwise>
+ 		 </choose>
+			<if test ='dataTableReq.length != -1'>
+				OFFSET ${dataTableReq.start} ROWS
+				FETCH NEXT ${dataTableReq.length} ROWS ONLY
+			</if>
+		</if>	
+    </select>
+    
+     <select id='isSourceExists' resultType="Boolean">
+		IF EXISTS(select 1 from
+		refData.TBL_External_Sources where
+		sourceID= #{sourceID})
+                BEGIN
+                    SELECT 1 AS 'RESULT'
+                END
+            ELSE
+                BEGIN
+                    SELECT 0 AS 'RESULT'
+                END
+     </select>
+	<select id='validateErrorCode' resultType='Boolean'>
+        IF EXISTS (select top 1 *  from Refdata.TBL_ErrorDictionaryMaster
+					where errorcode= #{errorcode}
+					)
+			BEGIN
+			  select 1 as 'Result'
+			END
+		ELSE
+			BEGIN
+			 select 0 as 'Result'
+			END 			 
+    </select>
+    <select id="getErrorDetailsByCode" resultType="com.ericsson.isf.model.ErrorDetailsModel">
+    	select errorCode,errorType,errorMessage,sourceID from Refdata.TBL_ErrorDictionaryMaster
+		where Errorcode=#{errorcode};
+    </select>
+     
+     <insert id='addErrorDetail'
+		parameterType="com.ericsson.isf.model.ErrorDetailsModel">
+		insert into refData.TBL_ErrorDictionaryMaster
+		(errorType,
+		errorMessage,
+		sourceID,
+		createdBy,
+		createdOn,
+		modifiedBy,
+		modifiedOn
+		)
+		values
+		(#{errorDetailsModel.errorType},
+		#{errorDetailsModel.errorMessage},
+		#{errorDetailsModel.sourceID},
+		#{errorDetailsModel.createdBy},
+		dbo.GetDateIST(),
+		#{errorDetailsModel.createdBy},
+		dbo.GetDateIST()
+		)
+	 </insert>
+	 
+	  <select id='isErrorDetailExists' resultType="Boolean">
+		IF EXISTS(select 1 from
+		refData.TBL_ErrorDictionaryMaster WITH (NOLOCK) where
+		sourceID=#{sourceID} and ErrorType=#{errorType} and ErrorMessage=#{errorMessage})
+                BEGIN
+                    SELECT 1 AS 'RESULT'
+                END
+            ELSE
+                BEGIN
+                    SELECT 0 AS 'RESULT'
+                END
+      </select>
+      
+      <select id='getServerBotOutputUrl' resultType="String">
+	    select server_bot_output_url from transactionalData.TBL_PROJECTS where ProjectID=#{projectID}
+      </select>
+	
+
+</mapper> 

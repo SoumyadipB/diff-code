@@ -1,0 +1,874 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ericsson.isf.mapper.ExternalInterfaceManagmentMapper">
+<cache type="org.mybatis.caches.ehcache.EhcacheCache"/>
+
+
+	<resultMap type='OpportunityModel' id='OpportunityModelResult'>
+		<id property='opportunityID' column='OpportunityID' />
+		<result property='opportunityName' column='OpportunityName' />
+	</resultMap>
+	
+	<resultMap type="com.ericsson.isf.model.ViewNetworkElementModel" id="NetworkElementModelResultv1">
+	<id property="networkElementID" column="NetworkElementID" />
+	<result property="projectID" column="ProjectID" />
+	<result property="domainSubDomainID" column="DomainSubDomainID" />
+	<result property="technologyID" column="TechnologyID" />
+	<result property="vendorID" column="VendorID" />
+	<result property="market" column="Market" />
+	<result property="elementType" column="ElementType" />
+	<result property="type" column="Type" />
+	<result property="name" column="Name" />
+	<result property="latitude" column="Latitude" />
+	<result property="longitude" column="Longitude" />
+	<result property="Software_Release" column="Software_Release" />
+	<result property="band" column="Band" />
+	<result property="uploadedON" column="UploadedON" />
+	<result property="uploadedBy" column="UploadedBy" />
+	<result property="countryName" column="countryName" />
+	<result property="customerName" column="customerName" />
+	<collection property="technologyDetails" ofType="com.ericsson.isf.model.TechnologyNetworkViewModel">
+		<id property="technologyID" column="TechnologyID" />
+		<result property="technology" column="Technology" />
+	</collection>
+	<collection property="domainDetails" ofType="com.ericsson.isf.model.DomainNetworkViewModel">
+		<id property="domainID" column="DomainID" />
+		<result property="domain" column="Domain" />
+	</collection>
+	<collection property="vendorDetails" ofType="com.ericsson.isf.model.VendorNetworkViewModel">
+		<id property="vendorID" column="VendorID" />
+		<result property="vendor" column="Vendor" />
+	</collection>
+</resultMap>
+
+	<select id='checkIsfHealth' resultType="java.util.LinkedHashMap">
+		select top 1 EmployeeName,Signum 
+		from [refData].[TBL_Employees];
+	</select>
+
+	<insert id='generateWOrkOrder' parameterType="com.ericsson.isf.model.ErisiteDataModel">
+		IF NOT EXISTS (select 1 from [transactionalData].[TBL_EXTERNAL_PROJECTS] where ExternalProjectID = #{erisiteDataModel.nroActivityEvent.erisiteActivityDetails.erisiteParentReferences.parentProjectId}
+			and SourceID = #{externalSourceID} 
+			and ParentWorkPlanId = #{erisiteDataModel.nroActivityEvent.erisiteActivityDetails.erisiteParentReferences.parentWorkPlanId} 
+			and ParentWorkPlanTemplateName = #{erisiteDataModel.nroActivityEvent.erisiteActivityDetails.erisiteParentReferences.parentWorkPlanTemplateName}) 
+		BEGIN
+		INSERT into
+				[transactionalData].[TBL_EXTERNAL_PROJECTS]
+				(
+				ExternalProjectID
+				,SourceID
+				,[ParentProjectName]
+				,[ParentWorkPlanId]
+				,[ParentWorkPlanName]
+				,[Customer]
+				,[ParentProjectCountry]
+				,[ISFProjectID]
+				,[isActive]
+				,[ParentWorkPlanTemplateName])
+				values(
+				#{erisiteDataModel.nroActivityEvent.erisiteActivityDetails.erisiteParentReferences.parentProjectId},
+				#{externalSourceID},
+				#{erisiteDataModel.nroActivityEvent.erisiteActivityDetails.erisiteParentReferences.parentProjectName},
+				#{erisiteDataModel.nroActivityEvent.erisiteActivityDetails.erisiteParentReferences.parentWorkPlanId},
+				#{erisiteDataModel.nroActivityEvent.erisiteActivityDetails.erisiteParentReferences.parentWorkPlanName},
+				#{erisiteDataModel.nroActivityEvent.erisiteActivityDetails.erisiteParentReferences.customer},
+				#{erisiteDataModel.nroActivityEvent.erisiteActivityDetails.erisiteParentReferences.parentProjectCountry},
+				#{isfProjectId},
+				1,
+				#{erisiteDataModel.nroActivityEvent.erisiteActivityDetails.erisiteParentReferences.parentWorkPlanTemplateName}
+				);
+		END
+		ELSE
+		BEGIN 
+			Select 0
+  		END
+	</insert>
+
+
+	<insert id='insertBlkWoCreationHistory' parameterType="com.ericsson.isf.model.ErisiteDataModel">
+		INSERT into [transactionalData].[TBL_BULK_WORK_ORDER_CREATION_HISTORY] 
+		(WOCreationFromID,WOCreationToID,UploadedBy,UploadedDate,UploadStatus,ProcessedON,CreatedBy,CreatedDate,ModifiedBy,ModifiedDate)
+		values(
+		#{erisiteDataModel.woCreationID},
+		#{erisiteDataModel.woCreationID},
+		'ejangua',
+		dbo.GetDateIST(),
+		'INPROGRESS',
+		dbo.GetDateIST(),
+		'ejangua',
+		dbo.GetDateIST(),
+		'ejangua',
+		dbo.GetDateIST()
+		);
+
+	</insert>
+
+	<insert id='insertBlkWoCreation' parameterType="com.ericsson.isf.model.ErisiteDataModel"
+		useGeneratedKeys="true" keyProperty="erisiteDataModel.woCreationID"
+		keyColumn="WOCreationID">
+		INSERT into [transactionalData].${tablename}
+		(ProjectID,SubserviceArea,Domain,SubDomain,Technology,WOID,ScopeName,SubActivityID,SubActivityName,Priority,SLAHours,AssignTo,StartDate,StartTime,WorkOrderName,WorkFlowName,NodeType,NodeNames,CreatedBy,CreatedDate,LastModifiedBy,LastModifiedDate,ExternalSourceID,ExternalSourceName,UploadedBy,ExecutionPlanID,ExternalProjectID,ForecastStartDate,ForecastEndDate,ExternalActivityID,ExternalActivityName,ParentWorkPlanId,ParentWorkPlanName,Status,ErisiteBusinessObject,HasFault,SystemRecordId,RecordName,ParentProjectIntegratedScoping,AssignedGroup,source_system_id,message_batch_id,transaction_id,businessentityid,ParentWorkPlanRecordID,comments, ParentWorkPlanTemplateName)
+		values(
+		#{isfProjectID},
+		NULL,
+		NULL,
+		NULL,
+		NULL,
+		0,
+		NULL,
+		#{subActivity},
+		NULL,
+		'Normal',
+		#{hour},
+		NULL,
+		#{erisiteDataModel.nroActivityEvent.erisiteActivityDetails.erisiteSchedule.forecastStartDate},
+		#{erisiteDataModel.nroActivityEvent.erisiteActivityDetails.erisiteSchedule.forecastStartDate},
+		#{actualWoName},
+		NULL,
+		'SITE',
+		#{nodeName},
+		#{source_system_id},
+		dbo.GetDateIST(),
+		NULL,
+		NULL,
+		#{externalSourceID},
+		#{source_system_id},
+		#{uploadedBy},
+		#{executionPlanID},
+		#{erisiteDataModel.nroActivityEvent.erisiteActivityDetails.erisiteParentReferences.parentProjectId},
+		#{erisiteDataModel.nroActivityEvent.erisiteActivityDetails.erisiteSchedule.forecastStartDate},
+		#{erisiteDataModel.nroActivityEvent.erisiteActivityDetails.erisiteSchedule.forecastEndDate},
+		#{erisiteDataModel.nroActivityEvent.erisiteActivityDetails.erisiteActivityCoreDetails.activityId},
+		#{erisiteDataModel.nroActivityEvent.erisiteActivityDetails.erisiteActivityCoreDetails.activityName},
+		#{erisiteDataModel.nroActivityEvent.erisiteActivityDetails.erisiteParentReferences.parentWorkPlanId},
+		#{erisiteDataModel.nroActivityEvent.erisiteActivityDetails.erisiteParentReferences.parentWorkPlanName},
+		#{erisiteDataModel.nroActivityEvent.erisiteActivityDetails.erisiteActivityCoreDetails.status},
+		#{erisiteDataModel.nroActivityEvent.erisiteActivityDetails.erisiteActivityCoreDetails.erisiteBusinessObject},
+		#{erisiteDataModel.nroActivityEvent.hasFault},
+		#{erisiteDataModel.nroActivityEvent.erisiteActivityDetails.erisiteActivityCoreDetails.systemRecordId},
+		#{erisiteDataModel.nroActivityEvent.erisiteActivityDetails.erisiteActivityCoreDetails.recordName},
+		#{erisiteDataModel.nroActivityEvent.erisiteActivityDetails.erisiteParentReferences.parentProjectIntegratedScoping},
+		#{assignedGroup},
+		#{source_system_id},
+		#{message_batch_id},
+		#{transaction_id},
+		#{businessentityid},
+		#{erisiteDataModel.nroActivityEvent.erisiteActivityDetails.erisiteParentReferences.parentWorkPlanRecordID},
+		#{comments},
+		#{erisiteDataModel.nroActivityEvent.erisiteActivityDetails.erisiteParentReferences.parentWorkPlanTemplateName}
+		);
+	</insert>
+
+	<update id='updateForcastWoCreation'>
+		update
+		[transactionalData].[TBL_BULK_WORK_ORDER_CREATION]
+		set
+		ProjectID = #{isfProjectID},
+		ExecutionPlanID=#{executionPlanID},
+		ForecastStartDate =
+		#{erisiteDataModel.nroActivityEvent.erisiteActivityDetails.erisiteSchedule.forecastStartDate}
+		, ForecastEndDate =
+		#{erisiteDataModel.nroActivityEvent.erisiteActivityDetails.erisiteSchedule.forecastEndDate},
+		SLAHours=#{hour1}
+		,StartDate=#{erisiteDataModel.nroActivityEvent.erisiteActivityDetails.erisiteSchedule.forecastStartDate}
+		,StartTime=#{erisiteDataModel.nroActivityEvent.erisiteActivityDetails.erisiteSchedule.forecastStartDate}
+		where ExternalActivityName =
+		#{erisiteDataModel.nroActivityEvent.erisiteActivityDetails.erisiteActivityCoreDetails.activityName} COLLATE SQL_Latin1_General_CP1_CS_AS
+		and ParentWorkPlanId =
+		#{erisiteDataModel.nroActivityEvent.erisiteActivityDetails.erisiteParentReferences.parentWorkPlanId}
+		and Status =
+		#{status}
+		and ExternalProjectID =
+		#{erisiteDataModel.nroActivityEvent.erisiteActivityDetails.erisiteParentReferences.parentProjectId}
+		and ExternalSourceID = #{externalSourceID}
+
+	</update>
+
+	<update id='updateWoNameWoCreation'>
+		update
+		[transactionalData].${tableName}
+		set
+		WorkOrderName = #{actualWoName},
+		comments = #{comments}
+		where ExternalActivityName =
+		#{erisiteDataModel.nroActivityEvent.erisiteActivityDetails.erisiteActivityCoreDetails.activityName} COLLATE SQL_Latin1_General_CP1_CS_AS
+		and ParentWorkPlanId =
+		#{erisiteDataModel.nroActivityEvent.erisiteActivityDetails.erisiteParentReferences.parentWorkPlanId}
+		and Status =
+		#{status}
+		and ExternalProjectID =
+		#{erisiteDataModel.nroActivityEvent.erisiteActivityDetails.erisiteParentReferences.parentProjectId}
+		and ExternalSourceID = #{externalSourceID}
+
+	</update>
+	
+	<update id='updateForcastWorkOrder'>
+		UPDATE wo
+		set PlannedStartDate = #{erisiteDataModel.nroActivityEvent.erisiteActivityDetails.erisiteSchedule.forecastStartDate}
+		, PlannedEndDate = #{erisiteDataModel.nroActivityEvent.erisiteActivityDetails.erisiteSchedule.forecastEndDate}
+		FROM [transactionalData].TBL_WORK_ORDER wo
+		where wo.WOName like '${woName}%' and wo.Status != 'CLOSED'
+	</update>
+
+	<update id='updateWorkOrderStatus'>
+		UPDATE wo
+		set wo.status = 'ASSIGNED' , wo.AdhocWOID = #{externalSourceID}
+	   ,wo.PlannedStartDate = #{erisiteDataModel.nroActivityEvent.erisiteActivityDetails.erisiteSchedule.forecastStartDate}
+	   ,wo.PlannedEndDate = #{erisiteDataModel.nroActivityEvent.erisiteActivityDetails.erisiteSchedule.forecastEndDate}
+		from [transactionalData].TBL_WORK_ORDER wo
+		where  wo.WOName like '${woName}%' and wo.Status != 'CLOSED'
+	</update>	
+	
+	<update id='updateWorkOrderName'>
+		UPDATE wo
+		set wo.WOName = #{actualWoName}+'_'+substring (REVERSE (wo.WOName),0,charindex ('_',REVERSE (wo.WOName),0))
+		FROM
+		[transactionalData].TBL_WORK_ORDER wo
+		where  wo.WOName like '${woName}%' and wo.Status != 'CLOSED'
+	</update>
+	
+	<update id='updateWorkOrderComments'>
+		UPDATE ad
+		SET ad.message = #{comments}
+		FROM transactionalData.TBL_AuditDetails ad
+		JOIN transactionalData.TBL_AuditGroup ag ON ad.auditgroupid = ag.auditgroupid
+		join transactionalData.TBL_WORK_ORDER wo on wo.WOID = ag.auditPageId
+		WHERE wo.WOName like '${actualName}%' and ag.auditGroupCategory = 'WORK_ORDER'
+		and ad.actorType is null and wo.Status != 'CLOSED'
+	</update>
+
+	<select id='getExternalProjectID' resultType="java.util.LinkedHashMap">
+		select
+		distinct ExternalProjectID, ParentProjectName from
+		[transactionalData].[TBL_EXTERNAL_PROJECTS] where sourceid =  #{sourceID} 
+	</select>
+	
+	<select id='getWoStatusByWoName' resultType="java.util.LinkedHashMap">
+		select  top 1  status 
+		FROM
+		[transactionalData].TBL_WORK_ORDER
+		where WOName like '${woName}%' and active = 1
+		order by CreatedDate desc
+	</select>
+	
+	<select id='getNotClosedWOsByName' resultType="Integer">
+		SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED
+		select count(wo.WOID)
+		FROM [transactionalData].TBL_WORK_ORDER wo
+		where WOName like '%${woName}%' and wo.Status != 'CLOSED'and wo.Active=1
+	</select>
+
+	<select id='getActiveExternalProjectID' resultType="java.util.LinkedHashMap">
+		select ea.sourceId, projectId, externalProjectId, referenceId, createdby, isactive
+		from refdata.[TBL_ExternalApplicationReference] ea
+		join
+		[refData].[TBL_IntegrationSources] isr on isr.sourceId = ea.sourceId
+		where isr.sourceName = #{source} and ea.isactive = 1 and ea.projectId
+		= #{projectID}
+	</select>
+
+	<select id='getExternalSourceID' resultType="Integer">
+		select sourceId from
+		[refData].[TBL_IntegrationSources] 
+		where source_system_id = #{source_system_id}
+	</select>
+	
+	<select id="getActivitySubAcitvityMapping" resultType="java.util.LinkedHashMap">
+		select
+		ExtActivityID, IsfSubActivityID from
+		[transactionalData].[TBL_EXTERNAL_ACTIVITY_SUBACTIVITY_MAPPING] where
+		SourceID = #{sourceID};
+	</select>
+
+	<select id="getProjectIDExternalProject" resultType="java.util.LinkedHashMap">
+		select distinct projectId  as ISFProjectID from refData.TBL_ExternalApplicationReference 
+		where externalProjectId = #{activityId} and sourceId = #{externalSourceID} and isactive =1
+	</select>
+	
+	<select id='getActiveExternalWorkPlanTemplateList' resultType="java.util.LinkedHashMap">
+		select distinct ParentWorkPlanTemplateName from transactionalData.TBL_BULK_WORK_ORDER_CREATION 
+		where ExternalSourceID = #{sourceID} and ExternalProjectID = #{externalProjectID} and ParentWorkPlanTemplateName is not null
+	</select>
+
+	<select id='getActiveExternalActivityList' resultType="java.util.LinkedHashMap">
+		select
+		distinct ExternalProjectID, ExternalActivityName COLLATE SQL_Latin1_General_CP1_CS_AS as ExternalActivityName
+		from
+		[transactionalData].[TBL_BULK_WORK_ORDER_CREATION]
+		where
+		ExternalActivityID is not null and
+		ExternalSourceID = #{sourceID} and ExternalProjectID = #{externalProjectID} and ParentWorkPlanTemplateName = #{workPlanTemplateName}
+	</select>
+
+	<select id='getExistingExecutionPlanID' resultType="String">
+		<!-- IF EXISTS (select
+		distinct ExecutionPlanID from
+		[transactionalData].[TBL_BULK_WORK_ORDER_CREATION]
+		where
+		ExecutionPlanID != 0 and ExternalActivityName = #{activityName} 
+		and ExternalProjectID = #{parentProjectId} and ExternalSourceID = #{externalSourceID}
+		and ParentWorkPlanTemplateName = #{workPlanName}) 
+		BEGIN
+	   		select
+			distinct ExecutionPlanID from
+			[transactionalData].[TBL_BULK_WORK_ORDER_CREATION]
+			where
+			ExecutionPlanID != 0 and ExternalActivityName = #{activityName} 
+			and ExternalProjectID = #{parentProjectId} 
+			and ExternalSourceID = #{externalSourceID}
+			and ParentWorkPlanTemplateName = #{workPlanName}
+		END
+		ELSE
+		BEGIN
+	        select  ExecutionPlanId from [transactionalData].[TBL_EXTERNAL_ACTIVITY_SUBACTIVITY_PROJECT_CONFIG]
+			where SourceID = #{externalSourceID} 
+			and ExtActivityName = #{activityName} 
+			and ExternalProjectID = #{parentProjectId} 
+			and ParentWorkPlanTemplateName = #{workPlanName}
+			and isActive = 1
+		END -->
+		select  top 1 ExecutionPlanId from [transactionalData].[TBL_EXTERNAL_ACTIVITY_SUBACTIVITY_PROJECT_CONFIG] SAPC
+join transactionalData.TBL_PROJECTSCOPE PS on PS.source=SAPC.SourceID and SAPC.ExtActivityName=PS.externalReference
+and PS.externalProjectId=SAPC.ExternalProjectID and PS.ParentWorkPlanTemplateName= SAPC.ParentWorkPlanTemplateName
+and PS.ProjectID= SAPC.IsfProjectID
+			where SourceID = #{externalSourceID} 
+			and ExtActivityName = #{activityName} COLLATE SQL_Latin1_General_CP1_CS_AS
+			and PS.ExternalProjectID  = #{parentProjectId} 
+			and PS.ParentWorkPlanTemplateName = #{workPlanName}
+			and isActive = 1
+			and Active=1
+			and Ps.deliverableStatus not IN ('Inactive')
+			and SAPC.IsfProjectID=#{isfProjectID}
+			order by PS.SystemID desc
+	</select>
+	
+	<select id='getExistingExecutionPlanIDWithoutTemplate' resultType="String">
+		IF EXISTS (select
+		distinct ExecutionPlanID from
+		[transactionalData].[TBL_BULK_WORK_ORDER_CREATION]
+		where
+		ExecutionPlanID != 0 and ExternalActivityName = #{activityName} COLLATE SQL_Latin1_General_CP1_CS_AS
+		and ExternalProjectID = #{parentProjectId} and ExternalSourceID = #{externalSourceID}
+		) 
+		BEGIN
+	   		select
+			distinct ExecutionPlanID from
+			[transactionalData].[TBL_BULK_WORK_ORDER_CREATION]
+			where
+			ExecutionPlanID != 0 and ExternalActivityName = #{activityName} COLLATE SQL_Latin1_General_CP1_CS_AS
+			and ExternalProjectID = #{parentProjectId} 
+			and ExternalSourceID = #{externalSourceID}
+		END
+		ELSE
+		BEGIN
+	        select  ExecutionPlanId from [transactionalData].[TBL_EXTERNAL_ACTIVITY_SUBACTIVITY_PROJECT_CONFIG]
+			where SourceID = #{externalSourceID} 
+			and ExtActivityName = #{activityName} COLLATE SQL_Latin1_General_CP1_CS_AS
+			and ExternalProjectID = #{parentProjectId}
+			and isActive = 1
+		END
+	</select>
+
+	<select id='getExistingAssignToByProject' resultType="String">
+		select distinct createdby as AssignTo from refdata.[TBL_ExternalApplicationReference] where projectId = #{isfProjectID} 
+		and externalProjectId = #{externalProjectID} and sourceId = #{externalSourceID}
+		
+	</select>
+
+	<update id='updateExecutionPlanWoCreation'>
+		update
+		[transactionalData].[TBL_BULK_WORK_ORDER_CREATION]
+		set ExecutionPlanID
+		= #{executionPlanModel.executionPlanId}, SubActivityID = #{executionPlanModel.subactivityId}
+		where ExternalActivityName = #{executionPlanModel.planExternalReference} COLLATE SQL_Latin1_General_CP1_CS_AS
+		and ExternalSourceID = #{executionPlanModel.planSourceid}
+		and ProjectID = #{executionPlanModel.projectId} 
+		and ExternalProjectID = #{executionPlanModel.externalProjectId}
+		and ParentWorkPlanTemplateName = #{executionPlanModel.externalWorkplanTemplate}
+	</update>
+
+	<select id='getNodeNamesByPlanID' resultType="java.util.LinkedHashMap">
+		select distinct
+		SITENAME , [IM Notes],[Scope of Work 1],[Scope of Work 2],[Scope of Work 3],[Scope of Work 4],[Scope of Work 5] from
+		[transactionalData].[TBL_EXTERNAL_WORK_PLAN_DETAILS]
+		where WORKPLANID =
+		#{parentWorkPlanId} and sourceId = #{externalSourceID}
+	</select>
+
+	<select id='checkIfPredecessorsExists' resultType="java.util.LinkedHashMap">
+		select top 1 WOCreationID,WorkOrderName,ExecutionPlanID,ProjectID from
+		[transactionalData].[TBL_BULK_WORK_ORDER_CREATION] where
+		ExternalActivityName = #{activityName} COLLATE SQL_Latin1_General_CP1_CS_AS
+		 and ParentWorkPlanId = #{parentWorkPlanId} and Status = #{status}
+		and ExternalProjectID = #{externalProjectID} and ExternalSourceID = #{externalSourceID}
+		and ParentWorkPlanTemplateName=#{templateName}
+		and ProjectID=#{isfProjectID}
+		order by WOCreationID desc
+
+	</select>
+
+	<select id='checkIfWOExists' resultType="String">
+		select UploadStatus from
+		transactionalData.TBL_BULK_WORK_ORDER_CREATION_HISTORY where
+		WOCreationFromID = #{WOCreationID}
+	</select>
+
+	<select id='checkIsfSubactivityMapping' resultType="java.util.LinkedHashMap">
+		<!-- select distinct SubActivityID from transactionalData.TBL_BULK_WORK_ORDER_CREATION 
+		where ExternalSourceID = #{externalSourceID} and SubActivityID != 0 and ExternalActivityName = #{activityName} and ExternalProjectID = #{parentProjectId} -->
+		select distinct IsfSubActivityID from [transactionalData].[TBL_EXTERNAL_ACTIVITY_SUBACTIVITY_PROJECT_CONFIG]
+		where SourceID = #{externalSourceID} and IsfSubActivityID != 0 
+		and ExtActivityName = #{activityName} COLLATE SQL_Latin1_General_CP1_CS_AS
+		and ExternalProjectID = #{parentProjectId}
+	</select>
+
+	<select id='getExternalGroup' resultType="java.util.LinkedHashMap">
+		select sourceId,sourceName,source_system_id,externalGroup from [refData].[TBL_IntegrationSources] where sourceId = #{planSourceid}
+	</select>
+
+	<select id='getAllExternalProjectIDByIsfProject' resultType="java.util.LinkedHashMap">
+		select externalProjectId from refData.TBL_ExternalApplicationReference where projectId = #{isfProjectID} and SourceID = #{sourceID}
+	</select>
+	
+	<select id='getExternalProjectIDByIsfProject' resultType="java.util.LinkedHashMap">
+	    select
+		distinct e.ExternalProjectID
+		from
+		refData.TBL_ExternalApplicationReference e
+		left join [transactionalData].[TBL_BULK_WORK_ORDER_CREATION]  b
+		on e.sourceid=b.externalsourceid  and e.externalprojectid=b.externalprojectid
+		where e.projectId= #{isfProjectID} and ExternalSourceID =#{sourceID} and ExternalActivityID is not null
+	</select>
+	
+	<select id='getAllExternalActivityList' resultType="java.util.LinkedHashMap">
+		select ExtActivityID  from transactionalData.TBL_EXTERNAL_ACTIVITY_SUBACTIVITY_MAPPING where SourceID = #{sourceID}
+	</select>
+	
+	<insert id='insertActivityConfig' >
+		INSERT into
+		[transactionalData].[TBL_EXTERNAL_ACTIVITY_SUBACTIVITY_PROJECT_CONFIG]
+		(ExtActivityName,IsfSubActivityID,SourceID,IsfProjectID,ExternalProjectID,
+		isActive,LastModifiedBy,LastModifiedDate,ExecutionPlanId, ParentWorkPlanTemplateName)
+		values(
+		#{executionPlanModel.planExternalReference},
+		#{executionPlanModel.subactivityId},
+		#{executionPlanModel.planSourceid},
+		#{executionPlanModel.projectId},
+		#{executionPlanModel.externalProjectId},
+		1,
+		#{executionPlanModel.currentUser},
+		dbo.GetDateIST(),
+		#{executionPlanModel.executionPlanId},
+		#{executionPlanModel.externalWorkplanTemplate}
+		);
+	</insert>
+	
+	<select id='getActivityConfig' resultType="java.util.LinkedHashMap">
+		select IsfSubActivityID , SourceID , IsfProjectID , ExternalProjectID , isActive , ExecutionPlanID , 
+        ExtActivityID , ParentWorkPlanTemplateName , ExtActivityName COLLATE SQL_Latin1_General_CP1_CS_AS as ExtActivityName
+		from [transactionalData].[TBL_EXTERNAL_ACTIVITY_SUBACTIVITY_PROJECT_CONFIG]
+		where SourceID = #{executionPlanModel.planSourceid} 
+		and ExtActivityName = #{executionPlanModel.planExternalReference} COLLATE SQL_Latin1_General_CP1_CS_AS
+		and ExternalProjectID = #{executionPlanModel.externalProjectId}
+		and ParentWorkPlanTemplateName = #{executionPlanModel.externalWorkplanTemplate}
+		and IsfProjectID=#{executionPlanModel.projectId}
+	</select>
+	
+	<update id='updateActivityConfig'>
+		update
+		[transactionalData].[TBL_EXTERNAL_ACTIVITY_SUBACTIVITY_PROJECT_CONFIG]
+		set IsfSubActivityID = #{executionPlanModel.subactivityId} , ExecutionPlanId = #{executionPlanModel.executionPlanId}
+		where SourceID = #{executionPlanModel.planSourceid} 
+		and ExtActivityName = #{executionPlanModel.planExternalReference} COLLATE SQL_Latin1_General_CP1_CS_AS
+		and ExternalProjectID = #{executionPlanModel.externalProjectId}
+		and ParentWorkPlanTemplateName = #{executionPlanModel.externalWorkplanTemplate}
+	</update>
+	
+	<insert id='dbFileUploadForSAP' >
+		insert into transactionalData.TBL_SAP_BO_FILE(Name,erisiteFile,Type,active,uploadedBy,uploadedOn,modifiedBy,modifiedOn) 
+        values(#{fileName},#{dataFile},#{mimeType},1,null,dbo.GetDateIST(),null,null);
+	</insert>
+	
+	<select id='downloadWorkInstructionFile' resultType="java.util.LinkedHashMap">
+		select Name,erisiteFile,Type,active,uploadedBy,uploadedOn,modifiedBy,modifiedOn,Id,CreatedBy,CreatedDate
+		 from  transactionalData.TBL_SAP_BO_FILE where Name=#{fileName}
+	</select>
+	
+	<select id='dbFileInsertForSAPBO' statementType="CALLABLE" resultType="String">
+	{call SAPBO_BULK_Upload 
+        (#{fileTable,mode=IN, jdbcType=VARCHAR},
+        #{instance,mode=IN, jdbcType=VARCHAR},
+        #{columnCount,mode=IN, jdbcType=INTEGER})}
+	</select>
+	
+	<select id='getAllExternalSource' resultType="java.util.LinkedHashMap">
+		SELECT SourceID, SourceName FROM refData.TBL_External_Sources
+	</select>
+	
+	
+	<select id='getAllExternalSourceErrorDictionary' resultType="java.util.LinkedHashMap">
+		SELECT SourceID, SourceName FROM refData.TBL_External_Sources where IsErrorType=1
+	</select>
+	
+	<select id='getAllowedApiListForExternalSource' resultType="String">
+		select API from  refData.TBL_Source_API_Mapping where sourceID = 
+		(select SourceID from refData.TBL_External_Sources where SourceName = #{externalSourceName}) 
+	</select>
+	
+	<update id='updateWoName'>
+		UPDATE [transactionalData].TBL_WORK_ORDER
+		set WOName=
+		REPLACE(WOName,CONCAT('_',CONVERT(VARCHAR,${oldExecutionPlanId}),'_'),CONCAT('_',CONVERT(VARCHAR,${executionPlanId}),'_')),
+		LastModifiedBy=#{signumId},
+		LastModifiedDate=dbo.GetDateIST()
+		where WOName like '%${woNameRegex}%' and Status != 'CLOSED' and Active=1 and ProjectID=${projectId}
+	</update>
+	
+		<select id='validateTaskDetails' resultType="Boolean">
+		IF EXISTS (select 1
+        from transactionalData.TBL_FLOWCHART_STEP_DETAILS
+        where SubActivityFlowChartDefID = #{flowchartdefid}
+        and VersionNumber =#{wfVersion}  and Active=1 and TaskID=#{taskID})
+        BEGIN
+        select 1 as 'Result'
+        END
+        ELSE
+        BEGIN
+        select 0 as 'Result'
+        END
+	</select>
+	
+	<select id='checkExistingStepStarted' resultType="Boolean">
+	IF EXISTS(select 1 from
+	transactionalData.TBL_WORK_ORDER_FLOWCHART_STEP_DETAILS
+	where WOID=#{wOID} and TaskID=#{taskID} and
+	FlowChartStepID=#{stepID}
+	and Status='STARTED')
+	begin
+	select 1 as result
+	end
+	else
+	begin
+	select 0 as result
+	end
+   </select>
+   
+   <select id = 'getValidateJsonForApi' resultType="String">
+    select ValidateJSON from Refdata.TBL_SourceApiValidateJson validate
+		inner join refData.TBL_IntegrationSources sources on sources.sourceId=validate.sourceid
+		where SourceAPI=#{apiName} and (sources.sourceName=#{externalSourceName} OR sources.source_system_id=#{externalSourceName})
+    </select>
+ 	<select id="getProjectIDExternalProjectV1" resultType="java.util.LinkedHashMap">
+	select  top 1 pcgif.IsfProjectID  as ISFProjectID from transactionalData.TBL_EXTERNAL_ACTIVITY_SUBACTIVITY_PROJECT_CONFIG pcgif
+	join  refdata.[TBL_ExternalApplicationReference] ear on  pcgif.IsfProjectID=ear.projectId and ear.externalProjectId=pcgif.ExternalProjectID
+	where pcgif.ExtActivityName=#{activityName} and pcgif.ExternalProjectID=#{parentProjectId}
+	and pcgif.ParentWorkPlanTemplateName=#{parentWorkPlanTemplateName} and ear.isactive=1 order by pcgif.LastModifiedDate desc
+	</select>
+    
+    <select id="getNetworkElement"  resultMap="NetworkElementModelResultv1">
+		Declare @CountryCustomerGroupID int, @domainID int
+		Select distinct @CountryCustomerGroupID = CountryCustomerGroupID
+		from
+		refData.TBL_CountryCustomerMapping ccm
+		join refData.TBL_COUNTRIES coun on ccm.CountryID = coun.CountryID
+		join refdata.TBL_CUSTOMERS cus on ccm.CustomerID = cus.CustomerID
+		where CountryName = #{networkElement.country} and CustomerName = #{networkElement.customer}
+		
+		Select ne.Market,
+		ne.NetworkElementID,
+		ne.ProjectID,
+		ne.domainSubDomainID,
+		ne.ElementType,
+		ne.Type,
+		ne.Name,
+		ne.Latitude,
+		ne.Longitude,
+		ne.Software_Release,
+		d.DomainID,
+		CONCAT(d.Domain,+'/'+ d.SubDomain) as Domain,
+		v.VendorID,
+		v.Vendor,
+		t.TechnologyID,
+		t.Technology,
+		ne.UploadedON,
+		ne.UploadedBy,
+		ne.Band,
+		#{networkElement.country} countryName,
+		#{networkElement.customer} customername
+		from transactionalData.TBL_NETWORK_ELEMENT ne
+		inner join refData.TBL_DOMAIN d on d.DomainID=ne.DomainSubDomainID
+		inner join refData.TBL_VENDOR v on v.VendorID=ne.VendorID
+		inner join refData.TBL_TECHNOLOGY t on t.TechnologyID=ne.TechnologyID
+		where ne.CountryCustomergroupID = @CountryCustomerGroupID
+		and ne.active = 1
+		<if test="networkElement.type != null and networkElement.type != ''">
+		and ne.Type=#{networkElement.type}
+		</if>
+		<if test="networkElement.market != null and networkElement.market != ''">
+		and ne.Market=#{networkElement.market}
+		</if>
+		<if test="networkElement.domain != null and networkElement.domain != '' and networkElement.subDomain != null and networkElement.subDomain != ''">
+		and Domain = #{networkElement.domain}
+		and SubDomain = #{networkElement.subDomain}
+		and d.Active = 1
+		</if>
+		<if test="networkElement.technologyName != null and networkElement.technologyName != ''">
+		and t.Technology=#{networkElement.technologyName}
+		and t.Active = 1
+		</if>
+		ORDER BY ProjectID
+		OFFSET #{networkElement.pageOffSet} ROWS
+		FETCH NEXT #{networkElement.pageLength} ROWS ONLY
+    </select>
+    
+    <select id='isCountryExist' resultType="Boolean">
+		IF EXISTS (select top 1 countryId from refdata.tbl_countries where countryname=#{country})
+        BEGIN
+        select 1 as 'Result'
+        END
+        ELSE
+        BEGIN
+        select 0 as 'Result'
+        END
+	</select>
+	
+	<select id="getProjectIDExternalProjectFromScope" resultType="hashmap">
+	Select top 1 ps.ProjectID  as ISFProjectID from  transactionalData.TBL_ProjectScope ps
+	join  refdata.[TBL_ExternalApplicationReference] ear on  ps.ProjectID=ear.projectId and ear.externalProjectId=ps.externalProjectId
+	where ps.externalReference=#{activityName} and ps.ExternalProjectID=#{parentProjectId}
+	and ps.ParentWorkPlanTemplateName=#{parentWorkPlanTemplateName} 
+	and Active=1 and ear.isactive=1
+	and ps.deliverableStatus in ('New','Active') order by ps.LastModifiedDate desc
+	</select>
+<update id='updateExecutionPlanBulkWoCreation'>
+		update
+		[transactionalData].[TBL_BULK_WORK_ORDER_CREATION]
+		set ExecutionPlanID	= 0
+		where WOCreationID=#{woCreationID}
+	</update>
+	
+	<select id='checkIfExistsInCreation' resultType="java.util.LinkedHashMap">
+		select  WOCreationID,WorkOrderName,ExecutionPlanID,ProjectID from
+		[transactionalData].[TBL_BULK_WORK_ORDER_CREATION] where
+		ExternalActivityName = #{activityName} COLLATE SQL_Latin1_General_CP1_CS_AS
+		and ParentWorkPlanId in ${parentWorkPlanId}
+		and ExternalProjectID = #{externalProjectID} and ExternalSourceID = #{externalSourceID}
+		and ParentWorkPlanTemplateName=#{templateName}
+		and ProjectID=#{isfProjectID}
+		order by WOCreationID desc
+	</select>
+	
+	<select id='checkIfExternalProjectActive' resultType="Boolean">
+	if exists(select 1 from refdata.[TBL_ExternalApplicationReference]
+	where externalProjectId= #{parentProjectId} 
+	and isactive=1
+	and sourceId=#{externalSourceID})
+	Begin
+		Select 1 as Result
+	end
+	Else
+	Begin 
+		Select 0 as Result
+	End
+	</select>
+	
+	<select id='isCustomerExist' resultType="Boolean">
+		IF EXISTS (select top 1 customerid from refdata.tbl_customers where CustomerName=#{customer} and isActive=1)
+        BEGIN
+        select 1 as 'Result'
+        END
+        ELSE
+        BEGIN
+        select 0 as 'Result'
+        END
+	</select>
+
+	<select id="getSubscribeIsfFeeds" resultType="java.util.LinkedHashMap" >
+		declare @sql nvarchar(max),
+		@Startdate varchar(25) = convert(varchar(25), ${event_start_date} ,121),
+		@ColumnName Varchar(7000)= ${columns},
+		@enddate varchar(25) = convert(varchar(25), ${event_end_date} ,121),
+		@orderBy Varchar(1000)=${order_by}
+		declare @ProjectID varchar(200) = ${projectid}
+	
+	
+		Set @sql = 'SELECT distinct '+@ColumnName+'
+        FROM [transactionalData].[TBL_AuditDetails]  (NOLOCK)
+        Left join [transactionalData].[TBL_AuditGroup] (NOLOCK) on [transactionalData].[TBL_AuditDetails].auditgroupid = [transactionalData].[TBL_AuditGroup].auditgroupid
+        Left join [transactionalData].[TBL_WORK_ORDER] (NOLOCK) on [transactionalData].[TBL_WORK_ORDER].woid = [transactionalData].[TBL_AuditGroup].auditPageId
+        Left join [transactionalData].[TBL_PROJECTS] (NOLOCK) on [transactionalData].[TBL_WORK_ORDER].PROJECTID=[transactionalData].[TBL_PROJECTS].ProjectID
+        Left join [transactionalData].[TBL_WORK_ORDER_NODES]  (NOLOCK) on [transactionalData].[TBL_WORK_ORDER_NODES].woid=[transactionalData].[TBL_AuditGroup].auditPageId
+        Left join refData.TBL_Employees  (NOLOCK) on refData.TBL_Employees.Signum=[transactionalData].[TBL_AuditDetails].createdBy
+        Left Join transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF  (NOLOCK) on transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF.ProjectID=[transactionalData].[TBL_WORK_ORDER].PROJECTID and transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF.VersionNumber=[transactionalData].[TBL_WORK_ORDER].WorkFlowVersion and [transactionalData].[TBL_WORK_ORDER].flowchartdefid=transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF.SubActivityFlowChartDefID
+        Left join transactionalData.TBL_NETWORK_ELEMENT (nolock)  on transactionalData.TBL_NETWORK_ELEMENT.NetworkElementID=[transactionalData].[TBL_WORK_ORDER_NODES].NetworkElementID
+        where [transactionalData].[TBL_WORK_ORDER].projectid in('+@ProjectID+') and
+        [transactionalData].[TBL_AuditDetails].dateCreated between '+''''+@startDate+''''+' AND '+''''+@enddate+''''+'
+        order by '+@orderBy
+
+        exec sp_executesql @sql, N''   
+	
+	</select>
+	<select id='validationMarketArea' resultType="Boolean"  useCache="true">
+    IF EXISTS (select 1  from refData.TBL_MARKETAREAS WHERE MarketAreaName=#{marketArea})
+        BEGIN
+        select 1 as 'Result'
+        END
+        ELSE
+        BEGIN
+        select 0 as 'Result'
+        END
+    </select>
+    
+<!--     <select id="getCalculativeColums" resultType="String">
+		SELECT Calculative_Column from transactionaldata.tbl_table_col_mapping where Alias in (${alias})
+    </select> -->
+    
+    <select id="getCalculativeColums" resultType="String">
+		Declare @Alias VARCHAR(2000) = ${blankAlias}
+		
+		IF (@Alias ='NULL' or @Alias = '')
+		BEGIN
+		SELECT calculative_column from transactionaldata.tbl_table_col_mapping
+		where is_active = 1
+		END
+		ELSE
+		BEGIN
+		SELECT calculative_column from transactionaldata.tbl_table_col_mapping where alias in (${alias})
+		END
+    </select>    
+    
+    <!-- validate  calculative columns from the mapping table -->
+    <select id="validateAlias" resultType="java.util.LinkedHashMap" useCache="true">
+    	declare @str1 varchar(2000),@str2 varchar(2000) ,@StringAlias varchar(50)
+		,@mappingAlias VARCHAR(50)
+		SET @str1 = ${alias}
+		DROP TABLE IF EXISTS #T1,#t2
+		Select @str1 = replace(REPLACE(@str1,'''',''),' ','')
+		
+		SELECT IDENTITY(INT,1,1) AS ROWID,[value]  As Alias
+		into #t1
+		FROM STRING_SPLIT(@str1, ','); 
+
+		
+		Select A.alias as StringAlias,b.alias as mappingAlias
+		into #t2
+		from #T1 a
+		left join transactionaldata.tbl_table_col_mapping b
+		on a.alias = b.alias and b.is_active = 1
+		where  b.alias is null
+		
+		IF EXISTS (Select 1 from #t2 where mappingAlias is null)
+		BEGIN
+		       Select StringAlias , 0 Result from #t2
+		END
+		ELSE 
+		BEGIN 
+		       Select 1 Result
+		END 
+    	
+    </select>
+
+    <select id="validateProjectIdFeed" resultType="java.util.LinkedHashMap" useCache="true">
+	declare @str1 varchar(2000),@str2 varchar(2000) ,@StringAlias varchar(50)
+	,@mappingAlias VARCHAR(50)
+	SET @str1 = ${projectIds}
+	DROP TABLE IF EXISTS #T3,#t4
+	Select @str1 = replace(REPLACE(@str1,'''',''),' ','')
+	
+	SELECT IDENTITY(INT,1,1) AS ROWID,[value] As ProjectID
+	into #t3
+	FROM STRING_SPLIT(@str1, ',');
+	;
+	Select A.ProjectID as StringProjectID,b.ProjectID 
+	into #t4
+	from #t3 a
+	left join transactionaldata.TBL_PROJECTS b
+	on a.ProjectID = b.ProjectID and b.IsDeleted = 0
+	where b.ProjectID is null
+	;
+	IF EXISTS (Select 1 from #t4 where ProjectID is null)
+	BEGIN
+	Select StringProjectID , 0 Result from #t4
+	END
+	ELSE
+	BEGIN
+	Select 1 Result
+	END
+
+    </select>
+    
+    <select id="getOrderByColumn" resultType="String">
+    	IF EXISTS (SELECT 1 FROM transactionaldata.tbl_table_col_mapping where alias=${alias} and is_active=1)
+		BEGIN
+		       Select calculative_column AS Result from  transactionaldata.tbl_table_col_mapping where alias=${alias}
+		END
+		ELSE 
+		BEGIN 
+		       Select 'Invalid OrderBy name!' AS Result
+		END
+    </select>
+    <select id="getAlias" resultType="String">
+		Declare @Alias VARCHAR(2000) = ${blankAlias}
+		
+		IF (@Alias ='NULL' or @Alias = '')
+		BEGIN
+		SELECT alias from transactionaldata.tbl_table_col_mapping
+		where is_active = 1
+		END
+		ELSE
+		BEGIN
+		SELECT alias from transactionaldata.tbl_table_col_mapping where alias in (${alias})
+		END
+    </select>
+<!--     <select id="validateMarketAreaProjectId" resultType="java.util.LinkedHashMap">
+		If exists(select 1 from
+		transactionalData.TBL_PROJECTS a
+		left join transactionalData.TBL_OPPORTUNITY op on a.OpportunityID = op.OpportunityID
+		left join refdata.TBL_MARKETAREAS market on op.MarketAreaID = market.MarketAreaID
+		where ProjectID in (${projectIds})
+		and MarketAreaName != ${marketArea})
+		Begin
+		select ProjectID,ProjectName,
+		MarketAreaName from
+		transactionalData.TBL_PROJECTS a
+		left join transactionalData.TBL_OPPORTUNITY op on a.OpportunityID = op.OpportunityID
+		left join refdata.TBL_MARKETAREAS market on op.MarketAreaID = market.MarketAreaID
+		where ProjectID in (${projectIds})
+		and MarketAreaName != ${marketArea}
+		
+		
+		
+		END
+		Else
+		Begin
+		Select 1 as Result
+		END
+
+</select> -->
+    <select id="validateMarketAreaProjectId" resultType="java.util.LinkedHashMap">
+		If exists(select 1 from
+		transactionalData.TBL_PROJECTS a
+		left join transactionalData.TBL_OPPORTUNITY op on a.OpportunityID = op.OpportunityID
+		left join refdata.TBL_MARKETAREAS market on op.MarketAreaID = market.MarketAreaID
+		where ProjectID in (${projectIds})
+		and MarketAreaName != ${marketArea})
+		Begin
+		select ProjectID from
+		transactionalData.TBL_PROJECTS a
+		left join transactionalData.TBL_OPPORTUNITY op on a.OpportunityID = op.OpportunityID
+		left join refdata.TBL_MARKETAREAS market on op.MarketAreaID = market.MarketAreaID
+		where ProjectID in (${projectIds})
+		and MarketAreaName != ${marketArea}
+		
+		
+		
+		END
+		Else
+		Begin
+		Select 1 as Result
+		END
+
+</select>
+	
+</mapper>
+

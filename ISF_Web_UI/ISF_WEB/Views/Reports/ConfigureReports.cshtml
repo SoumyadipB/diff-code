@@ -1,0 +1,67 @@
+﻿@{
+    ViewBag.Title = "Reports";
+}
+
+<div class="col-md-12">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            Configure Reports
+            <ul class="nav nav-tabs pull-right" data-tabs="tabs" id="tabs">
+                <li class="active">
+                    <a data-toggle="tab" href="#tab1"><span>Search Reports</span></a>
+                </li>
+                <li>
+                    <a data-toggle="tab" href="#tab2"><span>Add Reports</span></a>
+                </li>
+
+            </ul>
+        </div>
+        <div class="panel-body">
+            <div class="tab-content padded" id="my-tab-content">
+                <div class="tab-pane in active" id="tab1">
+                    @{Html.RenderPartial("_searchReports");}
+                </div>
+
+                <div class="tab-pane" id="tab2">
+                    @{Html.RenderPartial("_addReports");}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+</div>
+@*<div class="content">
+    <section>
+
+        <div id="page-wrapper">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="widget-container fluid-height">
+                        <div class="heading tabs">
+                            Configure Reports
+                            <ul class="nav nav-tabs pull-right" data-tabs="tabs" id="tabs">
+                                <li class="active">
+                                    <a data-toggle="tab"  href="#tab1"><span>Search Reports</span></a>
+                                </li>
+                                <li>
+                                    <a data-toggle="tab" href="#tab2"><span>Add Reports</span></a>
+                                </li>
+                                
+                            </ul>
+                        </div>
+                        <div class="tab-content padded" id="my-tab-content">
+                            <div class="tab-pane in active" id="tab1">
+                                @{Html.RenderPartial("_searchReports");}
+                            </div>
+
+                            <div class="tab-pane" id="tab2">
+                                @{Html.RenderPartial("_addReports");}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </section>
+</div>*@

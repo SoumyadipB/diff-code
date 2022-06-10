@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ericsson.isf.mapper.AppUtilMapper">
+<cache type="org.mybatis.caches.ehcache.EhcacheCache" />
+    
+    <resultMap type='com.ericsson.isf.model.EmailModel' id='EmailModelResult'>
+        <result property='templateName' column='templateName'/>
+        <result property='templateText' column='templateText'/>
+        <result property='subject' column='subject'/>
+        <result property='cc' column='cc'/>
+        <result property='to' column='to'/>
+    </resultMap>
+    
+    
+    <resultMap type='com.ericsson.isf.model.EmailModel' id='EmailModelResultSmtp'>
+        <result property='senderSignum' column='send_request_user'/>
+        <result property='body' column='body'/>
+        <result property='subject' column='subject'/>
+        <result property='cc' column='copy_recipients'/>
+        <result property='to' column='Recipients'/>
+        </resultMap>
+  
+  
+    <update id='sendMail' statementType="CALLABLE"  parameterType="com.ericsson.isf.model.EmailModel">
+        {call msdb.dbo.sp_send_dbmail(
+        @profile_name='isf',
+        @body_format ='HTML',
+        @from_address=#{mailRequest.senderSignum},
+        @body=#{mailRequest.body},
+       	@recipients= #{mailRequest.receiverSignum},
+       	@subject= #{mailRequest.subject},
+       	@copy_recipients= #{mailRequest.cc}
+        )}
+    </update>
+    
+   
+
+
+	<select id ="getNotificationsDetailsByTemplateName" resultMap="EmailModelResult">
+         SELECT templateName,templateText,subject,[to],cc,templateId FROM [transactionalData].[TBL_NOTIFICATIONS_CONFIG]
+         WITH (NOLOCK)
+         where templateName=#{templateName}
+    </select>
+
+
+  	  
+  	<select id='botDownloadUsingProc'  statementType="CALLABLE" parameterType="com.ericsson.isf.model.botstore.BotDetail">
+        {call ProcGetFileContent (
+         #{botDetail.pFileName, mode=IN,jdbcType=VARCHAR},
+         #{botDetail.pFileContent, mode=OUT,jdbcType=LONGVARBINARY},
+         #{botDetail.pErrorFlag, mode=OUT,jdbcType=INTEGER},
+         #{botDetail.pErrorMsg, mode=OUT,jdbcType=VARCHAR}
+        )} 
+	</select>
+	
+	 <select id='botUpload'  statementType="CALLABLE" parameterType="com.ericsson.isf.model.botstore.BotDetail">
+        {call ProcSaveFileContent (
+         #{botDetail.pFileNameWithFullPath, mode=IN,jdbcType=VARCHAR},
+         #{botDetail.pFileContent, mode=IN,jdbcType=LONGVARBINARY}
+       
+       
+        )} 
+	</select>
+	
+	
+	 <insert id="sendSmtpMail">
+        INSERT INTO transactionalData.TBL_SentMail (
+        Recipients,
+        copy_recipients,
+        subject,
+        body,
+        body_format,
+        send_request_date,
+        send_request_user,
+        sent_status,
+        sent_date  
+      )  
+        
+		VALUES (
+		#{smtpRequest.to},
+		#{smtpRequest.cc},
+		#{smtpRequest.subject},
+		#{smtpRequest.body},
+		'HTML',
+		dbo.GetDateIST(),
+		#{smtpRequest.senderSignum},
+		#{smtpRequest.status},
+		dbo.GetDateIST()
+	)
+		
+    </insert>
+
+    <select id ="getListOfUnsentMails" resultMap="EmailModelResultSmtp">
+         SELECT Recipients,copy_recipients,subject,body,body_format,send_request_date,send_request_user,sent_status,sent_date,
+          last_modified_date,lastmodifieduser,ID from transactionalData.TBL_SentMail      
+         where sent_status='UNSENT'
+    </select>
+    
+    <update id="sendUnsentSmtpMail">
+    	UPDATE transactionalData.TBL_SentMail set sent_status='SENT' where sent_status='UNSENT'	and id=#{emailDetails.id}
+    </update>
+    
+    <select id="getSharePointDetails" resultType="com.ericsson.isf.model.SharePointModel">
+     select am.marketAreaName as marketArea, sh.marketAreaID, sh.folderName, sh.baseURL, sh.viewName, sh.modifiedBy, sh.createdBy,
+    sh.modifiedOn, sh.createdOn, sh.clientID, sh.secretKey
+        from
+        transactionalData.TBL_SharePoint sh
+        join refData.TBL_MARKETAREAS am
+        on sh.marketAreaID = am.marketAreaID
+        where am.marketAreaName= #{marketArea}
+    </select>
+    
+    <select id='getViewData' resultType="java.util.LinkedHashMap">	
+     SET
+     TRANSACTION ISOLATION LEVEL READ UNCOMMITTED
+      select * from ${viewName}
+      where 1=1
+      <if test='dynamicClause != null'>
+      		<if test='dynamicClause.andCondition != null'>
+		      	<foreach item="column" index="index" collection="dynamicClause.andCondition" >
+		      			<if test='column != null and column.columnName != null and column.inValues !=null and !column.inValues.isEmpty()'>
+		      				and ${column.columnName} IN
+					          <foreach collection="column.inValues" item="value" index="index" open="(" separator=","  close=")">
+					         	#{value}
+					         </foreach>  
+		      			</if>   	
+				 </foreach>
+	      	</if>
+	      
+	      <if test='dynamicClause.orderBy != null'>
+	      	<foreach item="column" index="index" collection="dynamicClause.orderBy" separator="," open="order by" close="desc">
+	      		${column}    	
+			</foreach>
+	      </if>
+      </if>
+      
+    </select>
+    
+    <select id="getProficiencyID" resultType="com.ericsson.isf.model.ProficiencyTypeModal">
+    	select ProficiencyID,ProficiencyLevel,ProficiencyName from refData.tbl_WF_Proficiency_Type where ProficiencyName = #{proficiencyName}
+    </select>
+    <select id="getCountryCustomerGroupIDByProjectID" resultType="int" useCache="true">
+		Select distinct CountryCustomerGroupID
+		from
+		transactionalData.TBL_PROJECTS p WITH (NOLOCK)
+		inner join
+		transactionalData.TBL_OPPORTUNITY O WITH (NOLOCK) on
+		p.OpportunityID=O.OpportunityID and p.ProjectID = #{projectID}
+		inner join
+		refData.TBL_CountryCustomerMapping ccm WITH (NOLOCK) on
+		ccm.CountryID=o.CountryID and ccm.CustomerID=o.CustomerID
+
+    </select>
+
+
+	<select id="insertSharePointDetailsForServerBot"
+	resultType="Boolean">
+	IF exists (select 1 from
+	[TransactionalData].[TBL_BotServerExecution_Sharepoint]
+	where BaseURL =
+	#{sharePointModel.baseURL} and SiteName = #{sharePointModel.siteName}
+	and active=1)
+	begin
+	select 0 as 'Result'
+	end
+
+	else
+	begin
+	insert into
+	[TransactionalData].[TBL_BotServerExecution_Sharepoint]
+	(MarketAreaId,
+	BaseUrl,
+	SiteName,
+	clientID,
+	Active,
+	Createdby,
+	Createdon,
+	Modifiedby,
+	Modifiedon)
+	values
+	(#{sharePointModel.marketAreaID},
+	#{sharePointModel.baseURL},
+	#{sharePointModel.siteName},
+	#{sharePointModel.clientId},
+	1,
+	#{sharePointModel.createdBy},
+	dbo.getDateIST(),
+	#{sharePointModel.createdBy},
+	dbo.getDateIST()
+	)
+	select 1 as 'Result'
+
+	END
+
+</select>
+
+	<select id="checkSharePointDetailsForServerBot"
+		resultType="Boolean">
+		IF Exists(
+		select 1 from [TransactionalData].[TBL_BotServerExecution_Sharepoint]
+		where MarketAreaId = #{sharePointModel.marketAreaID}
+		and BaseUrl = #{sharePointModel.baseURL}
+		and siteName = #{sharePointModel.siteName}
+		and active=1
+		)
+		Begin
+		Select 1 as 'Result'
+		End
+		else
+		Begin
+		Select 0 as 'Result'
+		End
+	</select>
+
+
+	<select id="getClientIDbySiteName" resultType="String">
+		select clientID
+		from [TransactionalData].[TBL_BotServerExecution_Sharepoint]
+		where Sitename= #{siteName}
+		and Active=1
+	</select>
+
+	<select id="updateSharePointDetailsForServerBot"
+	resultType="Boolean">
+	IF exists (select 1 from
+	[TransactionalData].[TBL_BotServerExecution_Sharepoint]
+	where
+	MarketAreaId != #{sharePointModel.marketAreaID} and BaseURL =
+	#{sharePointModel.baseURL} and SiteName = #{sharePointModel.siteName}
+	and active=1)
+	begin
+	select 0 as 'Result'
+	end
+	Else
+	Begin
+	Update
+	[TransactionalData].[TBL_BotServerExecution_Sharepoint]
+	set baseurl =
+	#{sharePointModel.baseURL}, siteName =
+	#{sharePointModel.siteName},
+	clientID = #{sharePointModel.clientId},
+	ModifiedBy = #{sharePointModel.createdBy},
+	ModifiedOn =
+	dbo.getDateIST(),
+	active =1
+
+	where marketAreaID =
+	#{sharePointModel.marketAreaID} and active = 1
+	select 1 as 'Result'
+	End
+</select>
+	
+</mapper>

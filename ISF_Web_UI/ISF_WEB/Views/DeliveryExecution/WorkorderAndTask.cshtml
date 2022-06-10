@@ -1,0 +1,2356 @@
+﻿@{
+    ViewBag.Title = "Work order and tasks";
+}
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+@Scripts.Render("~/bundles/AutoSense")
+@Styles.Render("~/bundles/css/DataTableStyle")
+@Scripts.Render("~/bundles/DataTableScript")
+@Scripts.Render("~/bundles/DataTablesAdvancedScript")
+@Scripts.Render("~/bundles/formbuilder")
+
+@Scripts.Render("~/bundles/WorkorderAndTask")
+@Styles.Render("~/bundles/css/DeliveryExecution")
+
+@Scripts.Render("~/bundles/jquery-dateformat")
+@Scripts.Render("~/bundles/introjs")
+@Styles.Render("~/bundles/Scripts/lib/introjs/WorkOrderAndQueueCss")
+@Styles.Render("~/bundles/css/select2")
+@Scripts.Render("~/bundles/select2")
+@Scripts.Render("~/bundles/commentsJs")
+@Scripts.Render("~/bundles/WorkOrderAndQueue")
+<style>
+    #Node_Names_WO_Create .select2-container .select2-selection {
+        height: 70px;
+        width: 90%;
+        overflow: auto;
+    }
+
+    .wmd-view-topscroll, .wmd-view {
+        overflow-x: scroll;
+        overflow-y: hidden;
+        /*width: 300px;*/
+        border: none 0px RED;
+    }
+
+    .wmd-view-topscroll {
+        height: 20px;
+        width: 100%;
+    }
+
+    /*.wmd-view { max-width: 300px; }*/
+
+    .feedbackowner {
+        line-height: 2.6;
+        white-space: nowrap;
+        width: 150px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        font-size: 10px
+    }
+
+    .feedbackBox {
+        position: absolute;
+        width: 40% !important;
+        height: 500px !important;
+        border: 1px solid lightgray;
+        box-shadow: 2px 3px 20px dimgrey;
+        display: none;
+        font-size: 12px;
+        text-transform: initial;
+        background-color: white;
+        top: 36px;
+        right: 26px;
+    }
+
+    .reqFld {
+        color: red;
+    }
+    /*.marketP > .fa-spinner {
+        font-size:10px;
+    }*/
+    .feedbackHistoryDiv {
+        width: 95%;
+        height: 150px !important;
+        max-height: 175px !important;
+        border: 1px solid lightgray;
+        box-shadow: 2px 2px #F0F0F0;
+        margin-left: 15px;
+        overflow-y: auto;
+        padding-left: 3px;
+        padding-top: 3px;
+    }
+
+    .stepLevelFeedbackHistoryDiv {
+        width: 95%;
+        height: 100px !important;
+        max-height: 215px !important;
+        border: 1px solid lightgray;
+        box-shadow: 2px 2px #F0F0F0;
+        margin-left: 15px;
+        overflow-y: auto;
+        padding-left: 3px;
+        padding-top: 3px;
+    }
+
+    .feebackBarUserInfo {
+        background-color: lightgray;
+        height: 24px;
+        line-height: 2;
+    }
+
+    .feedbackBar {
+        width: 103%;
+        margin-bottom: 4px;
+        height: auto;
+        border: 1px solid lightgray;
+        box-shadow: 2px 2px #F0F0F0;
+    }
+
+
+    .scroll-div1 {
+        width: 2600px;
+        overflow-x: scroll;
+        overflow-y: hidden;
+        height: 20px;
+    }
+
+    .scroll-div2 {
+        /*width: 1000px;*/
+        height: 20px;
+        /*overflow-x: scroll;*/
+    }
+
+
+    .inputTextStyle {
+        width: 100%;
+        padding: 8px 15px;
+        display: inline-block;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+    }
+    /*CSS for Input Output Files*/
+    .linkHover:hover {
+        color: #007aff !important;
+    }
+
+    .filesDiv .dropdown-menu > li > a {
+        padding: 5px 15px 5px 2px;
+    }
+
+    .filesDiv:hover ul.dropdown-menu {
+        display: block;
+        max-height: 500px;
+        overflow-y: auto;
+    }
+
+    .inputFileClass {
+        width: 100%;
+        padding: 4px;
+        display: inline-block;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+    }
+
+    .inputSubMenu.dropdown-submenu:hover > .dropdown-menu {
+        display: block !important;
+        max-height: 500px !important;
+        overflow-y: auto !important;
+    }
+
+    .inputSubMenu {
+        position: relative !important;
+    }
+
+    .inputFilesList {
+        top: 0 !important;
+        left: 98% !important;
+        margin-top: -1px !important;
+    }
+
+    .instructionP {
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+
+    #sourceId3 .select2-container {
+        z-index: 100000;
+    }
+
+    /*START - OVERRIDE SELECT2*/
+
+    .flowchartPullRightArea .select2-container--classic .select2-selection--single .select2-selection__arrow {
+        height: 20px;
+    }
+
+    .flowchartPullRightArea .select2-container .select2-selection--single {
+        height: 22px;
+        width: 130px;
+    }
+
+    .flowchartPullRightArea .select2-container--classic .select2-selection--single .select2-selection__rendered {
+        line-height: 22px;
+    }
+
+    /*START - OVERRIDE SELECT2*/
+
+
+    /*START BOOTSTRAO OVERRIDE*/
+    .btn-group {
+        margin: 0px;
+    }
+
+    .btn {
+        margin: 0px 3px 0px 0px;
+    }
+
+
+    .btn-group > .btn + .dropdown-toggle {
+        margin-left: 0px;
+        padding: 1px 5px;
+    }
+
+    .badge {
+        background-color: #faf9f9;
+        color: #a0a0a0;
+    }
+
+
+    .nopadding {
+        padding: 4px !important;
+        margin: 0px !important;
+    }
+
+    .label {
+        margin: 0 -2px;
+    }
+
+
+    .actionBtn {
+        background: #ffffff; /* Old browsers */
+        background: -moz-linear-gradient(top, #ffffff 0%, #e5e5e5 100%); /* FF3.6-15 */
+        background: -webkit-linear-gradient(top, #ffffff 0%,#e5e5e5 100%); /* Chrome10-25,Safari5.1-6 */
+        background: linear-gradient(to bottom, #ffffff 0%,#e5e5e5 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+        filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#e5e5e5',GradientType=0 ); /* IE6-9 */
+    }
+
+    .open > .dropdown-menu {
+        width: 207px;
+    }
+
+    /*END BOOTSTRAO OVERRIDE*/
+
+
+
+    .main_panel .panel-default .panel-heading {
+        text-align: left;
+        height: 31px;
+        padding: 5px;
+    }
+
+    .main_panel .main_heading {
+        text-align: left;
+        background: #ffffff; /* Old browsers */
+        background: -moz-linear-gradient(top, #ffffff 0%, #e5e5e5 100%); /* FF3.6-15 */
+        background: -webkit-linear-gradient(top, #ffffff 0%,#e5e5e5 100%); /* Chrome10-25,Safari5.1-6 */
+        background: linear-gradient(to bottom, #ffffff 0%,#e5e5e5 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+        filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#e5e5e5',GradientType=0 ); /* IE6-9 */
+    }
+
+    .myWorkOrderPanel.progress {
+        height: 7px;
+        background-color: #e6e3e3;
+        margin-bottom: 3px;
+        border-radius: 0px;
+    }
+
+    .flow_chart_one_panel .progress {
+        background-color: #e6e3e3;
+    }
+
+    .dBox .shape {
+        border-style: solid;
+        border-width: 0 70px 40px 0;
+        float: right;
+        height: 0px;
+        width: 0px;
+        -ms-transform: rotate(360deg); /* IE 9 */
+        -o-transform: rotate(360deg); /* Opera 10.5 */
+        -webkit-transform: rotate(360deg); /* Safari and Chrome */
+        transform: rotate(360deg);
+        position: absolute;
+        right: 0px;
+    }
+
+    .dBox {
+        background: #fff;
+        border: 1px solid #ddd;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        /*margin: 15px 0;*/
+        overflow: hidden;
+        margin-right: 7px;
+        position: relative;
+    }
+
+        .dBox .shape {
+            border-color: rgba(255,255,255,0) #d9534f rgba(255,255,255,0) rgba(255,255,255,0);
+        }
+
+    .dBox-radius {
+        border-radius: 7px;
+    }
+
+    .dBox-danger {
+        border-color: #d9534f;
+    }
+
+        .dBox-danger .shape {
+            border-color: transparent #d9534f transparent transparent;
+        }
+
+    .dBox-success {
+        border-color: #5cb85c;
+    }
+
+        .dBox-success .shape {
+            border-color: transparent #5cb85c transparent transparent;
+        }
+
+    .dBox-default {
+        border-color: #999999;
+    }
+
+        .dBox-default .shape {
+            border-color: transparent #999999 transparent transparent;
+        }
+
+    .dBox-primary {
+        border-color: #428bca;
+    }
+
+        .dBox-primary .shape {
+            border-color: transparent #428bca transparent transparent;
+        }
+
+    .dBox-info {
+        border-color: #5bc0de;
+    }
+
+        .dBox-info .shape {
+            border-color: transparent #5bc0de transparent transparent;
+        }
+
+    .dBox-warning {
+        border-color: #f0ad4e;
+    }
+
+        .dBox-warning .shape {
+            border-color: transparent #f0ad4e transparent transparent;
+        }
+
+    .dBox .shape-text {
+        color: #fff;
+        font-size: 12px;
+        font-weight: bold;
+        position: relative;
+        right: -31px;
+        top: -2px;
+        white-space: nowrap;
+        -ms-transform: rotate(30deg); /* IE 9 */
+        -o-transform: rotate(360deg); /* Opera 10.5 */
+        -webkit-transform: rotate(30deg); /* Safari and Chrome */
+        transform: rotate(30deg);
+    }
+
+    .dBox-content {
+        padding: 0 20px 10px;
+    }
+
+
+    /*INPROGRESS TASKS*/
+
+    .inprogressTask_panel, .work_order_panel, .flow_chart_main_panel {
+        box-shadow: 0px 0px 6px 1px rgba(0, 0, 0, 0.2);
+    }
+
+
+        .inprogressTask_panel .panel-heading, .work_order_panel .panel-heading {
+        }
+
+        .inprogressTask_panel .panel-body {
+            padding: 4px;
+        }
+
+
+    .inprogressTask_container {
+        width: 100%;
+        display: -webkit-box;
+        overflow: auto;
+        overflow-y: hidden;
+    }
+
+
+
+    .inprogressTask_dBox {
+        width: 250px;
+        margin-right: 5px;
+        height: 145px;
+    }
+
+
+        .inprogressTask_dBox .dBox-content {
+            padding: 6px;
+        }
+
+            .inprogressTask_dBox .dBox-content .content-row {
+                margin-bottom: 1px;
+                display: inline-flex;
+                width: 100%;
+            }
+
+                .inprogressTask_dBox .dBox-content .content-row p {
+                    margin: 0px;
+                }
+
+            .inprogressTask_dBox .dBox-content .lbl {
+                font-weight: bold;
+                margin-right: 5px;
+            }
+
+            .inprogressTask_dBox .dBox-content .lbl2 {
+                font-weight: bold;
+                margin-left: 10px;
+                margin-right: 5px;
+            }
+
+
+
+            .inprogressTask_dBox .dBox-content .action_area i {
+                font-size: 14px;
+                margin-right: 5px;
+                cursor: pointer;
+                padding: 2px 3px;
+                border: 1px solid #ccc;
+                border-radius: 3px;
+                background-color: #f5f8fb;
+                width: 20px;
+                text-align: center;
+            }
+
+            .inprogressTask_dBox .dBox-content .time_area {
+                font-size: 18px;
+                font-weight: bold;
+                color: #2197d2;
+                margin-top: -2px;
+                margin-left: 7px;
+            }
+
+    .infoTaskBtn {
+        color: #0c13f5 !important;
+        border-radius: 10px !important;
+        background-color: #cbdcf1 !important;
+    }
+
+    /*INPROGRESS TASKS*/
+
+    /*WORKORDER BOXES*/
+
+    .work_order_panel {
+        overflow: auto;
+    }
+
+        .work_order_panel .panel-body {
+            padding: 4px;
+        }
+
+
+
+    .work_order_dBox_container {
+        width: 100%;
+        display: -webkit-box;
+        overflow: auto;
+    }
+
+
+    .work_order_dBox {
+        width: 250px;
+        margin-right: 5px;
+        border-radius: 0px;
+        overflow: auto;
+        margin-bottom: 0px;
+        height: 97px;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    }
+
+        .work_order_dBox .panel-heading {
+            border-radius: 0px;
+        }
+
+        .work_order_dBox .panel-body {
+            padding: 6px;
+        }
+
+
+        .work_order_dBox .content-row {
+            display: inline-flex;
+            width: 100%;
+            border-bottom: 1px dotted #e0e0e0;
+        }
+
+            .work_order_dBox .content-row label {
+                font-weight: bold;
+                margin-right: 5px;
+            }
+
+            .work_order_dBox .content-row p {
+                margin: 0px;
+            }
+
+    .nodeNameP {
+        width: 158px;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+
+
+    .action-buttons .dropdown {
+    }
+
+    .work_order_panel.make_full_screen .work_order_dBox_container .work_order_dBox {
+        display: inline-block;
+    }
+
+    #woPriorityDropdown {
+        width: 135px;
+    }
+
+        #woPriorityDropdown > li > a, #woStatusDropdownUl > li > a {
+            padding: 1px 15px;
+            font-size: 10px;
+        }
+    /*WORKORDER BOXES*/
+
+
+
+
+    /* start FLOW CHARTS*/
+
+    .flow_chart_main_panel .woIdOnFlowchartHeader {
+        margin-right: 5px;
+    }
+
+    .flow_chart_main_panel {
+        overflow-x: hidden;
+        overflow-y: auto;
+    }
+
+        .flow_chart_main_panel .panel-body {
+            padding: 4px;
+        }
+
+        .flow_chart_main_panel .panel {
+            border-radius: 0px;
+            margin-bottom: 2px;
+        }
+
+
+    .legends {
+        display: inline-flex;
+        margin-right: 10px;
+    }
+
+        .legends .caption {
+            margin-right: 10px;
+        }
+
+
+    #flowchartRightHeader {
+        display: inline-flex;
+        height: 23px;
+    }
+    /*end FLOW CHARTS*/
+    /*START SCROLL BAR*/
+
+    /*END SCROLL BAR*/
+    .fixedThisToTop {
+        position: fixed;
+        top: 45px;
+        left: 65px;
+        width: 100%;
+        z-index: 1001;
+    }
+
+
+    .make_full_screen {
+        position: fixed;
+        top: 0px;
+        left: 0px;
+        width: 100%;
+        height: 100%;
+        z-index: 1030;
+    }
+
+
+    .searchText {
+        width: 200px;
+        font-size: 13px;
+        height: 22px;
+    }
+
+    .notFound {
+        width: 100%;
+        text-align: center;
+        font-size: 18px;
+        padding: 36px;
+        color: red;
+    }
+
+        .notFound:before {
+            content: '\f119';
+            font-family: fontawesome;
+            margin-right: 5px;
+            font-size: 18px;
+        }
+    /*/////////////////////////////////*/
+
+    .funMsg {
+        width: 100%;
+        text-align: center;
+        font-size: 14px;
+        padding: 10px;
+        color: green;
+    }
+
+    .myWorkHelpBtn {
+        border-radius: 13px;
+    }
+
+        .myWorkHelpBtn i {
+            font-size: 15px;
+        }
+
+    /*FOR TEXTBOX WHICH TYPE IS SEARCH*/
+    input[type="search"]::-webkit-search-cancel-button {
+        /*Bootstrap 3 override*/
+        -webkit-appearance: searchfield-cancel-button;
+        cursor: pointer;
+    }
+
+
+    .sliderSource {
+        background-color: #5bc0de;
+    }
+
+    .disableAssessedBg {
+        background-color: #CCC !important;
+    }
+
+
+
+    .particularTabActions {
+        overflow: hidden;
+    }
+
+
+    /*start for assign stop me*/
+
+    a.dividerDuration:hover {
+        background-color: #eeeeee;
+    }
+
+    .dividerDuration.active {
+        background-color: #eeeeee;
+        text-decoration: none;
+    }
+
+    .dividerDuration {
+        border-right: 1px solid;
+        padding: 4px 0px 4px 0px;
+        color: #cec8c8;
+    }
+
+
+    a.divider:hover {
+        background-color: #eeeeee;
+    }
+
+    .divider.active {
+        background-color: #eeeeee;
+        text-decoration: none;
+    }
+
+    .divider {
+        border-right: 1px solid;
+        padding: 4px 0px 4px 0px;
+        color: #cec8c8;
+    }
+
+    .link {
+        margin: 0px 5px 0px 5px;
+        color: blue;
+    }
+
+    .linkPriority {
+        margin: 0px 5px 0px 5px;
+        color: blue;
+    }
+
+        .linkPriority.active {
+            margin: 0px 5px 0px 5px;
+            color: white;
+        }
+
+        .linkPriority:hover {
+            margin: 0px 5px 0px 5px;
+            color: white;
+        }
+
+
+    .linkStatus {
+        margin: 0px 5px 0px 5px;
+        color: blue;
+    }
+
+        .linkStatus.active {
+            margin: 0px 5px 0px 5px;
+            color: white;
+        }
+
+        .linkStatus:hover {
+            margin: 0px 5px 0px 5px;
+            color: white;
+        }
+
+
+    .linkDuration {
+        margin: 0px 5px 0px 5px;
+        color: blue;
+    }
+
+        .linkDuration.active {
+            margin: 0px 5px 0px 5px;
+            color: white;
+        }
+
+        .linkDuration:hover {
+            margin: 0px 5px 0px 5px;
+            color: white;
+        }
+
+
+
+
+    .filterHrefs {
+        width: auto;
+        text-align: center;
+        text-transform: capitalize;
+        background-color: #ffffffc2;
+        padding: 4px;
+        border: 1px solid;
+        border-radius: 10px;
+        border-color: #cec8c8;
+        font-size: 10px;
+    }
+
+    .labelDist {
+        font-size: 10px;
+        float: left;
+        margin: 5px 2px 0px 15px;
+    }
+
+
+    tfoot {
+        display: table-header-group;
+    }
+
+
+
+    a.dividerStatus:hover {
+        background-color: #eeeeee;
+    }
+
+    .dividerStatus.active {
+        background-color: #eeeeee;
+        text-decoration: none;
+    }
+
+    .dividerStatus {
+        border-right: 1px solid;
+        padding: 4px 0px 4px 0px;
+        color: #cec8c8;
+    }
+
+    a.dividerPriorityProjectQueue:hover {
+        background-color: #5bc0de;
+    }
+
+    .dividerPriorityProjectQueue.active {
+        background-color: #5bc0de;
+        text-decoration: none;
+    }
+
+    .dividerPriorityProjectQueue {
+        border-right: 1px solid;
+        padding: 4px 0px 4px 0px;
+        color: #cec8c8;
+    }
+
+    a.dividerStatusPQ:hover {
+        background-color: #5bc0de;
+    }
+
+    .dividerStatusPQ.active {
+        background-color: #5bc0de;
+        text-decoration: none;
+    }
+
+    .dividerStatusPQ {
+        border-right: 1px solid;
+        padding: 4px 0px 4px 0px;
+        color: #cec8c8;
+    }
+
+    a.dividerDate:hover {
+        background-color: #5bc0de;
+    }
+
+    .dividerDate.active {
+        background-color: #5bc0de;
+        text-decoration: none;
+    }
+
+    .dividerDate {
+        border-right: 1px solid;
+        padding: 4px 0px 4px 0px;
+        color: #cec8c8;
+    }
+
+    /*end for assign stop me*/
+
+    .ui-autocomplete {
+        z-index: 2147483647;
+    }
+
+    /*start : CSS for FC View Button for Experienced WF*/
+    .woActionButtons {
+        border: 1px solid #ccc;
+        border-radius: 2px;
+        background-color: white;
+        height: 18px;
+        width: 18px;
+        padding: 2px 4px 2px 2px;
+        cursor: pointer;
+    }
+
+    .experiencedWOButtons {
+        height: 27px;
+        background-color: #e4e6e9;
+        padding-left: 4px;
+        margin-top: -2px;
+        border: 1px black;
+        border-radius: 6px;
+        padding-bottom: 2px;
+        padding-top: 4px;
+        box-shadow: 0px 0px 6px black;
+    }
+
+    .onholdWOButton {
+        background-color: #E5E500;
+    }
+
+    .woActionButtons:hover {
+        box-shadow: #8fff73 0px 0px 9px;
+    }
+
+    .disabledWOButton {
+        opacity: 0.5;
+        pointer-events: none;
+    }
+
+    /*end : CSS for FC View Button for Experienced WF*/
+
+    /*start : CSS for toggle button*/
+    .flow_chart_single_box input:checked + .sliderSource:before {
+        -webkit-transform: translateX(55px);
+        -ms-transform: translateX(55px);
+        transform: translateX(85px);
+    }
+
+    .flow_chart_single_box .switchSource {
+        /*top: 15px;*/
+        position: relative;
+        display: inline-block;
+        width: 108px;
+        height: 23px;
+    }
+    /*end : CSS for toggle button*/
+
+    /*CSS for table fields and tooltip*/
+    .truncateTableFields {
+        max-width: 130px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    body .tooltip > .tooltip-inner {
+        background-color: #339996;
+    }
+
+    body .tooltip > .tooltip-arrow {
+        border-top-color: #339996 !important;
+        border-bottom-color: #339996 !important;
+    }
+
+    body .tooltip.left > .tooltip-inner {
+        background-color: #063a7bc9 !important;
+    }
+
+    body .tooltip.left > .tooltip-arrow {
+        border-top-color: transparent !important;
+        border-bottom-color: transparent !important;
+        border-left-color: #063a7bc9 !important;
+        border-right-color: #063a7bc9 !important;
+    }
+
+    .select2-search__field:placeholder-shown {
+        width: 100% !important; /*makes the placeholder to be 100% of the width while there are no options selected*/
+    }
+
+    body .tooltip-inner {
+        max-width: 200px;
+        word-wrap: break-word
+    }
+
+    #divMessageProjectQueue {
+        border: 0px solid #897e0c;
+        padding: 3px;
+        border-bottom-left-radius: 20px;
+        border-bottom-right-radius: 20px;
+        background-color: #dcbf32;
+        color: black;
+        width: 60%;
+    }
+
+    .projectQueueNoteText {
+        margin-left: 20px;
+        text-align: center;
+        font-weight: 400;
+    }
+    /*end : CSS for toggle button*/
+
+    #textAreaForNELeadTime {
+        height: 37px;
+        width: 91%;
+        border-width: thin;
+    }
+
+    .labelFontLeadTime {
+        color: black;
+    }
+
+    #btnValidateNEAddEditLeadTime {
+        height: 28px;
+        padding-top: 5px;
+        float: right;
+        margin-top: 22px;
+    }
+
+    .btnDisabledForNEAddEditLeadTime {
+        background-color: #94BDED;
+        border-color: #94BDED;
+        pointer-events: none;
+    }
+
+    .btnEnabledForNEAddEditLeadTime {
+        background-color: #007aff;
+        border-color: #007aff;
+        cursor: pointer;
+    }
+
+    #textAreaForNECountLeadTime {
+        width: 62px;
+        resize: none;
+        padding: 2px 0px 0px 8px;
+        overflow: hidden;
+        height: 33px;
+        border-width: thin;
+    }
+
+    #serverBotInputUrl {
+        width: 87%;
+        border-width: thin;
+    }
+
+    #serverBotOutputUrl {
+        width: 86%;
+        border-width: thin;
+    }
+</style>
+
+<style type="text/css" media="screen and (max-width: 768px)">
+    .pull-right:not(.action-buttons):not(.dropdown) {
+        display: none !important;
+    }
+</style>
+
+<div class="col-md-12">
+
+
+    <ul class="nav nav-tabs">
+        <li id="liMyWorkTab" class="active"><a data-toggle="tab" href="#MyWork_tab_1">My Work</a> </li>
+        <li><a data-toggle="tab" href="#assignToMe_tab_2">Project Queue</a></li>
+        <li><a data-toggle="tab" href="#assignedTasks_tab_3">My Queue</a></li>
+        <li><a data-toggle="tab" href="#closedWorkorders_tab_4">Work Order History</a></li>
+        <div class="pull-right" style="margin-top:10px;">
+            <a onclick="this.href = downloadISFSetup" id="onMainHeader_downloadApp" class="btn-default btn-sm" style="cursor: pointer"><i class="fa fa-download" aria-hidden="true"></i> Download ISF setup</a>
+        </div>
+    </ul>
+    <div class="tab-content">
+        <!-- START - FIRST TAB - MY WORK-->
+
+        <div id="MyWork_tab_1" class="tab-pane fade in active">
+
+            <div class="panel panel-default main_panel" style="border-color: transparent;">
+
+                <div class="particularTabActions">
+
+                    <div class="pull-right" style="margin-top:10px;">
+
+                        <button class="btn btn-info btn-xs myWorkHelpBtn" type="button" title="Help (Overview)">
+                            <i class="fa fa-question-circle" aria-hidden="true"></i>
+                        </button>
+
+                        <button class="btn btn-info btn-xs" type="button" title="Refresh (All)" id="onMainRefreshAll">
+                            <i class="fa fa-refresh" aria-hidden="true"></i>
+                        </button>
+                    </div>
+
+                </div>
+
+                <div class="panel-body">
+
+                    <!-- START ADHOC BOOKING MAIN CONTAINER HTML -->
+                    <div class="panel panel-default adhocBooking_panel" style="display:none">
+
+                        <div class="panel-heading">
+                            Adhoc Time Booking
+
+                            <div id="divAdhocBookingButton" class="pull-right" style="display:none;">
+                                <button class="btn btn-warning btn-xs" type="button" id="recordPlannedAdhocBooking" onclick="SendDataForUpdateNonWorkingHourBooking('PLANNED')">Record Planned Effort</button>
+                                <button class="btn btn-default btn-xs" type="button" id="recordActualAdhocBooking" onclick="SendDataForUpdateNonWorkingHourBooking('ACTUAL')">Record Actual Effort</button>
+
+                            </div>
+
+
+                        </div>
+
+                        <div class="panel-body" style="height: 70px; padding-left: 3px;padding-bottom: 2px; padding-top: 3px;">
+                            <input id="adhocBookingID" type="hidden" value="" />
+                            <div class="adhocBooking_container"></div>
+
+                        </div>
+
+                    </div>
+                    <!-- END ADHOC BOOKING MAIN CONTAINER HTML -->
+                    <!-- START IN-PROGRESS MAIN CONTAINER HTML -->
+                    <div class="panel panel-default inprogressTask_panel">
+
+                        <div class="panel-heading">
+                            IN-PROGRESS TASKS
+
+                            <div class="pull-right" style="display:none;">
+                                <button class="btn btn-default btn-xs" type="button" id="displayAllTaskOfInprogress">
+                                    Total <span class="badge" id="inprogressGrandTotal"></span>
+                                </button>
+
+                                <button class="btn btn-warning btn-xs" type="button" id="displayAutomaticTask">
+                                    Automatic <span class="badge" id="inprogressAutoTotal"></span>
+                                </button>
+                                <button class="btn btn-info btn-xs" type="button" id="displayManualTask">
+                                    Manual <span class="badge" id="inprogressManualTotal"></span>
+                                </button>
+                                <input type="search" placeholder="Search" class="searchText" id="searchInInprogress">
+
+                                <button class="btn btn-info btn-xs" type="button" id="expandAndCollapseInprogress">
+                                    <i class="fa fa-angle-up" aria-hidden="true"></i>
+                                </button>
+
+                                <button class="btn btn-info btn-xs" type="button" title="Pause All" id="pauseAll">
+                                    <i class="fa fa-pause"></i>
+                                </button>
+
+                                <button class="btn btn-info btn-xs" type="button" title="Refresh (In-progress task)" id="refreshInprogressTask">
+                                    <i class="fa fa-refresh" aria-hidden="true"></i>
+                                </button>
+                            </div>
+
+
+                        </div>
+
+                        <div class="panel-body">
+
+                            <div class="inprogressTask_container"></div>
+
+                        </div>
+
+                    </div>
+                    <!-- END IN-PROGRESS MAIN CONTAINER HTML -->
+                    <!-- CURRENT WORK ORDER AREA -->
+
+                    <div class="panel panel-default work_order_panel">
+                        <div class="panel-heading">
+                            My current work order
+
+                            <div class="pull-right" style="display:none;">
+
+
+                                @*<label>4 WO found by search</label>*@
+                                <button class="btn btn-default btn-xs" type="button" id="woGrandTotalBtn">
+                                    Total <span class="badge" id="woGrandTotal"></span>
+                                </button>
+
+                                <div class="btn-group statusDropdown">
+
+                                    <button class="btn dropdown-toggle btn-xs btn-info" data-toggle="dropdown">
+                                        <span class="woStatusLbl" data-val="All" data-searchtext="">Status (All)</span><span class="caret"></span>
+                                    </button>
+                                    <ul id="woStatusDropdownUl" class="dropdown-menu">
+                                        <li data-label="Status (All)" data-searchtext="">
+                                            <a href="#">All <span class="badge" id="woStatusGrandTotal"></span></a>
+                                        </li>
+                                        <li data-label="Status (Assigned)" data-searchtext="s:assigned">
+                                            <a href="#">Assigned <span class="badge" id="woAssignedTotal"></span></a>
+                                        </li>
+                                        @*<li data-label="Status (Deferred)" data-searchtext="s:deferred">
+                                                <a href="#">Deferred <span class="badge" id="woDefferedTotal"></span></a>
+                                            </li>*@
+                                        <li data-label="Status (In-progress)" data-searchtext="s:inprogress">
+                                            <a href="#">In-progress <span class="badge" id="woInprogressTotal"></span></a>
+                                        </li>
+                                        <li data-label="Status (Reopened)" data-searchtext="s:reopened">
+                                            <a href="#">Reopened <span class="badge" id="woReopenedTotal"></span></a>
+                                        </li>
+
+                                        <li data-label="Status (On Hold)" data-searchtext="s:onhold">
+                                            <a href="#">On hold <span class="badge" id="woOnHoldTotal"></span></a>
+                                        </li>
+                                    </ul>
+                                </div>
+
+                                <div class="btn-group">
+
+                                    <button class="btn dropdown-toggle btn-xs" data-toggle="dropdown">
+                                        <span class="woPriorityLbl" data-val="" data-searchtext="">Priority (all)</span> <span class="caret"></span>
+                                    </button>
+                                    <ul id="woPriorityDropdown" class="dropdown-menu">
+
+                                        <li data-label="Priority (all)" data-searchtext="">
+                                            <a href="#">All <span class="badge" id="woPriorityGrandTotal"></span></a>
+                                        </li>
+                                        <li data-label="Priority (Critical)" data-searchtext="p:critical">
+                                            <a href="#">Critical <span class="badge" id="woCriticalTotal"></span></a>
+                                        </li>
+                                        <li data-label="Priority (High)" data-searchtext="p:high">
+                                            <a href="#">High <span class="badge" id="woHighTotal"></span></a>
+                                        </li>
+                                        <li data-label="Priority (Normal)" data-searchtext="p:normal">
+                                            <a href="#">Normal <span class="badge" id="woNormalTotal"></span></a>
+                                        </li>
+                                        <li data-label="Priority (Low)" data-searchtext="p:low">
+                                            <a href="#">Low <span class="badge" id="woLowTotal"></span></a>
+                                        </li>
+
+                                    </ul>
+                                </div>
+
+                                <div class="btn-group">
+
+                                    <button class="btn dropdown-toggle btn-xs" data-toggle="dropdown">
+                                        <span class="woSortByFilter" data-val="" data-searchtext="">Sort By</span> <span class="caret"></span>
+                                    </button>
+                                    <ul id="woSortByFilterDropdown" class="dropdown-menu">
+
+                                        <li data-label="Sort By (Planned Start Date)" data-sortbytext="plannedSdate">
+                                            <a href="#">Planned Start Date <span class="badge" id="woSortByPlannedSDate"></span></a>
+                                        </li>
+                                        <li data-label="Sort By (Planned End Date)" data-sortbytext="plannedEdate">
+                                            <a href="#">Planned End Date <span class="badge" id="woSortByPlannedEDate"></span></a>
+                                        </li>
+
+                                    </ul>
+                                </div>
+
+
+
+                                <input type="search" placeholder="Search" class="searchText" id="searchInWorkOrder">
+
+                                <button class="btn btn-info btn-xs" id="fullScreenForWO" type="button" title="Full screen">
+                                    <i class="fa fa-expand"></i>
+                                </button>
+
+                                <button class="btn btn-info btn-xs" type="button" id="expandAndCollapseWorkOrder">
+                                    <i class="fa fa-angle-up" aria-hidden="true"></i>
+                                </button>
+
+                                <button class="btn btn-info btn-xs" type="button" title="Refresh (Current WO)" id="refreshCurrentWorkOrderTask">
+                                    <i class="fa fa-refresh" aria-hidden="true"></i>
+                                </button>
+
+                            </div>
+
+
+
+                        </div>
+
+                        <div class="panel-body">
+
+                            <div class="work_order_dBox_container"> </div>
+
+                        </div>
+
+                    </div>
+
+                    <!-- CURRENT WORK ORDER AREA -->
+                    <!--FLOW CHARTS AREA-->
+
+                    <div class="panel panel-default flow_chart_main_panel">
+                        <div class="panel-heading">
+                            Flow Chart(s)
+
+                            <div class="pull-right" style="display:none;" id="flowchartRightHeader">
+
+                                <div class="legends">
+
+                                    <label class="caption">Legends</label>
+                                    <label class="label label-success">Success</label>
+                                    <label class="label label-warning" style="background-color:#E5E500">On Hold</label>
+                                    <label class="label label-default" style="background-color:#FFAB73">Skipped</label>
+                                    <label class="label label-info">Started</label>
+                                </div>
+
+
+                                <button class="btn btn-info btn-xs" type="button" style="display:none;" title="Show work order" id="showWOToTop">
+                                    <i class="fa fa-arrow-down" style="font-size:11px;" aria-hidden="true"></i>
+                                </button>
+
+                                <button class="btn btn-info btn-xs" type="button" style="display:none;" title="Show inprogress task" id="showInprogessToTop">
+                                    <i class="fa fa-arrow-circle-o-down" style="font-size:14px;" aria-hidden="true"></i>
+                                </button>
+
+                                <button class="btn btn-info btn-xs" id="fullScreenForFlowChart" type="button" title="Full screen">
+                                    <i class="fa fa-expand"></i>
+                                </button>
+
+                                <button class="btn btn-info btn-xs" id="changeColumns" type="button" title="Make it two Columns">
+                                    <i class="fa fa-th-large" aria-hidden="true"></i>
+                                </button>
+
+                            </div>
+
+
+
+                        </div>
+
+                        <div class="panel-body">
+
+                            <div class="alert alert-info flowChartInfoMsg">Your flow chart will appear here.</div>
+
+
+
+
+                        </div>
+                    </div>
+
+                    <!--FLOW CHARTS AREA-->
+
+
+                </div>
+            </div>
+
+        </div>
+
+        <!-- END - FIRST TAB - MY WORK -->
+        <!-- START - SECOND TAB - ASSIGN TO ME -->
+        <div id="assignToMe_tab_2" class="tab-pane fade">
+
+            <div class="row" style="margin-top:10px;">
+                <div class="col-lg-3 filterHrefs" style="margin-right: 20px;">
+                    <a href="#" class="" style="cursor:default;font-weight:bold;"><span>Priority :</span></a>
+                    <a href="#" class="dividerPriorityProjectQueue" onclick="callFor_getPriorityWO(this.innerText)"><span class="linkPriority">Live</span></a>
+                    <a href="#" class="dividerPriorityProjectQueue" onclick="callFor_getPriorityWO(this.innerText)"><span class="linkPriority">Critical</span></a>
+                    <a href="#" class="dividerPriorityProjectQueue" onclick="callFor_getPriorityWO(this.innerText)"><span class="linkPriority">High</span></a>
+                    <a href="#" class="dividerPriorityProjectQueue active" onclick="callFor_getPriorityWO(this.innerText)"><span class="linkPriority active">Normal</span></a>
+                    <a href="#" class="dividerPriorityProjectQueue" onclick="callFor_getPriorityWO(this.innerText)"><span class="linkPriority">Low</span></a>
+                </div>
+
+                <div class="col-lg-3 filterHrefs" style="margin-right: 20px;">
+                    <a href="#" class="" style="cursor:default;font-weight:bold;"><span>WO Status :</span></a>
+                    <a href="#" class="dividerStatusPQ active" onclick="projectQWOStatus(this.text)"><span class="linkStatus active">Assigned</span></a>
+                    <a href="#" class="dividerStatusPQ" onclick="projectQWOStatus(this.text)"><span class="linkStatus">OnHold</span></a>
+                </div>
+
+                <div class="col-lg-4 filterHrefs">
+                    <a href="#" class="" style="cursor:default;font-weight:bold;"><span>Duration :</span></a>
+                    <a href="#" class="dividerDate" onclick="callFor_WOForAssignToMe(this.innerText)"><span class="linkDuration">Last 3 Months</span></a>
+                    <a href="#" class="dividerDate" onclick="callFor_WOForAssignToMe(this.innerText)"><span class="linkDuration">Last Month</span></a>
+                    <a href="#" class="dividerDate" onclick="callFor_WOForAssignToMe(this.innerText)"><span class="linkDuration">This Month</span></a>
+                    <a href="#" class="dividerDate" onclick="callFor_WOForAssignToMe(this.innerText)"><span class="linkDuration">Next Month</span></a>
+                    <a href="#" class="dividerDate" onclick="callFor_WOForAssignToMe(this.innerText)"><span class="linkDuration">Next 3 Months</span></a>
+                    <a href="#" class="dividerDate" onclick="callFor_WOForAssignToMe(this.innerText)"><span class="linkDuration">Last Week</span></a>
+                    <a href="#" class="dividerDate" onclick="callFor_WOForAssignToMe(this.innerText)"><span class="linkDuration">This Week</span></a>
+                    <a href="#" class="dividerDate" onclick="callFor_WOForAssignToMe(this.innerText)"><span class="linkDuration">Next Week</span></a>
+                    <a href="#" class="dividerDate active" onclick="callFor_WOForAssignToMe(this.innerText)" style="border-right:0px;"><span class="linkDuration active">Today</span></a>
+                </div>
+
+
+            </div>
+            <div class="row" style="
+    padding-bottom: 20px;
+">
+                <div class="col-sm-5 pull-left" style="margin-bottom: 0px; padding-left:0px;">
+
+                    <div class="row">
+                        <div class="col-sm-5">
+                            <select onchange="onChangeDoStatus()" class="select2able" id="do_status">
+                                <option value="Inprogress" selected>DOID (In Progress)</option>
+                                <option value="All">DOID (In Progress + Assigned)</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-2">
+                            <div style="margin-left:0px;padding-top:8px">Project ID<a class="text-danger">*</a>:</div>
+
+                        </div>
+                        <div class="col-sm-5" style="margin-left: 0px; padding: 0px;">
+                            <select class="select2able select2-offscreen" id="selectprojId" multiple="multiple">
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-7 pull-right" style="margin-bottom: 0px;">
+
+                    <div class="row">
+
+
+                        <div class="col-sm-6" style="margin-bottom: 0px;padding-right:10px;">
+                            <div class="row">
+                                <div class="col-sm-6" style="margin-bottom: 0px; padding-left: 0px; padding-right:0px;">
+                                    <label style="margin-top: 9px; margin-bottom: 0px; padding-left:0px;">WO Planned Start Date - From : </label>
+                                </div>
+                                <div class="col-sm-4" style="margin-bottom: 0px;margin-left:-5px;">
+                                    <div class="form-group" style="margin-bottom: 0px;">
+                                        <input type="text" id="pStart_Date" class="form-control" data-date-format='yyyy-mm-dd' placeholder="yyyy-mm-dd" style=" margin-top: 0px; margin-bottom: 0px; " />
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="col-sm-4" style="margin-bottom: 0px;margin-left: -54px;">
+                            <div class="row">
+                                <div class="col-sm-3" style="margin-bottom: 0px; padding-left: 0px; padding-right: 0px; ">
+                                    <label style="margin-top: 9px; margin-bottom: 0px; padding-left:0px;">To : </label>
+                                </div>
+                                <div class="col-sm-6" style="margin-bottom: 0px;margin-left:-33px;">
+                                    <div class="form-group" style="margin-bottom: 0px;">
+                                        <input type="text" id="pEnd_Date" class="form-control" data-date-format='yyyy-mm-dd' placeholder="yyyy-mm-dd" style=" margin-top: 0px; margin-bottom: 0px;" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+
+
+
+                        <div class="col-sm-1" style="margin-bottom: 0px;margin-left: -85px;">
+                            <button class="btn btn-info btn-sm" style="height: 27px;padding-top: 4px;padding-bottom: 4px;" type="button" id="btnCompetence" title="Search" onclick="onSearchButtonClick();"><i class="fa fa-search fa-fw"></i></button>
+                        </div>
+                        <div class="col-sm-1" style="margin-bottom: 0px;margin-left: -35px;">
+                            <button class="btn btn-info btn-sm" style="height: 27px;padding-top: 4px;padding-bottom: 4px;" type="button" id="reset" title="Reset" onclick="clearFields();"><i class="fa fa-refresh fa-fw"></i></button>
+                        </div>
+                    </div>
+
+
+
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="wmd-view-topscroll" style="width:100%;">
+                    <div class="scroll-div1">
+                    </div>
+                </div>
+                <div class="table-responsive wmd-view" style="padding-top:10px;">
+                    <div class="scroll-div2">
+                        <table id="table_WO_for_assignToMe" class="table table-striped table-bordered table-hover" aria-hidden="true" style="width:100%; table-layout: fixed;"></table>
+                    </div>
+                    <input type="hidden" id="startDateTable" />
+                    <input type="hidden" id="endDateTable" />
+                </div>
+
+            </div>
+        </div>
+
+        <!-- END - SECOND TAB - ASSIGN TO ME -->
+        <!-- START - STOP AUTO STEP REASON -->
+
+        <div class="modal fade" id="modalStopWF" role="dialog">
+            <div class="modal-dialog modal-sm">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 id="" class="modal-title text-center">Stop WorkFlow</h4>
+                    </div>
+                    <div class="modal-body stopAutoFromProg">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <input id="woidWF" type="hidden" value="" />
+                                <input id="bookingIDWF" type="hidden" value="" />
+                                <input id="bookingTypeWF" type="hidden" value="" />
+                                <input id="stepIDWF" type="hidden" value="" />
+                                <input id="botType" type="hidden" value="" />
+                                <input id="subActDefID" type="hidden" value="" />
+                                <input id="taskIDWF" type="hidden" value="" />
+                                <input id="calledFromSkip" type="hidden" value="" />
+                                <input id="flowChartType" type="hidden" value="" />
+
+
+                                <div class="col-md-12" style="display:grid;"><label>Enter Comments: </label><select id="commentStoppedWF" class="select2able"></select></div>
+
+                            </div>
+                        </div>
+                        <hr />
+                        <div class="row">
+                            <button type="button" class="btn btn-default pull-right" onclick="forceStopOnSkip($('.stopAutoFromProg #flowChartType').val(), $('.stopAutoFromProg #woidWF').val(), $('.stopAutoFromProg #subActDefID').val(), $('.stopAutoFromProg #stepIDWF').val(), $('.stopAutoFromProg #taskIDWF').val(), false, 'Automatic', $('.stopAutoFromProg #bookingIDWF').val(), $('.stopAutoFromProg #bookingTypeWF').val(), $('#commentStoppedWF').val(), $('#calledFromSkip').val(), afterLoadingFlowchart);">Submit</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--END - STOP AUTO STEP REASON -->
+        <!-- START - THIRD TAB - ASSIGNED WORK FOR TRANSFER -->
+
+        <div class="modal fade" id="modalTransfer" role="dialog" aria-labelledby="myModalLabel">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="scopeTitleModal">Transfer Work Order</h4>
+                    </div>
+                    <div class="modal-body" id="scopeContentModal">
+
+                        <div class="row">
+                            <div class="col-lg-3">
+                                <div class="form-group" style="margin-top:10px;">
+                                    <label>Work Order ID</label>
+                                </div>
+
+
+                                <div class="form-group" style="margin-top:56px;">
+                                    <label>Signum ID</label><a class="text-danger">*</a>
+
+                                </div>
+
+                                <div class="form-group" id="stepNameLabel" style="margin-top:26px;">
+                                    <label>Step Name</label><a class="text-danger">*</a>
+
+                                </div>
+
+                                <div class="form-group" id="commentLabel" style="margin-top:46px;">
+                                    <label>Comments</label>
+
+                                </div>
+                            </div>
+
+                            <div class="col-lg-9">
+                                <div class="form-group">
+                                    <div class="col-sm-9">
+                                        <input class="form-control" id="modal_input_woid" disabled>
+                                        <input type="hidden" id="flowchartDefID" value="">
+                                        <input type="hidden" id="workOrderAutoSenseEnabled" value="">
+                                        <input type="hidden" id="woidForSingle" value="">
+                                    </div>
+                                    <div class="col-sm-3">
+                                        <button id="modal_input_woid_totalLabel" class="btn btn-warning btn-sm" style="display:none;">Total <span class="badge"></span></button>
+                                    </div>
+                                </div>
+
+                                <div class="form-group" id="signumbyprojectTransfersinglediv" style="display:none">
+                                    <select class="select2able select2-offscreen" id="select_modal_signum"></select>
+                                </div>
+                                <div id="selectallSignumTransfersinglediv" class="form-group">
+                                    <input id="selectUserAllSignumTransfersingle" style='width:100%' placeholder="Signum/Name" title="Minimum 3 characters required!" multiple />
+                                </div>
+                                <div id="select_stepNameDiv" class="form-group" style='width:410px'>
+
+                                    <select class="select2able select2-offscreen" id="select_stepName" data-selectnext="0" tabindex="-1" aria-hidden="true">
+                                    </select>
+                                </div>
+                                <div id="commentDiv" class="form-group" style="margin-top: 20px;">
+                                    <textarea id="tWOcommentsBox" rows="4" cols="58" type="text" placeholder="Enter comment (Max 250 characters)" style="resize: none;"></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="modal-footer" style="margin-top:0px">
+                        <a id="submitModal" class="btn btn-success" disabled onclick="executeAssignedTasksForTransfer()">Transfer</a>
+                        <button id="cancelModal" type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="assignedTasks_tab_3" class="tab-pane fade">
+
+            <div class="row" style="margin-top:10px;">
+                <div class="col-lg-4 filterHrefs transfer">
+                    <a href="#" class="" style="cursor:default;font-weight:bold;"><span>Duration :</span></a>
+                    @*<a href="#" class="divider" onclick="callFor_WOForAssignedTasksForTransfer(this.innerText)"><span class="link">All</span></a>*@
+                    <a href="#" class="dividerDuration" onclick="callFor_WOForAssignedTasksForTransfer(this.innerText)"><span class="link">Last 3 Months</span></a>
+                    <a href="#" class="dividerDuration" onclick="callFor_WOForAssignedTasksForTransfer(this.innerText)"><span class="link">Last Month</span></a>
+                    <a href="#" class="dividerDuration active" onclick="callFor_WOForAssignedTasksForTransfer(this.innerText)"><span class="link">This Month</span></a>
+                    <a href="#" class="dividerDuration" onclick="callFor_WOForAssignedTasksForTransfer(this.innerText)"><span class="link">Last Week</span></a>
+                    <a href="#" class="dividerDuration" onclick="callFor_WOForAssignedTasksForTransfer(this.innerText)"><span class="link">This Week</span></a>
+                    <a href="#" class="dividerDuration" onclick="callFor_WOForAssignedTasksForTransfer(this.innerText)" style="border-right:0px;"><span class="link">Today</span></a>
+                </div>
+
+                <div class="col-lg-2 filterHrefs" style="width:auto;margin-left:20px;">
+                    <a href="#" class="" style="cursor:default;font-weight:bold;"><span>WO Status:</span></a>
+                    @*<a href="#" class="dividerStatus" onclick="callFor_getStatusWO(this)"><span class="link">All</span></a>*@
+                    <a href="#" class="dividerStatus active" onclick="callFor_getStatusWO(this)"><span class="link">Assigned</span></a>
+                    <a href="#" class="dividerStatus" onclick="callFor_getStatusWO(this)"><span class="link">InProgress</span></a>
+                    <a href="#" class="dividerStatus" onclick="callFor_getStatusWO(this)"><span class="link">OnHold</span></a>
+                    <a href="#" class="dividerStatus" onclick="callFor_getStatusWO(this)" style="border-right:0px;"><span class="link">Reopened</span></a>
+                </div>
+
+                <button class="btn btn-success btn-xs pull-right" disabled type="button" id="btn_assignedTasksAllTransfer" onclick="callAllSelectedAssignedTasksTransfer()">Transfer</button>
+                <label class="pull-right" style="margin-right:5px;" id="lbl_withAllSelected_assignedTasks">With Selected </label>
+
+            </div>
+            <div class="row">
+                <div class="table-responsive" style="overflow-x: auto;">
+                    <table id="table_WO_for_assignedWorkForTransfer" class="table table-striped table-bordered table-hover" style="width:100%"></table>
+
+                </div>
+            </div>
+
+
+        </div>
+        <!-- END - THIRD TAB - ASSIGNED WORK FOR TRANSFER -->
+        <!-- START - FOURTH TAB - CLOSED WO -->
+        <div id="closedWorkorders_tab_4" class="tab-pane fade">
+            <div class="row" style="margin-top:10px;">
+                <div class="col-lg-4 filterHrefs closedWO">
+                    <a href="#" class="" style="cursor:default;font-weight:bold;"><span>Duration :</span></a>
+                    <a href="#" class="divider" onclick="callFor_closedWO(this.innerText)"><span class="link">Last 3 Months</span></a>
+                    <a href="#" class="divider" onclick="callFor_closedWO(this.innerText)"><span class="link">Last Month</span></a>
+                    <a href="#" class="divider active" onclick="callFor_closedWO(this.innerText)"><span class="link">This Month</span></a>
+                    <a href="#" class="divider" onclick="callFor_closedWO(this.innerText)"><span class="link">Last Week</span></a>
+                    <a href="#" class="divider" onclick="callFor_closedWO(this.innerText)"><span class="link">This Week</span></a>
+                    <a href="#" class="divider" onclick="callFor_closedWO(this.innerText)" style="border-right:0px;"><span class="link">Today</span></a>
+                </div>
+
+            </div>
+            <div class="row">
+                <div class="table-responsive" style="overflow-x: auto;">
+                    <table id="dataTable_for_closedWO" class="table table-striped table-bordered table-hover" style="width:100%"></table>
+
+                </div>
+            </div>
+
+        </div>
+        <!-- END - FOURTH TAB - CLOSED WO -->
+    </div>
+</div>
+
+<div id="historyDialogueProjectQueue" title="History"></div>
+
+<!--Modals-->
+<div class="modal fade" id="modal_wo_nodes_de" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" style="z-index:9999">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="scopeTitleModal">Network Element Details</h4>
+            </div>
+            <div class="modal-body" id="scopeContentModal" style="overflow:auto">
+
+                <table id="table_wo_nodes_de" class="display table-bordered" cellspacing="0" width="100%"></table>
+
+            </div>
+            <div class="modal-footer">
+                <button id="cancelModal" type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modal_wo_nodes_detail" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" style="z-index:9999;">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="scopeTitleModal">Network Element Details</h4>
+            </div>
+            <div class="modal-body" id="scopeContentModal" style="overflow:auto">
+
+                <table id="table_wo_nodes_detail" class="display table-bordered" cellspacing="0" width="100%"></table>
+
+            </div>
+            <div class="modal-footer">
+                @*<a id="submitModal" class="btn btn-primary" onclick="$('#modal_wo_nodes').modal('hide');">Close</a>*@
+                <button id="cancelModal" type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalSkipped" role="dialog">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 id="skippedHeader" class="modal-title text-center"></h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-8">
+                        <input id="woId" type="hidden" value="" />
+                        <input id="bookId" type="hidden" value="" />
+                        <input id="taskId" type="hidden" value="" />
+                        <input id="execType" type="hidden" value="" />
+                        <input id="stepid" type="hidden" value="" />
+                        <input id="defid" type="hidden" value="" />
+                        <input id="flowChartType" type="hidden" value="" />
+
+                        <div class="col-md-12" style="display:grid;"><label>Enter Comments: </label><select id="commentSkipped" class="select2able"></select></div>
+                    </div>
+                </div>
+                <hr />
+                <div class="row">
+                    <button type="button" class="btn btn-default pull-right" onclick="updateFlowChartTaskStatus($('#flowChartType').val(), $('#woId').val(), $('#defid').val(),$('#stepid').val(), $('#taskId').val(), $('#bookId').val(), 'SKIPPED', $('#commentSkipped').val(), $('#execType').val(),false)">Submit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--On Hold-->
+
+<div class="modal fade" id="modalTaskHold" role="dialog">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 id="taskHoldHeader" class="modal-title text-center"></h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-8">
+                        <input id="woId" type="hidden" value="" />
+                        <input id="bookId" type="hidden" value="" />
+                        <input id="taskId" type="hidden" value="" />
+                        <input id="execType" type="hidden" value="" />
+                        <input id="stepid" type="hidden" value="" />
+                        <input id="defid" type="hidden" value="" />
+                        <input id="flowChartType" type="hidden" value="" />
+
+                        <div class="col-md-12" style="display:grid;"><label>Enter Comments: </label><select id="commentOnHold" class="select2able"></select></div>
+                    </div>
+                </div>
+                <hr />
+                <div class="row">
+                    <button type="button" class="btn btn-default pull-right" onclick="updateFlowChartTaskStatus($('#flowChartType').val(), $('#woId').val(), $('#defid').val(), $('#stepid').val(), $('#taskId').val(), $('#bookId').val(), 'ONHOLD', $('#commentOnHold').val(), $('#execType').val(), false);">Submit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--Pause Disabled Step Modal-->
+
+<div class="modal fade" id="modalDisabledStepPause" role="dialog">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 id="disabledStepHeader" class="modal-title text-center"></h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <input id="isCallingFromFlowChartHide" type="hidden" value="false" />
+                    <div class="col-md-8">
+                        <input id="stopDisabledStepDetails" type="hidden" value="" />
+                        <div class="col-md-12" style="display:grid;"><label>Reason: </label><select id="disabledStepReasons" class="select2able"></select></div>
+                    </div>
+                </div>
+                <hr />
+                <div class="row">
+                    <button type="button" class="btn btn-default pull-right" onclick="pauseAllDisabledStep(JSON.parse($('#stopDisabledStepDetails').val()), $('#disabledStepReasons').val(), JSON.parse($('#stopDisabledStepDetails').val()).woID, $('#isCallingFromFlowChartHide').val())">Submit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--Pause All Modal-->
+
+<div class="modal fade" id="modalPauseAll" role="dialog">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 id="pauseHeader" class="modal-title text-center">Pause All</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-8">
+
+                        <div class="col-md-12" style="display:grid;"><label>Enter Comments: </label><select id="commentPauseAll" class="select2able"></select></div>
+                    </div>
+                </div>
+                <hr />
+                <div class="row">
+                    <button type="button" class="btn btn-default pull-right" onclick="updateFlowChartTaskStatusForAll(arrPauseAll, 'ONHOLD', $('#commentPauseAll').val(), false)">Submit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--Modal Duplicate WO-->
+<div class="modal fade" id="modalDuplicate" role="dialog">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title text-center">Duplicate Work Order</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-8">
+                        <input id="workOrderIDDup" type="hidden" value="" />
+                        <input id="ProjectID" type="hidden" value="" />
+                        <input id="commentDuplicate" class="form-control" type="text" placeholder="Enter comment" required />
+                    </div>
+                </div>
+
+                <hr />
+                <div class="row">
+                    <button type="button" class="btn btn-default pull-right" onclick="createDuplicateWO(document.getElementById('workOrderIDDup').value, $('#ProjectID').val(),document.getElementById('commentDuplicate').value)">Submit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--View Work Order Modal-->
+<div class="modal fade" id="myModalMadEwo" role="dialog">
+    <div class="modal-dialog modal-lg" style="overflow-y: initial;width:60%;height:600px">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title text-center">View Work Order</h4>
+            </div>
+            <div class="modal-body" style="height:600px;overflow-y: auto; ">
+
+                @Html.Partial("WorkOrderViews")
+
+                <hr />
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!--MARK ON HOLD MODAL-->
+<div class="modal fade" id="modalHold" role="dialog">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title text-center">Mark as on Hold</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-8">
+                        <input id="priorityHold" type="hidden" value="" />
+                        <input id="workOrderIDHold" type="hidden" value="" />
+                        <input id="commentHold" class="form-control" type="text" placeholder="Enter comment" required />
+                    </div>
+                </div>
+
+                <hr />
+                <div class="row">
+                    <button type="button" class="btn btn-default pull-right" onclick="updateWOStatus(document.getElementById('workOrderIDHold').value,'ONHOLD', document.getElementById('commentHold').value,document.getElementById('priorityHold').value)">Submit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!--MARK AS DEFERRED MODAL-->
+<div class="modal fade" id="modalEEIndex" role="dialog">
+    <div class="modal-dialog modal-md" style="width:70%">
+        <div class="modal-content">
+            <div class="modal-header" style="padding:8px;">
+                <button type="button" class="close" data-dismiss="modal" onclick="location.reload();">&times;</button>
+                <h4 class="modal-title text-center">Thank you, <span id="userNameForDelPerformance" style="font-weight: bold;"></span>. </h4><h5 class="modal-title text-center">Work order <span id="woidForDelPerformance" style="font-weight: bold;"></span> for <span id="marketNameForDelPerformance" style="font-weight: bold;"></span> - <span id="customerNameForDelPerformance" style="font-weight: bold;"></span> - <span id="subactivityNameForDelPerformance" style="font-weight: bold;"></span> is completed now.</h5>
+                <h5 class="modal-title text-center">Your delivery performance is as indicated below.</h5>
+            </div>
+            <div class="modal-body">
+                <span style="display: block;text-align: center;padding-bottom: 10px;font-size: 15px;">
+                </span>
+
+                <div id="allGaugeContainerArea" style="text-align:center;">
+
+                </div>
+
+                <hr style="margin-top: 1px; margin-bottom: 10px;" />
+                <div class="row">
+                    <button type="button" class="btn btn-primary" onclick="getEfficiencyTrend();">Efficiency Trend</button>
+                    <button type="button" class="btn btn-default pull-right" data-dismiss="modal" onclick="location.reload();">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<!--MARK AS COMPLETED MODAL-->
+<div class="modal fade" id="modalCompleted" role="dialog">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title text-center">Mark as Completed</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <input id="workOrderIDComp" type="hidden" value="" />
+                    <input id="workOrderNameComp" type="hidden" value="" />
+                    <input id="subActivityDefID" type="hidden" value="" />
+                    <input id="cycletime" type="hidden" value="" />
+                    <input id="completedProjectId" type="hidden" value="" />
+                    <input id="subActivityId" type="hidden" value="" />
+                    <input id="wfId" type="hidden" value="" />
+
+                    <label>Delivery Status</label>
+                    <select id="delStatus" class="form-control" required>
+                        <option value="" selected>--Select one--</option>
+                        <option value="Failure">Failure</option>
+                        <option value="Success">Success</option>
+                    </select>
+                </div>
+                <div class="form-group" id="reasonDiv" style="display:none">
+                    <label>Delivery Reason</label>
+                    <select id="delReason" onchange="testForSuccessReasonCheck();" class="form-control"></select>
+                </div>
+                <div class="form-group" id="subsequentDiv" style="display:none;">
+                    <input type="checkbox" id="isCreateSubSequentWO" name="interest" value="">
+                    <label for="isCreateSubSequentWO" style="color:red;font-weight:bold;font-size:medium;">Create subsequent workorder</label>&nbsp;&nbsp;<i data-toggle="tooltip" title="Check this only for creation of subsequent Work Orders" class="fa fa-info-circle"></i>
+                </div>
+                <div class="form-group">
+                    <input id="commentCompleted" class="form-control" type="text" placeholder="Enter comment (Max 1000 characters without quotes)" required />
+                </div>
+                <div id="cycleTimeReasondiv">
+                    <select id="reasonCycleTime" class="form-control"></select>
+                </div><br />
+                <a class="text-danger">*</a><b>Cycle time is breached when actual end date of the work order is greater than planned end date.</b>
+                <hr />
+                <div class="row">
+                    <button type="button" class="btn btn-primary pull-right" onclick="workOrderClosure(document.getElementById('workOrderIDComp').value, document.getElementById('workOrderNameComp').value, document.getElementById('delStatus').value, document.getElementById('delReason').value, document.getElementById('commentCompleted').value, document.getElementById('subActivityDefID').value, document.getElementById('reasonCycleTime').value, document.getElementById('cycletime').value, document.getElementById('completedProjectId').value, document.getElementById('subActivityId').value, document.getElementById('wfId').value)">Submit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--MARK AS DEFERRED MODAL-->
+<div class="modal fade" id="modalDeffered" role="dialog">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title text-center">Mark as Deferred</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-8">
+                        <input id="workOrderIDDef" type="hidden" value="" />
+                        <input id="commentDeffered" class="form-control" type="text" placeholder="Enter comment" required />
+                        <div class="form-group" id="subsequentDivDef" style="display:none;">
+                            <input type="checkbox" id="isCreateSubSequentWODef" name="interest" value="">
+                            <label for="isCreateSubSequentWODef" style="color:red;font-weight:bold;font-size:medium;">Create subsequent workorder</label>&nbsp;&nbsp;<i data-toggle="tooltip" title="Check this only for creation of subsequent Work Orders" class="fa fa-info-circle"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <hr />
+                <div class="row">
+                    <button type="button" class="btn btn-default pull-right" onclick="updateWOStatus(document.getElementById('workOrderIDDef').value,'DEFERRED', document.getElementById('commentDeffered').value)">Submit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--TRANSGER WO MODAL-->
+<div class="modal fade" id="modalTransferWO" role="dialog">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title text-center">Transfer Work Order</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <input id="woId" type="hidden" value="" />
+                        <label>Signum :</label><a class="text-danger">*</a>
+                        <div id="selectallSignumTransferInProgressdiv">
+                            <input id="selectUserAllSignumTransferInProgress" style='width:100%' placeholder="Signum/Name" title="Minimum 3 characters required!" multiple />
+                        </div>
+                        <div id="selectAspUserSignumTransferDiv">
+                            <select class="select2 select2able" id="selectAspUserSignumTransfer" style='width:100%' placeholder="Signum/Name"></select>
+                        </div>
+                        <div hidden>
+                            <select id="cbxSignumAR" class="select2able">
+                                <option value="" selected>Select Signum</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label>Step Name :</label><a class="text-danger">*</a>
+                        <select class="select2able select2-offscreen select2-hidden-accessible" id="select_stepNameMyWork" data-selectnext="0" tabindex="-1" aria-hidden="true">
+                        </select>
+                    </div>
+                </div>
+                <div class="row" style="margin-top: 20px;">
+                    <div class="col-md-12">
+                        <textarea id="tWOcommentsBoxMyWork" rows="4" cols="74" type="text" placeholder="Enter comment (Max 250 characters)" style="resize: none;"></textarea>
+                    </div>
+                </div>
+                <hr />
+                <div class="row">
+                    <button id="submitButtonMyWorkTab"
+                            type="button"
+                            class="btn btn-primary pull-right" disabled
+                            onclick="transferWOInProgress(document.getElementById('woId').value, $('#selectUserAllSignumTransferInProgress').val(), $('#select_stepNameMyWork').val(), $('textarea#tWOcommentsBoxMyWork').val())">
+                        Submit
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--VIEW BOOKING DETAILS-->
+<div class="modal fade" id="viewBookingDetails" role="dialog">
+    <div class="modal-dialog modal-lg" style="width: 70%!important;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 id="viewBookingDetailsHeader" class="modal-title text-center"></h4>
+                <h5 id="viewBookingTotalEffort" class="modal-title text-left"></h5>
+            </div>
+            <div id="viewBookingDetailsTable" class="modal-body">
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="outputFilesModal" role="dialog">
+    <div class="modal-dialog" style="width:750px">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Add Output Files</h4>
+            </div>
+            <div class="modal-body" style="max-height: 470px; overflow-y: auto;">
+                <input type="hidden" id="woidOutput" />
+                <input type="hidden" id="woidProjectId" />
+                <button class="btn btn-xs btn-success" onclick="addMoreOutputFiles()"><i class="fa fa-plus"></i> Add More Files</button>
+                <div class="row" style="margin-top: 10px;margin-left: 0px;margin-right: 0px;">
+                    <ul id="outputFileHeaders" style="padding-left: 0px;list-style-type: none;">
+                        <li><div class="row"><div class="col-lg-11" style="margin-bottom: 0px;"><div class="row"><div class="col-lg-4" style="margin-bottom: 0px;">File Name</div><div class="col-lg-8" style="margin-bottom: 0px;">File URL</div></div></div><div class="col-lg-1" style="padding-left: 0px;margin-bottom: 0px;">Actions</div></div></li>
+                    </ul>
+                    <ul id="outputFile" style="padding-left: 0px;list-style-type: none;"></ul>
+                </div>
+
+                <button class="btn btn-xs btn-primary showLocalGlobal" onclick="showLocalGlobalURLs('outputFilesModal')" title="View all local and global URLs"><i class="fa fa-eye"></i> Show Local/Global URLs</button>
+                <button class="btn btn-xs btn-danger hideLocalGlobal" onclick="hideLocalGlobalURLs('outputFilesModal')" title="Hide all local and global URLs" style="display:none"><i class="fa fa-eye-slash"></i> Hide Local/Global URLs</button>
+                <div class="panel panel-default localGlobalURLTables" style="display:none; margin-top: 10px;">
+                    <div class="panel-heading" style="padding-bottom: 0px;">
+                        <div class="row">
+                            <div class="col-lg-6" style="margin-bottom: 0px;text-align: center;">
+                                <h4>Global URLs</h4>
+                            </div>
+                            <div class="col-lg-6" style="margin-bottom: 0px;text-align: center;">
+                                <h4>Local URLs</h4>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel-body" style="background: linear-gradient(#e8e8e8, #e8e8e8) no-repeat center/1.5px 100%;">
+
+                        <div class="row">
+
+                            <div class="col-lg-6">
+                                <div class="table-responsive globalURLTableAreaWOCreation" style="width:100%; overflow:auto">
+
+                                    <table class="table table-bordered table-striped table-hover globalURLTableWOCreation">
+                                    </table>
+
+                                </div>
+
+                            </div>
+
+                            <div class="col-lg-6">
+                                <div class="table-responsive localURLTableArea" style="width:100%; overflow:auto">
+
+                                    <table class="table table-bordered table-striped table-hover localURLTable">
+                                    </table>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-footer" style="margin-top: 0px;padding-top: 0px;">
+                <button class="btn btn-primary" onclick="addOutputFiles()">Add</button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div class="modal fade" id="OpenOutputFilesModal" role="dialog">
+    <div class="modal-dialog" style="width:750px">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Output File URLs</h4>
+            </div>
+            <div class="modal-body" style="padding-bottom: 0px;max-height:470px;overflow-y: auto;">
+                <input id="outputWOIDWO" type="hidden">
+                <input id="outputProjectID" type="hidden" />
+                <button id="editOutputButton" class="btn btn-xs btn-primary" onclick="editOutputFilesDE()" style="margin-bottom: 10px;"><i class="fa fa-pencil-square-o"></i> Edit/Add URLs</button>
+                <button id="addOutputButton" class="btn btn-xs btn-success" onclick="addMoreOutputFilesDE()" style="display:none;margin-bottom: 10px;"><i class="fa fa-plus"></i> Add More URLs</button>
+                <div class="row" style="margin-left: 0px;margin-right: 0px;">
+                    <ul id="outputFileHeadersWP" style="padding-left: 0px;list-style-type: none;">
+                        <li><div class="row"><div class="col-lg-11" style="margin-bottom: 0px;"><div class="row"><div class="col-lg-4" style="margin-bottom: 0px;">File Name</div><div class="col-lg-8" style="margin-bottom: 0px;">File URL</div></div></div><div class="col-lg-1" style="padding-left: 0px;margin-bottom: 0px;">Actions</div></div></li>
+                    </ul>
+
+                    <ul id="outputFileWP" style="padding-left: 0px;list-style-type: none;"></ul>
+                </div>
+
+                <button class="btn btn-xs btn-primary showLocalGlobal" onclick="showLocalGlobalURLs('OpenOutputFilesModal')" title="View all local and global URLs"><i class="fa fa-eye"></i> Show Local/Global URLs</button>
+                <button class="btn btn-xs btn-danger hideLocalGlobal" onclick="hideLocalGlobalURLs('OpenOutputFilesModal')" title="Hide all local and global URLs" style="display:none"><i class="fa fa-eye-slash"></i> Hide Local/Global URLs</button>
+
+                <div class="panel panel-default localGlobalURLTables" style="display:none; margin-top: 10px;">
+                    <div class="panel-heading" style="padding-bottom: 0px;">
+                        <div class="row">
+                            <div class="col-lg-6" style="margin-bottom: 0px;text-align: center;">
+                                <h4>Global URLs</h4>
+                            </div>
+                            <div class="col-lg-6" style="margin-bottom: 0px;text-align: center;">
+                                <h4>Local URLs</h4>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel-body" style="background: linear-gradient(#e8e8e8, #e8e8e8) no-repeat center/1.5px 100%;">
+
+                        <div class="row">
+
+                            <div class="col-lg-6">
+                                <div class="table-responsive globalURLTableAreaWOCreation" style="width:100%; overflow:auto">
+
+                                    <table class="table table-bordered table-striped table-hover globalURLTableWOCreation">
+                                    </table>
+
+                                </div>
+
+                            </div>
+
+                            <div class="col-lg-6">
+                                <div class="table-responsive localURLTableArea" style="width:100%; overflow:auto">
+
+                                    <table class="table table-bordered table-striped table-hover localURLTable">
+                                    </table>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-footer" style="margin-top: 0px;padding-top: 0px;">
+                <button id="outputUpdateButton" class="btn btn-primary" style="display:none" onclick="updateOutputFileWO()">Update</button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!--  Modal to show all Local URLs(for that project) and Global URLs -->
+<div class="modal fade" id="allLocalGlobalUrl" role="dialog" style="font-size:12px;text-transform:none;z-index: 10000;">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header" style="padding-bottom: 0px;">
+                <div class="row">
+                    <div class="col-lg-6" style="margin-bottom: 0px;text-align: center;">
+                        <h4>Global URLs</h4>
+                    </div>
+                    <div class="col-lg-6" style="margin-bottom: 0px;text-align: center;">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4>Local URLs</h4>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-body" style="background: linear-gradient(#847f7f, #847f7f) no-repeat center/1px 100%;">
+
+                <div class="row">
+
+                    <div class="col-lg-6">
+                        <div class="table-responsive" id="globalURLTableAreaWOCreation" style="width:100%; overflow:auto">
+
+                            <table class="table table-bordered table-striped table-hover" id="globalURLTableWOCreation">
+                            </table>
+
+                        </div>
+
+                    </div>
+
+                    <div class="col-lg-6">
+                        <div class="table-responsive" id="localURLTableArea" style="width:100%; overflow:auto">
+
+                            <table class="table table-bordered table-striped table-hover" id="localURLTable">
+                            </table>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="flowChartWarning" role="dialog">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title" id="flowChartWarningTitle"></h4>
+            </div>
+            <div class="modal-body" style="padding-bottom: 0px;">
+                <div class="row" id="commentReason" style="display:none">
+                    <div class="col-lg-6">
+                        <label>Reason for Lead Time breach :</label><select class="select2able select2-container" id="sourceId3"></select>
+                    </div>
+                    <div class="col-lg-6">
+                        <div @*class="commenting-field main"*@>
+                            <div class="col-lg-1">
+                                <i class="fa fa-user fa-2x"></i>
+                            </div>
+                            <div class="textarea-wrapper">
+                                <div>
+                                    <textarea id="commentsBox" class="textarea edit" placeholder="Add a comment"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="warningMsg" style="font-weight:bolder;margin-left: 20px;">
+                </div>
+                <input type="hidden" id="projectIdWarning" />
+                <input type="hidden" id="domainWarning" />
+                <input type="hidden" id="subDomainWarning" />
+                <input type="hidden" id="technologyWarning" />
+                <input type="hidden" id="woidWarning" />
+                <input type="hidden" id="domainIdWarning" />
+                <a id="slideUp" class="btn btn-link" onclick="createTransitionLeadTime();" style="color:blue;font-size:10px"><i class="fa fa-angle-double-up" style="color:blue"></i> &nbsp;&nbsp;Select Network Elements for work order</a>
+                <a id="slideDwn" class="btn btn-link" onclick="resetTransition()" style="display:none;color:green;font-size:10px"><i class="fa fa-angle-double-down" style="color:green"></i>&nbsp;&nbsp; Go Back</a>
+
+                <!----- NE Update for Lead Time starts ---->
+                <div id="node_box_DE" style="display:none;">
+                    <hr />
+                    <label style="font-weight: bolder; margin-left: 20px; text-decoration: underline; font-size: 13px; margin-bottom: 15px;">
+                        NETWORK ELEMENTS UPDATE
+                    </label>
+                    <div id="mainDivNEAddEditLeadTime">
+                        @Html.Partial("_NetworkElementAddEdit", "neMandatory")
+                    </div>
+                    <hr />
+                </div>
+                <!----- NE Update for Lead Time starts ---->
+            </div>
+            <div class="modal-footer" style="margin-top: 0px;padding-top: 0px;">
+                <button type="button" class="btn btn-primary" id="openWF">OK</button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal" onclick="resetNetworkElementFields('neMandatory');">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalSelectStartOption" role="dialog">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 id="modalSelectStartHeader" class="modal-title text-center">Bot Execution Alert</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="col-md-12">
+                            <input type="hidden" id="cellDataAutomatic" />
+                            <input type="hidden" id="runOnLocal" />
+                            <p>
+                                The Bot you are about to execute is also
+                                compatible with server execution. Do you
+                                want to run it on Server?
+                            </p>
+                        </div>
+                        <br />
+                        <div class="col-md-12">
+                            <button class="serverstart btn btn-primary" id="runOnServerAutomatic">Yes, Run On Server</button>
+                            <button class="btn btn-warning pull-right" id="runOnLocalAutomatic">No, Run On Local</button>
+                        </div>
+                    </div>
+                </div>
+                <hr />
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalBrowseFile" role="dialog">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 id="modalBrowseFileHeader" class="modal-title text-center"></h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12" style="padding-right:0px;">
+                        <div class="col-md-12" style="padding-left:0px; padding-right:0px;">
+                            <input type="hidden" value="" id="botjsondetails" />
+                            <input type="hidden" value=rpaId id="rpaid" />
+                            <label>Input Url : </label>&nbsp;&nbsp;
+                            <input type="url" id="serverBotInputUrl" />
+                        </div>
+                    </div>
+                </div>
+                <hr />
+                <div class="row">
+                    <button type="button" class="btn btn-primary pull-right" id="runBotOnServer" onclick="submitRpaFile()">Run BOT on server</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalOutputFileForServerBot" role="dialog">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 id="modalBrowseFileHeaderForOutput" class="modal-title text-center"></h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12" style="padding-right:0px;">
+                        <div class="col-md-12" style="padding-left:0px;padding-right:0px;">
+                            <input type="hidden" value="" id="botjsondetails" />
+                            <input type="hidden" value=rpaId id="rpaid" />
+                            <label>Output Url : </label>&nbsp;&nbsp;
+                            <input type="url" id="serverBotOutputUrl" />
+                        </div>
+                    </div>
+                </div>
+                <hr style="margin-bottom:10px;" />
+                <div class="row" style="padding-left:17px;padding-top:0px;">
+                    <label style="color:red">NOTE : Please enter URL till your folder</label>
+                </div>
+                <div class="row">
+                    <button type="button" class="btn btn-primary pull-right" id="runNoInputBotOnServer" onclick="submitOutputFile()">Run BOT on server</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@*nahar*@
+<div class="modal fade" id="WFLevelInst" style="width:30%;overflow:hidden" role="dialog">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content" style="width:200px;">
+            <div class="modal-body" style="padding:5px">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <br>
+                <ul id="wf_instruction">
+                </ul>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- _NetworkElementsDuplicatePopUp -->
+<div>
+    @Html.Partial("_NetworkElementsDuplicatePopUp")
+</div>
+
+@Scripts.Render("~/bundles/protip")
+<script>
+    $(document).ready(function () {
+        $.protip();
+
+        $("#pStart_Date").datepicker({
+            dateFormat: "yy-mm-dd"
+        });
+        $("#pEnd_Date").datepicker({
+            dateFormat: "yy-mm-dd",
+
+
+        });
+        var IsFloatingWindowRunning = localStorage.getItem("IsFloatingWindowRunning");
+
+        if (IsFloatingWindowRunning == undefined || IsFloatingWindowRunning == null || IsFloatingWindowRunning == "") {
+            localStorage.setItem("IsFloatingWindowRunning", true);
+            setTimeout(function () {
+                window.open('FloatingWindow:exec_' + signumGlobal, '_self');
+            }, 2000);
+        };
+    });
+</script>
+

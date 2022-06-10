@@ -1,0 +1,209 @@
+﻿
+@{
+    Layout = "";
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Work Flow</title>
+
+    <link rel="stylesheet" type="text/css" href="~/Content/rappid/build/rappid.min.css">
+    <link rel="stylesheet" type="text/css" href="~/Content/rappid/apps/KitchenSink/css/style.css">
+    <link rel="stylesheet" type="text/css" href="~/Content/rappid/apps/KitchenSink/css/theme-picker.css">
+
+    <!-- theme-specific application CSS  -->
+    <link rel="stylesheet" type="text/css" href="~/Content/rappid/apps/KitchenSink/css/style.dark.css">
+    <link rel="stylesheet" type="text/css" href="~/Content/rappid/apps/KitchenSink/css/style.material.css">
+    <link rel="stylesheet" type="text/css" href="~/Content/rappid/apps/KitchenSink/css/style.modern.css">
+    <link rel="stylesheet" type="text/css" href="~/Content/bootstrap.min.css">    
+    @Scripts.Render("~/bundles/SessionManagement")
+</head>
+<body>
+    <div class="container">
+        <h4>3821 SCFT POST DRIVE TEST</h4>
+        <input type="hidden" id="jsonval" />;
+        <div class="row">
+            <div class="col-md-3"><strong>Node Type:</strong> Router</div>
+            <div class="col-md-3"><strong>Node Count:</strong> 1</div>
+            <div class="col-md-3"><strong>Node Name:</strong> BLR_7</div>
+            <div class="col-md-3"><strong>Started On:</strong></div>
+        </div>
+        <div class="row">
+            <div class="col-md-3"><strong>Closed On:</strong></div>
+            <div class="col-md-3"><strong>Digital Hours:</strong></div>
+            <div class="col-md-3"><strong>Manual Hours:</strong></div>
+            <div class="col-md-3"><strong>Total Hours:</strong></div>
+        </div>
+        <hr />
+        <div class="row">
+            <div class="col-md-2">MA Performed<span style="margin-left: 5px ;padding: 3px 10px 3px 10px;background-color:#6e88ff;"></span></div>
+            <div class="col-md-2">GSC Performed<span style=" margin-left: 5px ;padding: 3px 10px 3px 10px;background-color:#00983b;"></span></div>
+            <div class="col-md-2">Not Performed<span style="margin-left: 5px;"><img src="~/Content/images/rr.png"></span></div>
+            <div class="col-md-2">Automated<span style="margin-left: 5px;"><img src="~/Content/images/pg.png"></span></div>
+            <div class="col-md-4"><span class="pull-right"><a href="#" id="" class="btn btn-primary" data-toggle="modal" data-target="#addEditStep">Add Step</a></span></div>
+            <input type="file" name="fileUpload" id="fileUpload" onchange="myFunction()" />
+        </div>
+        <br />
+    </div>
+    <div class="container" id="app">
+        <div class="app-header">
+            <div class="app-title">
+                <h1>WORK FLOW</h1>
+            </div>
+            <div class="toolbar-container"></div>
+        </div>
+        <div class="app-body">
+            <div class="stencil-container"></div>
+            <div class="paper-container"></div>
+            <div class="inspector-container"></div>
+            <div class="navigator-container"></div>
+        </div>
+    </div>
+    <!-- Rappid/JointJS dependencies: -->
+    <script src="~/Content/rappid/node_modules/jquery/dist/jquery.js"></script>
+    <script src="~/Content/rappid/node_modules/lodash/index.js"></script>
+    <script src="~/Content/rappid/node_modules/backbone/backbone.js"></script>
+    <script src="~/Content/rappid/node_modules/graphlib/dist/graphlib.core.js"></script>
+    <script src="~/Content/rappid/node_modules/dagre/dist/dagre.core.js"></script>
+    <script src="~/Content/rappid/build/rappid.min.js"></script>
+    <!--[if IE 9]>
+        <script>
+          // `-ms-user-select: none` doesn't work in IE9
+          document.onselectstart = function() { return false; };
+        </script>
+    <![endif]-->
+    <!-- Application files:  -->
+    <script src="~/Content/rappid/apps/KitchenSink/js/config/halo.js"></script>
+    <script src="~/Content/rappid/apps/KitchenSink/js/config/selection.js"></script>
+    <script src="~/Content/rappid/apps/KitchenSink/js/config/inspector.js"></script>
+    <script src="~/Content/rappid/apps/KitchenSink/js/config/stencil.js"></script>
+    <script src="~/Content/rappid/apps/KitchenSink/js/config/toolbar.js"></script>
+    <script src="~/Content/rappid/apps/KitchenSink/js/config/sample-graphs.js"></script>
+    <script src="~/Content/rappid/apps/KitchenSink/js/views/main.js"></script>
+    <script src="~/Content/rappid/apps/KitchenSink/js/views/theme-picker.js"></script>
+    <script src="~/Content/rappid/apps/KitchenSink/js/models/joint.shapes.app.js"></script>
+    @Scripts.Render("~/bundles/bootstrap")
+    @Scripts.Render("~/bundles/wrkflowScript")
+    <script>
+        joint.setTheme('modern');
+        app = new App.MainView({ el: '#app' });
+        //console.log(app);
+        themePicker = new App.ThemePicker({ mainView: app });
+        themePicker.render().$el.appendTo(document.body);
+        window.addEventListener('load', function () {
+            // app.graph.fromJSON(App.config.sampleGraphs.emergencyProcedure);
+
+            // app.graph.fromJSON(JSON.parse(App.config.sampleGraphs.emergencyProcedure));
+        });
+    </script>
+    <!-- Local file warning: -->
+
+    <div id="message-fs" style="display: none;">
+        <p>The application was open locally using the file protocol. It is recommended to access it trough a <b>Web server</b>.</p>
+        <p>Please see <a href="README.md">instructions</a>.</p>
+    </div>
+    <script>
+        (function () {
+            var fs = (document.location.protocol === 'file:');
+            var ff = (navigator.userAgent.toLowerCase().indexOf('firefox') !== -1);
+            if (fs && !ff) {
+                (new joint.ui.Dialog({
+                    width: 300,
+                    type: 'alert',
+                    title: 'Local File',
+                    content: $('#message-fs').show()
+                })).open();
+            }
+        })();
+
+        function myFunction() {
+            var formData = new FormData();
+            formData.append("fileUpload", document.getElementById("fileUpload").files[0]);
+            alert(formData);
+            $.isf.ajax({
+                type: "POST",
+                url: "https://ericsson.sharepoint.com/sites/ISF2018/SitePages/API_UploadFileForFlowChart.aspx ",
+                //dataType: 'json',
+                data:
+                    formData,
+                // JSON.stringify({ 'subActivityID': '121', 'flowChartJSON': JSON.stringify(this.graph.toJSON()) }),
+                processData: false,
+                contentType: "multipart/form-data",
+                //crossDomain:true,
+                success: function (result) {
+                    alert("hi" + result);
+                },
+                error: function () {
+                    alert("error");
+                }
+            });
+        }
+
+    </script>
+
+    <!-- Modal -->
+    <div class="modal fade" id="addEditStep" role="dialog">
+        <div class="modal-dialog">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header btn-primary">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Add Step</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="Step">Step Name</label>
+                        <input type="text" class="form-control step" id="step">
+                    </div>
+                    <div class="form-group">
+                        <label for="Task">Task Name</label>
+                        <select class="form-control task" id="task"></select>
+                    </div>
+                    <div class="form-group">
+                        <label for="avgHrs">Average Estimated Hours</label>
+                        <input type="number" placeholder="0.00" min="0" value="0" step="0.01" class="form-control" id="avgHrs">
+                    </div>
+                    <div class="form-group">
+                        <label for="tool">Tools</label>
+                        <select class="form-control" id="tool"></select>
+                    </div>
+                    <div class="form-group">
+                        <label for="reason">Reason</label>
+                        <input type="text" class="form-control" id="reason">
+                    </div>
+                    <div class="form-group">
+                        <label for="desc">Description</label>
+                        <input type="text" class="form-control" id="desc">
+                    </div>
+                    <div class="form-group">
+                        <label for="execType">Execution Type</label>
+                        <select class="form-control execType" id="execType">
+                            <option>Manual</option>
+                            <option>Partial</option>
+                            <option>Automated</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary" id="btn_add">Add</button>
+                    <button type="reset" class="btn btn-default">Reset</button>
+                </div>
+                <div class="modal-footer">
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+    <script>
+
+
+
+
+
+    </script>
+</body>
+</html>
+
+

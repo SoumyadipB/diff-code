@@ -1,0 +1,3968 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="com.ericsson.isf.mapper.ProjectManagementMapper">
+
+
+
+	<resultMap type='OpportunityModel'
+		id='OpportunityModelResult'>
+		<id property='opportunityID' column='OpportunityID' />
+		<result property='opportunityName' column='OpportunityName' />
+	</resultMap>
+
+
+
+	<!-- //TODO code cleanup <select id='getOpportunityDetails' resultMap='OpportunityModelResult'> 
+		SELECT OpportunityID, OpportunityName from transactionalData.TBL_OPPORTUNITY; 
+		</select> -->
+	<resultMap type='ActivityScopeModel'
+		id='ActivityScopeModelResult'>
+		<id property='activityScopeID' column='ActivityScopeID' />
+		<result property='subActivityID' column='SubActivityID' />
+		<result property='avgEstdEffort' column='AvgEstdEffort' />
+		<result property='projectScopeDetailID' column='ProjectScopeDetailID' />
+		<result property='createdBy' column='CreatedBy' />
+		<result property='createdDate' column='CreatedDate' />
+		<result property='lastModifiedBy' column='LastModifiedBy' />
+		<result property='lastModifiedDate' column='LastModifiedDate' />
+		<result property='active' column='Active' />
+	</resultMap>
+
+	<!-- <insert id = 'saveActivityScope' parameterType="ActivityScopeModel"> 
+		INSERT into transactionalData.TBL_ActivityScope (SubActivityID,AvgEstdEffort,ProjectScopeDetailID,CreatedBy,CreatedDate,LastModifiedBy,LastModifiedDate,Active) 
+		values(#{activityScopeModel.subActivityID},#{activityScopeModel.avgEstdEffort},#{activityScopeModel.projectScopeDetailID}, 
+		#{activityScopeModel.createdBy},getDate(),#{activityScopeModel.createdBy}, 
+		getDate(),1); </insert> -->
+	<select id='saveActivityScope'
+		parameterType="ActivityScopeModel" resultType="int">
+		{call
+		[dbo].[SaveActivityScope](
+		#{activityScopeModel.projectScopeDetailID},
+		#{activityScopeModel.subActivityID},
+		#{activityScopeModel.avgEstdEffort},
+		#{activityScopeModel.createdBy}
+		)}
+	</select>
+	<!-- //TODO code cleanup <update id = 'DeleteActivityScope' parameterType="ActivityScopeModel"> 
+		UPDATE transactionalData.TBL_ActivityScope SET ACTIVE =0 ,LastModifiedBy 
+		= #{lastModifiedBy} ,LastModifiedDate = getdate() WHERE ActivityScopeID = 
+		#{activityScopeId}; </update> -->
+
+	<resultMap type='ProjectScopeDetailModel'
+		id='ProjectScopeDetailModelResult'>
+		<id property='projectScopeDetailID' column='ProjectScopeDetailID' />
+		<result property='projectScopeID' column='ProjectScopeID' />
+		<result property='createdBy' column='CreatedBy' />
+		<result property='domainID' column='DomainID' />
+		<result property='serviceAreaID' column='ServiceAreaID' />
+		<result property='technologyID' column='TechnologyID' />
+		<result property='createdDate' column='CreatedDate' />
+		<result property='lastModifiedBy' column='LastModifiedBy' />
+		<result property='lastModifiedDate' column='LastModifiedDate' />
+		<result property='active' column='Active' />
+	</resultMap>
+
+	<insert id='saveProjectScopeDetail'
+		parameterType="ProjectScopeDetailModel">
+		INSERT into
+		transactionalData.TBL_ProjectScopeDetail(ProjectScopeID,DomainID,ServiceAreaID,TechnologyID,CreatedBy,CreatedDate,LastModifiedBy,LastModifiedDate,Active)
+		values(#{projectScopeDetailModel.projectScopeID},#{projectScopeDetailModel.domainID},#{projectScopeDetailModel.serviceAreaID},#{projectScopeDetailModel.technologyID},
+		#{projectScopeDetailModel.createdBy},dbo.GetDateIST(),#{projectScopeDetailModel.createdBy},
+		dbo.GetDateIST(),1);
+	</insert>
+	<update id='DeleteProjectScopeDetail'
+		parameterType="ProjectScopeDetailModel">
+		UPDATE transactionalData.TBL_ProjectScopeDetail set
+		active=0, LastModifiedBy
+		= #{lastModifiedBy} ,LastModifiedDate =
+		dbo.GetDateIST() WHERE
+		ProjectScopeDetailID = #{projectScopeDetailID};
+	</update>
+
+	<resultMap type='ProjectScopeModel' id='ProjectScopeModel'>
+		<id property='projectScopeID' column='ProjectScopeID' />
+		<result property='scopeName' column='ScopeName' />
+		<result property='startDate' column='StartDate' />
+		<result property='endDate' column='EndDate' />
+		<result property='projectID' column='ProjectID' />
+		<result property='createdBy' column='CreatedBy' />
+		<result property='createdDate' column='CreatedDate' />
+		<result property='lastModifiedBy' column='LastModifiedBy' />
+		<result property='lastModifiedDate' column='LastModifiedDate' />
+		<result property='active' column='Active' />
+		<result property='deliverableStatus' column='deliverableStatus' />
+		<result property='parentWorkplanTemplateName' column='ParentWorkPlanTemplateName' />
+		<result property='externalReference' column='externalReference' />
+		<result property='sourceId' column='source' />
+		<result property='externalProjectId' column='externalProjectId' />
+	    <result property='vendorCode' column='vendorCode' />
+		<collection property='domainTechList' ofType='com.ericsson.isf.model.ScopeDomainProject'>
+		<id property="domainID" column="DomainID" />
+			<result property="domain" column="Domain" />
+			<result property="subDomain" column="SubDomain" />
+			<result property="technology" column="Technology" />
+			<result property="technologyID" column="TechnologyID" />
+		</collection>
+	</resultMap>
+
+
+	<insert id='saveScope' parameterType="ProjectScopeModel">
+		INSERT into
+		transactionalData.TBL_ProjectScope(
+		ScopeName,
+		StartDate,
+		EndDate,
+		ProjectID,
+		CreatedBy,
+		CreatedDate,
+		LastModifiedBy,
+		LastModifiedDate,
+		Active,
+		requestType,
+		deliverableUnit,
+		vendorCode,
+		source,
+		externalReference,
+		externalProjectId,
+		deliverableStatus,
+		ParentWorkPlanTemplateName
+		<if test="projectScopeModel.scopeTypeId !=null and projectScopeModel.scopeTypeId != 0">,ScopeTypeID
+		</if>
+		<if test="projectScopeModel.methodID !=null and projectScopeModel.methodID != 0">,MethodID
+		</if>
+		<if test="projectScopeModel.operatorCountId !=null and projectScopeModel.operatorCountId != 0">,OperatorCountid
+		</if>
+		<if test="projectScopeModel.projectFinancialsID !=null and projectScopeModel.projectFinancialsID != 0">,ProjectFinancialsID
+		</if>
+		<if test="projectScopeModel.remarks !=null">,Remarks
+		</if>
+		)
+		values(#{projectScopeModel.scopeName},
+		#{projectScopeModel.startDate},
+		#{projectScopeModel.endDate},
+		#{projectScopeModel.projectID},
+		#{projectScopeModel.createdBy},
+		dbo.GetDateIST(),
+		#{projectScopeModel.createdBy},
+		dbo.GetDateIST(),
+		1,
+		#{projectScopeModel.requestType},
+		#{projectScopeModel.deliverableUnit},
+		#{projectScopeModel.vendorCode},
+		#{projectScopeModel.source},
+		#{projectScopeModel.externalReference},
+		#{projectScopeModel.externalProjectId},
+		#{projectScopeModel.deliverableStatus},
+		#{projectScopeModel.externalWorkplanTemplate}
+		<if test="projectScopeModel.scopeTypeId !=null and projectScopeModel.scopeTypeId != 0">,#{projectScopeModel.scopeTypeId,jdbcType=INTEGER}
+		</if>
+		<if test="projectScopeModel.methodID !=null and projectScopeModel.methodID != 0">,#{projectScopeModel.methodID,jdbcType=INTEGER}
+		</if>
+		<if test="projectScopeModel.operatorCountId !=null and projectScopeModel.operatorCountId != 0">,#{projectScopeModel.operatorCountId,jdbcType=INTEGER}
+		</if>
+		<if test="projectScopeModel.projectFinancialsID !=null and projectScopeModel.projectFinancialsID != 0">,#{projectScopeModel.projectFinancialsID,jdbcType=INTEGER}
+		</if>
+		<if test="projectScopeModel.remarks !=null">,#{projectScopeModel.remarks,jdbcType=VARCHAR}
+		</if>
+		);
+	</insert>
+
+	<select id="scopeByProject" resultType="ProjectScopeModel">
+
+		select
+		tps.ProjectScopeID
+	    ,tps.ScopeName
+		,tps.StartDate
+		,tps.EndDate
+		,tps.ProjectID
+		,tps.CreatedBy
+		,tps.CreatedDate
+		,tps.requestType
+		,tps.vendorCode
+		,pdu.DeliverableUnitName as deliverableUnit
+		,pdu.DeliverableUnitID
+		,av.vendorName
+		,tis.sourceName as source
+		,tis.sourceId as sourceId
+		,tps.externalReference
+		,tps.externalProjectId
+		,tps.ParentWorkPlanTemplateName as externalWorkplanTemplate
+		,count(def.SubActivityID) as isWorkFlowCreated
+		,isnull(b.hasDeliverablePlan,0) as hasDeliverablePlan
+		,b.executionPlanId as deliverablePlanId
+		,tps.deliverableStatus
+	    ,st.ScopeType
+	    ,m.Method
+	    ,pf.ProjectFinancials
+	    ,case when b.executionplanid  is null then tps.scopename
+         else tps.scopename+'('+convert(varchar(15),b.executionplanid )+')' end deliverable
+        ,convert(varchar(15),tps.vendorCode ) +'/'+ av.vendorname vendor
+        ,Count(*) OVER() totalcounts
+		from
+		transactionalData.TBL_PROJECTSCOPE tps
+		left join
+		transactionalData.TBL_PROJECTSCOPEDETAIL psd on
+		tps.ProjectScopeID=psd.ProjectScopeID
+		left join
+		transactionalData.TBL_ACTIVITYSCOPE tas on
+		psd.ProjectScopeDetailID=tas.ProjectScopeDetailID
+		left join
+		transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF def on
+		tps.ProjectID=def.ProjectID and tas.SubActivityID=def.SubActivityID
+		and def.Active = 1
+		left join (select rnum as hasDeliverablePlan,
+		executionPlanId, scopeId
+		from (Select
+		row_number() over(partition by
+		executionPlanId order by executionplanid desc) as
+		rnum,
+		executionPlanId,
+		scopeId
+		from
+		transactionalData.TBL_Deliverable_Plan_Mapping
+		where isActive = 1) a
+		where rnum = 1) b on b.scopeId = tps.ProjectScopeID
+		left join
+		refData.TBL_ASPVendor as av on tps.vendorCode = av.vendorCode
+		left join
+		refData.TBL_Project_Deliverable_Unit as pdu on
+		tps.deliverableUnit = pdu.DeliverableUnitID
+		left join refData.TBL_IntegrationSources as tis
+		on tis.sourceId = tps.source
+		LEFT JOIN [refData].[TBL_ScopeTypeWithDeliverableUnit] as st
+	    on st.ScopeTypeID=tps.ScopeTypeID
+	    LEFT JOIN [refData].[TBL_MethodForDeliverableUnit] as m
+	    on m.MethodID=tps.MethodID
+	    LEFT JOIN [refData].[TBL_ProjectFinancialsWithDeliverableUnit] as pf
+	    on pf.ProjectFinancialsID=tps.ProjectFinancialsID
+		
+		where tps.ProjectID = #{projectId} and
+		tps.active=1
+		<if test="status != null and status != ''">
+			and tps.deliverableStatus in (${status})
+		</if>
+			
+		
+		<if test="dataTableRequest != null">
+              <foreach item="column" index="index" collection="dataTableRequest.columns">
+		            <if test ="column.search != ''">
+		                 <choose>
+		                      <when test="column.data =='deliverable' ">
+		                           AND case when b.executionplanid  is null then tps.scopename
+                                  else tps.scopename+'('+convert(varchar(15),b.executionplanid )+')' end LIKE #{column.search}
+		                      </when> 
+		                      <when test="column.data=='deliverableStatus'">
+		                             AND deliverablestatus LIKE #{column.search}
+		                      </when>
+		                      <when test="column.data=='deliverableUnit'">
+		                              AND pdu.DeliverableUnitName LIKE #{column.search}
+		                      </when>
+		                      <when test="column.data=='startDate'">
+		                             AND convert(nvarchar(50), startdate,111) LIKE  #{column.search}
+		                      </when>
+		                      <when test="column.data=='endDate'">
+		                             AND convert(nvarchar(50), enddate,111) LIKE  #{column.search}
+		                      </when>
+		                      <when test="column.data=='requestType'">
+		                              AND requesttype LIKE  #{column.search}
+		                      </when>
+		                      <when test="column.data=='vendor'">
+		                              AND convert(varchar(15),tps.vendorCode ) +'/'+ av.vendorname LIKE  #{column.search}
+		                      </when>
+		                      <when test="column.data=='scopeType'">
+		                              AND st.ScopeType LIKE  #{column.search}
+		                      </when>
+		                      <when test="column.data=='method'">
+		                             AND m.Method LIKE  #{column.search}
+		                      </when>
+		                      <when test="column.data=='projectFinancials'">
+		                             AND pf.ProjectFinancials LIKE  #{column.search}
+		                      </when>
+		                      <when test="column.data=='source'">
+		                             AND tis.sourceName LIKE  #{column.search}
+		                      </when>
+		                      <when test="column.data=='externalReference'">
+		                             AND externalreference LIKE  #{column.search}
+		                      </when>
+		                      <when test="column.data=='externalProjectID'">
+		                             AND tps.externalprojectid LIKE  #{column.search}
+		                      </when>
+		                      <when test="column.data=='externalWorkPlanTemplate'">
+		                             AND tps.ParentWorkPlanTemplateName LIKE  #{column.search}
+		                      </when>
+		                     <otherwise>
+		                         and ${column.data} like #{column.search}
+		                     </otherwise>
+		                  </choose>
+		                 </if>
+
+		             </foreach>
+		             
+		             <if test ='dataTableRequest.search != null and dataTableRequest.search != ""'> 
+		                    and (
+		                       deliverable like #{dataTableRequest.search}
+		                    or deliverablestatus like #{dataTableRequest.search}
+		                    or deliverableUnit like #{dataTableRequest.search}
+		                    or convert(nvarchar(50), startdate,126) like #{dataTableRequest.search} 
+		                    or convert(nvarchar(50), enddate,126) like  #{dataTableRequest.search} 
+		                    or requesttype like #{dataTableRequest.search}
+		                    or vendor like #{dataTableRequest.search}
+		                    or scopeType like #{dataTableRequest.search} 
+		                    or method like  #{dataTableRequest.search}       
+		                    or projectFinancials like  #{dataTableRequest.search} 
+		                    or source like #{dataTableRequest.search} 
+		                    or externalreference like #{dataTableRequest.search}
+		                    or externalprojectid like #{dataTableRequest.search}
+		                    or externalWorkplanTemplate like #{dataTableRequest.search} 
+		                 ) 
+		             </if>
+                 </if>
+		
+		
+		group by
+		tps.ProjectScopeID
+		,tps.ScopeName
+		,tps.StartDate
+		,tps.EndDate
+		,tps.ProjectID
+		,tps.CreatedBy
+		,tps.CreatedDate
+		,tps.requestType
+		,tps.vendorCode
+		,pdu.DeliverableUnitName
+		,av.vendorName
+		,tis.sourceName
+		,tis.sourceId
+		,tps.externalReference
+		,tps.externalProjectId
+		,tps.ParentWorkPlanTemplateName
+		,tps.deliverableStatus
+		,b.hasDeliverablePlan
+		,b.executionPlanId
+		,st.ScopeType
+	    ,m.Method
+	    ,pf.ProjectFinancials
+	    ,pdu.DeliverableUnitID
+		
+		 <if test="dataTableRequest != null">    		          
+		    <choose>
+			  <when test ="dataTableRequest.order != null and dataTableRequest.order.sortDir!=null">
+			    order by ${dataTableRequest.order.data} ${dataTableRequest.order.sortDir}
+			  </when>
+              <otherwise>
+			    order by tps.ProjectScopeID
+ 		      </otherwise>
+ 		  </choose>
+			<if test ='dataTableRequest.length != -1'>
+				OFFSET ${dataTableRequest.start} ROWS 
+				 FETCH NEXT ${dataTableRequest.length} ROWS ONLY
+			</if>
+	     </if>
+	     
+	</select>
+	
+	
+	
+	<select id="scopeByProjectV1" resultType="ProjectScopeModel">
+
+		select
+		tps.ProjectScopeID
+		,tps.ScopeName
+		,tps.StartDate
+		,tps.EndDate
+		,tps.ProjectID
+		,tps.CreatedBy
+		,tps.CreatedDate
+		,tps.requestType
+		,tps.vendorCode
+		,pdu.DeliverableUnitName as deliverableUnit
+		,av.vendorName
+		,tis.sourceName as source
+		,tis.sourceId as sourceId
+		,tps.externalReference
+		,tps.externalProjectId
+		,tps.ParentWorkPlanTemplateName as externalWorkplanTemplate
+		,count(def.SubActivityID) as isWorkFlowCreated
+		,isnull(b.hasDeliverablePlan,0) as hasDeliverablePlan
+		,b.executionPlanId as deliverablePlanId
+		,tps.deliverableStatus
+		from
+		transactionalData.TBL_PROJECTSCOPE tps
+		left join
+		transactionalData.TBL_PROJECTSCOPEDETAIL psd on
+		tps.ProjectScopeID=psd.ProjectScopeID
+		left join
+		transactionalData.TBL_ACTIVITYSCOPE tas on
+		psd.ProjectScopeDetailID=tas.ProjectScopeDetailID
+		left join
+		transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF def on
+		tps.ProjectID=def.ProjectID and tas.SubActivityID=def.SubActivityID
+		and def.Active = 1
+		left join (select rnum as hasDeliverablePlan,
+		executionPlanId, scopeId
+		from (Select
+		row_number() over(partition by
+		executionPlanId order by executionplanid desc) as
+		rnum,
+		executionPlanId,
+		scopeId
+		from
+		transactionalData.TBL_Deliverable_Plan_Mapping
+		where isActive = 1) a
+		where rnum = 1) b on b.scopeId = tps.ProjectScopeID
+		left join
+		refData.TBL_ASPVendor as av on tps.vendorCode = av.vendorCode
+		left join
+		refData.TBL_Project_Deliverable_Unit as pdu on
+		tps.deliverableUnit =
+		pdu.DeliverableUnitID
+		left join refData.TBL_IntegrationSources as tis
+		on tis.sourceId =
+		tps.source
+		where tps.ProjectID = #{projectId} and
+		tps.active=1
+		<if test="status != null and status != ''">
+			and tps.deliverableStatus in (${status})
+		</if>
+		group by
+		tps.ProjectScopeID
+		,tps.ScopeName
+		,tps.StartDate
+		,tps.EndDate
+		,tps.ProjectID
+		,tps.CreatedBy
+		,tps.CreatedDate
+		,tps.requestType
+		,tps.vendorCode
+		,pdu.DeliverableUnitName
+		,av.vendorName
+		,tis.sourceName
+		,tis.sourceId
+		,tps.externalReference
+		,tps.externalProjectId
+		,tps.ParentWorkPlanTemplateName
+		,tps.deliverableStatus
+		,b.hasDeliverablePlan
+		,b.executionPlanId
+		order by tps.ProjectScopeID
+	</select>
+	
+
+	<select id="getActivtiySubActivityByScope" resultType="hashmap">
+		select
+		distinct(tas.ActivityScopeID),sa.SubActivityID,CONCAT(sa.Activity,' / ',sa.SubActivity) as ActivitySubActivityName
+		from
+		refData.TBL_SUBACTIVITY as sa
+		join transactionalData.TBL_ACTIVITYSCOPE
+		tas on sa.SubActivityID = tas.SubActivityID
+		join
+		transactionalData.TBL_PROJECTSCOPEDETAIL psd on
+		tas.ProjectScopeDetailID = psd.ProjectScopeDetailID
+		join
+		transactionalData.TBL_PROJECTSCOPE ps on ps.ProjectScopeID =
+		psd.ProjectScopeID
+		join transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF
+		def on ps.ProjectID=def.ProjectID and
+		def.SubActivityID=tas.SubActivityID
+		where ps.ProjectScopeID =
+		#{projectScopeId} and def.Active = 1 and tas.Active = 1 and psd.Active
+		= 1 and ps.Active = 1
+	</select>
+
+	<update id='DeleteScope' parameterType="ProjectScopeModel">
+		UPDATE
+		transactionalData.TBL_ProjectScope set active=0, LastModifiedBy =
+		#{lastModifiedBy} ,LastModifiedDate = dbo.GetDateIST() WHERE
+		ProjectScopeID = #{scopeId};
+	</update>
+
+	<resultMap type='ProjectsModel' id='ProjectsModelResult'>
+		<id property='projectID' column='ProjectID' />
+		<result property='projectName' column='ProjectName' />
+		<result property='projectCreator' column='ProjectCreator' />
+		<result property='marketAreaName' column='MarketAreaName' />
+		<result property='countryName' column='CountryName' />
+		<result property='Status' column='Status' />
+		<result property='startDate' column='StartDate' />
+		<result property='endDate' column='EndDate' />
+		<result property='createdBy' column='CreatedBy' />
+	</resultMap>
+
+	<select id='getProjectByFilters'
+		parameterType="ProjectFilterModel" resultMap='ProjectsModelResult'>
+		<choose>
+			<when test="projectFilterModel.role != null and (projectFilterModel.role == 'Authorized Service Professional Delivery Responsible' or projectFilterModel.role == 'Delivery Responsible')">
+				select DISTINCT
+				t1.ProjectID,ProjectName,ProjectCreator,MarketAreaName,CountryName,Status,StartDate,EndDate,t1.CreatedBy,t1.ServAreaID,t1.OperationalManager,
+				t1.RPM
+				from(
+				select ProjectID,ProjectName,ProjectCreator ,
+				MarketAreaID,CountryID,customerID,Status,StartDate,EndDate,CreatedBy,IsDeleted,a.ServAreaID,
+				a.OperationalManager, a.RPM
+				from transactionalData.TBL_Projects a
+				join transactionalData.TBL_OPPORTUNITY b on(a.OpportunityID
+				=b.OpportunityID))t1
+				join refData.TBL_MARKETAREAS t2
+				on(t1.MarketAreaID=t2.MarketAreaID)
+				join refData.TBL_COUNTRIES t3
+				on(t1.CountryID=t3.CountryID)
+				Inner join
+				transactionalData.TBL_DELIVERY_RESPONSIBLE TDR on
+				TDR.ProjectID=
+				t1.ProjectID
+				where IsDeleted =0
+				<if
+					test="projectFilterModel.projectID != null and projectFilterModel.projectID != 0">
+					and t1.ProjectID=#{projectFilterModel.projectID}
+				</if>
+				<if test="projectFilterModel.status != null">
+					and Status=#{projectFilterModel.status}
+				</if>
+				<if
+					test="projectFilterModel.countryID != null and projectFilterModel.countryID != 0">
+					and t1.CountryID=#{projectFilterModel.countryID}
+				</if>
+				<if
+					test="projectFilterModel.customerID != null and projectFilterModel.customerID != 0">
+					and t1.CustomerID=#{projectFilterModel.customerID}
+				</if>
+				<if
+					test="projectFilterModel.marketAreaID != null and projectFilterModel.marketAreaID != 0">
+					and t1.MarketAreaID=#{projectFilterModel.marketAreaID}
+				</if>
+				<if
+					test="projectFilterModel.serviceAreaID != null and projectFilterModel.serviceAreaID != 0">
+					and t1.ServAreaID=#{projectFilterModel.serviceAreaID}
+				</if>
+				<if
+					test="projectFilterModel.role != null and projectFilterModel.role != 'All'">
+					and
+					1 =
+					(CASE
+					WHEN (#{projectFilterModel.role}='Delivery Responsible' or
+					#{projectFilterModel.role}='Authorized Service Professional Delivery Responsible') AND 
+					TDR.SignumID =#{projectFilterModel.signum} AND TDR.Active=1 THEN 1
+					else 0 END)
+				</if>
+
+			</when>
+			<otherwise>
+				select DISTINCT
+				t1.ProjectID,ProjectName,ProjectCreator,MarketAreaName,CountryName,Status,StartDate,EndDate,t1.CreatedBy,t1.ServAreaID,t1.OperationalManager,
+				t1.RPM
+				from(
+				select ProjectID,ProjectName,ProjectCreator ,
+				MarketAreaID,CountryID,customerID,Status,StartDate,EndDate,CreatedBy,IsDeleted,a.ServAreaID,
+				a.OperationalManager, a.RPM
+				from transactionalData.TBL_Projects a
+				join transactionalData.TBL_OPPORTUNITY b on(a.OpportunityID
+				=b.OpportunityID))t1
+				join refData.TBL_MARKETAREAS t2
+				on(t1.MarketAreaID=t2.MarketAreaID)
+				join refData.TBL_COUNTRIES t3
+				on(t1.CountryID=t3.CountryID)
+				where IsDeleted =0
+				<if
+					test="projectFilterModel.projectID != null and projectFilterModel.projectID != 0">
+					and t1.ProjectID=#{projectFilterModel.projectID}
+				</if>
+				<if test="projectFilterModel.status != null">
+					and Status=#{projectFilterModel.status}
+				</if>
+				<if
+					test="projectFilterModel.countryID != null and projectFilterModel.countryID != 0">
+					and t1.CountryID=#{projectFilterModel.countryID}
+				</if>
+				<if
+					test="projectFilterModel.customerID != null and projectFilterModel.customerID != 0">
+					and t1.CustomerID=#{projectFilterModel.customerID}
+				</if>
+				<if
+					test="projectFilterModel.marketAreaID != null and projectFilterModel.marketAreaID != 0">
+					and t1.MarketAreaID=#{projectFilterModel.marketAreaID}
+				</if>
+				<if
+					test="projectFilterModel.serviceAreaID != null and projectFilterModel.serviceAreaID != 0">
+					and t1.ServAreaID=#{projectFilterModel.serviceAreaID}
+				</if>
+				<if
+					test="projectFilterModel.role != null and projectFilterModel.role != 'All'">
+					and
+					1 =
+					(CASE
+					WHEN #{projectFilterModel.role} ='Operational Manager' AND
+					t1.OperationalManager = #{projectFilterModel.signum}
+					THEN 1
+					WHEN #{projectFilterModel.role} ='Resource Planning Manager'
+					AND t1.RPM
+					= #{projectFilterModel.signum} THEN 1
+					WHEN
+					#{projectFilterModel.role} ='Project Manager' AND
+					(t1.ProjectCreator = #{projectFilterModel.signum}) THEN 1
+					WHEN
+					#{projectFilterModel.role} ='ASP Project Manager' AND
+					(t1.ProjectCreator = #{projectFilterModel.signum} or t1.CreatedBy =
+					#{projectFilterModel.signum}) THEN 1
+
+					else 0 END)
+				</if>
+			</otherwise>
+		</choose>
+	</select>
+
+
+	<select id='getDashboardProject' resultType='hashmap'>
+		select p.*,s.PCode from transactionalData.TBL_Projects p
+		left join
+		[refData].[TBL_SERVICEAREA] s on p.ServAreaID = s.ServiceAreaID
+		<if test="role =='Delivery Responsible'">
+			join [transactionalData].[TBL_DELIVERY_RESPONSIBLE] TDR on
+			TDR.ProjectID=p.ProjectID and TDR.signumid=#{signum}
+		</if>
+		where
+		isdeleted='0'
+		<if test="marketArea !='All'">
+			and p.ProjectName like '%${marketArea}%'
+		</if>
+		<if test="role =='Project Manager'">
+			and p.ProjectCreator=#{signum}
+		</if>
+
+		<if test="role =='Operational Manager'">
+			and p.OperationalManager=#{signum}
+		</if>
+	</select>
+
+	<!-- //TODO code cleanup <select id='getCountries' resultType='hashmap' 
+		> Select CountryID,CountryName,MarketAreaID from refData.TBL_COUNTRIES </select> -->
+	<!-- //TODO code cleanup <select id='getCountriesbyMarketAreaID' resultType='hashmap' 
+		> select c.CountryID,c.CountryName, c.MarketAreaID from refData.TBL_COUNTRIES 
+		c left join refData.TBL_MARKETAREAS M on c.MarketAreaID = m.MarketAreaID 
+		where c.MarketAreaID = #{marketAreaID} </select> -->
+
+
+	<!-- changes reverted in query -->
+	<select id='getCustomers' resultType='hashmap'>
+		Select distinct
+		cust.CustomerName,cust.CustomerID,cont.CountryName,cont.CountryID,cust.country
+		from [refData].[TBL_CountryCustomerMapping] Contmap
+		inner join
+		refData.TBL_COUNTRIES cont on cont.CountryID=contMap.countryId
+		inner
+		join refData.TBL_CUSTOMERS cust on cust.CustomerID
+		=contmap.customerId
+		and case when cust.country like '%-%' then
+		substring(cust.country,1,charindex(' - ',cust.country)-1 ) else
+		cust.country end=
+		case when replace(cont.CountryName,'"','') like '%,%'
+		then substring(
+		replace(cont.CountryName,'"',''),1,charindex(',',
+		replace(cont.CountryName,'"',''))-1 ) else cont.countryname end
+		where
+		1=1 and isActive=1
+		<if test="countryID != null">
+			and cont.CountryID= #{countryID}
+		</if>
+	</select>
+	<!-- //TODO code cleanup <select id='getAllProjects' resultType='hashmap' 
+		> select ProjectID,ProjectName,ProjectCreator signum,Status from [transactionalData].[TBL_PROJECTS] 
+		where IsDeleted = 0 <if test ="marketAreaID != null"> and MarketAreaID= #{marketAreaID} 
+		</if> <if test ="countryID != null"> and CountryID= #{countryID} </if> <if 
+		test ="signum != null"> and ProjectCreator= #{signum} </if> <if test ="status 
+		!= null"> and Status= #{status} </if> </select> -->
+
+	<!-- <select id='getAllScopeDetailsByProject' resultType='hashmap' > SELECT 
+		ps.[ProjectScopeID] ,ps.[ScopeName] ,ps.[StartDate] ,ps.[EndDate] ,ps.[ProjectID] 
+		,ps.[requestType] ,psd.ProjectScopeDetailID ,psd.DomainID ,psd.ServiceAreaID 
+		,psd.TechnologyID ,d.Domain + '/' + d.SubDomain as Domain ,sa.ServiceArea 
+		+ '/' + sa.SubServiceArea as 'ServiceArea' ,t.Technology FROM [transactionalData].[TBL_PROJECTSCOPE] 
+		ps join [transactionalData].[TBL_PROJECTSCOPEDETAIL] psd on ps.ProjectScopeID 
+		= psd.ProjectScopeID join [refData].[TBL_DOMAIN] d on psd.DomainID = d.DomainID 
+		join [refData].[TBL_SERVICEAREA] sa on psd.ServiceAreaID = sa.ServiceAreaID 
+		join [refData].[TBL_TECHNOLOGY] t on psd.TechnologyID = t.TechnologyID where 
+		ps.Active = 1 and psd.Active = 1 and ps.ProjectID = #{projectId} </select> -->
+
+
+	<select id='getAllScopeDetailsByProject' resultType='hashmap'>
+		SELECT
+		ps.[ProjectScopeID]
+		,ps.[ScopeName]
+		,ps.[StartDate]
+		,ps.[EndDate]
+		,ps.[ProjectID]
+		,ps.[requestType]
+
+		FROM
+		[transactionalData].[TBL_PROJECTSCOPE] ps
+
+		where ps.Active = 1
+
+		and
+		ps.ProjectID = #{projectId}
+	</select>
+
+
+
+	<resultMap type='DeliveryResponsibleModel'
+		id='DeliveryResponsibleModelResult'>
+		<id property='deliveryResponsibleID' column='DeliveryResponsibleID' />
+		<result property='projectID' column='ProjectID' />
+		<result property='deliveryResponsible' column='DeliveryResponsible' />
+		<result property='signumID' column='SignumID' />
+		<result property='active' column='Active' />
+		<result property='createdBy' column='CreatedBy' />
+		<result property='createdDate' column='CreatedDate' />
+		<result property='lastModifiedBy' column='LastModifiedBy' />
+		<result property='lastModifiedOn' column='LastModifiedDate' />
+
+	</resultMap>
+
+	<select id='checkIFSignumExists' resultType='Boolean'>
+		IF EXISTS(select 1
+		from transactionalData.TBL_Delivery_Responsible where
+		deliveryResponsible = #{deliveryResponsible} and projectID =
+		#{projectID} and Active = 1)
+		BEGIN
+		SELECT 1 AS 'RESULT'
+		END
+		ELSE
+		BEGIN
+		SELECT 0 AS 'RESULT'
+		END
+	</select>
+
+
+	<insert id='addDeliveryResponsible'
+		parameterType='DeliveryResponsibleModel'>
+		insert into transactionalData.TBL_Delivery_Responsible
+		(ProjectID,DeliveryResponsible,Active,CreatedBy,CreatedDate,LastModifiedBy,LastModifiedDate,signumID)
+		values
+		(#{deliveryResponsible.projectID, mode=IN, jdbcType=INTEGER},
+		#{deliveryResponsible.deliveryResponsible, mode=IN, jdbcType=VARCHAR},
+		1, #{deliveryResponsible.createdBy, mode=IN, jdbcType=VARCHAR},
+		dbo.GetDateIST(), NULL, NULL,
+		#{deliveryResponsible.signumID, mode=IN,
+		jdbcType=VARCHAR})
+
+	</insert>
+
+	<select id='getDeliveryResponsibleByProject'
+		resultMap='DeliveryResponsibleModelResult'>
+		select DeliveryResponsible , ProjectID , SignumID ,
+		DeliveryResponsibleID
+		from transactionalData.TBL_Delivery_Responsible
+		where projectID = #{projectID} and Active=1
+	</select>
+
+	<select id='checkProject' resultType='Boolean'>
+		IF EXISTS(select 1 from
+		transactionalData.TBL_Delivery_Responsible where
+		projectID =
+		#{projectID} and Active = 1)
+		BEGIN
+		SELECT 1 AS 'RESULT'
+		END
+		ELSE
+		BEGIN
+		SELECT 0 AS 'RESULT'
+		END
+	</select>
+
+	<select id='getProjectAcceptance' resultType='hashmap'>
+		SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED
+		<choose>
+			<when test="role != null and role == 'Delivery Acceptence SPOC'">
+
+				select distinct t4.ProjectID, t4.ProjectName,t6.SignumID
+				from
+				transactionalData.TBL_WORK_ORDER_DELIVERY_ACCEPTANCE t1 WITH
+				(FORCESEEK)
+				inner join transactionalData.TBL_WORK_ORDER t2 on t1.WOID
+				= t2.WOID
+				inner join transactionalData.TBL_PROJECTS t4 on
+				t4.ProjectID =
+				t2.ProjectID and t4.IsDeleted=0
+				inner join
+				transactionalData.TBL_DELIVERY_ACCEPTANCE t6 on
+				t6.ProjectID=t4.ProjectID
+				where t6.SignumID=#{signum} and
+				t6.Active=1
+				and t4.Status != 'Closed'
+				<if test="marketArea!=null and marketArea !='All'">
+					and t4.ProjectName like '%${marketArea}%'
+				</if>
+			</when>
+			<otherwise>
+				select distinct t4.ProjectID, t4.ProjectName
+				from
+				transactionalData.TBL_WORK_ORDER_DELIVERY_ACCEPTANCE t1 WITH
+				(FORCESEEK)
+				inner join transactionalData.TBL_WORK_ORDER t2 on t1.woid
+				= t2.woid
+				inner join transactionalData.TBL_PROJECTS t4 on
+				t2.projectid =
+				t4.ProjectID
+				where t4.ProjectCreator =#{signum} and
+				t4.IsDeleted=0
+				<if test="marketArea!=null and marketArea !='All'">
+					and t4.ProjectName like '%${marketArea}%'
+				</if>
+			</otherwise>
+		</choose>
+	</select>
+
+
+	<update id='deleteProject'
+		parameterType="DeliveryResponsibleModel">
+
+		UPDATE transactionalData.TBL_PROJECTS SET IsDeleted =1,
+		LastModifiedBy =
+		#{DeliveryResponsibleModel.lastModifiedBy} ,
+		LastModifiedOn =
+		dbo.GetDateIST() WHERE
+		projectID=#{DeliveryResponsibleModel.projectID};
+		UPDATE
+		transactionalData.TBL_ProjectApprovals SET ApprovedOrRejected =2,
+		ApprovedOrRejectedOn = dbo.GetDateIST()
+		,ModifiedBy=#{DeliveryResponsibleModel.signumID}
+		,ModifiedDate=dbo.GetDateIST() WHERE
+		projectID=#{DeliveryResponsibleModel.projectID};
+
+	</update>
+
+
+	<update id='changeProjectStatus'>
+		UPDATE transactionalData.TBL_PROJECTS set
+		Status=#{status}, LastModifiedBy =
+		#{lastModifiedBy} ,LastModifiedOn =
+		dbo.GetDateIST() WHERE ProjectID =
+		#{projectId};
+	</update>
+
+
+	<update id='deleteActivityScopeByProjectScopeDetailId'>
+
+		UPDATE transactionalData.TBL_ActivityScope SET ACTIVE=0 ,LastModifiedBy =
+		#{lastModifiedBy} ,LastModifiedDate =
+		dbo.GetDateIST() WHERE
+		ProjectScopeDetailID = #{projectScopeDetailID};
+
+	</update>
+
+	<select id='getProjectScopeDetailsByScopeId'
+		resultType='ProjectScopeDetailModel'>
+		select * from [transactionalData].[TBL_PROJECTSCOPEDETAIL]
+		where
+		ProjectScopeID=#{projectScopeId}
+
+
+	</select>
+
+	<update id='deleteProjectScopeDetailByProjectScopeId'>
+		UPDATE transactionalData.TBL_ProjectScopeDetail set
+		active=0, LastModifiedBy
+		= #{lastModifiedBy} ,LastModifiedDate =
+		dbo.GetDateIST() WHERE
+		projectScopeID = #{projectScopeId};
+	</update>
+
+	<select id='checkIfDataExists' resultType="Boolean">
+		IF EXISTS(select 1
+		from transactionalData.TBL_PROJECTSCOPEDETAIL where
+		projectScopeID =
+		#{projectScopeID} and domainID=#{domainID} and
+		serviceAreaID=#{serviceAreaID} and technologyID= #{technologyID} and
+		Active=1)
+		BEGIN
+		SELECT 1 AS 'RESULT'
+		END
+		ELSE
+		BEGIN
+		SELECT 0 AS 'RESULT'
+		END
+	</select>
+
+	<select id='checkIfProjectScopeExists' resultType="Boolean">
+		IF
+		EXISTS(select 1 from transactionalData.TBL_ProjectScope where
+		projectID = #{projectID} and ScopeName=#{scopeName} and
+		RequestType=#{requestType} and StartDate= #{startDate} and EndDate=
+		#{endDate}
+		and ProjectScopeID=#{projectScopeId} and Active=1)
+		BEGIN
+		SELECT 1 AS 'RESULT'
+		END
+		ELSE
+		BEGIN
+		SELECT 0 AS 'RESULT'
+		END
+	</select>
+
+	<select id='checkParamNotExist' resultType="Boolean">
+		IF EXISTS(select 1 from transactionalData.TBL_ProjectScope where
+		source = #{projectScopeModel.source}
+		<if test="projectScopeModel.externalProjectId !=null">
+			and externalProjectId =
+			#{projectScopeModel.externalProjectId}
+		</if>
+		<if test="projectScopeModel.externalReference !=null">
+			and externalReference =
+			#{projectScopeModel.externalReference}
+		</if>
+		<if test="projectScopeModel.externalWorkplanTemplate !=null">
+			and ParentWorkPlanTemplateName =
+			#{projectScopeModel.externalWorkplanTemplate}
+		</if>
+		)
+
+		BEGIN
+		SELECT 1 AS 'RESULT'
+		END
+		ELSE
+		BEGIN
+		SELECT 0 AS 'RESULT'
+		END
+	</select>
+
+	<select id='checkIfProjectParamsExists' resultType="Boolean">
+		IF
+		EXISTS(select 1 from transactionalData.TBL_ProjectScope where
+
+		source=#{projectScopeModel.source}
+		and
+		externalReference=#{projectScopeModel.externalReference}
+		and
+		externalProjectId=#{projectScopeModel.externalProjectId}
+		and
+		ParentWorkTemplateName=#{projectScopeModel.externalWorkplanTemplate}
+		and Active=1)
+		BEGIN
+		SELECT 1 AS 'RESULT'
+		END
+		ELSE
+		BEGIN
+		SELECT 0 AS 'RESULT'
+		END
+	</select>
+
+	<select id='checkScopeName' resultType="Boolean">
+		select count(1)
+		from
+		transactionalData.TBL_PROJECTSCOPE
+		where ProjectID = #{projectId} and
+		ScopeName = #{scopeName} and
+		ProjectScopeID != #{projectScopeId} and
+		Active = 1
+	</select>
+
+	<select id='checkScopeId' resultType="Boolean">
+		select * from
+		transactionalData.TBL_PROJECTSCOPE
+		where scopeID = #{scopeId} and
+		externalName='ERISITE';
+	</select>
+
+
+
+	<select id='getManagerByProjectId' resultType='String'>
+		select
+		ProjectCreator from transactionalData.TBL_PROJECTS
+		where
+		projectid=#{projectId}
+	</select>
+
+
+
+	<select id='getSpocByProjectId' resultType='String'>
+		select distinct spoc
+		from transactionalData.TBL_PROJECTS p
+		inner join
+		transactionalData.TBL_PROJECTSCOPE ps on
+		p.ProjectID=ps.ProjectID
+		inner
+		join transactionalData.TBL_PROJECTSCOPEDETAIL psd on
+		psd.ProjectScopeID=ps.ProjectScopeID
+		inner join
+		transactionalData.TBL_OPPORTUNITY op on
+		p.OpportunityID=op.OpportunityID
+		inner join [refData].[TBL_DomainSpoc]
+		ds on ds.servAreaID=p.ServAreaID and
+		ds.DomainID=psd.DomainID and
+		ds.marketAreaID=op.MarketAreaID
+		where
+		p.ProjectID=#{projectId} and
+		ds.Active=1
+	</select>
+
+	<select id='getDemandOwningCompanies' resultType='hashmap'>
+		Select
+		CompanyID,CompanyName from refData.TBL_Companies
+	</select>
+
+	<select id='getMarketAreas' resultType='hashmap'>
+		Select
+		MarketAreaID,MarketAreaName from refData.TBL_MARKETAREAS
+	</select>
+
+	<select id='getOpportunities' resultType='hashmap'>
+		Select OpportunityID,
+		OpportunityName,OpportunityCode from
+		transactionalData.Tbl_Opportunity
+		op
+		join refData.TBL_MARKETAREAS ma on ma.MarketAreaID=op.MarketAreaID
+		where OpportunityName is not null and Active=1
+		and
+		MarketAreaName=#{marketArea}
+	</select>
+
+	<select id='getOpportunityDetailsById' resultType='hashmap'>
+		select
+		OpportunityID,OpportunityName,OpportunityCode,a.CustomerID,b.CustomerName,a.CountryID,d.CountryName,a.MarketAreaID,ma.MarketAreaName,a.CompanyID,c.CompanyName
+		from transactionalData.TBL_OPPORTUNITY as a
+		left join
+		refData.tbl_customers as b on a.CustomerID=b.CustomerID
+		left join
+		refData.TBL_COMPANIES as c on a.CompanyID = c.CompanyID
+		left join
+		refData.TBL_COUNTRIES as d on a.CountryID = d.CountryID
+		left join
+		refData.TBL_MARKETAREAS as ma on a.MarketAreaID =
+		ma.MarketAreaID
+		where
+		OpportunityID= #{opportunityID}
+	</select>
+	<!-- //TODO code cleanup <select id='getDesktopVersion' resultType='String' 
+		> select top 1 Version from [refData].[TBL_ISFDesktopUpdates] where UpdateType 
+		= #{type} and active = 1 ORDER BY ISFDesktopUpdatesID DESC </select> -->
+	<select id='getBookingDetalsByScope' resultType='hashmap'>
+		<!-- select WOBD.BookingID from [transactionalData].[TBL_WORK_ORDER_PLAN] 
+			as WOP join [transactionalData].[TBL_WORK_ORDER] WO on WOP.woplanid = wo.woplanid 
+			join [transactionalData].[TBL_WORK_ORDER_BOOKING_DETAILS] WOBD on WOBD.woid 
+			= WO.woid where WO.active = 1 and WOP.active = 1 -->
+		select WOBD.BookingID from [transactionalData].[TBL_WORK_ORDER_PLAN]
+		as WOP
+		join [transactionalData].[TBL_WORK_ORDER] (nolock) WO on
+		WOP.woplanid = wo.woplanid
+		join
+		[transactionalData].[TBL_WORK_ORDER_BOOKING_DETAILS] WOBD
+		with(FORCESEEK NOLOCK)
+		on WOBD.woid = WO.woid
+		where WO.active = 1
+		and
+		WOP.active = 1
+		<if test="projectComponentModel.projectID != null">
+			and WO.Projectid = #{projectComponentModel.projectID}
+		</if>
+		<if test="projectComponentModel.scopeID != null">
+			and wop.scopeid = #{projectComponentModel.scopeID}
+		</if>
+
+	</select>
+
+	<select id='getPositionStatus' resultType='String'>
+		select
+		distinct(rp.PositionStatus) from transactionalData.TBL_PROJECTSCOPE
+		ps
+		join transactionalData.TBL_PROJECTSCOPEDETAIL psd on
+		ps.ProjectScopeID=psd.ProjectScopeID
+		join
+		transactionalData.TBL_ResourceRequests rr on
+		psd.ProjectScopeDetailID=rr.ProjectScopeDetailID
+		join
+		transactionalData.TBL_ResourcePosition rp on
+		rr.ResourceRequestID=rp.ResourceRequestID
+		join
+		transactionalData.TBL_WorkEffort we on
+		rp.ResourcePositionID=we.ResourcePositionID
+		where rp.PositionStatus not
+		in ('Cancelled') and rp.PositionStatus not like 'Reject%' and
+		rp.isActivie = 1
+		and ps.ProjectScopeID = #{scopeId}
+	</select>
+
+	<select id='getBookingDetalsByScopeDetailID'
+		resultType='hashmap'>
+		select distinct wo.woid from
+		[transactionalData].[TBL_WORK_ORDER_PLAN] WOP
+		join
+		[transactionalData].[TBL_WORK_ORDER] WO on WOP.woplanid =
+		wo.woplanid
+		join [transactionalData].[TBL_PROJECTSCOPEDETAIL] PSD on
+		WOP.ScopeID =
+		PSD.ProjectScopeID
+		join
+		transactionalData.TBL_PROJECTSCOPE PS on
+		PS.ProjectScopeID =
+		PSD.ProjectScopeID and wop.scopeid =
+		PS.ProjectScopeID and
+		wop.ProjectID = PS.ProjectID
+		Left join
+		[transactionalData].[TBL_ACTIVITYSCOPE] ASCP on
+		ASCP.ProjectScopeDetailID = PSD.ProjectScopeDetailID
+		and
+		ASCP.SubActivityID = WO.SubActivityID
+		join
+		[transactionalData].[TBL_WORK_ORDER_BOOKING_DETAILS] WOBD on WOBD.woid
+		= WO.woid
+		where WO.Status != 'ASSIGNED' and WO.active = 1 and
+		PSD.active = 1
+		and WOP.ScopeID = #{projectComponentModel.scopeID}
+		and
+		PSD.ProjectScopeDetailID = #{projectComponentModel.scopeDetailID}
+		and
+		WOP.Projectid = #{projectComponentModel.projectID}
+	</select>
+
+	<select id='getBookingDetalsByActivityID' resultType='hashmap'>
+		select woid
+		from
+		[transactionalData].[TBL_WORK_ORDER] WO
+		join
+		[transactionalData].[TBL_WORK_ORDER_PLAN] WOP on wop.WOPlanID =
+		wo.WOPlanID
+		join [transactionalData].[TBL_ACTIVITYSCOPE] ACSC on
+		acsc.SubActivityID =
+		WO.SubActivityID
+		where WO.status != 'ASSIGNED' and
+		WOP.ProjectID =
+		#{projectComponentModel.projectID} and
+		acsc.ActivityScopeID =
+		#{projectComponentModel.activityID}
+	</select>
+
+	<select id='getWfCountByActivityID' resultType='hashmap'>
+		select
+		SubActivityFlowChartDefID count_flowChart from
+		[transactionalData].[TBL_SUBACTIVITY_FLOWCHART_DEF] SUB
+		join
+		[transactionalData].[TBL_ACTIVITYSCOPE] act on act.SubActivityID =
+		sub.SubActivityID
+		where act.ActivityScopeID
+		=#{projectComponentModel.activityID} and sub.ProjectID =
+		#{projectComponentModel.projectID}
+		and SUB.active = 1
+	</select>
+
+	<select id='getWoCountByActivityID' resultType='hashmap'>
+		select woid count_woid from
+		[transactionalData].[TBL_WORK_ORDER] wo
+		join
+		[transactionalData].[TBL_WORK_ORDER_PLAN] wop on wop.woplanid
+		=
+		wo.woplanid
+		join [transactionalData].[TBL_ACTIVITYSCOPE] act on
+		act.SubActivityID = wo.SubActivityID
+		where act.ActivityScopeID
+		=#{projectComponentModel.activityID} and wop.ProjectID =
+		#{projectComponentModel.projectID}
+		and wo.active = 1
+	</select>
+
+	<update id='updateProjectScope'>
+		UPDATE [transactionalData].[TBL_PROJECTSCOPE]
+		set active =
+		#{projectComponentModel.active} , LastModifiedBy =
+		#{projectComponentModel.loggedInUser} , LastModifiedDate =
+		dbo.GetDateIST()
+		from [transactionalData].[TBL_PROJECTSCOPE] PS
+		where
+		1=1
+		<if test="projectComponentModel.projectID != null">
+			and PS.ProjectID = #{projectComponentModel.projectID}
+		</if>
+		<if test="projectComponentModel.scopeID != null">
+			and PS.ProjectScopeID = #{projectComponentModel.scopeID}
+		</if>
+	</update>
+	<update id='updateProjectByProjectID'>
+		UPDATE [transactionalData].[TBL_PROJECTS]
+		set
+		IsDeleted = 1 , LastModifiedBy
+		= #{projectComponentModel.loggedInUser}
+		, LastModifiedOn =
+		dbo.GetDateIST()
+		where ProjectID =
+		#{projectComponentModel.projectID}
+	</update>
+
+	<update id='updateDeliveryResonsible'>
+		UPDATE [transactionalData].[TBL_DELIVERY_RESPONSIBLE]
+		set active = 0 ,
+		LastModifiedBy = #{projectComponentModel.loggedInUser}
+		,
+		LastModifiedDate = dbo.GetDateIST()
+		where ProjectID =
+		#{projectComponentModel.projectID}
+	</update>
+
+	<update id='updateProjectScopeDetail'>
+		UPDATE [transactionalData].[TBL_PROJECTSCOPEDETAIL]
+		set
+		[transactionalData].[TBL_PROJECTSCOPEDETAIL].active =
+		#{projectComponentModel.active},
+		[transactionalData].[TBL_PROJECTSCOPEDETAIL].LastModifiedBy =
+		#{projectComponentModel.loggedInUser} ,
+		[transactionalData].[TBL_PROJECTSCOPEDETAIL].LastModifiedDate =
+		dbo.GetDateIST()
+		from [transactionalData].[TBL_PROJECTSCOPEDETAIL] PSD
+		join [transactionalData].[TBL_PROJECTSCOPE] PS on PS.ProjectScopeID =
+		PSD.ProjectScopeID
+		where 1=1
+		<if test="projectComponentModel.projectID != null">
+			and PS.ProjectID = #{projectComponentModel.projectID}
+		</if>
+		<if test="projectComponentModel.scopeID != null">
+			and PS.ProjectScopeID = #{projectComponentModel.scopeID}
+		</if>
+		<if test="projectComponentModel.scopeDetailID != null">
+			and PSD.ProjectScopeDetailID =
+			#{projectComponentModel.scopeDetailID}
+		</if>
+	</update>
+
+	<update id='updateActivity'>
+		UPDATE [transactionalData].[TBL_ACTIVITYSCOPE]
+		set
+		[transactionalData].[TBL_ACTIVITYSCOPE].active =
+		#{projectComponentModel.active} ,
+		[transactionalData].[TBL_ACTIVITYSCOPE].LastModifiedBy =
+		#{projectComponentModel.loggedInUser} ,
+		[transactionalData].[TBL_ACTIVITYSCOPE].LastModifiedDate =
+		dbo.GetDateIST()
+		from [transactionalData].[TBL_ACTIVITYSCOPE] ACS
+		join
+		[transactionalData].[TBL_PROJECTSCOPEDETAIL] PSD on
+		PSD.ProjectScopeDetailID = ACS.ProjectScopeDetailID
+		join
+		[transactionalData].[TBL_PROJECTSCOPE] PS on PS.ProjectScopeID =
+		PSD.ProjectScopeID
+		where 1=1
+		<if test="projectComponentModel.projectID != null">
+			and PS.ProjectID = #{projectComponentModel.projectID}
+		</if>
+		<if test="projectComponentModel.scopeID != null">
+			and PS.ProjectScopeID = #{projectComponentModel.scopeID}
+		</if>
+		<if test="projectComponentModel.scopeDetailID != null">
+			and PSD.ProjectScopeDetailID =
+			#{projectComponentModel.scopeDetailID}
+		</if>
+	</update>
+
+	<update id='updateSubActivity'>
+		UPDATE [refData].[TBL_SUBACTIVITY]
+		set
+		[refData].[TBL_SUBACTIVITY].active = #{projectComponentModel.active} ,
+		[refData].[TBL_SUBACTIVITY].LastModifiedBy =
+		#{projectComponentModel.loggedInUser} ,
+		[refData].[TBL_SUBACTIVITY].LastModifiedDate = dbo.GetDateIST()
+		from
+		[refData].[TBL_SUBACTIVITY] SAC
+		join
+		[transactionalData].[TBL_ACTIVITYSCOPE] ACS on ACS.SubActivityID =
+		SAC.SubActivityID
+		join [transactionalData].[TBL_PROJECTSCOPEDETAIL] PSD
+		on PSD.ProjectScopeDetailID = ACS.ProjectScopeDetailID
+		join
+		[transactionalData].[TBL_PROJECTSCOPE] PS on PS.ProjectScopeID =
+		PSD.ProjectScopeID
+		where PS.ProjectID =
+		#{projectComponentModel.projectID}
+		<if test="projectComponentModel.scopeID != null">
+			and PS.ProjectScopeID = #{projectComponentModel.scopeID}
+		</if>
+		<if test="projectComponentModel.scopeDetailID != null">
+			and PSD.ProjectScopeDetailID =
+			#{projectComponentModel.scopeDetailID}
+		</if>
+	</update>
+
+	<update id='updateWorkFlow'>
+		UPDATE [transactionalData].[TBL_SUBACTIVITY_FLOWCHART_DEF]
+		set
+		[transactionalData].[TBL_SUBACTIVITY_FLOWCHART_DEF].active = 0,
+		[transactionalData].[TBL_SUBACTIVITY_FLOWCHART_DEF].LastModifiedBy =
+		#{projectComponentModel.loggedInUser} ,
+		[transactionalData].[TBL_SUBACTIVITY_FLOWCHART_DEF].LastModifiedDate =
+		dbo.GetDateIST()
+		from
+		[transactionalData].[TBL_SUBACTIVITY_FLOWCHART_DEF] SFD
+		join
+		[refData].[TBL_SUBACTIVITY] SAC on SAC.SubActivityID =
+		SFD.SubActivityID
+		join [transactionalData].[TBL_ACTIVITYSCOPE] ACS on
+		ACS.SubActivityID = SAC.SubActivityID
+		join
+		[transactionalData].[TBL_PROJECTSCOPEDETAIL] PSD on
+		PSD.ProjectScopeDetailID = ACS.ProjectScopeDetailID
+		join
+		[transactionalData].[TBL_PROJECTSCOPE] PS on PS.ProjectScopeID =
+		PSD.ProjectScopeID
+		where SFD.active = 1
+		<if test="projectComponentModel.projectID != null">
+			and SFD.ProjectID = #{projectComponentModel.projectID}
+		</if>
+		<if test="projectComponentModel.scopeID != null">
+			and PS.ProjectScopeID = #{projectComponentModel.scopeID}
+		</if>
+		<if test="projectComponentModel.scopeDetailID != null">
+			and PSD.ProjectScopeDetailID =
+			#{projectComponentModel.scopeDetailID}
+		</if>
+		<if test="projectComponentModel.subActivityFlowChartDefID != null">
+			and SFD.SubActivityFlowChartDefID =
+			#{projectComponentModel.subActivityFlowChartDefID}
+		</if>
+	</update>
+
+	<update id='updateFlowChartStepDetails'>
+		UPDATE transactionalData.TBL_FLOWCHART_STEP_DETAILS
+		set
+		transactionalData.TBL_FLOWCHART_STEP_DETAILS.active = 0
+		from
+		transactionalData.TBL_FLOWCHART_STEP_DETAILS FSD
+		join
+		[transactionalData].[TBL_SUBACTIVITY_FLOWCHART_DEF] SFD on
+		SFD.SubActivityFlowChartDefID = FSD.SubActivityFlowChartDefID
+		join
+		[refData].[TBL_SUBACTIVITY] SAC on SAC.SubActivityID =
+		SFD.SubActivityID
+		join [transactionalData].[TBL_ACTIVITYSCOPE] ACS on
+		ACS.SubActivityID = SAC.SubActivityID
+		join
+		[transactionalData].[TBL_PROJECTSCOPEDETAIL] PSD on
+		PSD.ProjectScopeDetailID = ACS.ProjectScopeDetailID
+		join
+		[transactionalData].[TBL_PROJECTSCOPE] PS on PS.ProjectScopeID =
+		PSD.ProjectScopeID
+		where 1=1
+		<if test="projectComponentModel.projectID != null">
+			and SFD.ProjectID = #{projectComponentModel.projectID}
+		</if>
+		<if test="projectComponentModel.scopeID != null">
+			and PS.ProjectScopeID = #{projectComponentModel.scopeID}
+		</if>
+		<if test="projectComponentModel.scopeDetailID != null">
+			and PSD.ProjectScopeDetailID =
+			#{projectComponentModel.scopeDetailID}
+		</if>
+		<if test="projectComponentModel.subActivityFlowChartDefID != null">
+			and SFD.SubActivityFlowChartDefID =
+			#{projectComponentModel.subActivityFlowChartDefID}
+		</if>
+	</update>
+
+
+	<update id='updateWorkOrder'>
+		UPDATE [transactionalData].[TBL_WORK_ORDER]
+		set
+		[transactionalData].[TBL_WORK_ORDER].active =
+		#{projectComponentModel.active} ,
+		[transactionalData].[TBL_WORK_ORDER].LastModifiedBy =
+		#{projectComponentModel.loggedInUser} ,
+		[transactionalData].[TBL_WORK_ORDER].LastModifiedDate =
+		dbo.GetDateIST()
+		from [transactionalData].[TBL_WORK_ORDER] WO
+		join
+		[transactionalData].[TBL_WORK_ORDER_PLAN] WOP on WOP.WOPlanID =
+		WO.WOPlanID
+		join [transactionalData].[TBL_PROJECTSCOPEDETAIL] PSD on
+		WOP.ScopeID = PSD.ProjectScopeID
+
+		where 1=1
+		<if test="projectComponentModel.projectID != null">
+			and WOP.ProjectID = #{projectComponentModel.projectID}
+		</if>
+		<if test="projectComponentModel.scopeID != null">
+			and WOP.ScopeID = #{projectComponentModel.scopeID}
+		</if>
+		<if test="projectComponentModel.scopeDetailID != null">
+			and PSD.ProjectScopeDetailID =
+			#{projectComponentModel.scopeDetailID}
+		</if>
+
+	</update>
+
+	<update id='updateAdhocWorkOrder'>
+		UPDATE [transactionalData].[TBL_ADHOC_WORK_ORDER]
+		set
+		[transactionalData].[TBL_ADHOC_WORK_ORDER].active =
+		#{projectComponentModel.active}
+		from
+		[transactionalData].[TBL_ADHOC_WORK_ORDER] ADWO
+		join
+		[transactionalData].[TBL_PROJECTSCOPEDETAIL] PSD on ADWO.ScopeID =
+		PSD.ProjectScopeID
+		where 1=1
+		<if test="projectComponentModel.projectID != null">
+			and ADWO.ProjectID = #{projectComponentModel.projectID}
+		</if>
+		<if test="projectComponentModel.scopeID != null">
+			and ADWO.ScopeID = #{projectComponentModel.scopeID}
+		</if>
+		<if test="projectComponentModel.scopeDetailID != null">
+			and PSD.ProjectScopeDetailID =
+			#{projectComponentModel.scopeDetailID}
+		</if>
+		<if test="projectComponentModel.activityID != null">
+			and ADWO.SubActivityID =
+			#{projectComponentModel.activityID}
+		</if>
+
+	</update>
+
+	<update id='updateWorkOrderPlan'>
+		UPDATE [transactionalData].[TBL_WORK_ORDER_PLAN]
+		set
+		[transactionalData].[TBL_WORK_ORDER_PLAN].active = 0 ,
+		[transactionalData].[TBL_WORK_ORDER_PLAN].LastModifiedBy =
+		#{projectComponentModel.loggedInUser} ,
+		[transactionalData].[TBL_WORK_ORDER_PLAN].LastModifiedDate =
+		dbo.GetDateIST()
+		from [transactionalData].[TBL_WORK_ORDER_PLAN] WOP
+		join [transactionalData].[TBL_PROJECTSCOPEDETAIL] PSD on WOP.ScopeID =
+		PSD.ProjectScopeID
+		join [transactionalData].[TBL_WORK_ORDER] wo on
+		WOP.woPlanID = wo.woPlanID
+		where 1=1
+		<if test="projectComponentModel.projectID != null">
+			and WOP.ProjectID = #{projectComponentModel.projectID}
+		</if>
+		<if test="projectComponentModel.scopeID != null">
+			and WOP.ScopeID = #{projectComponentModel.scopeID}
+		</if>
+		<if test="projectComponentModel.scopeDetailID != null">
+			and PSD.ProjectScopeDetailID =
+			#{projectComponentModel.scopeDetailID}
+		</if>
+		<if test="projectComponentModel.activityID != null">
+			and wo.SubActivityID = #{projectComponentModel.activityID}
+		</if>
+		<if test="projectComponentModel.woPlanID != null">
+			and WOP.WOPlanID = #{projectComponentModel.woPlanID}
+		</if>
+		<if test=" projectComponentModel.lstWoPlanID != null">
+			<if test=" projectComponentModel.lstWoPlanID.size() > 0 ">
+				and wop.WOPlanID in
+				<foreach item="item" index="index"
+					collection="projectComponentModel.lstWoPlanID" open="("
+					separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
+		</if>
+	</update>
+
+	<update id='updateWorkOrderPlanByActivityID'>
+		UPDATE [transactionalData].[TBL_WORK_ORDER_PLAN]
+		set
+		[transactionalData].[TBL_WORK_ORDER_PLAN].active =
+		#{projectComponentModel.active} ,
+		[transactionalData].[TBL_WORK_ORDER_PLAN].LastModifiedBy =
+		#{projectComponentModel.loggedInUser} ,
+		[transactionalData].[TBL_WORK_ORDER_PLAN].LastModifiedDate =
+		dbo.GetDateIST()
+		from [transactionalData].[TBL_WORK_ORDER_PLAN] WOP
+		join [transactionalData].[TBL_WORK_ORDER] wo on WOP.woPlanID =
+		wo.woPlanID
+		join [transactionalData].[TBL_ACTIVITYSCOPE] ACS on
+		wo.SubActivityID = ACS.SubActivityID
+		where WOP.ProjectID =
+		#{projectComponentModel.projectID}
+		and ACS.ActivityScopeID =
+		#{projectComponentModel.activityID}
+	</update>
+
+	<update id='updateAdhocWorkOrderByActivityID'>
+		UPDATE [transactionalData].[TBL_ADHOC_WORK_ORDER]
+		set
+		[transactionalData].[TBL_ADHOC_WORK_ORDER].active =
+		#{projectComponentModel.active}
+		from
+		[transactionalData].[TBL_ADHOC_WORK_ORDER] ADWO
+		join
+		[transactionalData].[TBL_ACTIVITYSCOPE] ACS on ADWO.SubActivityID =
+		ACS.SubActivityID
+		where ADWO.ProjectID =
+		#{projectComponentModel.projectID}
+		and ACS.ActivityScopeID =
+		#{projectComponentModel.activityID}
+	</update>
+
+	<update id='disableAcitvity'>
+		update [transactionalData].[TBL_ACTIVITYSCOPE]
+		set
+		Active = #{projectComponentModel.active} , LastModifiedBy =
+		#{projectComponentModel.loggedInUser} , LastModifiedDate =
+		dbo.GetDateIST()
+		where ActivityScopeID =
+		#{projectComponentModel.activityID}
+	</update>
+	<update id='disableWorkFlow'>
+		update
+		[transactionalData].[TBL_SUBACTIVITY_FLOWCHART_DEF]
+		set active =
+		#{projectComponentModel.active} ,
+		[transactionalData].[TBL_SUBACTIVITY_FLOWCHART_DEF].LastModifiedBy =
+		#{projectComponentModel.loggedInUser} ,
+		[transactionalData].[TBL_SUBACTIVITY_FLOWCHART_DEF].LastModifiedDate =
+		dbo.GetDateIST()
+		where SubActivityFlowChartDefID in (
+		select
+		SubActivityFlowChartDefID count_flowChart from
+		[transactionalData].[TBL_SUBACTIVITY_FLOWCHART_DEF] SUB
+		join
+		[transactionalData].[TBL_ACTIVITYSCOPE] act on act.SubActivityID =
+		sub.SubActivityID
+		where act.ActivityScopeID
+		=#{projectComponentModel.activityID} and sub.ProjectID =
+		#{projectComponentModel.projectID}
+		)
+	</update>
+	<update id='disableWorkOrder'>
+		update [transactionalData].[TBL_WORK_ORDER]
+		set
+		[transactionalData].[TBL_WORK_ORDER].Active = 0 ,
+		[transactionalData].[TBL_WORK_ORDER].LastModifiedBy =
+		#{projectComponentModel.loggedInUser} ,
+		[transactionalData].[TBL_WORK_ORDER].LastModifiedDate =
+		dbo.GetDateIST()
+		where [transactionalData].[TBL_WORK_ORDER].woid in
+		(
+		select woid from
+		[transactionalData].[TBL_WORK_ORDER] WO
+		join
+		[transactionalData].[TBL_WORK_ORDER_PLAN] WOP on wop.WOPlanID =
+		wo.WOPlanID
+		join [transactionalData].[TBL_ACTIVITYSCOPE] ACSC on
+		acsc.SubActivityID =
+		WO.SubActivityID
+		where WOP.ProjectID =
+		#{projectComponentModel.projectID} and
+		acsc.ActivityScopeID =
+		#{projectComponentModel.activityID}
+		)
+
+	</update>
+
+	<select id='getScopeByScopeID' resultType='hashmap'>
+		select
+		[ProjectScopeID]
+		,[ScopeName]
+		,convert(nvarchar(MAX), StartDate, 23) StartDate
+		,convert(nvarchar(MAX), EndDate, 23) EndDate
+		,[ProjectID]
+		,tps.[Active]
+		,[requestType]
+		,[deliverableUnit]
+		,[vendorCode]
+		,[source]
+		,[externalReference]
+		,[deliverableStatus]
+		,st.ScopeTypeID
+		,m.MethodID
+		,pf.ProjectFinancialsID
+		,oc.OperatorCountID
+		,tps.Remarks
+		from
+		[transactionalData].[TBL_PROJECTSCOPE] tps
+        LEFT JOIN [refData].[TBL_ScopeTypeWithDeliverableUnit] as st
+	    on st.ScopeTypeID=tps.ScopeTypeID
+	    LEFT JOIN [refData].[TBL_MethodForDeliverableUnit] as m
+	    on m.MethodID=tps.MethodID
+	    LEFT JOIN [refData].[TBL_ProjectFinancialsWithDeliverableUnit] as pf
+	    on pf.ProjectFinancialsID=tps.ProjectFinancialsID
+	    LEFT JOIN [refData].[TBL_OperatorCountWithDeliverableUnit] oc
+		on oc.OperatorCountID=tps.OperatorCountid
+		where ProjectID=#{projectComponentModel.projectID} and ProjectScopeID =#{projectComponentModel.scopeID} and tps.active = 1
+		
+	</select>
+
+	<select id='getWoDetailsByScopeID' resultType='hashmap'>
+		select PSD.ServiceAreaID , PSD.DomainID , PSD.TechnologyID
+		from
+		[transactionalData].[TBL_WORK_ORDER] WO
+		join
+		[transactionalData].[TBL_WORK_ORDER_PLAN] WOP on WOP.WOPlanID =
+		WO.WOPlanID
+		join [transactionalData].[TBL_PROJECTSCOPEDETAIL] PSD on
+		WOP.ScopeID = PSD.ProjectScopeID
+
+		where WOP.ProjectID =
+		#{projectComponentModel.projectID}
+		<if test="projectComponentModel.scopeID != null">
+			and WOP.ScopeID = #{projectComponentModel.scopeID}
+		</if>
+		<if test="projectComponentModel.scopeDetailID != null">
+			and PSD.ProjectScopeDetailID =
+			#{projectComponentModel.scopeDetailID}
+		</if>
+	</select>
+
+	<select id='getWorkOrderByScopeDetailID' resultType='hashmap'>
+		select PSD.DomainID , PSD.ServiceAreaID , PSD.TechnologyID
+		from
+		[transactionalData].[TBL_WORK_ORDER] WO
+		join
+		[transactionalData].[TBL_WORK_ORDER_PLAN] WOP on WOP.WOPlanID =
+		WO.WOPlanID
+		join [transactionalData].[TBL_PROJECTSCOPEDETAIL] PSD on
+		WOP.ScopeID = PSD.ProjectScopeID
+
+		where WOP.ProjectID =
+		#{projectComponentModel.projectID} and WO.Active = 1
+		<if test="projectComponentModel.scopeID != null">
+			and WOP.ScopeID = #{projectComponentModel.scopeID}
+		</if>
+		<if test="projectComponentModel.scopeDetailID != null">
+			and PSD.ProjectScopeDetailID =
+			#{projectComponentModel.scopeDetailID}
+		</if>
+
+	</select>
+
+	<select id='getWorkFlowByScopeDetailID' resultType='hashmap'>
+		select SubActivityFlowChartDefID
+		from
+		[transactionalData].[TBL_SUBACTIVITY_FLOWCHART_DEF] SFD
+		join
+		[refData].[TBL_SUBACTIVITY] SAC on SAC.SubActivityID =
+		SFD.SubActivityID
+		join [transactionalData].[TBL_ACTIVITYSCOPE] ACS on
+		ACS.SubActivityID = SAC.SubActivityID
+		join
+		[transactionalData].[TBL_PROJECTSCOPEDETAIL] PSD on
+		PSD.ProjectScopeDetailID = ACS.ProjectScopeDetailID
+		join
+		[transactionalData].[TBL_PROJECTSCOPE] PS on PS.ProjectScopeID =
+		PSD.ProjectScopeID
+		where SFD.ProjectID =
+		#{projectComponentModel.projectID} and SFD.Active = 1
+		<if test="projectComponentModel.scopeID != null">
+			and PS.ProjectScopeID = #{projectComponentModel.scopeID}
+		</if>
+		<if test="projectComponentModel.scopeDetailID != null">
+			and PSD.ProjectScopeDetailID =
+			#{projectComponentModel.scopeDetailID}
+		</if>
+
+	</select>
+
+	<select id='getActivityByScopeDetailID' resultType='hashmap'>
+		select *
+		from [refData].[TBL_SUBACTIVITY] SAC
+		join
+		[transactionalData].[TBL_ACTIVITYSCOPE] ACS on ACS.SubActivityID =
+		SAC.SubActivityID
+		join [transactionalData].[TBL_PROJECTSCOPEDETAIL] PSD
+		on PSD.ProjectScopeDetailID = ACS.ProjectScopeDetailID
+		join
+		[transactionalData].[TBL_PROJECTSCOPE] PS on PS.ProjectScopeID =
+		PSD.ProjectScopeID
+		where PS.ProjectID =
+		#{projectComponentModel.projectID}
+		and ACS.active = 1
+		<if test="projectComponentModel.scopeID != null">
+			and PS.ProjectScopeID = #{projectComponentModel.scopeID}
+		</if>
+		<if test="projectComponentModel.scopeDetailID != null">
+			and PSD.ProjectScopeDetailID =
+			#{projectComponentModel.scopeDetailID}
+		</if>
+	</select>
+
+	<select id="getActivitySubActivityNameByScopeDetailID"
+		resultType='hashmap'>
+		select TOP 1 ServiceAreaID ,TechnologyID , DomainID
+		from
+		refData.TBL_SUBACTIVITY where Activity=#{activity} and
+		SubActivity=#{subActivity} and Active=1
+	</select>
+
+	<select id='getscopeDetailData' resultType='hashmap'>
+		select
+		ProjectScopeID
+		, DomainID , ServiceAreaID , TechnologyID ,
+		ProjectScopeDetailID
+		from
+		[transactionalData].[TBL_PROJECTSCOPEDETAIL]
+		where ProjectScopeDetailID
+		= #{projectComponentModel.scopeDetailID} and
+		ProjectScopeID =
+		#{projectComponentModel.scopeID} and active = 1
+	</select>
+	<update id='updateEditProjectScope'
+		parameterType="ProjectScopeModel">
+		UPDATE transactionalData.TBL_ProjectScope
+		<set>
+			<if test="projectScopeModel.scopeName != null">ScopeName=#{projectScopeModel.scopeName,jdbcType=VARCHAR},
+			</if>
+			<if test="projectScopeModel.startDate != null">StartDate=#{projectScopeModel.startDate,jdbcType=VARCHAR},
+			</if>
+			<if test="projectScopeModel.endDate != null">EndDate=#{projectScopeModel.endDate,jdbcType=VARCHAR},
+			</if>
+			<if test="projectScopeModel.requestType != null">requestType=#{projectScopeModel.requestType,jdbcType=VARCHAR},
+			</if>
+			<if test="projectScopeModel.vendorCode != null">vendorCode=#{projectScopeModel.vendorCode,jdbcType=VARCHAR},
+			</if>
+			<if test="projectScopeModel.loggedInUser != null">LastModifiedBy=#{projectScopeModel.loggedInUser,jdbcType=VARCHAR},
+			</if>
+			<if test="projectScopeModel.deliverableUnit != null">deliverableUnit=#{projectScopeModel.deliverableUnit,jdbcType=VARCHAR},
+			</if>
+			<if test="projectScopeModel.source != null">source=#{projectScopeModel.source,jdbcType=INTEGER},</if>
+			<if test="projectScopeModel.externalReference != null">externalReference=#{projectScopeModel.externalReference,jdbcType=VARCHAR},
+			</if>
+			<if test="projectScopeModel.deliverableStatus != null">deliverableStatus=#{projectScopeModel.deliverableStatus,jdbcType=VARCHAR},
+			</if>
+			<if test="projectScopeModel.scopeTypeId !=null and projectScopeModel.scopeTypeId != 0">ScopeTypeID=#{projectScopeModel.scopeTypeId,jdbcType=INTEGER},
+			</if>
+			<if test="projectScopeModel.methodID !=null and projectScopeModel.methodID != 0">MethodID=#{projectScopeModel.methodID,jdbcType=INTEGER},
+			</if>
+			<if test="projectScopeModel.operatorCountId !=null and projectScopeModel.operatorCountId != 0">OperatorCountid=#{projectScopeModel.operatorCountId,jdbcType=INTEGER},
+			</if>
+			<if test="projectScopeModel.projectFinancialsID !=null and projectScopeModel.projectFinancialsID != 0">ProjectFinancialsID=#{projectScopeModel.projectFinancialsID,jdbcType=INTEGER},
+			</if>
+			<if test="projectScopeModel.remarks !=null">Remarks=#{projectScopeModel.remarks,jdbcType=VARCHAR},
+			</if>
+			
+			<if test="projectScopeModel.methodID ==0 ">MethodID=null,
+			</if>
+			<if test="projectScopeModel.operatorCountId ==0 ">OperatorCountid=null,
+			</if>
+			<if test="projectScopeModel.projectFinancialsID ==0 ">ProjectFinancialsID=null,
+			</if>
+			<if test="projectScopeModel.scopeTypeId ==0 ">ScopeTypeID=null,
+			</if>
+			
+			<if test="projectScopeModel.remarks ==null">Remarks=#{projectScopeModel.remarks},
+			</if>
+			LastModifiedDate = dbo.GetDateIST()
+		</set>
+		where
+		projectScopeID=#{projectScopeModel.projectScopeID}
+	</update>
+	<select id='checkExistingScopeName'
+		resultMap='ProjectScopeModel'>
+		select * from transactionalData.TBL_ProjectScope
+		where
+		ScopeName = #{scopeName} and active = 1 and ProjectID = #{projectID}
+		and ProjectScopeID != #{projectScopeID};
+	</select>
+
+
+
+	<update id='updateEditProjectScopeDetail'
+		parameterType="ProjectScopeDetailModel">
+		UPDATE transactionalData.TBL_PROJECTSCOPEDETAIL
+		<set>
+			<if test="projectScopeDetailModel.domainID != null">domainID=#{projectScopeDetailModel.domainID},</if>
+			<if test="projectScopeDetailModel.serviceAreaID != null">serviceAreaID=#{projectScopeDetailModel.serviceAreaID},
+			</if>
+			<if test="projectScopeDetailModel.technologyID != null">technologyID=#{projectScopeDetailModel.technologyID},
+			</if>
+			<if test="projectScopeDetailModel.loggedInUser != null">LastModifiedBy=#{projectScopeDetailModel.loggedInUser,jdbcType=VARCHAR},
+			</if>
+			LastModifiedDate = dbo.GetDateIST()
+		</set>
+		where
+		projectScopeDetailID=#{projectScopeDetailModel.projectScopeDetailID}
+	</update>
+
+	<resultMap type='ProjectsTableModel' id='ProjectsTableModel'>
+		<id property='projectID' column='ProjectID' />
+		<result property='startDate' column='StartDate' />
+		<result property='endDate' column='EndDate' />
+		<result property='operationalManager' column='OperationalManager' />
+		<result property='projectCreator' column='ProjectCreator' />
+		<result property='projectDescription' column='ProjectDescription' />
+		<result property='cPM' column='CPM' />
+		<result property='lastModifiedBy' column='LastModifiedBy' />
+		<result property='lastModifiedOn' column='LastModifiedOn' />
+		<result property='createdBy' column='CreatedBy' />
+		<result property='rPM' column='RPM' />
+		<result property='projectName' column='ProjectName' />
+	</resultMap>
+
+	<update id='updateProject' parameterType="ProjectsTableModel">
+		UPDATE transactionalData.TBL_PROJECTS
+		<set>
+			<if test="projectsTableModel.projectName != null"> ProjectName = #{projectsTableModel.projectName} ,</if>
+			<if test="projectsTableModel.cPM != null"> CPM = #{projectsTableModel.cPM} ,</if>
+			<if test="projectsTableModel.projectCreator != null"> ProjectCreator = #{projectsTableModel.projectCreator},
+			</if>
+			<if test="projectsTableModel.startDate!= null"> StartDate =  #{projectsTableModel.startDate} ,</if>
+			<if test="projectsTableModel.endDate!= null"> EndDate = #{projectsTableModel.endDate} ,</if>
+			<if test="projectsTableModel.operationalManager != null">OperationalManager=#{projectsTableModel.operationalManager},
+			</if>
+			<if test="projectsTableModel.status != null">status=#{projectsTableModel.status},</if>
+			<if test="projectsTableModel.projectDescription != null">ProjectDescription=#{projectsTableModel.projectDescription},
+			</if>
+			<if test="projectsTableModel.createdBy != null"> LastModifiedBy = #{projectsTableModel.createdBy},</if>
+			<if test="projectsTableModel.createdBy != null"> CreatedBy = #{projectsTableModel.createdBy},</if>
+			RPM = #{projectsTableModel.rPM},
+			LastModifiedOn = dbo.GetDateIST()
+		</set>
+		where ProjectID=#{projectsTableModel.projectID}
+	</update>
+
+	<update id='inactiveDoc'>
+		UPDATE transactionalData.TBL_PROJECTDOCUMENTS set
+		IsActive = 0
+		where ProjectID=#{projId}
+	</update>
+
+	<update id='updateProjectPM' parameterType="ProjectsTableModel">
+		update
+		transactionalData.TBL_WORK_ORDER_DELIVERY_ACCEPTANCE
+		set
+		AcceptedOrRejectedBy=#{projectsTableModel.projectCreator},
+		AcceptedOrRejectedDate = dbo.GetDateIST(),
+		LastModifiedBy =
+		#{projectsTableModel.createdBy},
+		LastModifiedDate = dbo.GetDateIST()
+
+		from transactionalData.TBL_WORK_ORDER_DELIVERY_ACCEPTANCE da
+		inner join
+		transactionalData.TBL_WORK_ORDER wo on wo.woid=da.woid
+		inner join
+		transactionalData.TBL_PROJECTS p on p.ProjectID=wo.PROJECTID and
+		wo.ProjectID=#{projectsTableModel.projectID}
+		where Acceptance is null
+	</update>
+
+
+
+
+	<resultMap type='ProjectDocumentModel'
+		id='ProjectDocumentModel'>
+		<id property='projectDocumentID' column='ProjectDocumentID' />
+		<result property='documentType' column='DocumentType' />
+		<result property='documentLinks' column='DocumentLinks' />
+		<result property='createdBy' column='CreatedBy' />
+	</resultMap>
+
+	<insert id='insertDocDetails'
+		parameterType="ProjectDocumentModel">
+		INSERT into transactionalData.TBL_PROJECTDOCUMENTS
+		(DocumentType,DocumentLinks,ProjectID,CreatedBy,CreatedOn,LastModifiedBy,LastModifiedOn,IsActive)
+		values(#{projDocMod.documentType},#{projDocMod.documentLinks},#{projId},#{projDocMod.createdBy},dbo.GetDateIST(),#{projDocMod.createdBy},dbo.GetDateIST(),1)
+	</insert>
+
+	<select id='getDemandDetailsByScope' resultType='hashmap'>
+		select wf.WorkEffortID from transactionalData.TBL_ResourceRequests rr
+		join transactionalData.TBL_PROJECTSCOPEDETAIL PSD on
+		PSD.ProjectScopeDetailID = rr.ProjectScopeDetailID
+		join
+		transactionalData.TBL_PROJECTSCOPE ps on ps.ProjectScopeID =
+		psd.ProjectScopeID
+		join transactionalData.TBL_ResourcePosition rp on
+		rp.ResourceRequestID = rr.ResourceRequestID
+		join
+		transactionalData.TBL_WorkEffort wf on wf.ResourcePositionID =
+		rp.ResourcePositionID
+		where wf.PositionStatus in ('Deployed', 'Closed')
+		<if test="projectComponentModel.projectID != null">
+			and rr.ProjectID = #{projectComponentModel.projectID}
+		</if>
+		<if test="projectComponentModel.scopeID != null">
+			and psd.ProjectScopeID = #{projectComponentModel.scopeID}
+		</if>
+		<if test="projectComponentModel.scopeDetailID != null">
+			and psd.ProjectScopeDetailID =
+			#{projectComponentModel.scopeDetailID}
+		</if>
+	</select>
+
+	<update id='updateWorkEffort'>
+		UPDATE transactionalData.TBL_WorkEffort
+		set
+		transactionalData.TBL_WorkEffort.IsActive =
+		#{projectComponentModel.active} ,
+		transactionalData.TBL_WorkEffort.LastModifiedBy =
+		#{projectComponentModel.loggedInUser} ,
+		transactionalData.TBL_WorkEffort.LastModifiedOn = dbo.GetDateIST()
+		where transactionalData.TBL_WorkEffort.WorkEffortID in (
+		select
+		wf.WorkEffortID from transactionalData.TBL_ResourceRequests rr
+		join
+		transactionalData.TBL_PROJECTSCOPEDETAIL PSD on
+		PSD.ProjectScopeDetailID = rr.ProjectScopeDetailID
+		join
+		transactionalData.TBL_PROJECTSCOPE ps on ps.ProjectScopeID =
+		psd.ProjectScopeID
+		join transactionalData.TBL_ResourcePosition rp on
+		rp.ResourceRequestID = rr.ResourceRequestID
+		join
+		transactionalData.TBL_WorkEffort wf on wf.ResourcePositionID =
+		rp.ResourcePositionID
+		where 1=1
+		<if test="projectComponentModel.projectID != null">
+			and rr.ProjectID = #{projectComponentModel.projectID}
+		</if>
+		<if test="projectComponentModel.scopeID != null">
+			and psd.ProjectScopeID = #{projectComponentModel.scopeID}
+		</if>
+		<if test="projectComponentModel.scopeDetailID != null">
+			and psd.ProjectScopeDetailID =
+			#{projectComponentModel.scopeDetailID}
+		</if>
+		)
+
+	</update>
+
+	<update id='updateResourcePosition'>
+		UPDATE transactionalData.TBL_ResourcePosition
+		set
+		transactionalData.TBL_ResourcePosition.IsActivie =
+		#{projectComponentModel.active} ,
+		transactionalData.TBL_ResourcePosition.LastModifiedBy =
+		#{projectComponentModel.loggedInUser} ,
+		transactionalData.TBL_ResourcePosition.LastModifiedOn =
+		dbo.GetDateIST()
+		where
+		transactionalData.TBL_ResourcePosition.ResourcePositionID in (
+		select
+		rp.ResourcePositionID from transactionalData.TBL_ResourceRequests rr
+		join transactionalData.TBL_PROJECTSCOPEDETAIL PSD on
+		PSD.ProjectScopeDetailID = rr.ProjectScopeDetailID
+		join
+		transactionalData.TBL_PROJECTSCOPE ps on ps.ProjectScopeID =
+		psd.ProjectScopeID
+		join transactionalData.TBL_ResourcePosition rp on
+		rp.ResourceRequestID = rr.ResourceRequestID
+		join
+		transactionalData.TBL_WorkEffort wf on wf.ResourcePositionID =
+		rp.ResourcePositionID
+		where 1=1
+		<if test="projectComponentModel.projectID != null">
+			and rr.ProjectID = #{projectComponentModel.projectID}
+		</if>
+		<if test="projectComponentModel.scopeID != null">
+			and psd.ProjectScopeID = #{projectComponentModel.scopeID}
+		</if>
+		<if test="projectComponentModel.scopeDetailID != null">
+			and psd.ProjectScopeDetailID =
+			#{projectComponentModel.scopeDetailID}
+		</if>
+		)
+
+	</update>
+
+	<update id='updateResourceRequest'>
+		UPDATE transactionalData.TBL_ResourceRequests
+		set
+		transactionalData.TBL_ResourceRequests.active =
+		#{projectComponentModel.active} ,
+		transactionalData.TBL_ResourceRequests.LastModifiedBy =
+		#{projectComponentModel.loggedInUser} ,
+		transactionalData.TBL_ResourceRequests.LastModifiedOn =
+		dbo.GetDateIST()
+		where
+		transactionalData.TBL_ResourceRequests.ResourceRequestID in (
+		select
+		rr.ResourceRequestID from transactionalData.TBL_ResourceRequests rr
+		join transactionalData.TBL_PROJECTSCOPEDETAIL PSD on
+		PSD.ProjectScopeDetailID = rr.ProjectScopeDetailID
+		join
+		transactionalData.TBL_PROJECTSCOPE ps on ps.ProjectScopeID =
+		psd.ProjectScopeID
+		join transactionalData.TBL_ResourcePosition rp on
+		rp.ResourceRequestID = rr.ResourceRequestID
+		join
+		transactionalData.TBL_WorkEffort wf on wf.ResourcePositionID =
+		rp.ResourcePositionID
+		where 1=1
+		<if test="projectComponentModel.projectID != null">
+			and rr.ProjectID = #{projectComponentModel.projectID}
+		</if>
+		<if test="projectComponentModel.scopeID != null">
+			and psd.ProjectScopeID = #{projectComponentModel.scopeID}
+		</if>
+		<if test="projectComponentModel.scopeDetailID != null">
+			and psd.ProjectScopeDetailID =
+			#{projectComponentModel.scopeDetailID}
+		</if>
+		)
+
+	</update>
+
+	<delete id='deleteBookedResources'>
+		delete from [transactionalData].[TBL_Booked_Resource] where wfid in (
+		select wf.WorkEffortID from transactionalData.TBL_ResourceRequests rr
+		join transactionalData.TBL_PROJECTSCOPEDETAIL PSD on
+		PSD.ProjectScopeDetailID = rr.ProjectScopeDetailID
+		join
+		transactionalData.TBL_PROJECTSCOPE ps on ps.ProjectScopeID =
+		psd.ProjectScopeID
+		join transactionalData.TBL_ResourcePosition rp on
+		rp.ResourceRequestID =
+		rr.ResourceRequestID
+		join
+		transactionalData.TBL_WorkEffort wf on wf.ResourcePositionID =
+		rp.ResourcePositionID
+		where 1=1
+		<if test="projectComponentModel.projectID">
+			and rr.ProjectID = #{projectComponentModel.projectID}
+		</if>
+
+		<if test="projectComponentModel.scopeID != null">
+			and psd.ProjectScopeID = #{projectComponentModel.scopeID}
+		</if>
+		<if test="projectComponentModel.scopeDetailID != null">
+			and psd.ProjectScopeDetailID =
+			#{projectComponentModel.scopeDetailID}
+		</if>
+		)
+	</delete>
+
+	<delete id='deleteNetworkElement'>
+		delete from [transactionalData].[TBL_NETWORK_ELEMENT]
+		where ProjectID =
+		#{projectComponentModel.projectID}
+	</delete>
+
+	<select id='getBookingDetalsFlowChartDefID' resultType='hashmap'>
+		select
+		distinct wobd.WOID
+		from
+		[transactionalData].[TBL_SUBACTIVITY_FLOWCHART_DEF] wfd
+		join
+		[transactionalData].[TBL_WORK_ORDER_PLAN] wop on
+		wop.projectid=wfd.projectid
+		join [transactionalData].[TBL_WORK_ORDER]
+		wo on wo.WOPlanID = wop.WOPlanID
+		and
+		wfd.versionnumber=wo.WorkFlowVersion and wo.SubActivityID =
+		wfd.SubActivityID
+		join
+		[transactionalData].[TBL_WORK_ORDER_BOOKING_DETAILS] wobd on wobd.WOID
+		= wo.WOID
+		where WO.active = 1 and wfd.SubActivityFlowChartDefID =
+		#{projectComponentModel.subActivityFlowChartDefID} and
+		wo.SubActivityID = #{projectComponentModel.subActivityID} and
+		wop.ProjectID = #{projectComponentModel.projectID}
+	</select>
+
+
+	<update id='updateWoPlanIDWithNonExecutedWO'>
+		update [transactionalData].[TBL_WORK_ORDER_PLAN] set
+		active = 0 ,
+		LastModifiedBy = #{projectComponentModel.loggedInUser} ,
+		LastModifiedDate = dbo.GetDateIST()
+		where woplanid in
+		(
+		(
+		select distinct
+		wop.WOPlanID
+		from
+		[transactionalData].[TBL_SUBACTIVITY_FLOWCHART_DEF]
+		wfd
+		join [transactionalData].[TBL_WORK_ORDER] wo on wo.WorkFlowVersion
+		=
+		wfd.VersionNumber and wo.SubActivityID = wfd.SubActivityID
+		join
+		[transactionalData].[TBL_WORK_ORDER_PLAN] wop on wo.WOPlanID =
+		wop.WOPlanID
+		where wfd.SubActivityFlowChartDefID =
+		#{projectComponentModel.subActivityFlowChartDefID} and wop.ProjectID =
+		#{projectComponentModel.projectID}
+		and wfd.SubActivityID =
+		#{projectComponentModel.subActivityID}
+		)
+		Except
+		(
+		select distinct
+		wop.WOPlanID
+		from [transactionalData].[TBL_SUBACTIVITY_FLOWCHART_DEF]
+		wfd
+		join [transactionalData].[TBL_WORK_ORDER] wo on wo.WorkFlowVersion
+		=
+		wfd.VersionNumber and wo.SubActivityID = wfd.SubActivityID
+		join
+		[transactionalData].[TBL_WORK_ORDER_PLAN] wop on wo.WOPlanID =
+		wop.WOPlanID
+		join [transactionalData].[TBL_WORK_ORDER_BOOKING_DETAILS]
+		wobd on wobd.WOID = wo.WOID
+		where wfd.SubActivityFlowChartDefID =
+		#{projectComponentModel.subActivityFlowChartDefID} and wop.ProjectID =
+		#{projectComponentModel.projectID}
+		and wfd.SubActivityID =
+		#{projectComponentModel.subActivityID}
+		)
+		)
+	</update>
+
+	<update id='updateAdhocWoIDWithNonExecutedWO'>
+		update [transactionalData].[TBL_ADHOC_WORK_ORDER] set
+		active = 0
+		where AdhocWOID in
+		(
+		(
+		select distinct adwo.AdhocWOID
+		from
+		[transactionalData].[TBL_SUBACTIVITY_FLOWCHART_DEF] wfd
+		join
+		[transactionalData].[TBL_ADHOC_WORK_ORDER] adwo on adwo.SubActivityID
+		= wfd.SubActivityID
+		join [transactionalData].[TBL_WORK_ORDER] wo on
+		wo.AdhocWOID = adwo.AdhocWOID
+		where WO.active = 1 and
+		wfd.SubActivityFlowChartDefID = #{projectComponentModel.subActivityID}
+		and adwo.ProjectID = #{projectComponentModel.projectID}
+		)
+		Except
+		(
+
+		select
+		distinct adwo.AdhocWOID
+		from
+		[transactionalData].[TBL_SUBACTIVITY_FLOWCHART_DEF] wfd
+		join
+		[transactionalData].[TBL_ADHOC_WORK_ORDER] adwo on adwo.SubActivityID
+		= wfd.SubActivityID
+		join [transactionalData].[TBL_WORK_ORDER] wo on
+		wo.AdhocWOID = adwo.AdhocWOID
+		join
+		[transactionalData].[TBL_WORK_ORDER_BOOKING_DETAILS] wobd on wobd.WOID
+		= wo.WOID
+		where WO.active = 1 and wfd.SubActivityFlowChartDefID =
+		#{projectComponentModel.subActivityID} and adwo.ProjectID =
+		#{projectComponentModel.projectID}
+		)
+		)
+	</update>
+
+	<update id='updateWorkOrderByFlowChartDefID'>
+		update [transactionalData].[TBL_WORK_ORDER] set
+		active = 0 , LastModifiedBy
+		= #{projectComponentModel.loggedInUser} ,
+		LastModifiedDate =
+		dbo.GetDateIST()
+		where WOID in
+		(
+		(select distinct
+		wo.WOID
+		from
+		[transactionalData].[TBL_SUBACTIVITY_FLOWCHART_DEF] wfd
+		join [transactionalData].[TBL_WORK_ORDER] wo on wo.WorkFlowVersion =
+		wfd.VersionNumber and wo.SubActivityID = wfd.SubActivityID
+		join
+		[transactionalData].[TBL_WORK_ORDER_PLAN] wop on wo.WOPlanID =
+		wop.WOPlanID
+		where WO.active = 1 and wfd.SubActivityFlowChartDefID =
+		#{projectComponentModel.subActivityFlowChartDefID} and
+		wo.SubActivityID = #{projectComponentModel.subActivityID} and
+		wop.ProjectID = #{projectComponentModel.projectID}
+		)
+		EXCEPT
+		(
+		select
+		distinct wo.WOID
+		from
+		[transactionalData].[TBL_SUBACTIVITY_FLOWCHART_DEF] wfd
+		join
+		[transactionalData].[TBL_WORK_ORDER] wo on wo.WorkFlowVersion =
+		wfd.VersionNumber and wo.SubActivityID = wfd.SubActivityID
+		join
+		[transactionalData].[TBL_WORK_ORDER_PLAN] wop on wo.WOPlanID =
+		wop.WOPlanID
+		join [transactionalData].[TBL_WORK_ORDER_BOOKING_DETAILS]
+		wobd on wobd.WOID = wo.WOID
+		where WO.active = 1 and
+		wfd.SubActivityFlowChartDefID =
+		#{projectComponentModel.subActivityFlowChartDefID} and
+		wo.SubActivityID = #{projectComponentModel.subActivityID} and
+		wop.ProjectID = #{projectComponentModel.projectID}
+		)
+		)
+	</update>
+
+	<select id='getBookingDetalsWoPlanID' resultType='hashmap'>
+		select distinct wo.WOID
+		from [transactionalData].[TBL_WORK_ORDER_PLAN]
+		wop
+		join [transactionalData].[TBL_WORK_ORDER] wo on wo.WOPlanID =
+		wop.WOPlanID
+		<!-- join [transactionalData].[TBL_WORK_ORDER_BOOKING_DETAILS] wobd on 
+			wobd.WOID = wo.WOID -->
+		where WO.active = 1 and wop.ProjectID =
+		#{projectComponentModel.projectID}
+		<if test=" projectComponentModel.lstWoPlanID != null">
+			<if test=" projectComponentModel.lstWoPlanID.size() > 0 ">
+				and wop.WOPlanID in
+				<foreach item="item" index="index"
+					collection="projectComponentModel.lstWoPlanID" open="("
+					separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
+		</if>
+		<if test="projectComponentModel.woPlanID != null">
+			and wop.WOPlanID = #{projectComponentModel.woPlanID}
+		</if>
+		and
+		WO.Status not in ('ASSIGNED','DEFERRED','REOPENED')
+	</select>
+
+	<select id='getAllBookingDetalsWoPlanID' resultType='hashmap'>
+		select distinct wo.WOID
+		from [transactionalData].[TBL_WORK_ORDER_PLAN]
+		wop
+		join [transactionalData].[TBL_WORK_ORDER] wo on wo.WOPlanID =
+		wop.WOPlanID
+		where WO.active = 1 and wop.ProjectID =
+		#{projectComponentModel.projectID}
+		<if test=" projectComponentModel.lstWoPlanID != null">
+			<if test=" projectComponentModel.lstWoPlanID.size() > 0 ">
+				and wop.WOPlanID in
+				<foreach item="item" index="index"
+					collection="projectComponentModel.lstWoPlanID" open="("
+					separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
+		</if>
+		<if test="projectComponentModel.woPlanID != null">
+			and wop.WOPlanID = #{projectComponentModel.woPlanID}
+		</if>
+	</select>
+
+	<update id='updateWorkOrderByWoPlanID'>
+		update [transactionalData].[TBL_WORK_ORDER] set active = 0 ,
+		LastModifiedBy = #{projectComponentModel.loggedInUser} ,
+		LastModifiedDate = dbo.GetDateIST()
+		where WOID in
+		(
+		(select distinct
+		wo.WOID
+		from [transactionalData].[TBL_WORK_ORDER_PLAN]
+		wop
+		join
+		[transactionalData].[TBL_WORK_ORDER] wo on wo.WOPlanID = wop.WOPlanID
+		where WO.active = 1 and wop.ProjectID =
+		#{projectComponentModel.projectID}
+		<if test=" projectComponentModel.lstWoPlanID != null">
+			<if test=" projectComponentModel.lstWoPlanID.size() > 0 ">
+				and wop.WOPlanID in
+				<foreach item="item" index="index"
+					collection="projectComponentModel.lstWoPlanID" open="("
+					separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
+		</if>
+		<if test="projectComponentModel.woPlanID != null">
+			and wop.WOPlanID = #{projectComponentModel.woPlanID}
+		</if>
+		AND WO.Status not in ('CLOSED','INPROGRESS','REJECTED')
+		)
+		EXCEPT
+		(select
+		distinct wo.WOID
+		from
+		[transactionalData].[TBL_WORK_ORDER_PLAN] wop
+		join
+		[transactionalData].[TBL_WORK_ORDER] wo on wo.WOPlanID = wop.WOPlanID
+		join [transactionalData].[TBL_WORK_ORDER_BOOKING_DETAILS] wobd on
+		wobd.WOID = wo.WOID
+		where WO.active = 1 and wop.ProjectID =
+		#{projectComponentModel.projectID}
+		<if test=" projectComponentModel.lstWoPlanID != null">
+			<if test=" projectComponentModel.lstWoPlanID.size() > 0 ">
+				and wop.WOPlanID in
+				<foreach item="item" index="index"
+					collection="projectComponentModel.lstWoPlanID" open="("
+					separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
+		</if>
+		<if test="projectComponentModel.woPlanID != null">
+			and wop.WOPlanID = #{projectComponentModel.woPlanID}
+		</if>
+		<!-- #{projectComponentModel.woPlanID} -->
+		and
+		WO.Status not in ('ASSIGNED','DEFERRED','REOPENED'))
+		)
+	</update>
+
+
+
+	<insert id='addExternalApplicationReference'
+		parameterType="com.ericsson.isf.model.ExternalAppReferenceModel">
+		INSERT INTO [refData].[TBL_ExternalApplicationReference]
+		([sourceId]
+		,[projectId]
+		,[externalProjectId]
+		,[createdby]
+		,[isactive])
+		VALUES
+		(
+		#{externalAppReferenceModel.sourceId}
+		,#{externalAppReferenceModel.projectId}
+		,#{externalAppReferenceModel.externalProjectId}
+		,#{externalAppReferenceModel.createdby}
+		,#{externalAppReferenceModel.isactive}
+		)
+	</insert>
+
+
+	<update id='updateStatusOfExternalReference'>
+		update [refData].[TBL_ExternalApplicationReference]
+		set isactive=#{isActive}
+		where referenceId=#{referenceId}
+
+	</update>
+
+	<select id='getExpertWFDefID' resultType='Integer'>
+		IF Exists(select
+		SubActivityFlowChartDefID from
+		transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF
+		where WorkFlowName
+		=#{woName} and Active=1 and ProjectID = #{projectID} and
+		SubActivityID
+		= #{subActivityID})
+		BEGIN
+		select SubActivityFlowChartDefID from
+		transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF
+		where WorkFlowName
+		=#{woName} and Active=1 and Type='PROJECTDEFINED_EXPERT'
+		and ProjectID
+		= #{projectID} and SubActivityID = #{subActivityID}
+		END
+		ELSE
+		BEGIN
+		select
+		0 as 'SubActivityFlowChartDefID'
+		END
+	</select>
+
+	<select id='getTools' resultType='hashmap'>
+		Select ToolID,Tool
+		<!-- ,Introduction -->
+		from refData.TBL_TOOL_INVENTORY where Active=1 order by Tool asc
+	</select>
+
+	<insert id='saveProjectSpecificTools'
+		parameterType="ProjectSpecificToolModel">
+		Insert into transactionalData.TBL_PROJECT_TOOL_MAPPING
+		(ProjectID,ToolID,ToolLicenseOwnerID,AccessMethodID,ToolVersion,Active,CreatedBy,CreatedDate,LastModifiedBy,LastModifiedDate)
+		Values(#{projectToolModel.projectID},#{projectToolModel.toolID},#{projectToolModel.licenseOwnerID},
+		#{projectToolModel.accessMethodID},#{projectToolModel.toolVersion},1,#{projectToolModel.createdBy},dbo.GetDateIST(),#{projectToolModel.createdBy},dbo.GetDateIST())
+	</insert>
+
+	<select id='getProjectSpecificTools' resultType='hashmap'>
+             <!-- select ptm.ProjectToolID,ptm.ProjectID,ptm.ToolID,ti.Tool,tl.ToolLicenseTypeID,tl.LicenseType,lo.ToolLicenseOwnerID,lo.LicenseOwner, 
+             am.AccessMethodID,am.AccessMethod,ptm.ToolVersion,ptm.Active,ptm.CreatedBy,ptm.CreatedDate,ptm.LastModifiedBy, 
+                    ptm.LastModifiedDate from transactionalData.TBL_PROJECT_TOOL_MAPPING ptm 
+                    Inner Join refData.TBL_TOOL_INVENTORY ti on ptm.toolID = ti.ToolID and ti.active=1 
+                    Inner Join refData.TBL_TOOL_LICENSE_TYPE tl on tl.ToolLicenseTypeID = ptm.ToolLicenseTypeID 
+                    and tl.active=1 Inner Join refData.TBL_TOOL_LICENSE_OWNER lo on lo.ToolLicenseOwnerID 
+                    = ptm.ToolLicenseOwnerID and lo.Active=1 Inner Join refData.TBL_ACCESS_METHOD 
+                    am on am.accessMethodID = ptm.accessMethodID and am.active=1 -->
+
+
+             select ptm.ProjectToolID,ptm.ProjectID,ptm.ToolID,ti.Tool,
+             lo.ToolLicenseOwnerID,lo.LicenseOwner,
+             am.AccessMethodID,am.AccessMethod,
+       ptm.ToolVersion,ptm.Active,ptm.CreatedBy,ptm.CreatedDate,ptm.LastModifiedBy,
+             ptm.LastModifiedDate
+             from transactionalData.TBL_PROJECT_TOOL_MAPPING
+             ptm
+             Inner Join
+             refData.TBL_TOOL_INVENTORY ti on ptm.toolID = ti.ToolID
+             and
+             ti.active=1
+             Inner Join refData.TBL_TOOL_LICENSE_OWNER lo on
+             lo.ToolLicenseOwnerID = ptm.ToolLicenseOwnerID and lo.Active=1
+             Inner
+             Join refData.TBL_ACCESS_METHOD am on am.accessMethodID =
+             ptm.accessMethodID and am.active=1
+             and ptm.projectID=#{projectID}
+
+             <if test="isOnlyActiveRequired == 1">
+                    and ptm.Active=1
+             </if>
+
+
+
+       </select>
+
+    
+    <update id = 'updateProjectExternalProject'>
+      update  [transactionalData].[TBL_EXTERNAL_PROJECTS]
+      set ISFProjectID=#{externalAppReferenceModel.projectId}
+      where SourceID=#{externalAppReferenceModel.sourceId} and ExternalProjectID = #{externalAppReferenceModel.externalProjectId}
+        
+    </update>
+    
+    <update id = 'updateProjectBlkWOCreation'>
+      update  [transactionalData].[TBL_BULK_WORK_ORDER_CREATION]
+      set ProjectID=#{externalAppReferenceModel.projectId} , AssignTo = #{externalAppReferenceModel.createdby}
+      where [ExternalSourceID]=#{externalAppReferenceModel.sourceId} and ExternalProjectID = #{externalAppReferenceModel.externalProjectId}
+        
+    </update>
+    
+    <select id = 'getExternalApplicationReferencesByProjectId' resultType="com.ericsson.isf.model.ExternalAppReferenceModel">
+     select er.projectID , er.isactive , er.createdBy , er.createdOn , er.referenceId , externalProjectId
+       ,it.sourcename from  [refData].[TBL_ExternalApplicationReference]  er
+  	INNER JOIN  [refData].[TBL_IntegrationSources] it on er.sourceId=it.sourceid 
+  	where er.projectId=#{projectId}
+    </select>
+    
+    
+     <select id = 'getExternalApplicationReferencesByExternalProjectId' resultType="com.ericsson.isf.model.ExternalAppReferenceModel">
+      select sourceId , projectId , externalProjectId , referenceId , isactive , createdby , createdOn , InstanceID
+       from  [refData].[TBL_ExternalApplicationReference] where externalProjectId=#{externalProjectId} and sourceid = #{sourceId}
+        
+    </select>
+      
+    
+     <select id = 'getExternalProjects' resultType="hashmap">
+      SELECT [ExternalProjectID],[ProjectName]
+      
+      FROM [transactionalData].[TBL_EXTERNAL_PROJECTS]
+        
+    </select>
+     <select id='getRequestType' resultType='hashmap' >
+        Select RequestTypeID,RequestTypeName from REFDATA.TBL_PROJECT_SCOPE_REQUEST_TYPE where Active=1
+    </select>
+    
+    <select id='getWorkFlowName' resultType='String'>
+      select WorkFlowName from transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF where SubActivityFlowChartDefID = #{subActivityFlowChartDefID}
+    </select>
+  
+    
+     <select id='getToolLicenseType' resultType='hashmap' >
+        Select ToolLicenseTypeID,LicenseType,Defination from refData.TBL_TOOL_LICENSE_TYPE where Active=1 order by LicenseType asc
+    </select>
+    
+     <select id='getToolLicenseOwner' resultType='hashmap' >
+        Select ToolLicenseOwnerID,LicenseOwner,Defination from refData.TBL_TOOL_LICENSE_OWNER where Active=1 order by LicenseOwner asc
+    </select>
+    
+     <select id='getAccessMethod' resultType='hashmap' >
+        Select AccessMethodID,AccessMethod,Defination from refData.TBL_ACCESS_METHOD where Active=1 order by AccessMethod asc
+    </select>
+
+	<update id='updateProjectSpecificTools'
+		parameterType="ProjectSpecificToolModel">
+		UPDATE transactionalData.TBL_PROJECT_TOOL_MAPPING set
+		ToolID = #{projectToolModel.toolID},
+		ToolLicenseOwnerID =
+		#{projectToolModel.licenseOwnerID},
+		AccessMethodID =
+		#{projectToolModel.accessMethodID},
+		ToolVersion =
+		#{projectToolModel.toolVersion},
+		LastModifiedBy =
+		#{projectToolModel.lastModifiedBy},
+		LastModifiedDate = dbo.GetDateIST()
+		where projectID = #{projectToolModel.projectID} and projectToolID =
+		#{projectToolModel.projectToolID}
+	</update>
+
+	<update id='disableEnableTools'
+		parameterType="ProjectSpecificToolModel">
+		UPDATE transactionalData.TBL_PROJECT_TOOL_MAPPING set
+		Active = #{projectToolModel.active},
+		LastModifiedBy =
+		#{projectToolModel.lastModifiedBy},
+		LastModifiedDate = dbo.GetDateIST()
+		where projectID = #{projectToolModel.projectID} and projectToolID =
+		#{projectToolModel.projectToolID}
+	</update>
+
+	<select id='checkIFUserExists' resultType="Boolean">
+		IF EXISTS(select 1
+		from transactionalData.TBL_DELIVERY_ACCEPTANCE where
+		projectID=#{projectID} and signumID=#{signumID})
+		BEGIN
+		Select 1 as
+		'Result'
+		END
+		ELSE
+		BEGIN
+		Select 0 as 'Result'
+		END
+	</select>
+
+	<select id='checkIFUserExistsRPM' resultType="Boolean">
+		IF EXISTS(select 1
+		from transactionalData.TBL_RESOURCE_PLANNING_MANAGER
+		where
+		projectID=#{projectID} and rpmSignumID=#{signumID} and Active=1)
+		BEGIN
+		Select 1 as 'Result'
+		END
+		ELSE
+		BEGIN
+		Select 0 as 'Result'
+		END
+	</select>
+
+	<insert id='saveDeliveryAcceptance'
+		parameterType="DeliveryAcceptanceModel">
+		Insert into transactionalData.TBL_DELIVERY_ACCEPTANCE
+		(ProjectID,SignumID,Active,CreatedBy,CreatedDate,LastModifiedBy,LastModifiedDate)
+		Values(#{deliveryAcceptanceModel.projectID},#{deliveryAcceptanceModel.signumID},1,#{deliveryAcceptanceModel.createdBy},dbo.GetDateIST(),#{deliveryAcceptanceModel.createdBy},dbo.GetDateIST())
+	</insert>
+
+	<update id='disableDeliveryAcceptance'>
+		UPDATE transactionalData.TBL_DELIVERY_ACCEPTANCE set
+		Active = 0,
+		LastModifiedBy = #{signumID},
+		LastModifiedDate =
+		dbo.GetDateIST()
+		where deliveryAcceptanceID = #{deliveryAcceptanceID}
+	</update>
+
+	<select id='getDeliveryAcceptance'
+		resultType='java.util.HashMap'>
+		select da.SignumID , da.ProjectID , da.DeliveryAcceptanceID
+		,ep.Signum+'('+ep.EmployeeName+')' as EmployeeSignum
+		from
+		transactionalData.TBL_DELIVERY_ACCEPTANCE da
+		JOIN refData.TBL_Employees
+		ep on ep.Signum = da.SignumID
+		where da.Active=1 and da.ProjectID =
+		#{projectID}
+	</select>
+
+	<insert id='updateDeliveryAcceptance'
+		parameterType="DeliveryAcceptanceModel">
+		UPDATE transactionalData.TBL_DELIVERY_ACCEPTANCE set
+		Active = 1,
+		LastModifiedBy = #{deliveryAcceptanceModel.createdBy},
+		LastModifiedDate = dbo.GetDateIST()
+		where SignumID =
+		#{deliveryAcceptanceModel.signumID} and
+		ProjectID=
+		#{deliveryAcceptanceModel.projectID}
+	</insert>
+
+	<insert id='saveRPM' parameterType="RPMModel">
+		Insert into
+		transactionalData.TBL_RESOURCE_PLANNING_MANAGER
+		(ProjectID,RPMSignumID,Active,CreatedBy,CreatedDate,LastModifiedBy,LastModifiedDate)
+		Values(#{rmpModel.projectID},#{rmpModel.rpmSignumID},1,#{rmpModel.createdBy},dbo.GetDateIST(),#{rmpModel.createdBy},dbo.GetDateIST())
+	</insert>
+
+	<update id='disableRPM'>
+		UPDATE
+		transactionalData.TBL_RESOURCE_PLANNING_MANAGER set
+		Active = 0,
+		LastModifiedBy = #{signumID},
+		LastModifiedDate = dbo.GetDateIST()
+		where
+		RPMID = #{rpmID}
+	</update>
+
+	<select id='getRPM' resultType='java.util.HashMap'>
+		select rpm.RPMID ,
+		rpm.RPMSignumID ,rpm.ProjectID ,
+		ep.Signum+'('+ep.EmployeeName+')' as
+		EmployeeSignum
+		from transactionalData.TBL_RESOURCE_PLANNING_MANAGER rpm
+		JOIN refData.TBL_Employees ep on ep.Signum = rpm.rpmSignumID
+		where
+		rpm.Active=1 and rpm.ProjectID = #{projectID}
+	</select>
+
+	<select id='checkIFToolExists'
+		parameterType="ProjectSpecificToolModel" resultType="Boolean">
+		IF EXISTS(select 1
+		from transactionalData.TBL_PROJECT_TOOL_MAPPING where
+		projectID=#{projectToolModel.projectID} and
+		toolID=#{projectToolModel.toolID} and Active=1)
+		BEGIN
+		Select 1 as
+		'Result'
+		END
+		ELSE
+		BEGIN
+		Select 0 as 'Result'
+		END
+
+	</select>
+	<select id='checkIFUserIsActive' resultType="Boolean">
+		IF EXISTS(select 1
+		from transactionalData.TBL_DELIVERY_ACCEPTANCE where
+		projectID=#{projectID} and signumID=#{signumID} and Active=1)
+		BEGIN
+		Select 1 as 'Result'
+		END
+		ELSE
+		BEGIN
+		Select 0 as 'Result'
+		END
+	</select>
+
+	<select id='getRPMByProjectId' resultType="String">
+		select RPMSignumID
+		from transactionalData.TBL_RESOURCE_PLANNING_MANAGER
+		where
+		projectID=#{projectID} and active=1
+	</select>
+
+
+	<!-- //TODO code cleanup <select id='getDeliverableUnit' resultType='java.util.HashMap'> 
+		select DeliverableUnitName from [refData].[TBL_Project_Deliverable_Unit] 
+		where Active=1 </select> -->
+
+
+	<select id='checkIFUnitExists'
+		parameterType="ProjectDeliverableUnitModel" resultType="Boolean">
+		IF
+		EXISTS(select 1 from [refData].[TBL_Project_Deliverable_Unit] where
+		DeliverableUnitName=#{projectDeliverableUnitModel.deliverableUnitName}
+		and Active=1)
+		BEGIN
+		Select 1 as 'Result'
+		END
+		ELSE
+		BEGIN
+		Select 0 as 'Result'
+		END
+
+	</select>
+
+
+	<!-- <insert id='saveProjectDelUnit' parameterType="ProjectDeliverableUnitModel"> 
+		Insert into refData.TBL_Project_Deliverable_Unit (DeliverableUnitName,Description,Active,CreatedBy,CreatedOn,LastModifiedBy,LastModifiedOn) 
+		Values(#{projectDeliverableUnitModel.deliverableUnitName},#{projectDeliverableUnitModel.description},1,#{projectDeliverableUnitModel.createdBy}, 
+		getDate(),#{projectDeliverableUnitModel.lastModifiedBy},getDate()) </insert> -->
+
+
+	<select id='saveProjectDelUnit'
+		parameterType="ProjectDeliverableUnitModel">
+		{call [dbo].[usp_InsertDeliverableUnit](
+		#{projectDeliverableUnitModel.deliverableUnitName},
+		#{projectDeliverableUnitModel.description},
+		1,
+		#{projectDeliverableUnitModel.method},
+		#{projectDeliverableUnitModel.operatorCount},
+		#{projectDeliverableUnitModel.createdBy},
+		#{projectDeliverableUnitModel.lastModifiedBy}
+		)}
+	</select>
+
+	<select id='getAllDeliverableUnit'
+		resultType='java.util.HashMap'>
+		select
+		DeliverableUnitID,DeliverableUnitName,Description,Active,CreatedBy,CreatedOn,LastModifiedBy,LastModifiedOn
+		,IsMethod,IsOperatorCount
+		from [refData].[TBL_Project_Deliverable_Unit] where Active=1
+		<if test="term != null">
+			and DeliverableUnitName like '%${term}%'
+		</if>
+	</select>
+
+	<update id='deleteProjDelUnit'
+		parameterType="ProjectDeliverableUnitModel">
+
+		UPDATE refData.TBL_Project_Deliverable_Unit SET Active=0
+		,LastModifiedBy=
+		#{projectDeliverableUnitModel.lastModifiedBy}
+		,LastModifiedOn=
+		dbo.GetDateIST() WHERE DeliverableUnitID=
+		#{projectDeliverableUnitModel.deliverableUnitID};
+
+	</update>
+
+	<select id='checkIfProjectActive' resultType='boolean'>
+		select
+		(case when
+		Status in ('Closed') then 0 else 1 end) as isActive
+		from
+		transactionalData.TBL_Projects
+		where ProjectID =#{projectID}
+	</select>
+
+	<update id='EditDeliverableUnit'
+		parameterType="ProjectDeliverableUnitModel">
+		UPDATE [refData].[TBL_Project_Deliverable_Unit]
+		SET
+		[DeliverableUnitName]=#{projectDeliverableUnitModel.deliverableUnitName}
+		,[Description] =#{projectDeliverableUnitModel.description}
+		,[LastModifiedBy] =#{projectDeliverableUnitModel.lastModifiedBy}
+		,[LastModifiedOn] =dbo.GetDateIST()
+		,[IsMethod]=#{projectDeliverableUnitModel.method}
+		,[IsOperatorCount]=#{projectDeliverableUnitModel.operatorCount}
+		WHERE DeliverableUnitID=#{projectDeliverableUnitModel.deliverableUnitID}
+	</update>
+
+	<select id='checkDTRCASubActivityId' resultType='boolean'>
+		select count(1)
+		from refData.TBL_DTRCA_SUBACTIVITY
+		where SubActivityID =
+		#{subActivityId} and isActive = 1
+	</select>
+
+	<select id='getProjectScopeByScopeId'
+		resultType="ProjectScopeModel">
+		SELECT * FROM [transactionalData].[TBL_PROJECTSCOPE]
+		where
+		ProjectScopeID = #{projectScopeId}
+	</select>
+
+	<update id='updateProjectApprover'
+		parameterType="ProjectsTableModel">
+
+		update transactionalData.TBL_ProjectApprovals set
+		ApproverSignum=#{projectsTableModel.operationalManager} ,
+		ModifiedBy=#{projectsTableModel.createdBy},
+		ModifiedDate=dbo.GetDateIST()
+		where
+		ProjectID=#{projectsTableModel.projectID}
+	</update>
+
+	<select id='getProjectByProjectID'
+		resultType='com.ericsson.isf.model.ProjectsTableModel'>
+		select ProjectName , ProjectType , CPM , ProjectCreator ,
+		OpportunityID ,
+		StartDate , EndDate , ProjectDescription ,
+		ServAreaID ,
+		CreatedBy , CreatedOn , LastModifiedBy , LastModifiedOn , Status ,
+		OperationalManager , IsDeleted ,
+		ProjectID
+		from
+		transactionalData.TBL_PROJECTS where ProjectID = #{projectID} and
+		IsDeleted!=1 and Status not in('closed','rejected')
+	</select>
+
+	<select id='getResourceRequestDataByProjecDetails'
+		resultType='hashmap'>
+		select rr.ProjectScopeDetailID ,
+		psd.ProjectScopeID ,
+		psd.DomainID , psd.ServiceAreaID , TechnologyID
+		from
+		transactionalData.TBL_ResourceRequests rr inner join
+		transactionalData.TBL_PROJECTSCOPEDETAIL psd on
+		rr.ProjectScopeDetailID = psd.ProjectScopeDetailID and
+		ProjectID=#{projectComponentModel.projectID}
+		and
+		psd.ProjectScopeID=#{projectComponentModel.scopeID}
+	</select>
+
+	<select id='checkifProjectScopeErisite' resultType='Boolean'>
+		select
+		count(1)
+		from refdata.TBL_IntegrationSources where sourceId=#{sourceId}
+		and LOWER(externalGroup)='erisite'
+	</select>
+
+	<select id='checkIfSourceExists' resultType="Boolean">
+		IF Exists(SELECT 1
+		FROM [refData].[TBL_External_Sources] where
+		SourceName =
+		#{externalSource.sourceName})
+		Begin
+		Select 1 as 'Result'
+		End
+		else
+		Begin
+		Select 0 as 'Result'
+		End
+	</select>
+
+	<insert id='addExternalSource'
+		parameterType="com.ericsson.isf.model.ExternalSourceModel">
+		INSERT INTO [refData].[TBL_External_Sources]
+		([Type]
+		,[SourceName]
+		,[CreatedBy]
+		,[CreatedDate]
+		,[ReferenceOwner]
+		,[ReferenceSponser]
+		,[Description])
+		VALUES
+		(#{externalSource.type}
+		,#{externalSource.sourceName}
+		,#{externalSource.createdby}
+		,
+		dbo.GetDateIST()
+		,#{externalSource.referenceOwner}
+		,#{externalSource.referenceSponser}
+		,#{externalSource.description})
+	</insert>
+	<select id='getCountrybyMarketAreaID'
+		resultType='com.ericsson.isf.model.CountryModel'>
+		select c.CountryID,c.CountryName, c.MarketAreaID from
+		refData.TBL_COUNTRIES c
+		left join refData.TBL_MARKETAREAS M on
+		c.MarketAreaID = m.MarketAreaID
+		where c.MarketAreaID = #{marketAreaID}
+		order by c.CountryName
+	</select>
+
+	<resultMap type="ProjectDetailsModel"
+		id="ProjectDetailsModelResult">
+		<result property="projectID" column="projectID" />
+		<result property="projectName" column="projectName" />
+		<result property="projectType" column="projectType" />
+		<collection property='scopeDetails' ofType='ScopeDetailModel'>
+			<result property='projectID' column='projectID' />
+			<result property="scopeID" column="scopeID" />
+			<result property="scopeName" column="scopeName" />
+			<result property="scopeActive" column="scopeActive" />
+			<result property="haveExecutionPlan" column="haveExecutionPlan" />
+		</collection>
+	</resultMap>
+
+	<select id='getProjectAndScopeDetailBySignum'
+		statementType="CALLABLE" resultMap='ProjectDetailsModelResult'>
+		{call
+		[dbo].[GET_Project_Scope_Detail_BySignum](
+		#{signum},
+		#{role},
+		#{marketArea}
+		)}
+	</select>
+
+
+
+	<resultMap type="ProjectAllDetailsModel"
+		id="ProjectAllDetailsModelResult">
+		<id property='projectID' column='ProjectID' />
+		<result property='projectName' column='ProjectName' />
+		<result property='projectType' column='projectType' />
+		<result property='cPM' column='CPM' />
+		<result property='rPM' column='CPM' />
+		<result property='projectCreator' column='ProjectCreator' />
+		<result property='status' column='Status' />
+		<result property='startDate' column='StartDate' />
+		<result property='endDate' column='EndDate' />
+		<result property='projectDescription' column='ProjectDescription' />
+		<result property='productAreaID' column='ServAreaID' />
+		<result property='documentType' column='DocumentType' />
+		<result property='documentLinks' column='DocumentLinks' />
+		<result property='projectDocumentID' column='ProjectDocumentID' />
+		<result property='operationalManager' column='OperationalManager' />
+		<result property='pCode' column='PCode' />
+		<result property='createdBy' column='CreatedBy' />
+		<result property='serverBotOutputUrl' column='server_bot_output_url' />
+		<collection property='opportunityDetails' ofType='OpportunityDetailsModel'>
+			<id property='opportunityID' column='OpportunityID' />
+			<result property="opportunityName" column="OpportunityName" />
+			<result property="opportunityCode" column="OpportunityCode" />
+			<result property="isActive" column="Active" />
+			<result property="countryID" column="CountryID" />
+			<result property="countryName" column="CountryName" />
+			<result property="customerID" column="CustomerID" />
+			<result property="customerName" column="CustomerName" />
+			<result property="companyID" column="CompanyID" />
+			<result property="companyName" column="CompanyName" />
+			<result property="marketAreaID" column="MarketAreaID" />
+			<result property="marketAreaName" column="MarketAreaName" />
+		</collection>
+		<collection property='projectDocuments' ofType='ProjectDocumentModel'>
+			<id property='projectDocumentID' column='ProjectDocumentID' />
+			<result property="documentType" column="DocumentType" />
+			<result property="documentLinks" column="DocumentLinks" />
+		</collection>
+	</resultMap>
+
+	<resultMap type="ProjectDocumentModel" id="ProjectDocumentModelResult">
+		<id property='projectDocumentID' column='ProjectDocumentID' />
+		<result property="documentType" column="DocumentType" />
+		<result property="documentLinks" column="DocumentLinks" />
+	</resultMap>
+
+	<select id='getProjectDetails' statementType="CALLABLE"
+		resultMap='ProjectAllDetailsModelResult'>
+		SELECT Prj.ProjectID
+		,Prj.ProjectName
+		,Prj.ProjectType
+		,Prj.CPM
+		,Prj.ProjectCreator
+		,Prj.OpportunityID
+		,Convert(varchar(10),CONVERT(date,Prj.StartDate,101),101) as StartDate
+		,Convert(varchar(10),CONVERT(date,Prj.EndDate,101),101) as EndDate
+		,Prj.ProjectDescription
+		,Prj.ServAreaID
+		,Prj.OperationalManager
+		,Prj.OpportunityID
+		,Prj.Status
+		,Prj.CreatedBy
+		,Prj.RPM
+		,Opp.OpportunityName
+		,Opp.CompanyID
+		,Com.CompanyName
+		,Opp.CountryID
+		,C.CountryName
+		,Opp.CustomerID
+		,Cust.CustomerName
+		,Opp.MarketAreaID
+		,Opp.OpportunityCode
+		,Opp.OpportunityName
+		,MA.MarketAreaName
+		,s.PCode
+		,Prj.server_bot_output_url
+		FROM transactionalData.TBL_PROJECTS Prj
+		Join
+		transactionalData.TBL_OPPORTUNITY Opp on Prj.OpportunityID =
+		Opp.OpportunityID
+		Join refData.TBL_COMPANIES Com on Opp.CompanyID =
+		Com.CompanyID
+		Join refData.TBL_COUNTRIES C on Opp.CountryID =
+		c.CountryID
+		Join refData.TBL_CUSTOMERS Cust on Opp.CustomerID =
+		Cust.CustomerID
+		Join refData.TBL_SERVAREA s on Prj.ServAreaID =
+		s.ServAreaID
+		Join refData.TBL_MARKETAREAS MA on Opp.MarketAreaID =
+		MA.MarketAreaID
+		where ProjectID = #{ProjectID}
+	</select>
+
+	<select id="getProjectDocuments"
+		resultMap="ProjectDocumentModelResult">
+		SELECT
+		ProjectDocumentID,DocumentType,DocumentLinks,ProjectID
+		FROM
+		transactionalData.TBL_PROJECTDOCUMENTS
+		where ProjectID = #{ProjectID}
+		and IsActive = 1
+	</select>
+
+	<select id='getAllProjects' resultType='hashmap'>
+		select ProjectID,ProjectName,ProjectCreator,Status from
+		[transactionalData].[TBL_PROJECTS]
+		where IsDeleted = 0
+		<if test='signum != null'>
+			and CreatedBy = #{signum}
+		</if>
+		<if test='status != null'>
+			and Status = #{status}
+		</if>
+
+	</select>
+
+	<resultMap type='int' id='ProjectCreationModelResult'>
+		<id property='projectID' column='ProjectID' />
+		<result property='projectName' column='ProjectName' />
+		<result property='projectType' column='projectType' />
+		<result property='cPM' column='CPM' />
+		<result property='cpmName' column='CPMName' />
+		<result property='cpmMailId' column='CPMMailID' />
+		<result property='opportunityID' column='OpportunityID' />
+		<result property='opportunityCode' column='OpportunityCode' />
+		<result property='projectCreator' column='ProjectCreator' />
+		<result property='opportunityName' column='OpportunityName' />
+		<result property='countryID' column='CountryID' />
+		<result property='companyID' column='CompanyID' />
+		<result property='customerID' column='CustomerID' />
+		<result property='operationalManager' column='OperationalManager' />
+		<result property='pCode' column='PCode' />
+		<result property='marketAreaID' column='MarketAreaID' />
+		<result property='startDate' column='StartDate' />
+		<result property='endDate' column='EndDate' />
+		<result property='projectDescription' column='ProjectDescription' />
+		<result property='productAreaID' column='productAreaID' />
+		<result property='createdBy' column='CreatedBy' />
+		<result property='createdOn' column='CreatedOn' />
+		<result property='isActive' column='Active' />
+		<result property='rPM' column='RPM' />
+		<collection property='projectDocuments' ofType='ProjectDocumentModel'>
+			<id property='projectDocumentID' column='ProjectDocumentID' />
+			<result property="documentType" column="DocumentType" />
+			<result property="documentLinks" column="DocumentLinks" />
+			<result property="projectID" column="ProjectID" />
+			<result property="createdBy" column="CreatedBy" />
+			<result property="createdOn" column="CreatedOn" />
+			<result property="lastModifiedBy" column="LastModifiedBy" />
+			<result property="lastModifiedOn" column="LastModifiedOn" />
+			<result property="isActive" column="Active" />
+		</collection>
+	</resultMap>
+
+	<select id='createProject' statementType="CALLABLE"
+		resultMap='ProjectCreationModelResult' resultType="int">
+		{call
+		[dbo].[CreateProject](
+		#{projectCreationModel.projectName},
+		#{projectCreationModel.projectType},
+		#{projectCreationModel.operationalManager},
+		#{projectCreationModel.cPM},
+		#{projectCreationModel.cpmName},
+		#{projectCreationModel.cpmMailId},
+		#{projectCreationModel.projectCreator},
+		#{projectCreationModel.opportunityID},
+		#{projectCreationModel.opportunityName},
+		#{projectCreationModel.startDate},
+		#{projectCreationModel.endDate},
+		#{projectCreationModel.projectDescription},
+		#{projectCreationModel.productAreaID},
+		#{projectCreationModel.customerID},
+		#{projectCreationModel.countryID},
+		#{projectCreationModel.marketAreaID},
+		#{projectCreationModel.opportunityCode},
+		#{projectCreationModel.companyID},
+		#{projectCreationModel.rPM}
+		)}
+	</select>
+
+	<insert id="addProjectDocuments"
+		parameterType="ProjectDocumentModel">
+		INSERT INTO transactionalData.[TBL_PROJECTDOCUMENTS] (
+		[DocumentType],
+		[DocumentLinks],
+		[ProjectID],
+		[CreatedBy],
+		[CreatedOn],
+		[LastModifiedBy],
+		[LastModifiedOn],
+		[IsActive])
+		values (
+		#{projectDocument.documentType},
+		#{projectDocument.documentLinks},
+		#{projectId},
+		#{signum},
+		dbo.GetDateIST(),
+		#{signum},
+		dbo.GetDateIST(),
+		1
+		)
+	</insert>
+	<select id="haveExecutionPlan" resultType="Boolean">
+		IF Exists(select 1
+		from transactionalData.TBL_ExecutionPlan_master epm
+		inner join
+		transactionalData.TBL_ExecutionPlan_details epd on epm.executionPlanId
+		= epd.executionPlanId
+		inner join transactionalData.TBL_PROJECTSCOPE ps
+		on epm.planName = ps.ScopeName
+		and ps.deliverableStatus in
+		('In-Progress','Active','New')
+		and ps.ProjectID = #{projectID}
+		where
+		ps.Active = 1 and epd.scopeid = #{scopeID})
+		Begin
+		Select 1 as 'Result'
+		End
+		else
+		Begin
+		Select 0 as 'Result'
+		End
+
+	</select>
+
+	<resultMap type='ActiveProjectScopeModel' id='ActiveProjectScopeModel'>
+		<id property='projectScopeID' column='ProjectScopeID' />
+		
+		<result property='scopeName' column='ScopeName' />
+		<result property='startDate' column='StartDate' />
+		<result property='endDate' column='EndDate' />
+		<result property='projectID' column='ProjectID' />
+		<result property='createdBy' column='CreatedBy' />
+		<result property='createdDate' column='CreatedDate' />
+		<result property='lastModifiedBy' column='LastModifiedBy' />
+		<result property='lastModifiedDate' column='LastModifiedDate' />
+		<result property='active' column='Active' />
+		<result property='deliverableStatus' column='deliverableStatus' />
+		<collection property='scopeDetails' ofType='ScopeDetailsModel'>
+		 <id property='projectScopeDetailID' column='projectScopeDetailID' />
+			<result property="scopeName" column="scopeName" />
+			<result property="domain" column="domain" />
+			<result property="subDomain" column="subDomain" />
+			<result property="serviceArea" column="serviceArea" />
+			<result property="subServiceArea" column="subServiceArea" />
+			<result property="technology" column="technology" />
+			<result property="subActivityName" column="subActivityName" />
+		</collection>
+	</resultMap>
+
+	<select id="activeScopeByProject" resultMap="ProjectScopeModel">
+		DROP TABLE IF EXISTS #isWorkFlowCreated,#hasDeliverablePlan
+
+select scopeId,count(1) aa
+into #hasDeliverablePlan
+from transactionalData.TBL_Deliverable_Plan_Mapping
+where isActive = 1 group by scopeId
+
+select tps.ProjectScopeID, count(SubActivityFlowChartDefID) isWorkFlowCreated,
+ds.aa hasDeliverablePlan
+into #isWorkFlowCreated
+from transactionalData.TBL_PROJECTSCOPE tps 
+join transactionalData.TBL_PROJECTSCOPEDETAIL psd 
+on tps.ProjectScopeID=psd.ProjectScopeID 
+join transactionalData.TBL_ACTIVITYSCOPE tas 
+on psd.ProjectScopeDetailID=tas.ProjectScopeDetailID 
+join transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF def 
+on tps.ProjectID=def.ProjectID and tas.SubActivityID=def.SubActivityID 
+left join #hasDeliverablePlan ds
+on ds.scopeId = tps.ProjectScopeID
+where tps.ProjectID =#{projectId} and def.Active=1
+and psd.Active = 1 and tas.Active = 1
+group by tps.ProjectScopeID,ds.aa
+
+SELECT ps.ProjectScopeID ,ps.ScopeName ,ps.StartDate ,ps.EndDate ,ps.ProjectID ,ps.CreatedBy ,ps.CreatedDate
+,ps.requestType ,ps.vendorCode ,pdu.DeliverableUnitName as deliverableUnit ,av.vendorName ,tis.sourceName as source
+,tis.sourceId as sourceId ,ps.externalReference ,ps.externalProjectId 
+,ps.ParentWorkPlanTemplateName as externalWorkplanTemplate 
+,wf.isWorkFlowCreated
+,wf.hasDeliverablePlan
+,dpm.executionPlanId deliverablePlanId
+, ps.deliverableStatus 
+,d.DomainID as DomainID,
+d.Domain as Domain ,
+d.SubDomain as SubDomain,
+tch.TechnologyID as TechnologyID,
+tch.Technology as Technology, 
+ps.vendorCode 
+FROM transactionalData.TBL_PROJECTSCOPE as ps 
+left join transactionalData.TBL_PROJECTSCOPEDETAIL psd
+on ps.ProjectScopeID=psd.ProjectScopeID
+left join refData.TBL_ASPVendor as av 
+on ps.vendorCode = av.vendorCode 
+left join refData.TBL_Project_Deliverable_Unit 
+as pdu on ps.deliverableUnit = pdu.DeliverableUnitID 
+left join refData.TBL_IntegrationSources as tis
+on tis.sourceId = ps.source 
+left join #isWorkFlowCreated wf
+on ps.ProjectScopeID = wf.ProjectScopeID
+join transactionalData.TBL_Deliverable_Plan_Mapping dpm
+on dpm.scopeId = ps.ProjectScopeID
+and dpm.isActive = 1
+left join refData.TBL_DOMAIN d 
+on d.DomainID=psd.DomainID
+left join refData.TBL_TECHNOLOGY tch 
+on psd.TechnologyID=tch.TechnologyID
+where ps.ProjectID =#{projectId} and ps.Active = 1 
+and ps.deliverableStatus IN ('New','Active')
+		
+
+	</select>
+
+
+
+	<select id="getScopeDomainByProject" resultType="com.ericsson.isf.model.ScopeDomainProject">
+		select
+		d.DomainID as DomainID,
+		d.Domain as Domain ,
+		d.SubDomain as SubDomain,
+		tch.TechnologyID as TechnologyID,
+		tch.Technology as Technology
+		FROM
+		transactionalData.TBL_PROJECTSCOPE as
+		ps
+		left join
+		transactionalData.TBL_PROJECTSCOPEDETAIL psd on
+		ps.ProjectScopeID=psd.ProjectScopeID
+		left join refData.TBL_DOMAIN d on
+		d.DomainID=psd.DomainID
+		left join refData.TBL_TECHNOLOGY tch on
+		psd.TechnologyID=tch.TechnologyID
+		WHERE ps.projectid = #{projectId}
+		AND
+		ps.active = 1
+		AND ps.deliverablestatus IN ('New','Active')
+		AND (SELECT
+		Count(1) FROM transactionaldata.tbl_deliverable_plan_mapping
+		WHERE
+		scopeid = ps.projectscopeid AND isactive = 1) &gt;= 1
+		AND
+		ps.ProjectScopeID=#{projectScopeID}
+	</select>
+
+	<select id='getDeliveryResponsibleByProjectIDandSignum'
+		resultMap='DeliveryResponsibleModelResult'>
+		select ProjectID, DeliveryResponsible, SignumID, Active,
+		CreatedBy,
+		CreatedDate, LastModifiedBy, LastModifiedDate
+		from
+		transactionalData.TBL_Delivery_Responsible
+		where projectID =
+		#{projectID} and Active=1 and SignumID=#{signumID}
+	</select>
+
+	<select id="validateScopeDetailForActivitySubActivity"
+		parameterType="activityModel" resultType='Boolean'>
+		IF Exists(select 1 from
+		refData.TBL_SUBACTIVITY
+		where DomainID = #{activityModel.domainID}
+		and
+		ServiceAreaID = #{activityModel.serviceAreaID}
+		and TechnologyID =
+		#{activityModel.technologyID}
+		and Activity = #{activityModel.activity}
+		and SubActivity = #{activityModel.subActivity}
+		and Active = 1)
+		Begin
+		Select 1 as 'Result'
+		End
+		else
+		Begin
+		Select 0 as 'Result'
+		End
+	</select>
+	<select id='checkIfProjectScopeExistsExceptName'
+		resultType="Boolean">
+		IF EXISTS(select 1 from transactionalData.TBL_ProjectScope
+		where
+		projectID = #{projectID}
+		and ProjectScopeID=#{projectScopeId} and
+		Active=1)
+		BEGIN
+		SELECT 1 AS 'RESULT'
+		END
+		ELSE
+		BEGIN
+		SELECT 0 AS 'RESULT'
+		END
+	</select>
+
+	<insert id='addInternalSource'
+		parameterType="com.ericsson.isf.model.ExternalSourceModel">
+		insert into refData.TBL_IntegrationSources
+		(sourceName,
+		source_system_id,
+		externalGroup)
+		values
+		(#{externalSource.sourceName},
+		#{externalSource.sourceName},
+		'ISF'
+		)
+	</insert>
+
+	<select id="getWorkFlowsByProjectID"
+		resultType="com.ericsson.isf.model.WorkFlowFilterModel">
+		select concat(wfid,'_',WorkFlowName) as WorkFlowName, WFID
+		as workFlowId,
+		VersionNumber as workFlowVersion,
+		subActivityFlowChartDefID,
+		WFOwner from
+		transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF
+		where projectID=
+		#{projectID}
+		and (WorkFlowName like '%${term}%' or WFID like
+		'%${term}%')
+		and active=1
+
+	</select>
+
+	<select id="getEFWorkflowForSignumWFID"
+		resultType="com.ericsson.isf.model.WorkflowProficiencyModel">
+		declare @proficiencyid tinyInt
+
+		<if test="proficiencyStatus=='upgrade'">
+			SELECT @proficiencyid=proficiencyid
+			FROM
+			refdata.tbl_wf_proficiency_type
+			WHERE proficiencyname = 'Experienced'
+		</if>
+		<if test="proficiencyStatus=='downgrade'">
+			SELECT @proficiencyid=proficiencyid
+			FROM
+			refdata.tbl_wf_proficiency_type
+			WHERE proficiencyname = 'Assessed'
+		</if>
+
+		Drop TABLE IF Exists #tbl_work_flow_user_proficiency
+		select * into
+		#tbl_work_flow_user_proficiency
+		from (SELECT up.calculationmode,
+		up.calculationstartdate,
+		up.createdby, up.createdon, up.displayedmode,
+		up.lastmodifiedby, up.lastmodifiedon,
+		up.projectid, up.signumid,
+		up.subactivityid, up.wfid,
+		up.wfuserproficenctid, up.workflowname,
+		twpt.proficiencyname, ta1.reason, emp2.employeename as employeename,
+		emp3.employeename as
+		lastmodifiedByEmaployeeName,
+		ROW_NUMBER()
+		OVER(PARTITION BY PROJECTID,WFID,SUBACTIVITYID,signumid ORDER BY
+		up.LastModifiedOn DESC)RN
+		FROM
+		TRANSACTIONALDATA.TBL_WORK_FLOW_USER_PROFICIENCY up
+		inner Join
+		refdata.tbl_wf_proficiency_type twpt ON twpt.proficiencyid =
+		up.displayedmode
+		INNER JOIN refdata.TBL_Employees emp2
+		ON
+		emp2.Signum=up.SignumID
+		INNER JOIN refdata.TBL_Employees emp3
+		ON
+		emp3.Signum=up.lastmodifiedby
+		left JOIN
+		transactionalData.TBL_proficiency_Action ta1
+		ON
+		ta1.WFUserProficiencyID=up.WFUserProficenctID
+		WHERE
+		<if test="listofsignumIDs.size() > 0">
+			signumID IN
+			<foreach item="signumValue" index="index"
+				collection="listofsignumIDs" open="(" separator="," close=")">
+				<if test="signumValue !=null and signumValue !=''">
+					         #{signumValue}
+				</if>
+
+				 
+			</foreach>
+
+		</if>
+
+		<if
+			test="listofWorkFlowIDs.size() > 0  and    listofsignumIDs.size() > 0">
+			AND
+
+		</if>
+
+		<if test="listofWorkFlowIDs.size() > 0">
+			wfid IN
+			<foreach item="wfId" index="index"
+				collection="listofWorkFlowIDs" open="(" separator="," close=")">
+				<if test="wfId != 0  ">
+					#{wfId}
+				</if>
+			</foreach>
+		</if>
+
+		) tbl where rn=1
+		<if test="proficiencyStatus!='all'">
+			AND tbl.DisplayedMode=@proficiencyid
+		</if>
+
+
+
+		<foreach item="column" index="index"
+			collection="dataTableRequest.columns">
+			<if test="column.search != ''">
+				<if test="column.data != 'priority'">
+					<choose>
+						<when test="column.data == 'workFlowName' ">
+							and (wfid like #{column.search} or workflowname
+							like
+							#{column.search})
+						</when>
+						<when test="column.data=='signum'">
+							and (SignumID like #{column.search} or
+							tbl.EmployeeName like
+							#{column.search})
+						</when>
+						<when test="column.data=='triggeredBy'">
+							and calculationMode like #{column.search}
+						</when>
+						<when test="column.data=='modifiedBy'">
+							and (lastmodifiedby like #{column.search} or
+							tbl.lastmodifiedByEmaployeeName like #{column.search})
+						</when>
+						<when test="column.data=='proficiencyLevel'">
+							AND tbl.ProficiencyName LIKE #{column.search}
+						</when>
+						<when test="column.data=='comments'">
+							AND tbl.reason LIKE #{column.search}
+						</when>
+						<otherwise>
+							and ${column.data} like #{column.search}
+						</otherwise>
+					</choose>
+				</if>
+			</if>
+		</foreach>
+
+		<if
+			test='dataTableRequest.search != null and dataTableRequest.search != ""'>
+			and (
+			wfid like #{dataTableRequest.search}
+			or workflowname like
+			#{dataTableRequest.search}
+			or tbl.EmployeeName like
+			#{dataTableRequest.search}
+			or tbl.lastmodifiedByEmaployeeName like
+			#{dataTableRequest.search}
+			or tbl.ProficiencyName like
+			#{dataTableRequest.search}
+			or calculationMode like
+			#{dataTableRequest.search}
+			or signumid like #{dataTableRequest.search}
+			or tbl.reason like #{dataTableRequest.search}
+			or tbl.lastmodifiedon
+			like #{dataTableRequest.search}
+			or lastmodifiedby like
+			#{dataTableRequest.search}
+
+			)
+		</if>
+		SELECT twp.workflowname AS WorkFlowName,
+		twp.wfid AS workFlowId,
+		twpt.proficiencyname AS proficiencyLevel,
+		twp.calculationMode AS
+		triggeredBy,
+		CONCAT(twp.signumid,' (',emp.EmployeeName,')') AS signum,
+		CONCAT(twp.lastmodifiedby,' (',emp1.EmployeeName,')') AS modifiedBy,
+		twp.projectid AS projectId,
+		twp.SubActivityId AS subActivityId,
+		twp.DisplayedMode AS displayMode ,
+		twp.WFUserProficenctID AS
+		wfUserProficenctID,
+		twp.LastModifiedOn AS lastModifiedOn
+		,ISNULL(ta.Reason,'NA') as comments,
+		Count(*) OVER() recordsTotal
+
+		FROM
+		#tbl_work_flow_user_proficiency twp
+		INNER JOIN
+		refdata.tbl_wf_proficiency_type twpt
+		ON twpt.proficiencyID =
+		twp.DisplayedMode
+		INNER JOIN refdata.TBL_Employees emp
+		ON
+		emp.Signum=twp.SignumID
+		INNER JOIN refdata.TBL_Employees emp1
+		ON
+		emp1.Signum=twp.lastmodifiedby
+		left JOIN
+		transactionalData.TBL_proficiency_Action ta
+		ON
+		ta.WFUserProficiencyID=twp.WFUserProficenctID
+		WHERE twp.projectid =
+		#{projectID}
+		and (twpt.ProficiencyName &lt;&gt; 'Assessed' or
+		calculationmode &lt;&gt;
+		'Machine' )
+
+		AND
+		<if test="listofsignumIDs.size() > 0">
+			twp.signumid IN
+			<foreach item="signumValue" index="index"
+				collection="listofsignumIDs" open="(" separator="," close=")">
+				<if test="signumValue !=null and signumValue!=''">
+					         #{signumValue}
+				</if>
+
+				  
+			</foreach>
+
+		</if>
+		<if
+			test="listofWorkFlowIDs.size() > 0  and    listofsignumIDs.size() > 0">
+			and
+
+		</if>
+
+		<if test="listofWorkFlowIDs.size() > 0">
+			twp.wfid IN
+			<foreach item="wfId" index="index"
+				collection="listofWorkFlowIDs" open="(" separator="," close=")">
+				<if test="wfId != 0  ">
+					#{wfId}
+				</if>
+			</foreach>
+		</if>
+		<if test="proficiencyStatus!='all'">
+			AND twp.DisplayedMode=@proficiencyid
+		</if>
+		<choose>
+			<when
+				test='dataTableRequest.order != null and dataTableRequest.order.sortDir!=null and dataTableRequest.order.data != ""'>
+				order by ${dataTableRequest.order.data}
+				${dataTableRequest.order.sortDir}
+			</when>
+			<otherwise>
+				ORDER BY twpt.ProficiencyID DESC
+			</otherwise>
+		</choose>
+		<if test='dataTableRequest.length != -1'>
+			OFFSET ${dataTableRequest.start} ROWS
+			FETCH NEXT
+			${dataTableRequest.length} ROWS ONLY
+		</if>
+	</select>
+
+	<!-- <select id="updateProficiency" > declare @DispMode TINYINT <foreach 
+		item="Item" index="index" collection="workFlowProficiencyModelList" open="begin" 
+		close=";end;" separator=";"> select @DispMode = ProficiencyID from refdata.tbl_wf_proficiency_type 
+		where ProficiencyName != #{Item.proficiencyLevel} Update transactionalData.TBL_WORK_FLOW_USER_PROFICIENCY 
+		set DisplayedMode = @DispMode, LastModifiedBy = #{Item.modifiedBy}, LastModifiedOn 
+		= dbo.GetDateIST(), calculationMode= #{Item.triggeredBy}, CalculationStartDate= 
+		dbo.GetDateIST() Where projectid = #{projectID} AND signumid=#{Item.signum} 
+		AND wfid=#{Item.workFlowId} AND SubActivityId=#{Item.subActivityId} </foreach> 
+		</select> -->
+	<insert id="insertUserProficiencyOnUpdate"
+		useGeneratedKeys="true"
+		keyProperty="workflowProficiencyModel.wfUserProficenctID"
+		keyColumn="wfUserProficenctID">
+		declare @DispMode TINYINT
+
+		select @DispMode = ProficiencyID from
+		refdata.tbl_wf_proficiency_type
+		where ProficiencyName !=
+		#{workflowProficiencyModel.proficiencyLevel}
+
+		INSERT INTO
+		transactionaldata.tbl_work_flow_user_proficiency
+		(SignumID,
+		ProjectID,
+		SubActivityID,
+		WorkFlowName,
+		DisplayedMode,
+		CreatedBy,
+		CreatedOn,
+		WFID,
+		CalculationMode,
+		<if test='workflowProficiencyModel.proficiencyLevel != "Assessed" '>
+			CalculationStartDate,
+		</if>
+		LastModifiedBy
+		)
+		VALUES
+		(
+		<!-- <foreach collection="workFlowProficiencyModelList" item="Item" index="index" 
+			open="(" separator="),(" close=")"> -->
+		#{workflowProficiencyModel.signum},
+		#{projectID},
+		#{workflowProficiencyModel.subActivityId},
+		#{workflowProficiencyModel.workFlowName},
+		@DispMode,
+		#{workflowProficiencyModel.modifiedBy},
+		dbo.Getdateist(),
+		#{workflowProficiencyModel.workFlowId},
+		#{workflowProficiencyModel.triggeredBy},
+		<if test='workflowProficiencyModel.proficiencyLevel != "Assessed" '>
+			dbo.Getdateist(),
+		</if>
+		#{workflowProficiencyModel.modifiedBy}
+		)
+		<!-- </foreach> -->
+
+	</insert>
+
+	<insert id="addProficiencyAction">
+
+		<!-- <foreach item="Item" index="index" collection="workFlowProficiencyModelList" 
+			open="begin" close=";end;" separator=";"> -->
+
+		insert into transactionalData.TBL_proficiency_Action
+		(ByManagerOnSignum,
+		DateOfAction,
+		<if test='workFlowProficiencyModel.comments != "" '>
+			Reason,
+		</if>
+		WFUserProficiencyID,
+		IsActive,
+		CreatedBy,
+		CreatedDate,
+		ModifiedBy,
+		ModifiedDate)
+		values(
+		#{workFlowProficiencyModel.signum},
+		dbo.GetDateIST(),
+		<if test='workFlowProficiencyModel.comments != "" '>
+			#{workFlowProficiencyModel.comments},
+		</if>
+		#{workFlowProficiencyModel.wfUserProficenctID},
+		1,
+		#{workFlowProficiencyModel.modifiedBy},
+		dbo.GetDateIST(),
+		#{workFlowProficiencyModel.modifiedBy},
+		dbo.GetDateIST())
+		<!-- </foreach> -->
+
+	</insert>
+
+	<select id="updatePreviousAction">
+
+		<foreach item="Item" index="index"
+			collection="workFlowProficiencyModelList" open="begin" close=";end;"
+			separator=";">
+
+			Update transactionalData.TBL_proficiency_Action
+			set
+			IsActive=0,
+			ModifiedBy= #{Item.modifiedBy},
+			ModifiedDate=
+			dbo.GetDateIST()
+
+			where WFUserProficiencyID=
+			#{Item.previousWfUserProficenctID} and
+			IsActive=1 and
+			ByManagerOnSignum= #{Item.signum}
+
+		</foreach>
+
+	</select>
+
+
+	<select id="updatePreviousActionInReset">
+
+		Update transactionalData.TBL_proficiency_Action
+
+		set
+		IsActive=0,
+		ModifiedBy= #{workFlowProficiencyModel.modifiedBy},
+		ModifiedDate= dbo.GetDateIST()
+
+		where IsActive=1 and ByManagerOnSignum=
+		#{workFlowProficiencyModel.signum}
+		and wfUserProficiencyID in (select
+		WFUserProficenctID from
+		transactionaldata.tbl_work_flow_user_proficiency
+		where wfid =
+		#{workFlowProficiencyModel.workFlowId} )
+
+
+	</select>
+	<select id="isfProjectIdIfExists" resultType="ProjectScopeModel">
+		if exists(Select 1  from transactionalData.TBL_ProjectScope
+			where 
+			externalReference=#{externalReference} COLLATE SQL_Latin1_General_CP1_CS_AS
+			and ExternalProjectID=#{externalProjectId} and ParentWorkPlanTemplateName=#{externalWorkplanTemplate}
+			and Active=1 and deliverableStatus in ('Active', 'New'))
+		Begin
+		 select  top 1 * from transactionalData.TBL_ProjectScope
+			where 
+			externalReference=#{externalReference} COLLATE SQL_Latin1_General_CP1_CS_AS
+			and ExternalProjectID=#{externalProjectId} and ParentWorkPlanTemplateName=#{externalWorkplanTemplate}
+			and Active=1 
+			and deliverableStatus in ('Active', 'New')
+			order by SystemID desc
+		End
+		
+	</select>
+
+	<select id="checkIfExternalProjectExistForSameIsfproject" resultType="com.ericsson.isf.model.ExternalAppReferenceModel">
+			select top 1 externalProjectId
+       		from  [refData].[TBL_ExternalApplicationReference] where externalProjectId=#{externalProjectId} and sourceid = #{sourceId}
+       		and projectId = #{projectId}
+	</select>
+	<update id="updateIsfProjectIdUploadedBy">
+	    update transactionalData.TBL_BULK_WORK_ORDER_CREATION
+	    set projectId=#{projectID},
+	    UploadedBy=#{uploadedBy}
+	    where ExternalSourceID=#{sourceId} and ExternalProjectID=#{externalProjectId} 
+	    and ExternalActivityName=#{externalReference} COLLATE SQL_Latin1_General_CP1_CS_AS
+	    and ParentWorkPlanTemplateName=#{externalWorkplanTemplate}
+	    and ParentWorkPlanTemplateName is not null
+	    and projectId=0;
+	</update>
+	<update id="updateIsfProjectIdExternal">
+	update transactionalData.TBl_External_projects
+	    set ISFProjectID=0
+	    where SourceID=#{sourceId} and ExternalProjectID=#{externalProjectId} 
+	    and ParentWorkPlanTemplateName=#{externalWorkplanTemplate}
+	    and ISFProjectID=#{projectID} 
+	    and ParentWorkPlanId IN ${wPlanIds};
+	</update>
+	
+	<select id='getListWoPlanID'  resultType='Integer' >
+        select distinct  wop.WOPlanID
+		from [transactionalData].[TBL_WORK_ORDER_PLAN] wop 
+		join [transactionalData].[TBL_WORK_ORDER]  wo on wo.WOPlanID = wop.WOPlanID
+<!-- 		join [transactionalData].[TBL_WORK_ORDER_BOOKING_DETAILS] wobd on wobd.WOID = wo.WOID -->
+		where WO.active = 1 and wop.ProjectID = #{projectComponentModel.projectID} 
+		<if test=" projectComponentModel.lstWoPlanID != null">
+		<if test=" projectComponentModel.lstWoPlanID.size() > 0 ">
+		and wop.WOPlanID in
+		<foreach item="item" index="index" collection="projectComponentModel.lstWoPlanID" open="(" separator="," close=")"> 
+		 #{item} 
+		</foreach> 
+		</if>
+		</if>
+		<if test="projectComponentModel.woPlanID != null">
+			and wop.WOPlanID = #{projectComponentModel.woPlanID}
+		</if>
+		and 
+		WO.Status  not  in ('ASSIGNED','DEFERRED','REOPENED')
+    </select>
+    
+    
+    <select id='getWorkPlanIds'  resultType='Integer' >
+	    select ParentWorkPlanId from transactionalData.TBL_BULK_WORK_ORDER_CREATION
+	    where ExternalSourceID=#{sourceId} and ExternalProjectID=#{externalProjectId} 
+	    and ExternalActivityName=#{externalReference}
+	    and ParentWorkPlanTemplateName=#{externalWorkplanTemplate}
+	    and ParentWorkPlanTemplateName is not null
+	    order by LastModifiedDate desc
+	    
+	</select>
+    <update id='updateWorkOrderErisite'>
+		UPDATE [transactionalData].[TBL_WORK_ORDER]
+		set
+		[transactionalData].[TBL_WORK_ORDER].LastModifiedBy =
+		#{projectComponentModel.loggedInUser} ,
+		[transactionalData].[TBL_WORK_ORDER].LastModifiedDate =
+		dbo.GetDateIST(),
+		[transactionalData].[TBL_WORK_ORDER].StatusComment	=	'Deferring WO since Erisite Deliverable Deleted',
+		[transactionalData].[TBL_WORK_ORDER].Status	=	'DEFERRED'
+		from [transactionalData].[TBL_WORK_ORDER] WO
+		join
+		[transactionalData].[TBL_WORK_ORDER_PLAN] WOP on WOP.WOPlanID =
+		WO.WOPlanID
+		join [transactionalData].[TBL_PROJECTSCOPEDETAIL] PSD on
+		WOP.ScopeID = PSD.ProjectScopeID
+
+		where 1=1
+		and WO.Status in ('PLANNED','ONHOLD','ASSIGNED','REOPENED')
+		and WO.Active=1
+		<if test="projectComponentModel.projectID != null">
+			and WOP.ProjectID = #{projectComponentModel.projectID}
+		</if>
+		<if test="projectComponentModel.scopeID != null">
+			and WOP.ScopeID = #{projectComponentModel.scopeID}
+		</if>
+		<if test="projectComponentModel.scopeDetailID != null">
+			and PSD.ProjectScopeDetailID =
+			#{projectComponentModel.scopeDetailID}
+		</if>
+
+	</update>
+	<update id = 'updateProjectTblExternalProject'>
+	 update  [transactionalData].[TBL_EXTERNAL_PROJECTS]
+      set ISFProjectID=0
+      where SourceID=#{source} and ExternalProjectID = #{externalProjectId}
+      and ISFProjectID=#{isfProjectId}
+      and ParentWorkPlanTemplateName= #{externalWorkplanTemplate}
+	</update>
+	<update id='updateWorkOrderErisitePlanned'>
+		UPDATE [transactionalData].[TBL_WORK_ORDER]
+		set
+		[transactionalData].[TBL_WORK_ORDER].LastModifiedBy =
+		#{projectComponentModel.loggedInUser} ,
+		[transactionalData].[TBL_WORK_ORDER].LastModifiedDate =
+		dbo.GetDateIST(),
+		[transactionalData].[TBL_WORK_ORDER].StatusComment	=	'Deferring WO since Erisite Deliverable Status: Inactive',
+		[transactionalData].[TBL_WORK_ORDER].Status	=	'DEFERRED'
+		from [transactionalData].[TBL_WORK_ORDER] WO
+		join
+		[transactionalData].[TBL_WORK_ORDER_PLAN] WOP on WOP.WOPlanID =
+		WO.WOPlanID
+		join [transactionalData].[TBL_PROJECTSCOPEDETAIL] PSD on
+		WOP.ScopeID = PSD.ProjectScopeID
+
+		where 1=1
+		and WO.Status in ('PLANNED','ONHOLD','ASSIGNED','REOPENED')
+		and WO.Active=1
+		<if test="projectComponentModel.projectID != null">
+			and WOP.ProjectID = #{projectComponentModel.projectID}
+		</if>
+		<if test="projectComponentModel.scopeID != null">
+			and WOP.ScopeID = #{projectComponentModel.scopeID}
+		</if>
+		<if test="projectComponentModel.scopeDetailID != null">
+			and PSD.ProjectScopeDetailID =
+			#{projectComponentModel.scopeDetailID}
+		</if>
+
+	</update>	
+	
+		<select id='chechIfScopeAlreadyMapped'
+		resultType="ProjectScopeModel">
+		If Exists(select 1 from transactionalData.TBL_PROJECTSCOPE 
+			where externalProjectId=#{projectScopeModel.externalProjectId}
+			and source=#{projectScopeModel.source}
+			and externalReference=#{projectScopeModel.externalReference}
+			and ParentWorkPlanTemplateName=#{projectScopeModel.parentWorkplanTemplateName}
+			and deliverableStatus in (#{status})
+			and Active=1)
+		Begin 
+			select *  from transactionalData.TBL_PROJECTSCOPE 
+			where externalProjectId=#{projectScopeModel.externalProjectId}
+			and source=#{projectScopeModel.source}
+			and externalReference=#{projectScopeModel.externalReference}
+			and ParentWorkPlanTemplateName=#{projectScopeModel.parentWorkplanTemplateName}
+			and deliverableStatus in (#{status})
+			and Active=1
+		End
+		
+	</select>
+	
+	<update id="updateExecPlanId">
+	    update transactionalData.TBL_BULK_WORK_ORDER_CREATION
+	    set ExecutionPlanID=0
+	    where ExternalSourceID=#{sourceId} and ExternalProjectID=#{externalProjectId} 
+	    and ExternalActivityName=#{externalReference} COLLATE SQL_Latin1_General_CP1_CS_AS
+	    and ParentWorkPlanTemplateName=#{externalWorkplanTemplate}
+	    and ParentWorkPlanTemplateName is not null
+	    and projectId=#{projectID};
+	</update>
+    <select id='checkActiveProject' resultType='Boolean'>     
+		IF Exists(
+		select ProjectName from transactionalData.TBL_PROJECTS 
+		where projectId=#{projectID} and IsDeleted=0 and  Status not in ('Closed','Rejected')
+		)
+		Begin
+		Select 1 as 'Result'
+		End
+		else
+		Begin
+		Select 0 as 'Result'
+		End
+    </select>
+    
+      <select id='getScopeType' resultType="hashmap">
+          select ScopeTypeID ,ScopeType from [refData].[TBL_ScopeTypeWithDeliverableUnit] where Active=1
+      </select>
+      
+      <select id='isScopeTypeRequired' resultType='Boolean'>
+        IF EXISTS (select 1 from [refData].[TBL_Project_Deliverable_Unit]
+					where DeliverableUnitID=#{deliverableUnit} and IsScopeType=1 and Active=1
+				  )
+			BEGIN
+			  select 1 as 'Result'
+			END
+		ELSE
+			BEGIN
+			 select 0 as 'Result'
+			END 			 
+      </select>
+      
+      <select id='getMethodForDU' resultType="hashmap">
+          select MethodID, Method from [refData].[TBL_MethodForDeliverableUnit] where Active=1
+      </select>
+      
+      <select id='isMethodRequired' resultType='Boolean'>
+        IF EXISTS (select 1 from [refData].[TBL_Project_Deliverable_Unit]
+					where DeliverableUnitID=#{deliverableUnit} and IsMethod=1 and Active=1
+				  )
+			BEGIN
+			  select 1 as 'Result'
+			END
+		ELSE
+			BEGIN
+			 select 0 as 'Result'
+			END 			 
+      </select>
+      
+      <select id='getOperatorCount' resultType="hashmap">
+          select OperatorCountID ,OperatorCount from [refData].[TBL_OperatorCountWithDeliverableUnit] where Active=1
+      </select>
+      
+      <select id='isOperatorCountRequired' resultType='Boolean'>
+        IF EXISTS (select 1 from [refData].[TBL_Project_Deliverable_Unit]
+					where DeliverableUnitID=#{deliverableUnit} and IsOperatorCount=1 and Active=1
+				  )
+			BEGIN
+			  select 1 as 'Result'
+			END
+		ELSE
+			BEGIN
+			 select 0 as 'Result'
+			END 			 
+      </select>
+      
+      <select id='getProjectFinancials' resultType="hashmap">
+          select ProjectFinancialsID ,ProjectFinancials from [refData].[TBL_ProjectFinancialsWithDeliverableUnit] where Active=1
+      </select>
+      
+      <select id='isProjectFinancialsRequired' resultType='Boolean'>
+        IF EXISTS (select 1 from [refData].[TBL_Project_Deliverable_Unit]
+					where DeliverableUnitID=#{deliverableUnit} and IsProjectFinancial=1 and Active=1
+				  )
+			BEGIN
+			  select 1 as 'Result'
+			END
+		ELSE
+			BEGIN
+			 select 0 as 'Result'
+			END 			 
+      </select>
+      
+      
+      <select id="downloadDeliverableData" resultType="java.util.LinkedHashMap">
+      
+	    select
+		case when b.executionplanid  is null then tps.scopename
+        else tps.scopename+'('+convert(varchar(15),b.executionplanid )+')' end [Deliverable (Plan ID)]
+		,tps.deliverableStatus as [Deliverable Status]
+		,pdu.DeliverableUnitName as [Deliverable Unit]
+		,tps.StartDate as [Start Date]
+		,tps.EndDate as [End Date]
+		,tps.requestType  as [Request Type]
+		,convert(varchar(15),tps.vendorCode ) +'/'+ av.vendorname [Vendor code/Name]
+	    ,st.ScopeType as [Scope Type]
+	    ,m.Method as Method
+	    ,pf.ProjectFinancials as [Deliverable Type]
+		,tis.sourceName as Source
+		,tps.externalReference as [External Reference]
+		,tps.externalProjectId as [External ProjectID]
+		,tps.ParentWorkPlanTemplateName as [External Workplan Template]
+        
+		from
+		transactionalData.TBL_PROJECTSCOPE tps
+		left join
+		transactionalData.TBL_PROJECTSCOPEDETAIL psd on
+		tps.ProjectScopeID=psd.ProjectScopeID
+		left join
+		transactionalData.TBL_ACTIVITYSCOPE tas on
+		psd.ProjectScopeDetailID=tas.ProjectScopeDetailID
+		left join
+		transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF def on
+		tps.ProjectID=def.ProjectID and tas.SubActivityID=def.SubActivityID
+		and def.Active = 1
+		left join (select rnum as hasDeliverablePlan,
+		executionPlanId, scopeId
+		from (Select
+		row_number() over(partition by
+		executionPlanId order by executionplanid desc) as
+		rnum,
+		executionPlanId,
+		scopeId
+		from
+		transactionalData.TBL_Deliverable_Plan_Mapping
+		where isActive = 1) a
+		where rnum = 1) b on b.scopeId = tps.ProjectScopeID
+		left join
+		refData.TBL_ASPVendor as av on tps.vendorCode = av.vendorCode
+		left join
+		refData.TBL_Project_Deliverable_Unit as pdu on
+		tps.deliverableUnit = pdu.DeliverableUnitID
+		left join refData.TBL_IntegrationSources as tis
+		on tis.sourceId = tps.source
+		LEFT JOIN [refData].[TBL_ScopeTypeWithDeliverableUnit] as st
+	    on st.ScopeTypeID=tps.ScopeTypeID
+	    LEFT JOIN [refData].[TBL_MethodForDeliverableUnit] as m
+	    on m.MethodID=tps.MethodID
+	    LEFT JOIN [refData].[TBL_ProjectFinancialsWithDeliverableUnit] as pf
+	    on pf.ProjectFinancialsID=tps.ProjectFinancialsID
+		
+		where tps.ProjectID = #{projectId} and
+		tps.active=1
+		<if test="status != null and status != ''">
+			and tps.deliverableStatus in (${status})
+		</if>
+			
+		group by
+		tps.ProjectScopeID
+		,tps.ScopeName
+		,tps.StartDate
+		,tps.EndDate
+		,tps.ProjectID
+		,tps.CreatedBy
+		,tps.CreatedDate
+		,tps.requestType
+		,tps.vendorCode
+		,pdu.DeliverableUnitName
+		,av.vendorName
+		,tis.sourceName
+		,tis.sourceId
+		,tps.externalReference
+		,tps.externalProjectId
+		,tps.ParentWorkPlanTemplateName
+		,tps.deliverableStatus
+		,b.hasDeliverablePlan
+		,b.executionPlanId
+		,st.ScopeType
+	    ,m.Method
+	    ,pf.ProjectFinancials
+	    order by tps.ProjectScopeID
+	     				  		   
+	  </select>
+	  
+	  
+	  <select id='getIDAndTypeOfActivity' resultType="com.ericsson.isf.model.AdhocTypeModel">
+		select Type,ADHOCBOOKINGACTIVITYID as id from refData.TBL_ADHOC_BOOKING_ACTIVITY 
+	    where Activity=#{activity} and Permission='{"CRUD Permissions": ["displayOnWEB"]}' order by Type desc
+	  </select>
+	  <select id='checkDrCount' resultType="boolean">
+	  SELECT CASE WHEN count(distinct DeliveryResponsibleID ) > #{maxLimit}-1 THEN 1
+		ELSE 0 END AS flag
+		FROM transactionalData.TBL_DELIVERY_RESPONSIBLE
+		where ProjectID=#{projectID} and Active=1
+	  </select>
+
+    
+</mapper>

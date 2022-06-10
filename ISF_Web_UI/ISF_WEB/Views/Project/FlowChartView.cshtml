@@ -1,0 +1,77 @@
+﻿@{
+    Layout = "";
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Work Flow</title>
+    @Scripts.Render("~/bundles/SessionManagement")
+    @Styles.Render("~/bundles/css/rappid")
+    @Styles.Render("~/bundles/css/bootstrap")
+
+    @Styles.Render("~/bundles/css/DataTableStyle")
+    <link type="text/css" rel="stylesheet" href="~/Content/CSS/font-awesome.min.css" />
+    <style>
+        .popover {
+            max-width: 100%;
+            // Max Width of the popover (depending on the container!)
+        }
+
+        .joint-lightbox.modal {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+
+        <div id="wOdetailForWF"></div>
+        <hr />
+        <div class="row">
+            <div class="col-md-2">Started<span style="margin-left: 5px ;padding: 3px 10px 3px 10px;background-color:#6e88ff;"></span></div>
+            <div class="col-md-2">Completed<span style=" margin-left: 5px ;padding: 3px 10px 3px 10px;background-color:#00983b;"></span></div>
+            <div class="col-md-2">On Hold<span style="margin-left: 5px ;padding: 3px 10px 3px 10px;background-color:#E5E500;"></span></div>
+            <div class="col-md-2">Skipped<span style=" margin-left: 5px ;padding: 3px 10px 3px 10px;background-color:#FFAB73 ;"></span></div>
+            <div class="col-md-2">Manual<span style=" margin-left: 5px ;padding: 3px 17px 3px 17px;background-color:#dcd7d7;border: 1px solid #31d0c6 ;"></span></div>
+            <div class="col-md-2">Automatic<span style="margin-left: 5px;padding: 3px 4px 4px 4px;background-color:#ffffff;border: 1px solid red;"><span style=" margin-left: 0px ;padding: 1px 15px 1px 15px;background-color:#31d0c6;border: 1px solid red"></span></span></div>
+        </div>
+        <br />
+    </div>
+
+
+    <div class="container" id="app">
+        <div class="app-header">
+            <div class="app-title">
+                <h1>VIEW WorkFlow</h1>
+            </div>
+            <div class="toolbar-container"></div>
+        </div>
+        <div class="app-body">
+            <div class="stencil-container"></div>
+            <div class="paper-container"></div>
+            <div class="inspector-container"></div>
+            <div class="navigator-container"></div>
+        </div>
+    </div>
+    <!-- Rappid/JointJS dependencies: -->
+    @Scripts.Render("~/bundles/rappid")
+    @Scripts.Render("~/bundles/GetSessionVars")
+    @Scripts.Render("~/bundles/config")
+    @Scripts.Render("~/bundles/bootstrap")
+    @Scripts.Render("~/bundles/datepicker")
+    @Scripts.Render("~/bundles/DeliveryExecution")
+    @Scripts.Render("~/bundles/DataTableScript")
+    @Scripts.Render("~/bundles/FlowChartView")
+    @*<script src="~/Scripts/Login/AzureADLogin.js"></script>*@
+    @Scripts.Render("~/bundles/customConsole")
+    @Scripts.Render("~/bundles/ajaxRequest")
+    <!-- Local file warning: -->
+    <div id="message-fs" style="display: none;">
+        <p>The application was open locally using the file protocol. It is recommended to access it trough a <b>Web server</b>.</p>
+        <p>Please see <a href="README.md">instructions</a>.</p>
+    </div>
+
+</body>
+</html>
+

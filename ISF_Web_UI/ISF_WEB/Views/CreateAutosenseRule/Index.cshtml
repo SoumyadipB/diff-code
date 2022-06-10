@@ -1,0 +1,145 @@
+﻿@{
+    ViewBag.Title = "Create Autosense Rule";
+}
+
+
+
+
+@Styles.Render("~/bundles/css/DataTableStyle")
+@Styles.Render("~/bundles/css/CreateAutosenseRule")
+@Styles.Render("~/bundles/css/select2")
+@Scripts.Render("~/bundles/select2")
+@Scripts.Render("~/bundles/CreateAutosenseRule")
+@Scripts.Render("~/bundles/DataTableScript")
+@Scripts.Render("~/bundles/DataTablesAdvancedScript")
+@*<script type="text/javascript" src="~/Scripts\CreateAutosenseRule\autoSense.js"></script>*@
+<script type="text/javascript" src="~/Scripts/CreateAutosenseRule/validation_rule.js"></script>
+<style>
+    .glyphicon-ring {
+        width: 22px;
+        height: 21px;
+    }
+    #ruleDeleteIcon:hover {
+        background-color: #ea573fe !important;
+        }
+    #ruleEditIcon:hover{
+        background-color: #1169b5;
+        border: 1px solid #2e6da4;
+        }
+
+    .fa-plus-circle {
+        color: #256fb3;
+    }
+    /*span.td-container {
+  height: 34px !important; 
+  display: inline-block;
+      overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+}*/    
+
+    .ruleDescStyling{
+        min-width:70px;
+        max-width: 200px;    
+        width: 26%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+   
+
+    .panel-default > .panel-heading {
+        color: #333;
+        background-color: #eae9e9;
+        border-color: #ddd;
+        font-weight: bolder;
+    }
+
+    .table thead > tr > th {
+        color: #2049bcdb;
+    }
+
+    .table-bordered {
+        box-shadow: 1px 5px 11px 5px rgba(0, 0, 0, 0.3);
+        position: relative;
+    }
+
+    .checkBoxRow input:checked ~ .autosenseCheckbox {
+        background-color: #2ada4d;
+    }
+    /*.checkBoxRow input[type="checkbox"]:checked{
+       background: #2ada4d;
+       border: #7f83a2 1px solid;
+    }*/
+    a.icon-edit:hover {
+        background-color: #467aaf;
+    }
+
+    .hiddenRuleID {
+        display: none;
+    }
+</style>
+
+
+
+<div class="col-lg-12" style="padding-right: 0px;padding-left: 0px;">
+    <div class="panel panel-default" style="margin: 10px;width: 99%;">
+        <div class="panel-heading" style="margin-bottom: 6px;">
+
+            <span style="float: left;">Auto-sense Rules</span>
+            <a href="#" class="pull-right" data-toggle="tooltip" title="Click to add Auto-sense Rules." name="managePlus" id="btnAutosenseRuleAdd" onclick="openAutoSenseDialog()"><i class="fa fa-plus-circle fa-2x" style="position: relative;top: -3px;"></i></a>
+        </div>
+        <div class="panel-body">
+
+            <div class="table-responsive" style="overflow-x:auto;overflow-y:auto">
+                <table style="width:100%; margin-right: 0px;" id="addAutoSenseRuleTable" class="table table-bordered table-striped table-hover"></table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade modalCheck" id="createAutosenseRule" role="dialog">
+    <div class="modal-dialog modal-lg" style="overflow-y: initial !important;width:100%">
+        <div class="modal-content" style="height:585px;position:relative; bottom:22px;" >
+            <div class="modal-header" style="height:43px; background-color:#595674; color:white">
+                <div class="row pull-right" style="margin-top: -13px;">
+
+                 <i class="fa fa-download glyphicon-ring glyphicon-green" id="downloadJsonIcon" title="Download Json" style="position:relative; cursor:pointer; color:darkgray; pointer-events:none;  left:15px;" aria-hidden="true" onclick="downloadJson()"></i>
+                    
+                    @*<button class="btn btn-primary component" type="button" title="Download Rule" onclick="downloadJson()">Download Rule</button>*@
+                    <button class="btn btn-success btn-sm"  id="saveRule" type="button" style="position:relative; left:25px; background:white; font-size: 10px; top:2px;" title="Save this rule" data-mode="save" onclick="saveRuleJson()" disabled>Save this rule</button>
+                    <button class="btn btn-danger btn-sm" type="button" style="position:relative; left:25px; font-size: 10px; top:2px" title="Close this rule" onclick="closeAutosensePopup()">Close</button>
+                </div>
+                <h4 class="modal-title " style="line-height:1.428571; font-size:16px; text-align:center; margin-top:-8px;">Create Auto-Sense Rule</h4>
+            </div>
+            <div class="modal-body" style="height:600px;overflow-y:auto; width:100%; padding:0px;top: -7px;">
+                <input type="hidden" id="autosenseRuleData" data-ruleName="rule1" />
+                <iframe id="iframeAutosenseRule" style="height:100%; width:100%"></iframe>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+@*<div class="modal fade " id="autoSenseClose" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content" style="width:350px; position:relative; top:200px;left:100px"> 
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h5 class="modal-title" >Save Your Changes</h5>
+            </div>
+            <div class="modal-body" id="updateReason" style=" overflow-y:auto ">
+                <h5> You have made some changes which are not saved yet. Do you want to continue ?</h5>
+                <div style="text-align:center">
+                    <button id="reasonBtn" onclick="closeAutosense()" pull-right class="btn btn-danger btn-sm">Yes</button>
+                    <button id="saveAutosenseYes" onclick="closeAutosenseAlert()" pull-right class="btn btn-success btn-sm">No</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>*@

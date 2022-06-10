@@ -1,0 +1,312 @@
+﻿@Scripts.Render("~/bundles/DataTableScript")
+@Scripts.Render("~/bundles/DataTablesAdvancedScript")
+@Styles.Render("~/bundles/css/DataTableStyle")
+
+
+@Scripts.Render("~/bundles/Reports")
+@Styles.Render("~/bundles/css/datepicker")
+
+@Styles.Render("~/bundles/css/checkboxAndRadioStyle")
+
+
+<script>
+    function goBack() {
+        window.history.back();
+    }
+</script>
+
+
+<style>
+    .btn {
+        font-size: 12px;
+    }
+
+
+    section {
+        padding: 5px;
+    }
+
+    label {
+        font-size: 12px !important;
+    }
+
+    .select2-container .select2-selection--single .select2-selection__rendered {
+        font-size: 11px !important;
+    }
+
+    .widget-container {
+        box-shadow: none;
+    }
+
+    .tab-pane {
+        padding-top: 20px;
+    }
+
+
+    .filtersList {
+        padding: 6px;
+    }
+
+    .groupByList {
+        padding: 6px;
+    }
+
+    li.rightside {
+        float: right;
+        display: flex;
+    }
+
+        li.rightside a i {
+            color: #0d20b7;
+            font-size: 17px;
+        }
+
+    .generateReport {
+        height: 36px;
+    }
+
+    .rpt_description {
+        font-size: 12px;
+    }
+
+    .select2-hidden-accessible {
+        display: none !important;
+    }
+
+    .panel-heading a:after {
+        /* symbol for "opening" panels */
+        font-family: 'FontAwesome'; /* essential for enabling font Awesome*/
+        content: "\f106"; /* fa angle-up */
+        float: right;
+    }
+
+    .panel-heading a.collapsed:after {
+        /*symbol for "closing panel"*/
+        content: "\f107"; /* fa angle-down */
+    }
+
+    tfoot {
+        display: table-header-group;
+    }
+
+    .select2-selection--multiple {
+        overflow: scroll !important;
+        height: 80px !important;
+    }
+
+    .invisible {
+        visibility: hidden;
+    }
+
+    .rm:after {
+        content: none !important;
+    }
+
+    .form-control {
+        border-left: 1px solid;
+        border-right: 1px solid;
+        border-top: 1px solid;
+        border-color: #CCC !important;
+        border-bottom: 1px solid #CCC !important;
+        border-radius: 3px !important;
+    }
+    /*@@media (max-width: 768px) {
+       .rptDateFilterRow{
+            margin-top:23px;
+        }
+    }*/
+
+    .filterInput {
+        margin-bottom: 6%;
+    }
+</style>
+
+<style type="text/css" media="screen and (max-width: 768px)">
+
+    body {
+        padding-top: 58px;
+    }
+</style>
+
+<style type="text/css" media="screen and (min-width: 768px) and (max-width: 1024px)">
+    .filterInput {
+        margin-bottom: 10%;
+    }
+</style>
+
+<style type="text/css" media="screen and (min-width: 330px) and (max-width: 767px)">
+
+    #generateRptNameSelected {
+        font-size: 9px !important;
+        width: 69%;
+    }
+
+    .rpt_description {
+        font-size: 8px;
+    }
+
+    .rm {
+        width: 46px;
+        overflow: hidden;
+    }
+
+    .filterInput {
+        margin-bottom: 26%;
+    }
+</style>
+<style type="text/css" media="screen and (min-width: 320px) and (max-width: 329px)">
+    #generateRptNameSelected {
+        font-size: 9px !important;
+        width: 69%;
+    }
+
+    .col-md-12 {
+        padding-left: 8px;
+        padding-right: 8px;
+    }
+
+    .rpt_description {
+        font-size: 8px;
+    }
+
+    .rm {
+        width: 46px;
+        overflow: hidden;
+    }
+
+    .filterInput {
+        margin-bottom: 26%;
+    }
+</style>
+
+
+
+<div id="rptImgLoader" style="display:none;"><img src="~/Content/images/loading.gif"></div>
+
+<div class="row" style="overflow: hidden; height: 0px;">
+
+    <div class="col-md-4">
+        <label>Module</label>
+        <div style="width: 300px;">
+            <select id="sel_genrpt_module" class="select2able"></select>
+        </div>
+        <div class="row">
+            <label id="cbxSA-Required" style="color: red; font-size: 10px; padding-left: 15px;"></label>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <label>Sub Module</label>
+        <div style="width: 300px;">
+            <select id="sel_genrpt_sub_module" class="select2able"></select>
+        </div>
+        <div class="row">
+            <label id="cbxTechnology-Required" style="color: red; font-size: 10px; padding-left: 15px;"></label>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <label>Report Name</label>
+        <div style="width:300px;">
+            <select id="sel_genrpt_report_name" class="select2able"></select>
+        </div>
+        <div class="row">
+            <label id="cbxDomain-Required" style="color: red; font-size: 10px; padding-left: 15px;"></label>
+        </div>
+    </div>
+</div>
+
+
+
+<div class="row" id="generateRptDownArea" style="display:none;">
+
+    <div class="row" id="generateRpt_options">
+        <div class="panel panel-default">
+            <div class="panel-heading" style="text-align: left; height: 46px;font-family:inherit;">
+                <a data-toggle="collapse" href="#reportDes">
+                    <label id="generateRptNameSelected" style="font-size: 17px; font-weight: normal;">
+                        Report Name
+
+                        <a onclick="goBack()" class="btn btn-info rm " role="button" style="float:right">Back to Report Index</a>
+
+                        @*<span class="rpt_description"><br />Report Description</span>*@
+                    </label>
+
+                </a>
+            </div>
+
+            <div id="reportDes" class="panel-body collapse in">
+
+                <div id="reportsFilter" class="row"></div>
+
+                <div class="row"><div id="generateRptGroupByDiv"></div></div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div style="text-align:right;padding-bottom:10px;">
+        <span style="color: red; padding-right: 10px;"> <i class="fa fa-info-circle" style="font-size: 15px;"></i> More data will lead to more loading time. Apply filters and be precise while fetching data.</span>
+    </div>
+    <ul class="nav nav-tabs">
+        <li class="active"><a data-toggle="tab" href="#genRpt_chartView">Chart View</a></li>
+        <li><a data-toggle="tab" href="#genRpt_tableView">Table View</a></li>
+
+
+        <li class="rightside" role="presentation">
+            <button class="generateReport btn btn-primary" type="button" title="Generate" onclick="GenerateReport()">Generate</button>
+
+        </li>
+
+        <li class="rightside" role="presentation" style="display:flex;" id="rpt_downloadLink"></li>
+    </ul>
+
+    <div class="tab-content">
+        <div id="genRpt_chartView" class="tab-pane fade in active">
+
+            <div class="row">
+                <div class="col-md-8 col-sm-12">
+                    <div class="btn-group" role="group" id="generateRpt_toolbar" style="padding-left:30px;"></div>
+                </div>
+                <div class="col-md-4" style="text-align:right;">
+
+
+                    <div class="checkbox checkbox-success">
+                        <input type="checkbox" id="displayDataLabel" /><label title="Show or Hide Labels" for="displayDataLabel" style="padding-left:4px;"> Show Data Labels</label>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- MAP CONTAINER -->
+            <div class="row">
+                <div id="generaterpt_container" style="height: 500px; margin: 0 auto"></div>
+
+            </div>
+        </div>
+        <div id="genRpt_tableView" class="tab-pane fade">
+            <div class="dataTable_wrapper" style="overflow-x: auto;">
+                <div id="generateRpt_table_view_div" class="table-responsive"></div>
+            </div>
+
+        </div>
+
+
+
+    </div>
+
+</div>
+
+
+<script>
+
+    $(document).ready(function () {
+        getRptInit();
+
+        $('.btn.btn-icon-toggle').removeClass("btn-default").css('color', 'white');
+
+    });
+
+</script>

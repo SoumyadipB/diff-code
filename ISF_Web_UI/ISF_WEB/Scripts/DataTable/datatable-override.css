@@ -1,0 +1,37 @@
+
+/*BUTTON VISIBLE OVERRIDE*/
+
+.dt-button.buttons-columnVisibility{
+        color:#bbb;
+    }
+.dt-button.buttons-columnVisibility.active{
+    color: black;
+}
+
+div.dt-button-collection {
+    width: 300%;
+    overflow:auto;
+    max-height:180px;
+}
+
+div.dt-button-collection button.dt-button, div.dt-button-collection div.dt-button, div.dt-button-collection a.dt-button{
+    width:48%;
+    float:left;
+    margin-left:5px;
+}
+
+button.dt-button, div.dt-button, a.dt-button{
+    white-space:normal;
+}
+
+
+/*OVERRIDE DATATABLE.MIN.CSS*/
+
+table.dataTable thead th, table.dataTable thead td {
+    
+     border-bottom: 0px solid #111; 
+}
+
+table.dataTable tfoot th, table.dataTable tfoot td{
+    border-top:1px solid #e9e9eb;
+}

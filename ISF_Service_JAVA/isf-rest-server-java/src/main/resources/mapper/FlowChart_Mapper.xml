@@ -1,0 +1,2680 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ericsson.isf.mapper.FlowChartMapper">
+    <resultMap type="FlowChartStepModel" id="FlowChartStepModelResult">
+        <id property="subActivityFlowChartStepID" column="SubActivityFlowChartStepID"/>
+        <result property="subActivityFlowChartDefID" column="SubActivityFlowChartDefID"/>
+        <result property="stepName" column="StepName" />
+        <result property="displayStepName" column="DisplayStepName" />
+        <result property="graphicalRepresentation" column="GraphicalRepresentation" />
+        <result property="executionType" column="ExecutionType" />
+        <result property="responsible" column="Responsible" />
+        <result property="isTaskOrSubTask" column="IsTaskOrSubTask" />
+        <result property="taskOrParentTaskMapped" column="TaskOrParentTaskMapped" />
+        <result property="ordering" column="Ordering" />
+        <result property="stepJSON" column="StepJSON" />
+        <result property="toolName" column="ToolName" />
+        <result property="outputUpload" column="OutputUpload" />
+        <result property="cascadeInput" column="CascadeInput" />
+    </resultMap>
+        
+    <resultMap type="FlowChartDependencyModel" id="FlowChartDependencyModelResult">
+        <result property="subActivityFlowChartDepID" column="SubActivityFlowChartDepID"/>
+        <result property="srcFlowChartStepID" column="SourceFlowChartStepID"/>
+        <result property="srcStepName" column="SourceStepName"/>
+        <result property="destFlowChartStepID" column="DestFlowChartStepID" />
+        <result property="destStepName" column="DestStepName" />
+        <result property="linkJson" column="LinkJSON" />
+        <result property="linkText" column = "DependencyCondition"/>
+    </resultMap>
+        
+    <resultMap type="FlowChartDefModel" id="FlowChartDefModelResult">
+        <id property="subActivityFlowChartDefID" column="SubActivityFlowChartDefID"/>
+        <result property="projectID" column="ProjectID"/>
+        <result property="subActivityID" column="SubActivityID"/>
+        <result property="flowChartJSON" column="FlowChartJSON" />
+        <result property="sourceProjectID" column="SourceProjectID" />
+        <result property="createdBy" column="CreatedBy" />
+        <result property="createdDate" column="CreatedDate" />
+        <result property="active" column="Active" />
+        <result property="versionNumber" column="VersionNumber" />
+        <result property="workFlowName" column="WorkFlowName" />
+        <result property="type" column="Type" />
+        
+        <result property="neNeeded" column="NENeededForExecution" />
+        <result property="experiencedFlow" column="MultiView" />
+        <result property="ftrValue" column="FTR"/>
+        <result property="slaHours" column="SLAHours"/>
+        <result property="isAutoSenseEnable" column="IsAutoSenseEnable"/>
+        <result property="loeMeasurementCriterionID" column="LOEMeasurementCriterionID"/>
+    </resultMap>   
+    
+    <select id='getVersionName' resultMap ="FlowChartDefModelResult">
+        select SubActivityFlowChartDefID,ProjectID,SubActivityID,VersionNumber,WorkFlowName from transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF where ProjectID NOT IN #{projectID} and SubActivityID = #{subActivityID} and active =1 
+    </select> 
+       
+    <select id='getWorkflow' resultType="Boolean">
+     IF Exists(select 1  from transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF where ProjectID = #{projectID} and WorkFlowName = #{WorkFlowName} and SubActivityID =#{subActivityID} and active =1 )
+        Begin
+        Select 1 as 'Result'
+        End
+        else
+        Begin
+        Select 0 as 'Result'
+        End
+        
+    </select>
+    
+    <select id='getVersionNameCurProjId' resultMap ="FlowChartDefModelResult">
+        select SubActivityFlowChartDefID,ProjectID,SubActivityID,FlowChartJson,VersionNumber,WorkFlowName,LOEMeasurementCriterionID
+        from transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF where SubActivityFlowChartDefID = #{flowChartDefID}
+    </select> 
+    
+    <select id='getWorkFlowVersionData' resultMap ="FlowChartDefModelResult">
+        select SubActivityFlowChartDefID,ProjectID,SubActivityID,FlowChartJson,VersionNumber,WorkFlowName from transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF where ProjectID = #{projectID} and SubActivityID = #{subActivityID} and WFID=#{wfid} and active =1 
+        and type in ('PROJECTDEFINED')
+    </select> 
+    
+    <resultMap type="ErrorBean" id="ErrorBeanResult">
+        <result property="errorCategory" column="ErroerCategory"/>
+        <result property="errorDescription" column="ErrorDescription"/>
+        <result property="details" column ="Details"/>
+    </resultMap>
+      
+        
+    <select id ="uploadExcel" resultMap="ErrorBeanResult" statementType="CALLABLE">
+        {call user_sp_FlowChart_UploadExcel_V4 (#{FileTable,mode=IN, jdbcType=VARCHAR},
+        #{projectID,mode=IN, jdbcType=INTEGER},
+        #{subActivityID,mode=IN, jdbcType=INTEGER},
+        #{signumID,mode=IN, jdbcType=VARCHAR},
+        #{workFlowName,mode=IN, jdbcType=VARCHAR})}
+    </select>
+        
+    <select id  ='getFlowChartStepDetails' resultMap ='FlowChartStepModelResult'>
+        select stp.SubActivityFlowChartDefID,stp.StepName,stp.GraphicalRepresentation,stp.ExecutionType,stp.Responsible,
+		stp.TaskOrParentTaskMapped,stp.StepJSON,stp.ToolName,stp.OutputUpload,stp.SubActivityFlowChartStepID,stp.CascadeInput
+		from transactionalData.TBL_SUBACTIVITY_FLOWCHART_STEP stp inner join transactionalData.TBL_FlOWCHART_DEFINATION_STAGING
+		def on def.SubActivityFlowChartDefID = stp.SubActivityFlowChartDefID
+        where def.ProjectID = #{projectID} and def.SubActivityID = #{subActivityID}
+    </select>   
+    
+    <select id = 'getFlowDefIDForSubActivity' resultType="java.util.LinkedHashMap">
+        select  d1.SubActivityFlowChartDefID,d1.VersionNumber
+        from transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF d1
+        inner join 
+        (
+        select ProjectID, SubActivityID, MAX(VersionNumber) as MaxVersionNumber
+        from transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF 
+        group by ProjectID, SubActivityID
+        ) as d2 on d1.VersionNumber = d2.MaxVersionNumber
+        and d1.ProjectID = d2.ProjectID
+        and d1.SubActivityID = d2.SubActivityID
+        where d1.ProjectID = #{projectID} and d1.SubActivityID = #{subActivityID}
+    </select>
+    
+    <select id='getLatestDefID' resultType="Integer">
+        select ISNULL(MAX(SubActivityFlowChartDefID),0) as SubActivityFlowChartDefID 
+        from transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF 
+        where ProjectID=#{projectID} and SubActivityID = #{subActivityID} 
+        and FlowChartJSON is NULL and Type is NULL
+    </select>
+    
+    <select id='deleteStepData'>
+        IF EXISTS(Select 1 from transactionalData.TBL_SUBACTIVITY_FLOWCHART_STEP where SubActivityFlowChartDefID =#{subaActivityDefID})
+        BEGIN
+        delete from transactionalData.TBL_SUBACTIVITY_FLOWCHART_STEP where SubActivityFlowChartDefID =#{subaActivityDefID}
+        END
+    </select>
+    
+    <select id='deleteEmptyData'>
+        delete from transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF where SubActivityFlowChartDefID =#{subaActivityDefID} and FlowChartJSON is NULL and Type is NULL
+    </select>
+    
+      <select id='deleteFlowStepData'>
+          IF EXISTS(Select * from transactionalData.TBL_FLOWCHART_STEP_DETAILS where SubActivityFlowChartDefID =#{subActivityDefID})
+        BEGIN
+        delete from transactionalData.TBL_FLOWCHART_STEP_DETAILS where SubActivityFlowChartDefID =#{subActivityDefID}
+          END
+    </select>
+    
+     <select id='deleteFlowStepLinkData'>
+         IF EXISTS(Select * from transactionalData.TBL_WORK_ORDER_FLOWCHART_STEP_LINK_DETAILS where SubActivityFlowChartDefID =#{subActivityDefID})
+        BEGIN
+        delete from transactionalData.TBL_WORK_ORDER_FLOWCHART_STEP_LINK_DETAILS where SubActivityFlowChartDefID =#{subActivityDefID}
+         END
+    </select>
+    
+    <select id='deleteWFDefData'>
+        delete from transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF where SubActivityFlowChartDefID =#{subActivityDefID}
+    </select>
+    
+    
+    <select id = 'getActiveFlowDefIDForSubActivity' resultType="Integer">
+        select top 1 SubActivityFlowChartDefID from  transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF 
+        where SubActivityID=#{subActivityID} and ProjectID=#{projectID} and Active=1 
+    </select>
+         
+    <update id  = 'saveJSONForStepID'>
+        
+        update transactionalData.TBL_SUBACTIVITY_FLOWCHART_STEP  set stepJSON = #{json} where subActivityFlowChartStepID =#{stepID}
+        
+    </update>
+         
+    <select id ='getDependencyStep' resultMap = 'FlowChartDependencyModelResult'>
+        select dep.SubActivityFlowChartDepID, 
+        src.SubActivityFlowChartStepID as SourceFlowChartStepID, src.StepName as SourceStepName, 
+        dest.SubActivityFlowChartStepID as DestFlowChartStepID, dest.StepName as destStepName,
+        dep.LinkJSON,dep.DependencyCondition
+        from transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEP dep
+        inner join transactionalData.TBL_SUBACTIVITY_FLOWCHART_STEP src on dep.SubActivityFlowChartDependentStepID = src.SubActivityFlowChartStepID
+        inner join transactionalData.TBL_SUBACTIVITY_FLOWCHART_STEP dest on dep.SubActivityFlowChartStepID = dest.SubActivityFlowChartStepID
+        inner join transactionalData.TBL_FlOWCHART_DEFINATION_STAGING srcDef on srcDef.SubActivityFlowChartDefID = src.SubActivityFlowChartDefID
+        where srcDef.SubActivityID = #{subActivityID}
+    </select>
+         
+    <update id ='saveJSONFromUI' parameterType="FlowChartDefModel">
+        
+        update transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF 
+        set  flowChartJSON = #{flowChartDefModel.flowChartJSON},
+        Type =#{type},
+        LastModifiedBy = #{flowChartDefModel.createdBy},
+        LastModifiedDate = dbo.GetDateIST(),
+        WorkFlowName = #{flowChartDefModel.workFlowName},
+        
+        NENeededForExecution = #{flowChartDefModel.neNeeded},
+        MultiView = #{flowChartDefModel.experiencedFlow},
+        WFOwner = #{flowChartDefModel.wfOwner},
+        SLAHours = #{flowChartDefModel.slaHours},
+        FTR = #{flowChartDefModel.ftrValue}
+        where SubActivityFlowChartDefID = #{flowChartDefModel.subActivityFlowChartDefID}
+        
+    </update>
+         
+    <update id="updateUiFlowChartStepDetails">
+        
+        Update transactionalData.TBL_FLOWCHART_STEP_DETAILS 
+        set 
+        StepID = #{stepId,jdbcType=VARCHAR},
+        StepName = #{stepName,jdbcType=VARCHAR},
+        TaskID = #{taskId,jdbcType=INTEGER},
+        Task = #{taskName,jdbcType=VARCHAR},
+        ExecutionType = #{exeType, jdbcType=VARCHAR},
+        AvgEstdEffort = #{avgEft, jdbcType=VARCHAR},
+        ToolID = #{toolId,jdbcType=INTEGER},
+        Active = 1
+        where
+        SubActivityFlowChartDefID = #{subActFCDefID,jdbcType=INTEGER}
+        
+    </update>
+                 
+    <insert id ='saveTaskDetailsForStep'>
+        INSERT INTO transactionalData.TBL_FLOWCHART_STEP_DETAILS(SubActivityFlowChartDefID,StepID,StepName,TaskID,Task,ExecutionType,AvgEstdEffort,ToolID,Active,Ordering,VersionNumber,MasterTask)
+        Values (#{flowChartDefID},#{flowChartStepID},#{stepName},#{taskID},#{task},#{executionType},#{avgEstdEffort},#{toolID},1,#{order},#{versionNumber},#{task})
+    </insert>
+         
+    <select id='viewFlowChartForSubActivity' resultType='java.util.Map'>
+        IF Exists (select top 1 WOFlowChartID from transactionalData.TBL_WORK_ORDER_FLOWCHART_DETAILS where WOID = #{woID} and Active=1)
+        Begin
+        Declare @SubActivityFlowChartDefID int
+        select @SubActivityFlowChartDefID=max(SubActivityFlowChartDefID) from transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF where ProjectID = #{projectID} and
+        subActivityID= #{subActivityID} and Type = 'CUSTOM' and Active=1 and WFID=#{wfid}
+        select sfd.FlowChartJSON,sfd.SubActivityFlowChartDefID,sfd.WorkFlowName,
+        case when MultiView = '1'  then 'Assessed,Experienced' else 'Assessed' end as Mode,sfd.MultiView,sfd.IsAutoSenseEnable as enableField
+        from transactionalData.TBL_WORK_ORDER_FLOWCHART_DETAILS wfd
+        inner join transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF sfd on sfd.SubActivityFlowChartDefID = wfd.SubActivityFlowChartDefID
+        where woid = #{woID}
+        and wfd.SubActivityFlowChartDefID =@SubActivityFlowChartDefID
+        End
+        Else
+        Begin
+        select FlowChartJSON,SubActivityFlowChartDefID,WorkFlowName,
+        case when MultiView = '1'  then 'Assessed,Experienced' else 'Assessed' end as Mode,MultiView,IsAutoSenseEnable as enableField
+        from transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF	
+        where ProjectID = #{projectID} and SubActivityID = #{subActivityID} and Type = 'PROJECTDEFINED' and Active=1 and WFID=#{wfid}
+        End
+    </select>
+         
+    <select id='getFlowChartBySubActFCDefID' resultMap='FlowChartDefModelResult'>
+        select * from [transactionalData].[TBL_FLOWCHART_STEP_DETAILS] where SubActivityFlowChartDefID = #{subActFCDefID}
+    </select>
+    
+    <select id='getFlowChartByDefID' resultType='java.util.Map'>
+		select fsd.SubActivityFlowChartDefID,fsd.ExecutionType,fsd.StepID,fsd.RpaID,fsd.Savings,fsd.Task,fsd.StepName
+		from [transactionalData].[TBL_FLOWCHART_STEP_DETAILS] fsd
+		join transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF sfd on sfd.SubActivityFlowChartDefID = fsd.SubActivityFlowChartDefID
+		
+		where sfd.SubActivityID = #{subActivityID} and sfd.VersionNumber = #{wfVersion} and sfd.ProjectID = #{projectID}
+		and sfd.WFID=#{wfid}
+		and StepType not in ('ericsson.EndStep','ericsson.StartStep','ericsson.Decision','ericsson.ManualDisabled')
+    </select>
+    
+    <update id='updateVersionInFlowChart' >
+        
+        update [transactionalData].[TBL_FLOWCHART_STEP_DETAILS]  set VersionNumber = #{version} where SubActivityFlowChartDefID = #{subActivityFlowChartStepID}
+        
+    </update>
+    
+    <select id='viewFlowChartForSubActivityWithVersion' resultType='java.util.Map'>
+        IF Exists (select top 1 WOFlowChartID  from transactionalData.TBL_WORK_ORDER_FLOWCHART_DETAILS where WOID = #{woID} 
+        
+        )
+        Begin
+         Declare @SubActivityFlowChartDefID int
+         select @SubActivityFlowChartDefID= max(SubActivityFlowChartDefID) from transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF where ProjectID = #{projectID} and
+        subActivityID= #{subActivityID} and Type = 'CUSTOM' and VersionNumber = #{wfVersion} and WFID=#{wfid}
+        select sfd.FlowChartJSON,sfd.SubActivityFlowChartDefID,sfd.WorkFlowName,
+        case when MultiView = '1'  then 'Assessed,Experienced' else 'Assessed' end as Mode,sfd.MultiView,sfd.IsAutoSenseEnable as enableField
+        from transactionalData.TBL_WORK_ORDER_FLOWCHART_DETAILS wfd
+        inner join transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF sfd on sfd.SubActivityFlowChartDefID = wfd.SubActivityFlowChartDefID
+        where woid = #{woID}
+        and wfd.SubActivityFlowChartDefID =@SubActivityFlowChartDefID
+        End
+        Else
+        Begin
+        select FlowChartJSON,SubActivityFlowChartDefID,WorkFlowName,
+        case when MultiView = '1'  then 'Assessed,Experienced' else 'Assessed' end as Mode,MultiView,IsAutoSenseEnable as enableField
+        from transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF	
+        where ProjectID = #{projectID} and SubActivityID = #{subActivityID} and Type = 'PROJECTDEFINED' and VersionNumber = #{wfVersion} and WFID=#{wfid}
+        End
+    </select>   
+         
+         
+    <select id ='getStepJSON' resultMap ='FlowChartStepModelResult'>
+        select SubActivityFlowChartStepID,StepName,stepJSON from transactionalData.TBL_SUBACTIVITY_FLOWCHART_STEP stp
+        inner join transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF dep on dep.SubActivityFlowChartDefID = stp.SubActivityFlowChartDefID
+        where ProjectID = #{projectID} and dep.SubActivityID=#{subActivityID} 
+    </select>
+    
+    <select id = "getWFBySubActivityId" resultType = 'hashmap'>
+    	select SubActivityFlowChartDefID,WorkFlowName,VersionNumber,WFID 
+		from transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF 
+		where SubActivityID = #{subActivityId} and ProjectID = #{projectId} and Active = 1 and Type in ('PROJECTDEFINED')
+    </select>
+         
+    <update id ="saveJSONLinkForDependency" >
+        
+        update transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEP  SET LinkJSON = #{jsonLink} where subActivityFlowChartDepID =#{depID}
+        
+    </update>
+            
+    <resultMap type="FlowChartStepDetailsModel" id="FlowChartStepDetailsResult">
+        <id property="scopeTaskMappingID" column="ScopeTaskMappingID"/>
+        <result property="projectID" column="ProjectID"/>
+        <result property="scopeID" column="ScopeID"/>
+        <result property="subActivityID" column="SubActivityID" />
+        <result property="taskID" column="TaskID" />
+        <result property="executionType" column="ExecutionType" />
+        <result property="task" column="Task" />
+        <result property="avgEstdEffort" column="AvgEstdEffort" />
+        <result property="toolID" column="ToolID" />
+        <result property="tool" column="Tool" />
+    </resultMap>
+    
+    <resultMap type="ScopeTaskMappingModel" id="ScopeTaskMappingModelResult">
+        <id property="scopeTaskMappingID" column="ScopeTaskMappingID"/>
+        <result property="projectID" column="ProjectID"/>
+        <result property="scopeID" column="ScopeID"/>
+        <result property="subActivityID" column="SubActivityID" />
+        <result property="taskID" column="TaskID" />
+        <result property="executionType" column="ExecutionType" />
+        <result property="task" column="Task" />
+        <result property="avgEstdEffort" column="AvgEstdEffort" />
+        <result property="toolID" column="ToolID" />
+        <result property="tool" column="Tool" />
+        <result property="rpaID" column="RpaID"/>
+        <result property="rpaName" column="RpaName"/>
+        <result property="versionNumber" column="VersionNumber"/>
+    </resultMap>
+       
+    <select id='getScopeTaskMapping' resultMap="ScopeTaskMappingModelResult">
+        select Task,ExecutionType,AvgEstdEffort,Tool,ProjectID,ScopeID,SubActivityID,TaskID,ToolID,
+        MasterTask,VersionNumber,ScopeTaskMappingID from transactionalData.TBL_ScopeID_TASK_MAPPING
+        where ProjectID=#{projectID} and ScopeID=#{scopeID} and SubActivityID=#{subActivityID}
+        and TaskID=#{taskID} 
+    </select>
+        
+    <insert id="insertScopeTaskMapping" parameterType="ScopeTaskMappingModel">
+        insert into transactionalData.TBL_ScopeID_TASK_MAPPING(ProjectID,ScopeID,SubActivityID,TaskID,Task,ExecutionType,AvgEstdEffort,Tool,ToolID,RpaID,RpaName,MasterTask,VersionNumber)
+        Values
+        (#{ScopeTaskMappingResult.projectID,jdbcType=INTEGER},#{ScopeTaskMappingResult.scopeID,jdbcType=INTEGER},
+        #{ScopeTaskMappingResult.subActivityID,jdbcType=INTEGER},#{ScopeTaskMappingResult.taskID,jdbcType=INTEGER},
+        #{ScopeTaskMappingResult.task,jdbcType=VARCHAR},#{ScopeTaskMappingResult.executionType,jdbcType=VARCHAR},
+        #{ScopeTaskMappingResult.avgEstdEffort,jdbcType=FLOAT},#{ScopeTaskMappingResult.tool,jdbcType=VARCHAR},
+        #{ScopeTaskMappingResult.toolID,jdbcType=INTEGER},#{ScopeTaskMappingResult.rpaID,jdbcType=INTEGER},
+        #{ScopeTaskMappingResult.rpaName,jdbcType=VARCHAR},#{ScopeTaskMappingResult.masterTask,jdbcType=VARCHAR},
+        #{ScopeTaskMappingResult.versionNumber,jdbcType=INTEGER})
+    </insert>
+    
+    
+    <select id ="insertNetworkelements" statementType="CALLABLE" resultType="String">
+        {call NetworkElements_BULK_Upload 
+        (#{FileTable,mode=IN, jdbcType=VARCHAR},
+        #{domain,mode=IN, jdbcType=INTEGER},
+        #{technology,mode=IN, jdbcType=INTEGER},
+        #{vendor,mode=IN, jdbcType=INTEGER},
+        #{projectID,mode=IN, jdbcType=INTEGER},
+        #{uploadedON,mode=IN, jdbcType=VARCHAR},
+        #{uploadedBy,mode=IN, jdbcType=VARCHAR})}
+    </select>
+    
+     
+    
+    <select id ="insertNetworkelementsUpdate" statementType="CALLABLE" resultType="String">
+        {call NetworkElements_BULK_Upload_update 
+        (#{FileTable,mode=IN, jdbcType=VARCHAR},
+        #{domain,mode=IN, jdbcType=INTEGER},
+        #{technology,mode=IN, jdbcType=INTEGER},
+        #{vendor,mode=IN, jdbcType=INTEGER},
+        #{projectID,mode=IN, jdbcType=INTEGER},
+        #{uploadedON,mode=IN, jdbcType=VARCHAR},
+        #{uploadedBy,mode=IN, jdbcType=VARCHAR})}
+    </select>
+    
+    
+    <select id ='checkFLowEntry' resultMap="FlowChartStepDetailsResult">
+        select * from [transactionalData].[TBL_SCOPEID_TASK_MAPPING] where projectID=#{projectID} and subactivityID=#{subActivityID} and taskID=#{taskID}
+    </select>
+		
+    <update id="updateProjectDefinedTask" parameterType="FlowChartStepDetailsModel">
+        
+        update transactionalData.[TBL_SCOPEID_TASK_MAPPING]  
+        set Task=#{fcStepDetails.task,jdbcType=VARCHAR},
+        ExecutionType=#{fcStepDetails.executionType,jdbcType=VARCHAR},
+        AvgEstdEffort=#{fcStepDetails.avgEstdEffort,jdbcType=FLOAT},
+        ToolID=#{fcStepDetails.toolID,jdbcType=INTEGER},
+        Tool=#{fcStepDetails.tool,jdbcType=INTEGER},
+        RpaID = #{fcStepDetails.rpaID,jdbcType=INTEGER},
+        RpaName=#{fcStepDetails.rpaName,jdbcType=VARCHAR}
+        where projectID = #{fcStepDetails.projectID,jdbcType=INTEGER} 
+        and SubActivityID=#{fcStepDetails.subActivityID,jdbcType=INTEGER}
+        and TaskID=#{fcStepDetails.taskID,jdbcType=INTEGER}
+        and VersionNumber =#{fcStepDetails.versionNo}
+        
+    </update>
+    
+    <update id="updateFlowChartStepDetailsTasks" parameterType="FlowChartStepDetailsModel">
+        
+        update transactionalData.TBL_FLOWCHART_STEP_DETAILS 
+        set Task=#{fcStepDetails.task,jdbcType=VARCHAR},
+        ExecutionType=#{fcStepDetails.executionType,jdbcType=VARCHAR},
+        AvgEstdEffort=#{fcStepDetails.avgEstdEffort,jdbcType=FLOAT},
+        ToolID=#{fcStepDetails.toolID,jdbcType=INTEGER},
+        RpaID = #{fcStepDetails.rpaID,jdbcType=INTEGER}
+        where SubActivityFlowChartDefID = #{fcStepDetails.subActivityFlowChartDefID}
+        and TaskID=#{fcStepDetails.taskID,jdbcType=INTEGER}
+        and StepID=#{fcStepDetails.flowChartStepID,jdbcType=VARCHAR}
+        and VersionNumber =#{fcStepDetails.versionNo}
+        
+    </update>
+    
+    <select id='getStepAvgEffortDetails' resultType="Integer">
+        select ISNULL((SUM(AvgEstdEffort)),0) as AvgEstdEffort from transactionalData.TBL_FLOWCHART_STEP_DETAILS 
+        where SubActivityFlowChartDefID = #{fcStepDetails.subActivityFlowChartDefID}
+        and TaskID =#{fcStepDetails.taskID}
+        and VersionNumber = #{fcStepDetails.versionNo} and active=1
+    </select>
+    
+    <resultMap type="FlowChartJsonModel" id="FlowChartJsonModelResult">
+        <result property="projectID" column="ProjectID"/>
+        <result property="subActivityID" column="SubActivityID" />
+        <result property="projectName" column="ProjectName" />
+        <result property="countryName" column="CountryName" />
+        <result property="marketAreaName" column="MarketAreaName" />
+        <result property="customerName" column="CustomerName" />
+    </resultMap>
+       
+    
+    <select id ='getDetailsForImportExistingWF' resultMap = 'FlowChartJsonModelResult'>
+        SELECT distinct  fwDef.ProjectID as ProjectID, fwDef.SubActivityID as SubActivityID, proj.ProjectName as ProjectName , conty.CountryName as CountryName ,
+        mArea.MarketAreaName as MarketAreaName, cust.CustomerName as CustomerName
+        FROM [transactionalData].[TBL_SUBACTIVITY_FLOWCHART_DEF] as fwDef
+        inner join [transactionalData].[TBL_PROJECTS] as proj on fwDef.ProjectID = proj.ProjectID
+        inner join [transactionalData].[TBL_OPPORTUNITY] as oppr on proj.OpportunityID = oppr.OpportunityID
+        inner join [refData].[TBL_COUNTRIES] as conty on conty.CountryID = oppr.CountryID
+        inner join [refData].[TBL_MARKETAREAS] as mArea on mArea.MarketAreaID = oppr.MarketAreaID
+        inner join [refData].[TBL_CUSTOMERS] as cust on cust.CustomerID = oppr.CustomerID
+        where fwDef.SubActivityID =#{subActivityID} and fwDef.Active = 1 and fwDef.FlowChartJSON is not null  
+        and fwDef.type='PROJECTDEFINED'
+    </select>
+    
+    <select id='getDefIDAndVersionName' resultType='java.util.LinkedHashMap'>
+        select SubActivityFlowChartDefID,VersionNumber,WorkFlowName 
+        from transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF where ProjectID = #{projectID} and SubActivityID = #{subActivityID} and active = 1 
+        and type in ('PROJECTDEFINED')
+    </select>
+    
+    <resultMap type='WorkFlowAvailabilitySearchModel' id='searchWFAvailabilityforScopeResult'>
+        <result property='projectID' column='ProjectID'/>
+        <result property='projectName' column='ProjectName'/>
+        <result property='subActivityID' column='SubActivityID'/>
+        <result property='scopeID' column='ScopeID'/>
+        <result property='scopeName' column='ScopeName'/>
+        <result property='domain' column='Domain'/>
+        <result property='subDomain' column='SubDomain'/>
+        <result property='domainID' column='DomainID'/>
+        <result property='serviceArea' column='ServiceArea'/>
+        <result property='subServiceArea' column='SubServiceArea'/>
+        <result property='technology' column='Technology'/>
+        <result property='technologyID' column='TechnologyID'/>
+        <result property='activity' column='Activity'/>
+        <result property='subActivity' column='SubActivity'/>
+        <result property='wfAvailability' column='WFAvailable'/>
+        <result property ='neNeededForExecution' column='NENeededForExecution'/>
+        <result property='experiencedMode' column='MultiView'/>
+        <result property='slaHours' column='SLAHours'/>
+        <result property="lstVersionNumber" column="VersionNumber"/>   
+        <result property="lstWFName" column="WorkFlowName"/>
+        <result property="wfOwnerName" column="WFOwnerName"/>
+       
+        <result property="ftr" column="FTR"/>
+        <result property="wfid" column="WFID"/>
+    </resultMap>
+    
+    <select id='searchWFAvailabilityforScope' resultMap='searchWFAvailabilityforScopeResult' statementType="CALLABLE">
+        
+        {call user_sp_searchWFAvailabilityforScope (
+        #{projectID,mode=IN, jdbcType=VARCHAR}, 
+        #{domain,mode=IN, jdbcType=VARCHAR}, 
+        #{subDomain,mode=IN, jdbcType=VARCHAR},
+        #{serviceArea,mode=IN, jdbcType=VARCHAR},
+        #{subServiceArea,mode=IN, jdbcType=VARCHAR},
+        #{technology,mode=IN, jdbcType=VARCHAR},
+        #{activity,mode=IN, jdbcType=VARCHAR},
+        #{subActivity,mode=IN, jdbcType=VARCHAR},
+        #{marketArea,mode=IN, jdbcType=VARCHAR}
+        )};
+        
+    </select>
+    
+    <insert id="addWorkFlowToProject" parameterType="FlowChartDefModel">
+        Insert into transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF (ProjectID, SubActivityID, FlowChartJSON, SourceProjectID, CreatedBy, CreatedDate,
+        Active, VersionNumber, Type) values (#{flowChartDefModel.projectID,jdbcType=INTEGER},#{flowChartDefModel.subActivityID,jdbcType=INTEGER},
+        #{flowChartDefModel.flowChartJSON,jdbcType=VARCHAR},#{flowChartDefModel.sourceProjectID,jdbcType=INTEGER},
+        #{flowChartDefModel.createdBy,jdbcType=VARCHAR},dbo.GetDateIST(),1,#{flowChartDefModel.versionNumber,jdbcType=INTEGER},
+        #{flowChartDefModel.type, jdbcType=VARCHAR})
+
+    </insert>
+        
+    <select id="checkFlowChartVersion" resultMap="FlowChartDefModelResult">
+        <!--  select *  from transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF where ProjectID = #{flowChartDefModel.projectID,jdbcType=INTEGER} and
+        SubActivityID = #{flowChartDefModel.subActivityID,jdbcType=INTEGER} and Active = 1-->
+        
+        select VersionNumber,SubActivityFlowChartDefID  from transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF where ProjectID = #{flowChartDefModel.projectID,jdbcType=INTEGER} and
+        SubActivityID = #{flowChartDefModel.subActivityID,jdbcType=INTEGER} and Active = 1
+        
+    </select>
+        
+    <update id="inActiveWorkflowForProject">
+        
+        Update transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF  set Active = 0 where SubActivityFlowChartDefID = #{subActivityFlowChartDefID}
+        
+    </update>
+        
+    <select id="updateWFDefinition" parameterType="java.util.HashMap" statementType="CALLABLE">
+        {call user_sp_updateWFDefinition(
+        #{wOID,mode=IN, jdbcType=INTEGER},
+        #{wFJson,mode=IN, jdbcType=VARCHAR},
+        #{signum,mode=IN, jdbcType=VARCHAR},
+        #{version,mode=IN, jdbcType=VARCHAR},
+        #{flowChartDefID,mode=IN, jdbcType=VARCHAR},
+        #{subAct, mode=OUT,jdbcType=VARCHAR}
+        )}
+    </select>
+    
+    <select id='downloadNetworkElement' resultType="java.util.LinkedHashMap">
+        select ProjectID,DomainSubDomainID,TechnologyID,VendorID,ElementType,Type,Name,Software_Release,Market,
+  		Sector,Latitude,Longitude,UploadedBy,UploadedON,Band,NetworkElementID from transactionalData.TBL_NETWORK_ELEMENT 
+        where DomainSubDomainID =#{domain}
+        and TechnologyID = #{technology}
+        and VendorID = #{vendor}
+        and ProjectID =#{projectID}
+
+    </select>
+        
+     <insert id="insertInFlowChartStepDetails">
+        Insert into transactionalData.TBL_FLOWCHART_STEP_DETAILS(SubActivityFlowChartDefID,StepID,StepName,
+        TaskID,Task,ExecutionType,ToolID,TaskReason,
+        Active,VersionNumber,MasterTask,StepType,RPAID,WIID
+        ,isCalculationNeeded,Savings,ExecutionCount,Remarks,ExceptedSavings,PostStartDate,PostEndDate,OutputUpload,CascadeInput) 
+        Values(#{subActFCDefID,jdbcType=INTEGER},
+        #{stepId,jdbcType=VARCHAR},
+        #{stepName,jdbcType=VARCHAR},
+        #{taskId,jdbcType=INTEGER},
+        #{taskName,jdbcType=VARCHAR},
+        #{exeType, jdbcType=VARCHAR},
+        #{toolId,jdbcType=INTEGER},
+        #{reason},1,#{versionNO},
+        #{masterTask},#{stepType},
+        #{rpaID,jdbcType=INTEGER},
+        #{wiid,jdbcType=INTEGER},
+        #{stepData.isCalculationNeeded,jdbcType=BIT},
+        #{stepData.savings,jdbcType=FLOAT},
+        #{stepData.executionCount,jdbcType=INTEGER},
+        #{stepData.remarks,jdbcType=VARCHAR},
+        #{stepData.exceptedSavings,jdbcType=FLOAT},
+        #{stepData.postStartDate,jdbcType=DATE},
+        #{stepData.postEndDate,jdbcType=DATE},
+        #{outputUpload,jdbcType=VARCHAR},
+        #{cascadeInput,jdbcType=VARCHAR}
+        )
+    </insert> 
+    <insert id="insertInFlowChartStepDetails1" parameterType="com.ericsson.isf.model.FlowChartPopulateDataModel" useGeneratedKeys="true" keyProperty="flowChartdataModel.fCStepDetailsID" keyColumn="FCStepDetailsID">
+     Insert into transactionalData.TBL_FLOWCHART_STEP_DETAILS(SubActivityFlowChartDefID,StepID,StepName,
+        TaskID,Task,ExecutionType,ToolID,TaskReason,
+        Active,VersionNumber,MasterTask,StepType,RPAID,WIID
+        ,isCalculationNeeded,Savings,ExecutionCount,Remarks,ExceptedSavings,PostStartDate,PostEndDate,OutputUpload,CascadeInput,
+        ProficiencyID,CreatedBy,CreatedDate,ModifiedBy,ModifiedDate) 
+        Values(#{flowChartdataModel.flowChartDefId,jdbcType=INTEGER},
+        #{flowChartdataModel.stepId,jdbcType=VARCHAR},
+        #{flowChartdataModel.stepName,jdbcType=VARCHAR},
+        #{flowChartdataModel.taskId,jdbcType=INTEGER},
+        #{flowChartdataModel.taskName,jdbcType=VARCHAR},
+        #{flowChartdataModel.executionType, jdbcType=VARCHAR},
+        #{flowChartdataModel.toolId,jdbcType=INTEGER},
+        #{flowChartdataModel.reason},1,#{flowChartdataModel.versionNumber},
+        #{flowChartdataModel.masterTask},#{flowChartdataModel.type},
+        #{flowChartdataModel.rpaId,jdbcType=INTEGER},
+        #{flowChartdataModel.wiId,jdbcType=INTEGER},
+        #{stepData.isCalculationNeeded,jdbcType=BIT},
+        #{stepData.savings,jdbcType=FLOAT},
+        #{stepData.executionCount,jdbcType=INTEGER},
+        #{stepData.remarks,jdbcType=VARCHAR},
+        #{stepData.exceptedSavings,jdbcType=FLOAT},
+        #{stepData.postStartDate,jdbcType=DATE},
+        #{stepData.postEndDate,jdbcType=DATE},
+        #{flowChartdataModel.outputUpload,jdbcType=VARCHAR},
+        #{flowChartdataModel.cascadeInput,jdbcType=VARCHAR},
+        (select ProficiencyID from refdata.tbl_wf_proficiency_type where ProficiencyName=#{flowChartdataModel.viewMode}),
+        #{flowChartdataModel.loggedInSignum},
+        dbo.GetDateIST(),
+        #{flowChartdataModel.loggedInSignum},
+        dbo.GetDateIST() )
+    </insert>
+    <select id="getElementType" resultType="String">
+        
+        Select distinct ElementType from transactionalData.TBL_NETWORK_ELEMENT where projectID = #{projectID}
+        
+    </select>
+    
+    <select id="getMarketDetails" resultType="String">
+        
+        Select distinct Market from transactionalData.TBL_NETWORK_ELEMENT where projectID = #{projectID}
+        
+    </select>
+    <insert id="insertFlowchartStepLinkDetails">
+        Insert into transactionalData.TBL_WORK_ORDER_FLOWCHART_STEP_LINK_DETAILS(SubActivityFlowChartDefID,FlowchartSourceID,FlowchartTargetID) 
+        Values(#{subActivityDefID,jdbcType=INTEGER},
+        #{sourceID,jdbcType=VARCHAR},
+        #{targetID,jdbcType=VARCHAR})
+    </insert>
+    
+    <update id = 'deleteFlowchartStepDetails'>
+        IF EXISTS(select 1 from transactionalData.TBL_FLOWCHART_STEP_DETAILS where subActivityFlowchartDefID = #{subActivityDefID}
+        and stepID =#{stepID} and taskID= #{taskID}
+        and VersionNumber = #{versionNo} and active = 1)
+        Begin
+        update transactionalData.TBL_FLOWCHART_STEP_DETAILS set active =0 where subActivityFlowchartDefID = #{subActivityDefID} 
+        and StepID =#{stepID} and TaskID= #{taskID} and 
+        VersionNumber = #{versionNo} 
+        END
+    </update>
+    
+    <select id ='getTaskDetailsForJSONStep' resultMap='ScopeTaskMappingModelResult'>
+        IF Exists(select 1 from transactionalData.TBL_FLOWCHART_STEP_DETAILS
+        where SubActivityFlowChartDefID= #{flowChartDefID} 
+        and stepID=#{stepID} 
+        and taskID=#{taskID} and versionNumber =#{versionNo})
+        Begin
+        select top 1 def.ProjectID,def.SubActivityID,st.TaskID,st.Task,
+        st.ToolID,tool.Tool,st.ExecutionType,st.AvgEstdEffort,st.RpaID,st.MasterTask,st.VersionNumber
+        from transactionalData.TBL_FLOWCHART_STEP_DETAILS st
+        Inner Join transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF def on st.SubActivityFlowChartDefID=def.SubActivityFlowChartDefID 
+        and def.VersionNumber = st.VersionNumber
+        Inner Join refData.TBL_TOOL_INVENTORY tool on tool.ToolID=st.ToolID 
+        where st.SubActivityFlowChartDefID= #{flowChartDefID} 
+        and st.stepID=#{stepID} 
+        and st.taskID=#{taskID} and st.versionNumber =#{versionNo} and st.active=1
+        End
+    </select>
+  
+  
+    <select id='chekIFDataCopiedToScopeTable' resultType="Boolean">
+        IF Exists(select 1 from  transactionalData.TBL_SCOPEID_TASK_MAPPING where projectid= #{projectID} and SubActivityID= #{subActivityID})
+        Begin
+        Select 1 as 'Result'
+        End
+        else
+        Begin
+        Select 0 as 'Result'
+        End
+    </select>  
+    
+    <delete id='deleteStepTaskDetails'>
+        delete from transactionalData.TBL_SCOPEID_TASK_MAPPING where projectid= #{projectID} and SubActivityID= #{subActivityID}
+    </delete> 
+         
+    <select id="getProjectConfigTask" resultMap="ScopeTaskMappingModelResult">
+        select * from transactionalData.TBL_SCOPEID_TASK_MAPPING where projectID =#{projectID} and subActivityID =#{subActivityID} and VersionNumber = #{versionNo}
+    </select> 
+     
+    <update id="updatePrjectConfigTaskDetails">
+         
+        update transactionalData.TBL_SCOPEID_TASK_MAPPING  set executionType =#{executionType} 
+        where projectID =#{projectID} and subActivityID =#{subActivityID} and taskID=#{taskID} and VersionNumber = #{versionNumber}
+         
+    </update>
+     
+    <update id="updatePrjectConfigTaskDetailsVersion">
+         
+        update transactionalData.TBL_SCOPEID_TASK_MAPPING  
+        set executionType =#{executionType} 
+        where projectID =#{projectID} and subActivityID =#{subActivityID} and taskID=#{taskID} and VersionNumber = #{version}
+         
+    </update>
+     
+    <select id='checkFlowChartActiveStatus' resultType ="Boolean">
+        select Active from  transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF where  subActivityFlowChartDefID = #{flowChartDefID} 
+    </select>    
+     
+    <select id ='getMaxVerionStatus' resultType ="Boolean">
+              
+        IF EXISTS(select  d1.VersionNumber
+        from transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF d1
+        inner join 
+        (
+        select ProjectID, SubActivityID, MAX(VersionNumber) as MaxVersionNumber
+        from transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF where FlowChartJSON is not null
+        group by ProjectID, SubActivityID
+        ) as d2 on d1.VersionNumber = d2.MaxVersionNumber
+        and d1.ProjectID = d2.ProjectID
+        and d1.SubActivityID = d2.SubActivityID
+        where d1.ProjectID = #{projectID} and d1.SubActivityID =#{subActivityID} and d1.Active=1)
+        BEGIN
+        select 1 as Result
+        END
+        ELSE
+        BEGIN
+        select 0 as Result
+        END
+    </select>     
+
+    <insert id='insertJSONFromUI' parameterType="FlowChartDefModel"  useGeneratedKeys="true" keyProperty='flowModel.subActivityFlowChartDefID' keyColumn="SubActivityFlowChartDefID">
+        INSERT INTO TRANSACTIONALDATA.TBL_SUBACTIVITY_FLOWCHART_DEF(ProjectID,SubActivityID,FlowChartJSON,CreatedBy,CreatedDate,Active,VersionNumber,
+        Type,LastModifiedBy,LastModifiedDate,WorkFlowName,
+        NENeededForExecution,MultiView,WFOwner,SLAHours,FTR, WFID, ParentSubActFlowChartDefID,WFEditReason,IsAutoSenseEnable,LOEMeasurementCriterionID) 
+        VALUES (#{flowModel.projectID},#{flowModel.subActivityID},#{flowModel.flowChartJSON},
+        #{flowModel.createdBy},dbo.GetDateIST(),1,#{flowModel.versionNumber},#{flowModel.type},#{flowModel.createdBy},dbo.GetDateIST(),#{flowModel.workFlowName},
+       #{flowModel.neNeeded},#{flowModel.experiencedFlow},#{flowModel.wfOwner},#{flowModel.slaHours},#{flowModel.ftrValue}, #{flowModel.wFID},#{flowModel.parentFlowChartDefID},#{flowModel.wfEditReason},
+        #{flowModel.enableField},#{flowModel.loeMeasurementCriterionID})
+    </insert>
+     
+    <select id='getExistingWFName' resultType='String'>
+        select WorkFlowName from transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF where 
+        subActivityFlowChartDefID = #{subActivityDefID}
+    </select>
+
+    <update id='updateActiveStatus'>
+         
+        UPDATE TRANSACTIONALDATA.TBL_SUBACTIVITY_FLOWCHART_DEF
+        Set Active=0 ,LastModifiedBy =#{signumID},LastModifiedDate =dbo.GetDateIST()
+        Where projectID =#{projectID} and subActivityID= #{subActivityID} and subActivityFlowChartDefID = #{subActivityDefID}
+          
+    </update>
+     
+     
+    <resultMap type='WorkFlowApprovalModel' id='WorkFlowApprovalModelResult'>
+        <result property='flowchartDefID' column='SubActivityFlowChartDefID'/>
+        <result property='projectID' column='ProjectID'/>
+        <result property='scopeID' column='ScopeID'/>
+        <result property='subActivityID' column='SubActivityID'/>
+        <result property='scopeName' column='ScopeName'/>
+        <result property='domain' column='Domain'/>
+        <result property='subDomain' column='SubDomain'/>
+        <result property='serviceArea' column='ServiceArea'/>
+        <result property='technology' column='Technology'/>
+        <result property='activity' column='Activity'/>
+        <result property='subActivity' column='SubActivity'/>
+        <result property='modifiedBy' column='CreatedBy'/>
+        <result property='modifiedOn' column='CreatedDate'/>
+        <result property='type' column='Type'/>
+        <result property='flowChartJSON' column='FlowChartJSON'/>
+        <result property='wfid' column='WFID'/>
+        <result property='parentSubActFlowChartDefID' column='ParentSubActFlowChartDefID'/>
+        <collection property='versionNo' ofType='String'>
+            <result property="versionNo" column="VersionNumber"/>
+        </collection>
+        <collection property='workFlowName' ofType='String'>
+            <result property="workFlowName" column="WorkFlowName"/>
+        </collection>
+        
+    </resultMap>
+     
+    <select id ='getWorkFlowForApproval' resultMap='WorkFlowApprovalModelResult'>
+    
+        DROP TABLE IF EXISTS  #temp1;
+        
+		Select
+		ParentSubActFlowChartDefID,
+		SubActivityFlowChartDefID,
+		FlowChartJSON,
+		Type,
+		CreatedBy,
+		CreatedDate,
+		VersionNumber,
+		WorkFlowName,
+		WFID,
+		SubActivityID,
+		Projectid,
+		Case when FlowChartJSON is NULL then 1 else 0 end as isJsonNull
+		into #temp1
+		From transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF
+		Where Type='CUSTOM' and Active=1 and ProjectID = #{projectID}
+		
+		select DEF.ProjectID,
+		WO.SubActivityID,
+		PS.ProjectScopeID as ScopeID,
+		PS.ScopeName,
+		D.domain,
+		D.SubDomain,
+		SA.ServiceArea,
+		SA.SubServiceArea,
+		T.Technology,
+		SUB.Activity,
+		SUB.SubActivity,
+		ACS.ActivityScopeID,
+		DEF.SubActivityFlowChartDefID,
+		DEF.FlowChartJSON,
+		DEF.Type,
+		DEF.CreatedBy,
+		DEF.CreatedDate,
+		DEF.VersionNumber,
+		DEF.WorkFlowName,
+		DEF.WFID,
+		DEF.ParentSubActFlowChartDefID
+		from
+		#temp1 DEF
+		Inner Join transactionalData.TBL_WORK_ORDER WO ON WO.ProjectID = DEF.ProjectID and WO.flowchartdefid = DEF.SubActivityFlowChartDefID 
+		and WO.SubActivityID = DEF.SubActivityID
+		Inner Join transactionalData.TBL_WORK_ORDER_PLAN PL ON WO.WOPlanID = PL.WOPlanID and PL.Active=1
+		Inner Join transactionalData.TBL_PROJECTSCOPE PS ON PS.ProjectID = PL.ProjectID and PS.ProjectScopeID = PL.ScopeID
+		Inner Join transactionalData.TBL_PROJECTSCOPEDETAIL PSD ON PSD.ProjectScopeID = PS.ProjectScopeID
+		Inner JOIN transactionalData.TBL_ACTIVITYSCOPE ACS ON ACS.ProjectScopeDetailID = PSD.ProjectScopeDetailID
+		inner join refData.TBL_DOMAIN D on PSD.DomainID = D.DomainID
+		inner join refData.TBL_SERVICEAREA SA on PSD.ServiceAreaID = SA.ServiceAreaID
+		inner join refData.TBL_TECHNOLOGY T on PSD.TechnologyID = T.TechnologyID
+		Inner Join refData.TBL_SUBACTIVITY SUB ON SUB.SubActivityID = WO.SubActivityID and SUB.SubActivityID = ACS.SubActivityID
+		Where PS.Active = 1 and PSD.Active = 1 and WO.Active=1
+		and DEF.isJsonNull = 0 and ACS.Active=1 
+    </select>  
+     
+    <update id='rejectWorkFlow'>
+         
+        update transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF 
+        set active = 0 
+        where projectID=#{projectID} and subActivityID =#{subActivityID} and subActivityFlowChartDefID = #{flowchartDefID}
+          
+    </update>  
+     
+    <select id ='getEmployeeEmailDetails' resultType="java.util.Map">
+        select EmployeeName,EmployeeEmailID from refData.TBL_Employees where Signum =#{signumID}
+    </select>    
+     
+     
+    <select id ='getFlowChartJSON' resultMap="FlowChartDefModelResult">
+        select ProjectID,SubActivityID,FlowChartJSON,CreatedBy,VersionNumber,WFID,ParentSubActFlowChartDefID,
+       MultiView, WorkFlowName,Reason,NENeededForExecution,WFOwner,SLAHours,FTR,wfid,WFEditReason 
+		from transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF where ProjectID = #{projectID} 
+        and SubActivityID = #{subActivityID}
+        and VersionNumber = #{wfVersion}
+        and CreatedBY = #{signumID}
+        and WFID=#{wfid}  
+        and FlowChartJSON is not null 
+    </select> 
+     
+    <select id='getParentWorkFlowDefID' resultType ='Integer'>
+        select ISNULL((select ParentSubActivityFlowChartDefID from transactionalData.TBL_WORK_ORDER_FLOWCHART_DETAILS 
+        where SubActivityFlowChartDefID=#{flowchartDefID} ),0) as ParentSubActivityFlowChartDefID
+    </select>
+     
+    <select id='getParentWorkFlowDetails' resultMap ='FlowChartDefModelResult'>
+        select * from transactionalData.TBL_WORK_ORDER_FLOWCHART_DETAILS 
+        where SubActivityFlowChartDefID=#{flowchartDefID} 
+    </select>
+     
+     
+    <select id="getFlowchartDetails"  resultMap ='FlowChartDefModelResult'> 
+        SELECT [ProjectID]
+      ,[SubActivityID]
+      ,[FlowChartJSON]
+      ,[SourceProjectID]
+      ,[CreatedBy]
+      ,[CreatedDate]
+      ,[Active]
+      ,[VersionNumber]
+      ,[Type]
+      ,[LastModifiedBy]
+      ,[LastModifiedDate]
+      ,[WorkFlowName]
+      ,[Reason]      
+      ,[NENeededForExecution]
+      ,[MultiView]
+      ,[WFOwner]
+      ,[SLAHours]
+      ,[FTR]
+      ,[InstanceID]
+      ,[SubActivityFlowChartDefID]
+      ,[WFID]
+      ,[ParentSubActFlowChartDefID]
+      ,[WFEditReason]
+      ,[IsAutoSenseEnable]     
+      ,[LOEMeasurementCriterionID]
+       
+  FROM [transactionalData].[TBL_SUBACTIVITY_FLOWCHART_DEF] 
+  where subactivityflowchartdefid = #{subactivityflowchartdefid}
+    </select>
+     
+     
+     
+    <update id='updateParentWorkFlow'>
+         
+        update transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF 
+        set FlowChartJSON = #{flowChartJSON}
+        where ProjectID = #{projectID} 
+        and SubActivityID= #{subActivityID}
+        and SubActivityFlowChartDefID = #{parentWFDefID}
+                                                                
+    </update>
+     
+    <update id='deactivateCustomVersion'>
+        update transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF 
+        set Active = 0,
+        LastModifiedBy =#{mSignumID},
+        LastModifiedDate =dbo.GetDateIST(),
+        Reason =#{reason}
+        where ProjectID = #{projectID} 
+        and SubActivityID= #{subActivityID}
+        and SubActivityFlowChartDefID = #{flowchartDefID}
+    </update>
+    
+    <update id='deactivateParentVersion'>
+        update transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF 
+        set Active = 0,
+        LastModifiedBy =#{mSignumID},
+        LastModifiedDate =dbo.GetDateIST(),
+        Reason =#{reason}
+        where ProjectID = #{projectID} 
+        and SubActivityID= #{subActivityID}
+        and SubActivityFlowChartDefID = #{parentWFDefID}
+    </update>
+     
+    <select id='getUpdatedWorkFlowVersion' resultType = 'Integer'>
+        select VersionNumber from transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF 
+        where projectID =#{projectID} and subActivityID=#{subActivityID} and SubActivityFlowChartDefID = #{parentWFDefID} and Active=1
+                     
+    </select>    
+     
+    <insert id ='saveApprovalLogDetails'>
+        INSERT into TRANSACTIONALDATA.TBL_WORK_FLOW_APPROVAL_LOGS 
+        (SubActivityFlowChartDefID,Status,Approved_RejectedBY,RequestedBy,CreatedOn)
+        values (#{flowchartDefID},#{status},#{managerSignumID},#{employeeSignumID},dbo.GetDateIST())
+    </insert>
+     
+    <update id='inActiveCustomWFWO'>
+         
+        update transactionalData.TBL_WORK_ORDER_FLOWCHART_DETAILS 
+        set active = 0
+        where WOID = #{woID} and subActivityFlowChartDefID =#{flowchartDefID} and CreatedBy =#{signumID}
+         
+    </update>
+     
+    <update id='updateFlowChartStepDetails'>
+         
+        update transactionalData.TBL_WORK_ORDER_FLOWCHART_STEP_DETAILS 
+        set FlowChartDefID =#{subActivityFlowChartDefID}, ModifiedBy =#{signumID} , ModifiedDate =dbo.GetDateIST() 
+        where WOID =#{woID} and SignumID =#{signumID}
+         
+    </update>
+     
+    <update id='deActivatePreviousVersion'>
+          
+        Update transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF  
+        set Active = 0 where ProjectID =#{projectID} and SubActivityID =#{subActivityID} 
+         
+    </update>
+     
+    <update id='updateWorkFlowStepDetails'>
+          
+        Update transactionalData.TBL_FLOWCHART_STEP_DETAILS 
+        set VersionNumber = #{updatedVersion},SubActivityFlowChartDefID = #{subActivityFlowChartDefID}
+        where SubActivityFlowChartDefID =#{flowchartDefID} and versionNumber =#{wfVersion} 
+           
+    </update>
+     
+    <update id='updateWorkFlowStepLinkDetails'>
+         
+        Update transactionalData.TBL_WORK_ORDER_FLOWCHART_STEP_LINK_DETAILS 
+        set SubActivityFlowChartDefID = #{subActivityFlowChartDefID}
+        where SubActivityFlowChartDefID =#{flowchartDefID}
+          
+    </update>
+    
+    <insert id='insertDataToFlowChartStepDetails'>
+    declare @proficiencyID TINYINT 
+	        
+	        select @proficiencyID = ProficiencyID from refdata.tbl_wf_proficiency_type 
+                 where ProficiencyName = 'Assessed'
+    
+        Insert into transactionalData.TBL_FLOWCHART_STEP_DETAILS
+        (SubActivityFlowChartDefID,StepID,StepName,TaskID,Task,ExecutionType,AvgEstdEffort,ToolID,Active,TaskReason,Ordering,VersionNumber,RpaID,MasterTask,isIssue,StepType,toolIDjson,ProficiencyID, CreatedBy, CreatedDate, ModifiedBy, ModifiedDate )
+        select #{childFlowChartDefID},StepID,StepName,TaskID,Task,ExecutionType,AvgEstdEffort,ToolID,Active,TaskReason,Ordering,#{childWFVersion},RpaID,MasterTask,isIssue,StepType,toolIDjson , case when stepType= 'ericsson.Manual' then @proficiencyID end,
+        #{mSignumID}, dbo.getdateIST(), #{mSignumID}, dbo.getdateIST()
+        from transactionalData.TBL_FLOWCHART_STEP_DETAILS where SubActivityFlowChartDefID =#{parentFlowChartDefID} and VersionNumber = #{parentWFVersion} and Active = 1
+    </insert>
+    
+    <insert id='insertDataToFlowChartLinkDetails'>
+        Insert into transactionalData.TBL_WORK_ORDER_FLOWCHART_STEP_LINK_DETAILS
+        (SubActivityFlowChartDefID,FlowchartSourceID,FlowchartTargetID)
+        Select #{childFlowChartDefID},FlowchartSourceID,FlowchartTargetID 
+        from transactionalData.TBL_WORK_ORDER_FLOWCHART_STEP_LINK_DETAILS  where SubActivityFlowChartDefID = #{parentFlowChartDefID}
+    </insert>
+     
+   
+    <select id='getWorkFlowVersion' resultType='Integer'>
+        select ISNULL((select VersionNumber from transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF 
+        where SubActivityFlowChartDefID = #{parentWFDefID}),0) as VersionNumber
+         
+    </select>    
+      
+    <select id ="getMasterTask" resultType="String">
+        select Task from refData.TBL_TASK WITH (NOLOCK) where taskID =#{taskID} and subActivityID=#{subActivityID}
+    </select> 
+      
+    <select id='getSubActivityFlowchartDefIdByVersionNo' resultType='Integer'>
+        select SubActivityFlowChartDefID from transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF where WorkFlowName = '${workFlowName}' and VersionNumber = ${versionNO} and SubActivityID = ${subActId} and Active = 1 and ProjectID = ${projId}          
+    </select>    
+      
+    <select id ='getWFVersioNo' resultType="Integer">
+        select MAX(VersionNumber) from transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF WITH (NOLOCK) where WFID=#{wFID}
+    </select>
+     
+    <select id='checkIFStepDataExists' resultType="Boolean">
+        IF EXISTS (select 1 from transactionalData.TBL_FLOWCHART_STEP_DETAILS 
+        where SubActivityFlowChartDefID = #{subActFCDefID}
+        and StepID = #{stepId}
+        <!--and TaskID = #{taskId}-->
+        and VersionNumber = #{versionNO})
+        BEGIN
+        select 1 as 'Result'
+        END
+        ELSE
+        BEGIN
+        select 0 as 'Result'
+        END
+    </select>
+    
+    <select id='getStepExistingData' resultType='java.util.Map'>
+        select StepID,StepName,TaskID,ExecutionType,RPAID,ToolID
+        ,isCalculationNeeded,savings,executionCount,remarks,exceptedSavings,postStartDate,postEndDate,currentYearSavings,outputUpload
+        from transactionalData.TBL_FLOWCHART_STEP_DETAILS WITH (NOLOCK)
+        where SubActivityFlowChartDefID = #{subActivityDefID} and stepID= #{stepID} 
+        and VersionNumber =#{versionNumber}  and Active=1
+        
+    </select>
+     
+    <update id='updateFlowChartStepDetailsValue'>
+         
+        update transactionalData.TBL_FLOWCHART_STEP_DETAILS 
+        set StepName=#{stepName,jdbcType=VARCHAR},
+        Task=#{taskName,jdbcType=VARCHAR},
+        ExecutionType=#{exeType,jdbcType=VARCHAR},
+        ToolID=#{toolId},
+        RPAID =#{rpaID},
+        WIID=#{wiid},
+        OutputUpload=#{outputUpload}
+        CascadeInput=#{cascadeInput}
+        where SubActivityFlowChartDefID = #{subActFCDefID}
+        <!--and TaskID=#{taskId}-->
+        and StepID=#{stepId}
+        and VersionNumber =#{versionNo}
+        and Active = 1 
+         
+    </update>
+     
+     
+     
+    <select id ="getWfListForPlan" resultType="java.util.LinkedHashMap">
+        select ps.ScopeName,ps.projectscopeid as scopeId, d.domain, d.SubDomain, t.Technology, s.Activity,  s.SubActivity, fcd.WorkFlowName,s.subactivityid, fcd.VersionNumber, fcd.SubActivityFlowChartDefID, sa.SubServiceArea,
+        case when fcd.SLAHours is null then 0 else fcd.SLAHours end as SLAHours
+        from transactionalData.TBL_PROJECTS p
+        inner join transactionalData.TBL_PROJECTSCOPE ps on p.ProjectID = ps.ProjectID
+        inner join transactionalData.TBL_PROJECTSCOPEDETAIL psd on psd.ProjectScopeID = ps.ProjectScopeID 
+        inner join refData.TBL_DOMAIN d on psd.DomainID = d.DomainID
+        inner join refData.TBL_SERVICEAREA sa on psd.ServiceAreaID = sa.ServiceAreaID
+        inner join refData.TBL_TECHNOLOGY t on psd.TechnologyID = t.TechnologyID
+        inner join transactionalData.TBL_ACTIVITYSCOPE as1 on as1.ProjectScopeDetailID = psd.ProjectScopeDetailID 
+        inner join refData.TBL_SUBACTIVITY s on as1.SubActivityID = s.SubActivityID
+        left join transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF fcd on p.ProjectID = fcd.ProjectID and fcd.SubActivityID = s.SubActivityID 
+	
+        where psd.active=1 and as1.active=1 and ps.active=1 and fcd.active = 1 and fcd.type='PROJECTDEFINED' and fcd.FlowChartJSON is not null
+        and p.projectid=#{projectId}
+        order by fcd.VersionNumber desc
+    </select> 
+     
+    <select id ="getWfListForPlanForExternalSource" resultType="java.util.LinkedHashMap">
+        select ps.ScopeName,ps.projectscopeid as scopeId, d.domain, d.SubDomain, t.Technology, s.Activity,  s.SubActivity, fcd.WorkFlowName,s.subactivityid, fcd.VersionNumber,
+        case when fcd.SLAHours is null then 0 else fcd.SLAHours end as SLAHours
+        from transactionalData.TBL_PROJECTS p
+        inner join transactionalData.TBL_PROJECTSCOPE ps on p.ProjectID = ps.ProjectID
+        inner join transactionalData.TBL_PROJECTSCOPEDETAIL psd on psd.ProjectScopeID = ps.ProjectScopeID 
+        inner join refData.TBL_DOMAIN d on psd.DomainID = d.DomainID
+        inner join refData.TBL_SERVICEAREA sa on psd.ServiceAreaID = sa.ServiceAreaID
+        inner join refData.TBL_TECHNOLOGY t on psd.TechnologyID = t.TechnologyID
+        inner join transactionalData.TBL_ACTIVITYSCOPE as1 on as1.ProjectScopeDetailID = psd.ProjectScopeDetailID 
+        inner join refData.TBL_SUBACTIVITY s on as1.SubActivityID = s.SubActivityID
+        left join transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF fcd on p.ProjectID = fcd.ProjectID and fcd.SubActivityID = s.SubActivityID 
+	
+        where psd.active=1 and as1.active=1 and ps.active=1 and fcd.active = 1 and fcd.type='PROJECTDEFINED' and fcd.FlowChartJSON is not null
+        and p.projectid=#{projectId} 
+        order by fcd.VersionNumber desc
+    </select> 
+     
+    <select id='checkIFExecutionExists' resultType="java.util.Map">
+        IF EXISTS(select top 1 * from transactionalData.TBL_FLOWCHART_STEP_DETAILS where SubActivityFlowChartDefID = #{subActFCDefID}
+        and TaskID =#{taskID}  and Task = #{taskName} and VersionNumber = #{versionNo} and active=1)
+        BEGIN
+        select top 1 ExecutionType,StepName from transactionalData.TBL_FLOWCHART_STEP_DETAILS where SubActivityFlowChartDefID = #{subActFCDefID}
+        and TaskID =#{taskID}  and Task = #{taskName} and VersionNumber = #{versionNo} and active=1
+        END
+        ELSE
+        BEGIN
+        select 'NA' as ExecutionType,'NA' as StepName
+        END
+ 
+    </select>
+     
+    <resultMap type='WorkFlowDefinitionModel' id='WorkFlowDefinitionModelResult'>
+        <id property="workFlowID" column="WorkFlowID" />
+        <result property='workFlowName' column='WorkFlowName'/>
+        <result property='projectID' column='ProjectID'/>
+        <result property='subActivityID' column='SubActivityID'/>
+        <result property='flowChartType' column='FlowChartType'/>
+        <result property='versionNumber' column='VersionNumber'/>
+        <result property='createdBy' column='CreatedBy'/>
+        <result property='createdOn' column='CreatedOn'/>
+        <collection property='workFlowLinks' ofType='WorkFlowLinksModel'>
+            <id property='workFlow_LinkID' column='WorkFlow_LinkID'/>
+            <result property="connector" column="Connector" />
+            <result property='linkClientID' column='LinkClientID'/>
+            <result property='router' column='Router'/>
+            <result property='sourceStepClientID' column='SourceStepClientID'/>
+            <result property='targetStepClientID' column='TargetStepClientID'/>
+            <result property='label_Text' column='Label_Text'/>
+            <result property='type' column='Type'/>
+            <result property='z' column='Z'/>
+          
+        </collection> 
+        <collection property='workFlowSteps' ofType='WorkFlowStepsModel'>
+            <id property='workFlowStepID' column='WorkFlowStepID'/>
+            <result property="taskID" column="TaskID" />
+            <result property='rpaID' column='RpaID'/>
+            <result property='taskName' column='TaskName'/>
+            <result property='stepName' column='StepName'/>
+            <result property='executionType' column='ExecutionType'/>
+            <result property='avgEstdEffort' column='AvgEstdEffort'/>
+            <result property='stepType' column='StepType'/>
+            <result property='size_Width' column='Size_Width'/>
+            <result property='size_Height' column='Size_Height'/>
+            <result property='position_X' column='Position_X'/>
+            <result property='position_Y' column='Position_Y'/>
+            <result property='angle' column='Angle'/>
+            <result property='clientStepID' column='ClientStepID'/>
+            <result property='z' column='Z'/>
+            <result property='action' column='Action'/>
+            <collection property='workFlowStepAttr' ofType='WorkFlowStepAttrModel'>
+                <id property="attributeID" column="AttributeID" />
+                <result property='flowChartStepID' column='FlowChartStepID'/>
+                <result property='attributeType' column='AttributeType'/>
+                <result property='attributeName' column='AttributeName'/>
+                <result property='attributeValue' column='AttributeValue'/>
+            </collection>
+        </collection>       
+    </resultMap>
+     
+    <resultMap type='WorkFlowStepsModel' id='WorkFlowStepsModelResult'>
+        <id property="workFlowStepID" column="WorkFlowStepID" />
+        <result property='taskID' column='TaskID'/>
+        <result property='rpaID' column='RpaID'/>
+        <result property='workFlowID' column='WorkFlowID'/>
+        <result property='taskName' column='TaskName'/>
+        <result property='stepName' column='StepName'/>
+        <result property='executionType' column='ExecutionType'/>
+        <result property='avgEstdEffort' column='AvgEstdEffort'/>
+        <result property='stepType' column='StepType'/>
+        <result property='size_Width' column='Size_Width'/>
+        <result property='size_Height' column='Size_Height'/>
+        <result property='position_X' column='Position_X'/>
+        <result property='position_Y' column='Position_Y'/>
+        <result property='angle' column='Angle'/>
+        <result property='clientStepID' column='ClientStepID'/>
+        <result property='z' column='Z'/>
+        <result property='action' column='Action'/>
+        <result property='createdBy' column='CreatedBy'/>
+        <result property='createdOn' column='CreatedOn'/>      
+    </resultMap>
+     
+    <resultMap type='WorkFlowLinksModel' id='WorkFlowLinksModelResult'>
+        <id property="workFlow_LinkID" column="WorkFlow_LinkID" />
+        <result property='workFlowID' column='WorkFlowID'/>
+        <result property='linkClientID' column='LinkClientID'/>
+        <result property='router' column='Router'/>
+        <result property='connector' column='Connector'/>
+        <result property='sourceStepClientID' column='SourceStepClientID'/>
+        <result property='targetStepClientID' column='TargetStepClientID'/>
+        <result property='label_Text' column='Label_Text'/>
+        <result property='type' column='Type'/>
+        <result property='z' column='Z'/>
+        <result property='createdBy' column='CreatedBy'/>
+        <result property='createdOn' column='CreatedOn'/>      
+    </resultMap>
+        
+    <resultMap type='WorkFlowStepAttrModel' id='WorkFlowStepAttrModelResult'>
+        <id property="attributeID" column="AttributeID" />
+        <result property='flowChartStepID' column='FlowChartStepID'/>
+        <result property='attributeType' column='AttributeType'/>
+        <result property='attributeName' column='AttributeName'/>
+        <result property='attributeValue' column='AttributeValue'/>
+        <result property='createdBy' column='CreatedBy'/>
+        <result property='createdOn' column='CreatedOn'/>      
+    </resultMap>
+    
+    <resultMap type='WorkFlowLinksVerticesModel' id='WorkFlowLinksVerticesModelResult'>
+        <id property="verticeID" column="VerticeID" />
+        <result property='workFlow_LinkID' column='WorkFlow_LinkID'/>
+        <result property='x' column='X'/>
+        <result property='y' column='Y'/>
+        <result property='createdBy' column='CreatedBy'/>
+        <result property='createdOn' column='CreatedOn'/>      
+    </resultMap>
+        
+    <insert id="saveWorkFlowVertices" parameterType="WorkFlowLinksVerticesModel">
+        
+        INSERT INTO [transactionalData].[TBL_WORK_FLOW_LINKS_VERTICES]
+        ([WorkFlow_LinkID]
+        ,[X]
+        ,[Y]
+        ,[CreatedBy]
+        ,[CreatedOn])
+        VALUES
+        (#{workFlow_LinkID}
+        ,#{vertice.x}
+        ,#{vertice.y}
+        ,#{signum}
+        ,dbo.GetDateIST())
+    </insert>    
+        
+        
+    <insert id="saveWorkFlowStepAttr" parameterType="WorkFlowStepAttrModel">
+        INSERT INTO [transactionalData].[TBL_WORK_FLOW_STEP_ATTR]
+        ([FlowChartStepID]
+        ,[AttributeType]
+        ,[AttributeName]
+        ,[AttributeValue]
+        ,[CreatedBy]
+        ,[CreatedOn])
+        VALUES
+        (#{flowChartStepId}
+        ,#{workFlowStepAttr.attributeType}
+        ,#{workFlowStepAttr.attributeName}
+        ,#{workFlowStepAttr.attributeValue}
+        ,#{signum}
+        ,dbo.GetDateIST())
+        
+    </insert>
+        
+        
+    <insert id="saveWorkFlowLinks" parameterType="WorkFlowLinksModel" useGeneratedKeys="true" keyProperty="workFlowLink.workFlow_LinkID"
+                keyColumn="WorkFlow_LinkID"> 
+        INSERT INTO 
+        [transactionalData].[TBL_WORK_FLOW_LINKS]
+        ([WorkFlowID]
+        ,[LinkClientID]
+        ,[Router]
+        ,[Connector]
+        ,[SourceStepClientID]
+        ,[TargetStepClientID]
+        ,[Z]
+        ,[Label_Text]
+        ,[CreatedBy]
+        ,[CreatedOn]
+        ,[Type])
+        VALUES
+        (#{workFlowID}
+        ,#{workFlowLink.linkClientID}
+        ,#{workFlowLink.router}
+        ,#{workFlowLink.connector}
+        ,#{workFlowLink.sourceStepClientID}
+        ,#{workFlowLink.targetStepClientID}
+        ,#{workFlowLink.z}
+        ,#{workFlowLink.label_Text}
+        ,#{signum}
+        ,dbo.GetDateIST()
+        ,#{workFlowLink.type})
+    </insert> 
+        
+    <insert id="saveworkFlowSteps" parameterType="WorkFlowStepsModel" useGeneratedKeys="true" keyProperty="workFlowSteps.workFlowStepID" keyColumn="WorkFlowStepID">
+        INSERT INTO [transactionalData].[TBL_WORK_FLOW_STEPS]
+        ([TaskID]
+        ,[RpaID]
+        ,[WorkFlowID]
+        ,[TaskName]
+        ,[StepName]
+        ,[ExecutionType]
+        ,[AvgEstdEffort]
+        ,[StepType]
+        ,[Size_Width]
+        ,[Size_Height]
+        ,[Position_X]
+        ,[Position_Y]
+        ,[Angle]
+        ,[ClientStepID]
+        ,[Z]
+        ,[CreatedBy]
+        ,[CreatedOn]
+        ,[action])
+        VALUES
+        (#{workFlowSteps.taskID}
+        ,#{workFlowSteps.rpaID}
+        ,#{workFlowID}
+        ,#{workFlowSteps.taskName}
+        ,#{workFlowSteps.stepName}
+        ,#{workFlowSteps.executionType}
+        ,#{workFlowSteps.avgEstdEffort}
+        ,#{workFlowSteps.stepType}
+        ,#{workFlowSteps.size_Width}
+        ,#{workFlowSteps.size_Height}
+        ,#{workFlowSteps.position_X}
+        ,#{workFlowSteps.position_Y}
+        ,#{workFlowSteps.angle}
+        ,#{workFlowSteps.clientStepID}
+        ,#{workFlowSteps.z}
+        ,#{signum}
+        ,dbo.GetDateIST()
+        ,#{workFlowSteps.action})
+    </insert>
+     
+     
+     
+     
+     
+     
+    <insert id="saveWorkflowDefinition" parameterType="WorkFlowDefinitionModel" useGeneratedKeys="true" keyProperty="workFlowDefinitionModel.workFlowID" keyColumn="WorkFlowID">
+        INSERT INTO 
+        [transactionalData].[TBL_WORK_FLOW_DEFINITION]
+        ([WorkFlowName]
+        ,[ProjectID]
+        ,[SubActivityID]
+        ,[FlowChartType]
+        ,[VersionNumber]
+        ,[CreatedBy]
+        ,[CreatedOn])
+        VALUES
+        (#{workFlowDefinitionModel.workFlowName}
+        ,#{workFlowDefinitionModel.projectID}
+        ,#{workFlowDefinitionModel.subActivityID}
+        ,#{workFlowDefinitionModel.flowChartType}
+        ,#{workFlowDefinitionModel.versionNumber}
+        ,#{signum}
+        ,dbo.GetDateIST())
+           
+           
+    </insert>
+     
+    <select id="getJsonDataForWorkFlow" resultMap="WorkFlowDefinitionModelResult">
+        SELECT  wfd.WorkFlowID
+        ,wfd.WorkFlowName
+        ,wfd.ProjectID
+        ,wfd.SubActivityID
+        ,wfd.FlowChartType
+        ,wfd.VersionNumber
+        ,wfl.WorkFlow_LinkID
+        ,wfl.LinkClientID
+        ,wfl.Router
+        ,wfl.Connector
+        ,wfl.SourceStepClientID
+        ,wfl.TargetStepClientID
+        ,wfl.Z
+        ,wfl.Label_Text
+        ,wfl.Type
+        ,wfs.WorkFlowStepID
+        ,wfs.TaskID
+        ,wfs.RpaID
+        ,wfs.TaskName
+        ,wfs.StepName
+        ,wfs.ExecutionType
+        ,wfs.AvgEstdEffort
+        ,wfs.StepType
+        ,wfs.Size_Width
+        ,wfs.Size_Height
+        ,wfs.Position_X
+        ,wfs.Position_Y
+        ,wfs.Angle
+        ,wfs.ClientStepID
+        ,wfs.Z
+        ,wfs.action
+        ,wsa.AttributeID
+        ,wsa.FlowChartStepID
+        ,wsa.AttributeType
+        ,wsa.AttributeName
+        ,wsa.AttributeValue
+        FROM [transactionalData].[TBL_WORK_FLOW_DEFINITION] wfd
+        inner join [transactionalData].[TBL_WORK_FLOW_LINKS] wfl on
+        wfd.WorkFlowId=wfl.WorkFlowId
+        inner join [transactionalData].[TBL_WORK_FLOW_STEPS] wfs on
+        wfd.WorkFlowId=wfs.WorkFlowId
+        inner join [transactionalData].[TBL_WORK_FLOW_STEP_ATTR] wsa on
+        wsa.FlowChartStepID = wfs.WorkFlowStepId
+        where wfd.projectId =#{projectID} and wfd.SubActivityId=#{subActID} and wfd.VersionNumber=#{versionNO}
+    </select>
+        
+    <select id='getWorfFlowName' resultType='String'>
+        select WorkFlowName from transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF where subActivityFlowchartDEFID =#{subActFCDefID}
+    </select>  
+     
+    <select id='getStepDetails' resultType='java.util.Map'>
+        select FS.SubActivityFlowChartDefID,FS.StepID as FlowChartStepID,FS.TaskID,FS.Task,
+        FS.AvgEstdEffort,FS.ToolID,TL.Tool as ToolName,ISNULL(FS.RpaID,0) as RpaID,
+        FS.Active, bot.BOTName,FS.OutputUpload
+        from transactionalData.TBL_FLOWCHART_STEP_DETAILS FS 
+        Inner Join refData.TBL_TOOL_INVENTORY TL on FS.ToolID = TL.ToolID
+        left join [transactionalData].[TBL_RPA_DeployedBOT] bot on fs.RpaID = bot.BOTID
+        where FS.SubActivityFlowChartDefID=#{subActivityDefID}
+        and FS.Active = 1
+    </select>
+    
+    <select id='checkIFLinkDataExists' resultType="Boolean">
+        IF EXISTS (select 1 from transactionalData.TBL_WORK_ORDER_FLOWCHART_STEP_LINK_DETAILS
+        where SubActivityFlowChartDefID = #{subActivityDefID}
+        and FlowchartSourceID = #{sourceID}
+        and FlowchartTargetID = #{targetID})
+        BEGIN
+        select 1 as 'Result'
+        END
+        ELSE
+        BEGIN
+        select 0 as 'Result'
+        END
+    </select>
+    
+    <select id='getWFOwners' resultType='java.util.Map'>
+        SELECT distinct p.CreatedBy as SignumID ,e.EmployeeName
+        FROM [transactionalData].[TBL_PROJECTS] p
+        Join refData.TBL_Employees e on e.Signum = p.CreatedBy
+        where IsDeleted = 0 and p.ProjectID =#{projectID}
+        union
+        SELECT distinct dr.signumid as SignumID ,e.EmployeeName
+        from [transactionalData].[TBL_DELIVERY_RESPONSIBLE] dr
+        join [transactionalData].[TBL_PROJECTS] po on dr.ProjectID = po.ProjectID 
+        Join refData.TBL_Employees e on e.Signum = dr.SignumID
+        where dr.ProjectID =#{projectID} and po.IsDeleted = 0 and dr.active=1
+    </select>
+    
+    <update id='updateWFOwner'>
+        update transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF set WFOwner = #{signumID} 
+        where SubActivityFlowChartDefID = #{subaActivityDefID}
+    </update>
+    
+    <select id='getFlowChartData' resultType ='java.util.LinkedHashMap'>
+        select FS.StepName,
+        Case When StepType in('basic.Rect','app.ericssonStep','app.ericssonWeakEntity','erd.WeakEntity','ericsson.Manual','ericsson.Automatic') then 'Operation'
+        When StepType in('erd.Relationship','ericsson.Decision') then 'Decision' 
+        When StepType in('basic.Circle','ericsson.StartStep') and FS.StepName ='Start' then 'Start'
+        When StepType in('basic.Circle','ericsson.EndStep') and FS.StepName in('end','Stop') 
+        then 'End' else 'End' end as GraphicalRepresentation,
+        FS.Task,FS.ExecutionType,TL.Tool,FS.RpaID
+            from transactionalData.TBL_FLOWCHART_STEP_DETAILS FS
+            LEFT JOIN refData.TBL_TOOL_INVENTORY TL on FS.ToolID = TL.ToolID
+            where subactivityflowchartdefID= #{subaActivityDefID}
+    </select>
+    
+    
+    <select id='getWFName' resultType='String'>
+        select top 1 WorkFlowName from transactionaldata.tbl_subactivity_flowchart_def
+        where ProjectID =#{projectID}  
+        and SubActivityID = #{subActivityID} and VersionNumber = #{wfVersion} and WFID=#{wfid}
+        and Active=1
+    </select>
+    
+    <select id='getExperiencedVersionNo' resultType='Integer'>
+        select ISNULL(( select top 1 ISNULL(VersionNumber,0) as VersionNumber 
+        from transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF where ProjectID = #{projectID}
+        and SubActivityID = #{subActivityID} and WorkFlowName =#{wfName} order by SubActivityFlowChartDefID desc),0)as VersionNumber
+    </select>
+    
+    <select id='getFlowChartForExperiencedMode' resultType ='java.util.HashMap' >
+        select FlowChartJSON,SubActivityFlowChartDefID,WorkFlowName,
+               case when MultiView = '1'  then 'Assessed,Experienced' else 'Assessed' end as Mode,IsAutoSenseEnable as enableField
+        from transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF	
+        where ProjectID = #{projectID} and SubActivityID = #{subActivityID} 
+        and   WorkFlowName = #{wfName} and VersionNumber = #{wfVersion} and WFID=#{wfid}
+    </select>
+    
+      <select id ='getWorkFlowLatestVersion' resultType='Integer'>
+        select ISNULL((select d1.VersionNumber
+        from transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF d1
+        inner join 
+        (
+        select ProjectID, SubActivityID, MAX(VersionNumber) as MaxVersionNumber
+        from transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF 
+        group by ProjectID, SubActivityID
+        ) as d2 on d1.VersionNumber = d2.MaxVersionNumber
+        and d1.ProjectID = d2.ProjectID
+        and d1.SubActivityID = d2.SubActivityID
+         where d1.ProjectID = #{projectID} and d1.SubActivityID = #{subActivityID}),0)as VersionNumber
+    </select>
+    
+    <update id='checkWFNameExistsAndUpdate'>
+        IF EXISTS(select * from transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF 
+                    where projectID=#{projectID} and subactivityID=#{subActivityID}
+                    and workFlowName = #{wfName} and Active =1)
+        BEGIN
+            UPDATE TRANSACTIONALDATA.TBL_SUBACTIVITY_FLOWCHART_DEF 
+            Set Active=0 ,LastModifiedBy =#{signumID},LastModifiedDate =dbo.GetDateIST()
+            Where projectID =#{projectID} and subActivityID= #{subActivityID} and workFlowName = #{wfName}
+        END
+    </update>
+    
+    <select id='checkWFNameExistsWithExpert' resultType='java.util.LinkedHashMap'>
+    	select * from transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF 
+                    where projectID=#{projectID} and subactivityID=#{subActivityID}
+                    and workFlowName = #{wfName} and Active =1
+    </select>
+    
+    <select id='getAdditionalInfoOfWorkFlow' resultType='java.util.LinkedHashMap'>
+    select Activity,SubActivity from refdata.TBL_SUBACTIVITY where subActivityID = #{subActivityID}
+    
+    </select>
+    
+    <select id='getAllFlowCharts' resultType='java.util.LinkedHashMap'>
+    		select def.SubActivityFlowChartDefID from transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF def 
+		inner join transactionalData.TBL_PROJECTS p on p.projectid=def.projectid
+		inner join transactionalData.TBL_OPPORTUNITY o on o.OpportunityID=p.OpportunityID
+		inner join refData.TBL_MARKETAREAS ma on ma.MarketAreaID=o.MarketAreaID
+		where def.FlowChartJSON is not null and p.isdeleted=0 and p.Status not in ('REJECTED')
+		and ma.MarketAreaName=#{MA}
+    </select>
+    <select id='getAllFlowChartsBySubActivityFlowChartDefID' resultType='java.util.LinkedHashMap'>
+    	select FlowChartJSON,SubActivityFlowChartDefID from transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF where FlowChartJSON is not null and SubActivityFlowChartDefID = #{subActivityFlowChartDefID}
+    </select>
+    
+    <select id='getTaskNameByID' resultType='java.util.LinkedHashMap'>
+    	select Task from refData.TBL_TASK where TaskID = #{taskID} 
+    </select>
+    
+    <select id='getToolNameByID' resultType='java.util.LinkedHashMap'>
+    	select Tool from refData.TBL_TOOL_INVENTORY where ToolID = #{toolID}
+    </select>
+    
+    <select id='getDeletedSteps' resultType='java.util.LinkedHashMap'>
+    
+SELECT
+fsd1.StepID,
+fsd1.StepName,
+fsd1.TaskId,
+fsd1.task,
+fsd1.ExecutionType,
+fsd1.RpaID,
+AH.Savings
+FROM
+(
+select stepid,stepname,taskid,task,executiontype,rpaid
+from transactionaldata.tbl_flowchart_step_details
+where SubActivityFlowChartDefID = #{oldDefID}	
+) fsd1
+left join
+(
+select stepid,stepname,taskid,task,executiontype,rpaid
+from transactionaldata.tbl_flowchart_step_details
+where SubActivityFlowChartDefID = #{newDefID}
+) fsd2
+on fsd1.StepID = fsd2.StepID
+inner join refdata.tbl_task t ON t.taskid = fsd1.taskid
+left join
+(
+select StepID,avg(Hours) Savings from
+(
+select StepID,bd.EndDate,Hours
+from transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF sfd
+join transactionalData.TBL_FLOWCHART_STEP_DETAILS fsd
+on fsd.SubActivityFlowChartDefID=sfd.SubActivityFlowChartDefID
+and fsd.Active=1
+left join transactionalData.TBL_WORK_ORDER wo
+on sfd.SubActivityFlowChartDefID = wo.flowchartdefid
+and wo.PROJECTID =sfd.ProjectID
+join transactionalData.TBL_WORK_ORDER_FLOWCHART_STEP_DETAILS WOFSD
+on WOFSD.FlowChartStepID=fsd.StepID
+join transactionalData.TBL_WORK_ORDER_BOOKING_DETAILS bd
+on wo.WOID =bd.WOID
+and bd.TaskID = fsd.TaskID
+and bd.BookingID=WOFSD.BookingID
+where wo.Status = 'CLOSED'
+and sfd.SubActivityFlowChartDefID = #{oldDefID}	
+and StepID in
+(
+SELECT
+fsd1.stepid
+FROM
+(
+select stepid,taskid
+from transactionaldata.tbl_flowchart_step_details
+where SubActivityFlowChartDefID = #{oldDefID}	
+) fsd1
+left join
+(
+select stepid,taskid
+from transactionaldata.tbl_flowchart_step_details
+where SubActivityFlowChartDefID = #{newDefID}
+) fsd2
+on fsd1.StepID = fsd2.StepID
+inner join refdata.tbl_task t ON t.taskid = fsd1.taskid
+
+
+
+where
+fsd2.StepID is null
+
+
+
+)
+and hours is not null
+and bd.type != 'LEADTIME'
+and fsd.executiontype = 'Manual'
+group by StepID,bd.EndDate,Hours
+)a
+group by StepID
+
+
+
+)AH on fsd1.StepID=AH.StepID
+where
+fsd2.StepID is null
+	
+    </select>
+    
+    <select id='getAddedSteps' resultType='java.util.LinkedHashMap'>
+    	select StepID,StepName,fsd.TaskID,t.task, fsd.ExecutionType,RpaID,fsd.Savings from transactionalData.TBL_FLOWCHART_STEP_DETAILS fsd
+		join refdata.TBL_TASK t on t.TaskID = fsd.TaskID 
+		where SubActivityFlowChartDefID =#{newDefID}  and  fsd.StepID in (
+		select a.StepID
+		from 
+		(select StepID,RpaID,SubActivityFlowChartDefID from transactionalData.TBL_FLOWCHART_STEP_DETAILS where SubActivityFlowChartDefID =#{newDefID} ) A
+		left join (select StepID,RpaID,SubActivityFlowChartDefID from transactionalData.TBL_FLOWCHART_STEP_DETAILS where SubActivityFlowChartDefID = #{oldDefID} ) B
+		on A.Stepid=B.Stepid
+		Where (B.Stepid is null or A.rpaid!=B.rpaid ) 
+		)
+    </select>
+
+	<select id='getSavingForManualStep' resultType='java.util.LinkedHashMap'>
+		WITH data (StepID,EndDate,Hours) as (
+		select top 20 StepID,bd.EndDate,Hours
+		from transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF sfd
+		inner join transactionalData.TBL_FLOWCHART_STEP_DETAILS fsd on
+		fsd.SubActivityFlowChartDefID=sfd.SubActivityFlowChartDefID and
+		fsd.Active=1
+		left join transactionalData.TBL_WORK_ORDER wo on
+		sfd.SubActivityFlowChartDefID = wo.flowchartdefid and wo.PROJECTID =
+		sfd.ProjectID
+		join transactionalData.TBL_WORK_ORDER_FLOWCHART_STEP_DETAILS WOFSD on WOFSD.FlowChartStepID=fsd.StepID
+		join transactionalData.TBL_WORK_ORDER_BOOKING_DETAILS bd on wo.WOID =
+		bd.WOID and bd.TaskID = fsd.TaskID and 
+		bd.BookingID=WOFSD.BookingID
+		where wo.Status = 'CLOSED' and sfd.SubActivityFlowChartDefID=#{oldDefID}
+		and StepID = #{stepID} and hours is not null and bd.type != 'LEADTIME'
+		group by StepID,bd.EndDate,Hours
+		order by max(bd.EndDate) desc
+		)
+		select avg(Hours) Savings, StepID from data
+		group by StepID
+	</select>
+	
+    <select id='checkIfStepExperienced' resultType='java.util.LinkedHashMap'>
+		select  sfd.projectid ,  sfd.SubActivityID as subactivityid, sfd.SubActivityFlowChartDefID, count(WOID) executedCount 
+		from  transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF sfd 
+		inner join transactionalData.TBL_FLOWCHART_STEP_DETAILS  fsd on fsd.SubActivityFlowChartDefID=sfd.SubActivityFlowChartDefID and fsd.Active=1  
+		left join transactionalData.TBL_WORK_ORDER wo on sfd.SubActivityFlowChartDefID = wo.flowchartdefid and wo.PROJECTID = sfd.ProjectID
+		where wo.Status = 'CLOSED' and sfd.SubActivityFlowChartDefID=#{oldDefID} and StepID = #{stepID}
+		group by sfd.projectid , sfd.subactivityid, sfd.SubActivityFlowChartDefID
+		having count(WOID) >= 20
+    </select>
+    
+    <select id='checkisCalculationNeeded' resultType='java.util.LinkedHashMap'>
+    
+		select  isCalculationNeeded, Savings
+		from  transactionalData.TBL_FLOWCHART_STEP_DETAILS 
+		where  SubActivityFlowChartDefID = #{oldDefID} and StepID = #{stepID}
+		
+    </select>
+    
+    <select id='getDeployedBotList' resultType='java.util.LinkedHashMap'>
+		select distinct fsd.RpaID , fsd.StepID , sfd.ProjectID,p.ProjectName,ma.MarketAreaName,fsd.SubActivityFlowChartDefID,sfd.SubActivityID,s.Activity ,s.SubActivity,fsd.StepName,fsd.Task,db.CreatedOn as BotIntegrationDate, min (CONVERT(VARCHAR(20), wobd.StartDate, 23) ) BotActivationDate, fsd.Remarks,
+		case when fsd.isCalculationNeeded is null  then 0 else fsd.isCalculationNeeded end as  isCalculationNeeded , fsd.VersionNumber, sfd.WorkFlowName, id.OldWfDefID, fsd.Savings,id.BotStepId, fsd.CurrentYearSavings,sfd.WFID 
+		from transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF sfd
+		join transactionalData.TBL_FLOWCHART_STEP_DETAILS fsd on fsd.SubActivityFlowChartDefID = sfd.SubActivityFlowChartDefID
+		join transactionalData.TBL_PROJECTS p on sfd.ProjectID = p.ProjectID
+		join transactionalData.TBL_OPPORTUNITY op on op.OpportunityID = p.OpportunityID
+		join refData.TBL_MARKETAREAS ma on ma.MarketAreaID = op.MarketAreaID
+		join refdata.TBL_SUBACTIVITY s on sfd.SubActivityID = s.SubActivityID
+		left join transactionalData.TBL_RPA_DeployedBOT db on db.rpaRequestID = fsd.RpaID
+		left join transactionalData.TBL_WORK_ORDER wo on sfd.SubActivityFlowChartDefID = wo.flowchartdefid and wo.PROJECTID = p.ProjectID and wo.WorkFlowVersion = sfd.VersionNumber
+		left join transactionalData.TBL_WORK_ORDER_BOOKING_DETAILS wobd on wobd.TaskID = fsd.TaskID and wobd.WOID = wo.WOID
+		left join transactionalData.TBL_BOT_INTEGRATION_DEPLOYMENT id on id.BOTID = fsd.RpaID and sfd.SubActivityFlowChartDefID = id.NewWFDefID
+		where sfd.WFOwner =  #{signumID} and fsd.RpaID != 0 and fsd.StepType = 'ericsson.Automatic' and db.status = 'DEPLOYED' and fsd.Active = 1
+		group by fsd.RpaID, sfd.ProjectID,p.ProjectName,ma.MarketAreaName,fsd.SubActivityFlowChartDefID,sfd.SubActivityID,s.Activity,s.SubActivity,fsd.StepName,fsd.Task,db.CreatedOn,fsd.Remarks, fsd.isCalculationNeeded, fsd.VersionNumber, sfd.WorkFlowName, id.OldWfDefID,fsd.Savings,id.BotStepId, fsd.StepID, fsd.CurrentYearSavings,WFID				 
+    </select>
+    
+    <!-- <select id='getSavingForAutomaticStep' resultType='java.util.LinkedHashMap'>
+    	select [Saving Calculated] from TransactionalData.TBL_BOT_SAVING where BOTID =  #{botid} and [Saving Calculated] != 0
+    </select> -->
+    
+    <select id='getSavingForAutomaticStep' resultType='java.util.LinkedHashMap'>
+    	select Savings from transactionalData.TBL_FLOWCHART_STEP_DETAILS where StepType = 'ericsson.Automatic' and 
+    	SubActivityFlowChartDefID = #{oldDefID}
+		and StepID = #{stepID}
+    </select>
+    
+    <select id='getSavingForAutomaticStepForNewDef' resultType='java.util.LinkedHashMap'>
+    	select savings from transactionalData.TBL_FLOWCHART_STEP_DETAILS where StepType = 'ericsson.Automatic' and 
+    	SubActivityFlowChartDefID = #{botSavingModel.newDefID} and RpaID = #{botSavingModel.bOTID} and StepID = #{botSavingModel.oldStepId}
+    </select>
+    
+    <select id='getSavingForAutomaticStepForOthers' resultType='java.util.LinkedHashMap'>
+    	select avg(savings) as savings from transactionalData.TBL_FLOWCHART_STEP_DETAILS where StepType = 'ericsson.Automatic' and 
+    	SubActivityFlowChartDefID != #{botSavingModel.oldDefID}
+		and RpaID = #{botSavingModel.bOTID}
+    </select>
+    
+    <delete id="deleteDefID">
+		delete  from transactionalData.TBL_FLOWCHART_STEP_DETAILS where SubActivityFlowChartDefID = #{defID};
+		delete  from transactionalData.TBL_WORK_ORDER_FLOWCHART_STEP_LINK_DETAILS where SubActivityFlowChartDefID = #{defID}
+	</delete>
+	
+	<delete id="deleteSubAcitvityDefID">
+		delete  from transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF  where  SubActivityFlowChartDefID = #{defID};
+	</delete>
+	
+	<update id="updateOldDefID">
+		update transactionalData.TBL_FLOWCHART_STEP_DETAILS set active = 1 where SubActivityFlowChartDefID = #{defID};
+		update transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF set active = 1 where SubActivityFlowChartDefID = #{defID};
+	</update>
+	
+	<update id="updatePostPeriodDates">
+		update transactionalData.TBL_FLOWCHART_STEP_DETAILS set PostStartDate = #{botSavingModel.postPeriodStartDate} , PostEndDate = #{botSavingModel.postPeriodEndDate} , isCalculationNeeded = 0 
+		where RpaID = #{botSavingModel.bOTID} and SubActivityFlowChartDefID = #{botSavingModel.newDefID} and VersionNumber = #{botSavingModel.newVersion} and StepID =  #{botSavingModel.bOTStepID}
+	</update>
+	
+	<insert id ='saveBotSavingDetailsAndHistoryNew'>
+	
+	INSERT INTO [transactionalData].[TBL_BOT_INTEGRATION_DEPLOYMENT]
+	(BOTID,Projectid,SubactivityID,OldWfDefID,NewWFDefID,Type,StepID,StepName,CreatedBy,CreatedOn,BotStepId,ExecutionType,active,savings)
+	
+	Values (
+	#{botSavingModel.bOTID},
+	#{botSavingModel.projectID},
+	#{botSavingModel.subActivity},
+	#{botSavingModel.oldDefID},
+	#{botSavingModel.newDefID},
+	#{type},
+	#{newStepID},
+	#{newStepName},
+	#{botSavingModel.createdBy},
+	dbo.GetDateIST(),
+	#{botSavingModel.bOTStepID},
+	#{executionType},
+	1,
+	#{savings})
+	
+    </insert>
+	
+	<insert id ='saveBotSavingDetailsAndHistoryOld'>
+	
+	INSERT INTO [transactionalData].[TBL_BOT_INTEGRATION_DEPLOYMENT]
+	(BOTID,Projectid,SubactivityID,OldWfDefID,NewWFDefID,Type,StepID,StepName,CreatedBy,CreatedOn,BotStepId,ExecutionType,active,savings,emeCalculationDefID)
+	
+	Values (
+	#{botSavingModel.bOTID},
+	#{botSavingModel.projectID},
+	#{botSavingModel.subActivity},
+	#{botSavingModel.oldDefID},
+	#{botSavingModel.newDefID},
+	#{type},
+	#{newStepID},
+	#{newStepName},
+	#{botSavingModel.createdBy},
+	dbo.GetDateIST(),
+	#{botSavingModel.bOTStepID},
+	#{executionType},
+	1,
+	#{savings},
+	#{emeCalculationDefID})
+	
+    </insert>
+    
+    
+    <insert id ='saveBotSaving'>
+        INSERT INTO [transactionalData].[TBL_BOT_SAVING](BOTID,ExecutionCount,[Saving Calculated],[Total Saving],CreatedBy,CreatedOn,LastModifiedBY,LastModifiedOn)
+        Values (#{botSavingModel.bOTID},NULL,#{totalSavings},#{totalSavings},#{botSavingModel.createdBy},
+        #{botSavingModel.createdOn},#{botSavingModel.lastModifiedBy},#{botSavingModel.lastModifiedOn},#{botSavingModel.lastModifiedOn},#{botSavingModel.lastModifiedOn})
+    </insert>
+    
+    <select id='getWFVersionsFromSubactivityID' resultType='java.util.LinkedHashMap'>
+
+	DECLARE
+	@TempInActiveWFTable
+	TABLE
+	(WFID INT,
+	ProjectID int,
+	SubActivityID INT
+	)
+	INSERT INTO @TempInActiveWFTable(ProjectID,SubActivityID,WFID)
+	SELECT ProjectID,SubActivityID,WFID
+	from transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF
+	WHERE ProjectID = #{botSavingModel.projectID}
+	and SubActivityID =  #{botSavingModel.subActivity}  and Active=1 
+
+	IF NOT EXISTS
+	(
+	select 1 from transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF
+	where wfid =  #{botSavingModel.wfid}  
+	and SubActivityID = #{botSavingModel.subActivity} 
+	and ProjectID = #{botSavingModel.projectID} 
+	and VersionNumber = #{botSavingModel.newVersion}
+	and (concat ( WorkFlowName, '_' , wfid ) like '%${botSavingModel.term}%' or WorkFlowName like '%${botSavingModel.term}%' or wfid like '%${botSavingModel.term}%')
+	)
+	Begin
+	;with
+	CTE(SubActivityID,WorkFlowName,VersionNumber,wfid,ProjectID,SubActivityFlowChartDefID,active,type,Rownumber)
+	AS(
+	SELECT def.SubActivityID, def.WorkFlowName , VersionNumber, def.wfid,
+	def.ProjectID , def.SubActivityFlowChartDefID,def.active,def.type,
+	ROW_NUMBER() OVER(PARTITION BY WorkFlowName ORDER BY VersionNumber
+	DESC)Rownumber
+	FROM transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF def
+	join transactionalData.TBL_WORK_ORDER wo on wo.PROJECTID = def.ProjectID
+	and wo.SubActivityID = def.SubActivityID and
+	def.SubActivityFlowChartDefID = wo.flowchartdefid
+	
+	WHERE
+	def.SubActivityID =  #{botSavingModel.subActivity}   and 
+	def.ProjectID = #{botSavingModel.projectID}  
+	and def.type in ('PROJECTDEFINED')
+	and wo.active = 1
+	and wo.status = 'Closed'
+	and wo.DeliveryStatus = 'Success'
+	and Cast (wo.actualEndDate as Date ) &gt;=  Cast( DATEADD(month, -6,GetDate())
+	as Date) and Cast (wo.actualEndDate as Date ) &lt;= Cast( GetDate() as
+	Date)
+	GROUP BY def.SubActivityID,def.WorkFlowName , VersionNumber, WFID,
+	def.ProjectID, SubActivityFlowChartDefID,def.active,type
+	)Select distinct
+	def.SubActivityID,WorkFlowName,VersionNumber,def.wfid,def.ProjectID,
+	def.SubActivityFlowChartDefID , def.active, def.type,
+	concat( 'WF:' , def.WorkFlowName ,'_',def.wfid,' ', 'V:',def.VersionNumber) as
+	WorkFlowVersion
+	from CTE def
+	join @TempInActiveWFTable tmp on tmp.WFID = def.wfid
+
+	LEFT JOIN refdata.TBL_SUBACTIVITY sa on sa.SubActivityID =
+	def.SubActivityID
+	left join refData.TBL_DOMAIN d on sa.DomainID = d.DomainID
+	left join refdata.TBL_SERVICEAREA ser on sa.ServiceAreaID =
+	ser.ServiceAreaID
+	left join refdata.TBL_TECHNOLOGY tech on sa.TechnologyID =
+	tech.TechnologyID
+
+
+
+	where Rownumber &lt;= 5
+
+	and def.SubActivityID =  #{botSavingModel.subActivity} 
+	and (concat (def.WorkFlowName, '_' , def.wfid ) like '%${botSavingModel.term}%' or def.WorkFlowName like '%${botSavingModel.term}%' or def.wfid like '%${botSavingModel.term}%')
+	and def.ProjectID = #{botSavingModel.projectID}
+	order by def.wfid desc
+	end
+	else
+
+	Begin
+	;with
+	CTE(SubActivityID,WorkFlowName,VersionNumber,wfid,ProjectID,SubActivityFlowChartDefID,active,type,Rownumber)
+	AS(
+	SELECT def.SubActivityID, def.WorkFlowName , VersionNumber, def.wfid,
+	def.ProjectID , def.SubActivityFlowChartDefID,def.active,def.type,
+	ROW_NUMBER() OVER(PARTITION BY WorkFlowName ORDER BY VersionNumber
+	DESC)Rownumber
+	FROM transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF def
+	join transactionalData.TBL_WORK_ORDER wo on wo.PROJECTID = def.ProjectID
+	and wo.SubActivityID = def.SubActivityID and
+	def.SubActivityFlowChartDefID = wo.flowchartdefid
+	WHERE
+	def.SubActivityID = #{botSavingModel.subActivity}  
+	and def.ProjectID = #{botSavingModel.projectID} 
+	and def.type in ('PROJECTDEFINED') 
+	and wo.active = 1
+	and wo.status = 'Closed'
+	and wo.DeliveryStatus = 'Success'
+	and Cast (wo.actualEndDate as Date ) &gt;=  Cast( DATEADD(month, -6,GetDate())
+	as Date) and Cast (wo.actualEndDate as Date ) &lt;= Cast( GetDate() as
+	Date)
+	GROUP BY def.SubActivityID,def.WorkFlowName , VersionNumber, WFID,
+	def.ProjectID, SubActivityFlowChartDefID,def.active,type
+	)
+	Select distinct
+	def.SubActivityID,WorkFlowName,VersionNumber,def.wfid,def.ProjectID,
+	def.SubActivityFlowChartDefID , def.active, def.type,
+	concat('WF:' , def.WorkFlowName ,'_',def.wfid,' ', 'V:',def.VersionNumber) as
+	WorkFlowVersion
+	from CTE def
+	join @TempInActiveWFTable tmp on tmp.WFID = def.wfid
+	LEFT JOIN refdata.TBL_SUBACTIVITY sa on sa.SubActivityID =
+	def.SubActivityID
+	left join refData.TBL_DOMAIN d on sa.DomainID = d.DomainID
+	left join refdata.TBL_SERVICEAREA ser on sa.ServiceAreaID =
+	ser.ServiceAreaID
+	left join refdata.TBL_TECHNOLOGY tech on sa.TechnologyID =
+	tech.TechnologyID
+	where Rownumber &lt;= 5
+	and def.SubActivityID =  #{botSavingModel.subActivity}
+	and (concat (def.WorkFlowName, '_' , def.wfid ) like '%${botSavingModel.term}%' or def.WorkFlowName like '%${botSavingModel.term}%' or def.wfid like '%${botSavingModel.term}%')
+	and def.ProjectID = #{botSavingModel.projectID}
+	and def.active = 0
+	order by def.wfid desc
+	
+	end
+    </select>
+    
+    <select id='getPostSumSaving' resultType='String'>
+		select sum(savings) savings from [transactionalData].[TBL_BOT_INTEGRATION_DEPLOYMENT]
+		 where BOTID = #{rpaID} and NewWFDefID = #{defID} and ExecutionType = 'Manual' and active =1 and Type = 'POST'
+    </select>
+    <select id='getPreSumSaving' resultType='String'>
+		select CASE WHEN sum(savings) is null THEN 0 else sum(savings) end from [transactionalData].[TBL_BOT_INTEGRATION_DEPLOYMENT] where BOTID = #{rpaID} and NewWFDefID = #{defID} and ExecutionType = 'Manual' and active =1 and Type = 'PRE'
+    </select>
+    
+    <select id='getPreAutomaticSumSaving' resultType='Float'>
+		select CASE WHEN sum(savings) is null THEN 0 else sum(savings) end  from [transactionalData].[TBL_BOT_INTEGRATION_DEPLOYMENT] where BOTID = #{rpaID} and NewWFDefID = #{defID} and ExecutionType = 'Automatic' and active =1 and Type = 'PRE'
+    </select>
+    
+      <select id='getAvgBookingHours' resultType='String'>
+		select CASE WHEN sum(wb.Hours)/count(distinct wb.woid) is null THEN 0 else sum(wb.Hours)/count(distinct wb.woid) end   from  transactionalData.TBL_WORK_ORDER_BOOKING_DETAILS wb
+		join transactionalData.TBL_WORK_ORDER_FLOWCHART_STEP_DETAILS ws on ws.woid=wb.WOID and ws.TaskID = wb.TaskID and ws.BookingID = wb.BookingID
+ 		where ws.FlowChartDefID = #{defID}  and 
+ 		ws.FlowChartStepID in (select StepID from [transactionalData].[TBL_BOT_INTEGRATION_DEPLOYMENT] where NewWFDefID = #{defID}  and ExecutionType = 'Manual' and active =1 and Type = 'POST') 
+ 		and wb.taskid in (select TaskID from transactionalData.TBL_FLOWCHART_STEP_DETAILS where SubActivityFlowChartDefID = #{defID}  and StepID in (select StepID from [transactionalData].[TBL_BOT_INTEGRATION_DEPLOYMENT] where NewWFDefID = #{defID}  and ExecutionType = 'Manual' and active =1 and Type = 'POST'))
+    </select>
+    
+    <update id="updateStepDetailsSavings">
+		update transactionalData.TBL_FLOWCHART_STEP_DETAILS 
+		set isCalculationNeeded = 1, 
+		Remarks = #{botSavingModel.remark},
+		Savings = #{botSavingModel.totalSavings}, 
+		ExceptedSavings = #{botSavingModel.expectedSavings}, 
+		CurrentYearSavings = #{botSavingModel.currentYearSavings} 
+		where 
+		RpaID = #{botSavingModel.bOTID} and 
+		SubActivityFlowChartDefID = #{botSavingModel.newDefID}
+	</update>
+	
+	<update id="updateStepDetailsSavingsRemarks">
+		update transactionalData.TBL_FLOWCHART_STEP_DETAILS 
+		set isCalculationNeeded = 0, 
+		Remarks = #{botSavingModel.remark},
+		Savings = #{botSavingModel.totalSavings}, 
+		ExceptedSavings = #{botSavingModel.expectedSavings}, 
+		CurrentYearSavings = #{botSavingModel.currentYearSavings}  
+		where
+		RpaID = #{botSavingModel.bOTID} and 
+		SubActivityFlowChartDefID = #{botSavingModel.newDefID}
+	</update>
+    
+    <update id="deactiveBotStatusForOldReocrds">
+		update [transactionalData].[TBL_BOT_INTEGRATION_DEPLOYMENT] 
+		set active = 0 
+		where BOTID = #{botSavingModel.bOTID} and 
+		NewWFDefID = #{botSavingModel.newDefID}
+	</update>
+	
+	<select id='getWFVersionDetails' resultType='java.util.HashMap'>
+	   Select EPD.executionPlanDetailId,EPD.workFlowVersionNo, EPD.taskJson from transactionalData.TBL_ExecutionPlan_master EPM 
+       JOIN transactionalData.TBL_ExecutionPlan_details EPD on  EPM.ExecutionPlanID = EPD.ExecutionPlanID
+       AND ISJSON(taskJson)=1
+       AND (len(replace(JSON_VALUE(taskJson,'$.workflow'),'/','12'))-len(JSON_VALUE(taskJson,'$.workflow')))=2
+       JOIN transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF DEF on DEF.ProjectID =EPM.ProjectID
+       AND DEF.SubActivityID =  EPD.SubActivityID
+       and DEF.WFID=SUBSTRING( JSON_VALUE(taskJson, '$.workflow'), 0, CHARINDEX('/',  JSON_VALUE(taskJson, '$.workflow'))) 
+	   where epm.projectId = #{projectId} and epd.subactivityId = #{subActivityId} 
+	   and DEF.SubActivityFlowChartDefID = #{SubActflowChartDefId} 
+	   and epd.workFlowVersionNo = #{versionOld} and  epm.isactive=1
+     </select>
+     
+     <update id="updateWFVersionDetails">
+		update [transactionalData].[TBL_ExecutionPlan_details] set workFlowVersionNo = #{versionNew}, 
+		taskJson = #{taskJson} where executionPlanDetailId = #{executionPlanDetailId}
+	</update>
+	
+	<select id="getMaxWFID" resultType='Integer'>
+		select ISNULL(MAX(WFID),0) from [transactionalData].[TBL_SUBACTIVITY_FLOWCHART_DEF]  WITH (NOLOCK)
+	</select>
+	
+	<select id='getFlowChartEditReason' resultType='java.util.HashMap'>
+	 select FailureReason as EditReason,FailureCategory as EditCategory from refData.TBL_WORK_ORDER_FAILURE_REASON where FailureCategory='WorkFlow'
+     </select>
+     
+     <select id="getWFID" resultType='Integer'>
+		select WFID from [transactionalData].[TBL_SUBACTIVITY_FLOWCHART_DEF] where SubActivityFlowChartDefID=#{subActivityFlowChartDefID}
+	</select>
+	 <select id='getWorkflowForWFID' resultType ="Boolean">
+	  If Exists(select 1 from transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF where ProjectID = #{projectID} and WorkFlowName = #{wfName} and SubActivityID =#{subActivityID} and WFID=#{workFlowID} and active =1 )
+		Begin
+		select 1 as result
+		end
+		else
+		begin
+		select 0 as result
+		end
+        
+    </select>
+     <select id="getWFEditReason" resultType="String">
+		select WFEditReason from [transactionalData].[TBL_SUBACTIVITY_FLOWCHART_DEF] where SubActivityFlowChartDefID=#{subActivityFlowChartDefID}
+	</select>
+	
+	 <update id='deactivateCustomVersionOfWOStepDetails' >
+       update	transactionalData.TBL_WORK_ORDER_FLOWCHART_DETAILS set Active=0 where SubActivityFlowChartDefID=#{flowchartDefID}
+      </update>
+      
+      <select id='validateDRAndPM' resultType ="Boolean">
+       
+      If Exists(select proj.ProjectCreator from transactionalData.TBL_PROJECTS proj
+				left join transactionalData.TBL_DELIVERY_RESPONSIBLE dr on proj.ProjectID=dr.ProjectID and dr.Active=1
+				where proj.IsDeleted=0 and (proj.ProjectCreator=#{signum} or dr.SignumID=#{signum})
+				and proj.ProjectID=#{projectId})
+		Begin
+		select 1 as result
+		end
+		else
+		begin
+		select 0 as result
+		end
+		
+    </select>    
+    
+     <select id='validateOM' resultType ="Boolean">
+       
+    Drop Table If Exists #T
+    
+	select AccessProfileName into #T
+	from transactionalData.TBL_USER_ACCESS_PROFILE UAP
+	join refData.TBL_ACCESS_PROFILE AP on UAP.AccessProfileID=AP.AccessProfileID
+	where UAP.SignumID=#{signum} and AccessProfileName like 'OM%' and UAP.Active=1
+
+	If Exists(select 1 from #T where AccessProfileName like '%${marketArea}')
+		Begin
+		select 1 as result
+		end
+		else
+		begin
+		select 0 as result
+		end
+		
+    </select>    
+    
+     <select id='validateNE' resultType ="Boolean">
+       
+      If Exists(select  wo.WOID from transactionalData.TBL_WORK_ORDER wo
+	  			inner join transactionalData.TBL_PROJECTS proj on wo.PROJECTID=proj.ProjectID 
+	  			and proj.IsDeleted=0 where SignumID=#{signum} and wo.Status IN('ASSIGNED','INPROGRESS')
+	  			and wo.Active=1 and proj.ProjectID=#{projectId})
+       
+		Begin
+		select 1 as result
+		end
+		else
+		begin
+		select 0 as result
+		end
+		
+    </select>    
+     
+    <select id="revertOldDefIdForNewDefIdWO">
+    	update transactionalData.TBL_WORK_ORDER set WorkFlowVersion=#{lastUpdatedVersion},flowchartdefid=#{oldDefID} where flowchartdefid=#{newDefID}
+    </select>        
+    
+    <select id='validateEU' resultType ="Boolean">
+       
+    Drop Table If Exists #T
+    
+	select AccessProfileName into #T
+	from transactionalData.TBL_USER_ACCESS_PROFILE UAP
+	join refData.TBL_ACCESS_PROFILE AP on UAP.AccessProfileID=AP.AccessProfileID
+	where UAP.SignumID=#{signum} and AccessProfileName like 'EU%' and UAP.Active=1
+
+	If Exists(select 1 from #T where AccessProfileName like '%${marketArea}')
+		Begin
+		select 1 as result
+		end
+		else
+		begin
+		select 0 as result
+		end
+		
+    </select>    
+     
+      <select id='isExist' resultType="java.lang.Boolean">
+	   IF EXISTS(SELECT 1 FROM transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF  where ProjectID=#{projectID} and SubActivityID=#{subActivityID})
+	   begin
+	   select 1 as result
+	   end
+	   else
+	   begin
+	   select 0 as result
+	   end
+	   
+	</select>
+	<select id="getVersionNumber" resultType='Integer'>
+		select max(VersionNumber) as VersionNumber from transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF 
+		where ProjectID=#{projectID} and SubActivityID=#{subActivityID}
+	</select>
+	 <select id='validateAdmin' resultType ="Boolean">
+       
+    DROP TABLE IF EXISTS #t 
+SELECT accessprofilename 
+INTO   #t 
+FROM   transactionaldata.tbl_user_access_profile uap 
+JOIN   refdata.tbl_access_profile ap 
+ON     uap.accessprofileid=ap.accessprofileid 
+WHERE  uap.signumid= #{signum} 
+AND    accessprofilename= 'Admin' 
+AND    uap.active=1  
+IF EXISTS 
+( 
+       SELECT 1 
+       FROM   #t 
+       WHERE  accessprofilename = 'Admin') 
+BEGIN 
+  SELECT 1 AS result 
+END 
+ELSE 
+BEGIN 
+  SELECT 0 AS result 
+END
+		
+    </select> 
+    <update id='insertWorkflowStepAutoSenseRule' parameterType="com.ericsson.isf.model.FlowChartPopulateDataModel">
+    	declare @RuleID INT,@parsedRuleJson varchar(MAX),@TaskActionName varchar(25)
+        declare @subActivityFlowChartDefID int = #{flowChartdataModel.subActivityFlowchartStepDefId},@FCStepDetailsID int = #{flowChartdataModel.fCStepDetailsID},@createdBy varchar(25)= #{flowChartdataModel.loggedInSignum}
+        Declare Cur_Sources Cursor STATIC FOR
+
+		SELECT     RuleID,parsedRuleJson,TaskActionName 
+        FROM       dbo.TBL_TMP_WorkflowStepAutoSenseRule 
+        where ProjectIDSubactivityIDLoggedInSignum=#{flowChartdataModel.projectIDSubactivityIDLoggedInSignum} and StepID=#{flowChartdataModel.stepId} and TaskID=#{flowChartdataModel.taskId}
+       <!--   AND ExpertViewNeeded=#{flowChartdataModel.experiencedView}-->
+        Open Cur_Sources
+        IF @@CURSOR_ROWS > 0
+        BEGIN 
+        fetch next from Cur_Sources into @RuleID,@parsedRuleJson,@TaskActionName
+
+        while @@FETCH_STATUS = 0
+
+        BEGIN 
+
+        INSERT INTO transactionaldata.tbl_workflowstepautosenserule 
+            (RuleID, 
+             SubactivityFlowchartDefID, 
+             FCStepDetailsID, 
+             parsedRuleJson, 
+             RuleStatus, 
+             TaskActionName, 
+             createdBy, 
+             CreatedDate, 
+             ModifiedBy, 
+             ModifiedDate) 
+			VALUES    
+
+			( @RuleID, 
+ 			  @subActivityFlowChartDefID , 
+ 			  @FCStepDetailsID,@parsedRuleJson, 
+ 			  1,
+ 			  @TaskActionName, 
+ 			  @createdBy,
+ 			  dbo.Getdateist(), 
+ 			  @createdBy,
+ 			  dbo.Getdateist()
+			)
+
+		DELETE FROM dbo.TBL_TMP_WorkflowStepAutoSenseRule
+   		WHERE StepID= #{flowChartdataModel.stepId} and TaskID= #{flowChartdataModel.taskId} and ProjectIDSubactivityIDLoggedInSignum= #{flowChartdataModel.projectIDSubactivityIDLoggedInSignum}
+    	and TaskActionName= @TaskActionName
+    	<!--  and ExpertViewNeeded = #{flowChartdataModel.experiencedView} -->
+    
+		Fetch next from Cur_Sources INTO @RuleID,@parsedRuleJson,@TaskActionName 
+
+		END 
+		END
+		Close Cur_Sources
+		Deallocate Cur_Sources
+ 
+    </update>
+
+    <select id='updateWorkOrderForAutoSense'  >
+ 		update transactionalData.TBL_WORK_ORDER set IsAutoSenseEnable=NULL
+		where status IN ('ASSIGNED','REOPENED','PLANNED') and flowchartdefid =#{parentWFDefID}
+  	</select>
+  	
+  	 <update id='insertCustomWorkflowStepAutoSenseRule' parameterType="com.ericsson.isf.model.FlowChartPopulateDataModel">
+    	DROP TABLE IF EXISTS  #old;
+		DROP TABLE IF EXISTS  #new;
+		DROP TABLE IF EXISTS #MappingDetails;
+
+		Select SubActivityFlowChartDefID,StepID,FCStepDetailsID
+		into #old
+		from transactionalData.TBL_FLOWCHART_STEP_DETAILS 
+		where SubActivityFlowChartDefID=#{parentWFDefID} and Active = 1 and StepType not in ('ericsson.StartStep','ericsson.EndStep')
+
+		Select SubActivityFlowChartDefID,StepID,FCStepDetailsID
+		into #new
+		from transactionalData.TBL_FLOWCHART_STEP_DETAILS old 
+		where SubActivityFlowChartDefID=#{subActivityFlowchartDefId} and Active = 1 and StepType not in ('ericsson.StartStep','ericsson.EndStep')
+
+        select 
+		a.SubActivityFlowChartDefID OldDefID,
+        a.stepID,
+        a.FCStepDetailsID OldFCStepDetailsID,
+        b.SubActivityFlowChartDefID NewDefID,
+        b.FCStepDetailsID NewFCStepDetailsID
+        into #MappingDetails
+		from #old a
+		inner join #new b
+		on a.stepID = b.StepID
+        
+		INSERT INTO transactionaldata.TBL_WorkflowStepAutoSenseRule 
+            (RuleID, 
+             SubactivityFlowchartDefID, 
+             FCStepDetailsID, 
+             parsedRuleJson, 
+             RuleStatus, 
+             TaskActionName, 
+             createdBy, 
+             CreatedDate, 
+             ModifiedBy, 
+             ModifiedDate)   
+
+			(Select 
+		     RuleID,
+			 #{subActivityFlowchartDefId},
+			 Mapdetail.NewFCStepDetailsID,
+			 ParsedRuleJson,
+			 1,
+			 TaskActionName,
+             CreatedBy,
+			 CreatedDate,
+			 ModifiedBy,
+			 ModifiedDate
+             from transactionalData.TBL_WorkflowStepAutoSenseRule WFRule
+		     inner join #MappingDetails Mapdetail
+		     on WFRule.SubactivityFlowchartDefID = Mapdetail.OldDefID
+		     and WFRule.FCStepDetailsID = Mapdetail.OldFCStepDetailsID
+		     where WFRule.SubactivityFlowchartDefID = #{parentWFDefID})
+ 
+    </update>
+    
+ <insert id="addInstructionURL" parameterType = "com.ericsson.isf.model.WFStepInstructionModel">
+ 
+ INSERT INTO transactionalData.TBL_InstructionURL 
+  (FlowChartDefId,
+  InstructionType,
+  InstructionName,
+  InstructionURL,
+  IsActive,
+  CreatedBy,
+  CreatedDate,
+  ModifiedBy,
+  ModifiedDate
+  <if test="wfStepInstructionModel.stepID != null and wfStepInstructionModel.stepID != '' ">
+  ,StepID
+  ,Reference
+  ,FCStepDetailsID
+  </if>
+  ,IsWorkFlowUpdated
+  )
+ values
+ (
+ #{wfStepInstructionModel.flowChartDefID},
+ #{wfStepInstructionModel.instructionType},
+ #{wfStepInstructionModel.urlName},
+ #{wfStepInstructionModel.urlLink},
+ 1,
+ #{wfStepInstructionModel.createdBy},
+ dbo.GetDateIST(),
+ #{wfStepInstructionModel.modifiedBy},
+ dbo.GetDateIST()
+<if test="wfStepInstructionModel.stepID != null and wfStepInstructionModel.stepID != '' ">
+ ,#{wfStepInstructionModel.stepID}
+ ,#{wfStepInstructionModel.reference}
+ ,#{wfStepInstructionModel.fcStepDetailsID}
+
+ </if>
+ <if test="wfStepInstructionModel.state != 'later' and wfStepInstructionModel.instructionType == 'WF_INSTRUCTION' ">
+ ,1
+ </if>
+ <if test="wfStepInstructionModel.state == 'later' and wfStepInstructionModel.instructionType == 'WF_INSTRUCTION' ">
+ ,0
+ </if>
+ <if test="wfStepInstructionModel.instructionType == 'STEP_INSTRUCTION' ">
+ ,0
+ </if>
+ )
+ </insert>  
+ 
+
+
+		
+	<select id='getFcStepDeatilsID' resultType='Integer'>
+	IF EXISTS(select top 1 FCStepDetailsID from transactionalData.TBL_FLOWCHART_STEP_DETAILS 
+    where StepID=#{stepID}
+    and 
+    SubActivityFlowChartDefID=#{flowChartDefID}
+    and Active = 1)
+    BEGIN 
+    select top 1 FCStepDetailsID from transactionalData.TBL_FLOWCHART_STEP_DETAILS 
+    where StepID=#{stepID}
+    and 
+    SubActivityFlowChartDefID=#{flowChartDefID}
+    and Active = 1
+    END
+    ELSE
+    BEGIN
+    select 0 as 'FCStepDetailsID'
+    END
+	
+	</select>
+	
+	
+	<delete id="deleteFlowChartDefIDFromInstructionTable">
+		delete  from transactionalData.TBL_InstructionURL  where  flowChartDefID = #{defID};
+	</delete>
+	
+  <select id='getForwardReverseWFTransition' resultType='java.util.HashMap'>
+	
+   select
+   t1.ProficiencyName as Source , t2.ProficiencyName as Target,concat( t1.ProficiencyName ,'>>', t2.ProficiencyName) Transition,
+   convert (varchar (10), t1.ProficiencyID) +'>>'+convert (varchar(10), t2.ProficiencyID) TransitionID
+   ,case when t1.ProficiencyName='Assessed' Then 'Forward' when t1.ProficiencyName='Experienced' Then 'Reverse' End Flag
+   from refData.TBL_WF_Proficiency_Type as t1
+   cross join refData.TBL_WF_Proficiency_Type as t2
+   where
+   ( t1.ProficiencyID &lt; t2.ProficiencyID or t1.ProficiencyID &gt; t2.ProficiencyID )and t1.IsActive=1 and t2.IsActive=1 
+     
+   </select>
+   
+    <select id="getListOfViewMode" resultType="String">
+        Select  ProficiencyName from refData.tbl_WF_Proficiency_Type where isActive=1
+        
+    </select>
+    
+    <select id='getListOfKPIsForWF' resultType="com.ericsson.isf.model.KPIValueModel">
+    
+	select KpiID,KpiName,KpiDataType,KpiDefaultValue,KpiMinValue,KpiMaxValue,KpiDescription,isMandatory as mandatory,isActive as active
+    from refData.TBL_WF_Proficiency_KPI where ProficiencyLevelSource=#{proficiencyLevelSource} and isActive=1
+     
+   </select> 
+   
+    <!-- <update id="resetProficiency">
+        declare  @proficiencyId tinyint
+        select  @proficiencyId  = proficiencyId   from refdata.TBL_WF_Proficiency_Type where ProficiencyName='Assessed'
+    	Update transactionalData.TBL_WORK_FLOW_USER_PROFICIENCY 
+        set DisplayedMode = @proficiencyId ,  
+        LastModifiedBy = #{workflowProficiencyModel.modifiedBy}, 
+        LastModifiedOn = dbo.GetDateIST(),
+        CalculationStartDate=dbo.GetDateIST()
+       
+        Where projectid = #{workflowProficiencyModel.projectId} AND signumid=#{workflowProficiencyModel.signum} 
+        AND wfid=#{workflowProficiencyModel.workFlowId} AND SubActivityId=#{workflowProficiencyModel.subActivityId}
+    </update> -->
+    
+    <insert id="resetProficiency" useGeneratedKeys="true" keyProperty="workflowProficiencyModel.wfUserProficenctID" keyColumn="wfUserProficenctID">
+	        declare @proficiencyId TINYINT
+	        select  @proficiencyId  = proficiencyId   from refdata.TBL_WF_Proficiency_Type where ProficiencyName='Assessed' 
+	        <!-- declare @wfName varchar(200)
+	        select @wfName= WorkFlowName from transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF
+                			where ProjectID=#{workflowProficiencyModel.projectId} and SubActivityID=#{workflowProficiencyModel.subActivityId}
+                			and WFID=#{workflowProficiencyModel.workFlowId} and SubActivityFlowChartDefID=#{workflowProficiencyModel.subActivityFlowchartDefID} -->
+			INSERT INTO transactionaldata.tbl_work_flow_user_proficiency 
+            	(SignumID,
+            	ProjectID,
+            	SubActivityID,
+            	WorkFlowName,
+            	DisplayedMode,
+            	CreatedBy,
+            	CreatedOn,
+            	WFID,
+            	CalculationMode,
+            	CalculationStartDate,
+            	LastmodifiedBy
+            	) 
+          		   	VALUES
+               (
+               #{userSignum},
+               	#{workflowProficiencyModel.projectId},
+               	#{workflowProficiencyModel.subActivityId},
+               	#{workflowProficiencyModel.workFlowName},
+               	@proficiencyId,
+                #{loggedInSignum},
+            	dbo.Getdateist(),
+            	#{workflowProficiencyModel.workFlowId},
+            	#{workflowProficiencyModel.triggeredBy},
+            	dbo.Getdateist(),
+            	#{loggedInSignum}
+           	  )	
+	</insert>
+	<select id="saveKPIValuesOfWF" >
+          
+        <foreach item="Item" index="index" collection="kpiModelList" open="begin" close=";end;" separator=";">       
+		insert into transactionalData.TBL_SubactivityFlowchart_Kpi_Value
+		(WFID,
+		 KpiID,
+		 SubActivityFlowChartDefID,
+		 KPIValue,
+		 ProjectID,
+		 SubactivityID,
+		 isActive,
+		 CreatedBy,
+		 CreatedDate,
+		 ModifiedBy,
+		 ModifiedDate		
+		)
+
+		values
+		(#{Item.wFID},
+		 #{Item.kpiID},
+		 #{Item.subActivityFlowChartDefID},
+		 #{Item.kPIValue},
+		 #{Item.projectID},
+		 #{Item.subActivityID},
+		 1,
+		 #{Item.signum},
+		 dbo.GetDateIST(),
+		 #{Item.signum},
+		 dbo.GetDateIST()	
+		)
+		
+		 </foreach>
+		 
+	</select>
+	
+	<update id="updatePreviousKPIValuesOfWF" >  
+	     
+                 Update transactionalData.TBL_SubactivityFlowchart_Kpi_Value
+                   set IsActive=0,
+                   ModifiedBy=#{signumID},
+                   ModifiedDate=dbo.GetDateIST()
+                   
+                 where SubActivityFlowChartDefID=#{oldDefID} and IsActive=1
+                  
+   </update>
+    
+    <insert id="insertDummyDataOnStepDetails">
+    	INSERT INTO transactionaldata.tbl_flowchart_step_details 
+            (Subactivityflowchartdefid, 
+             stepid, 
+             stepname, 
+             taskid, 
+             executiontype, 
+             active, 
+             versionnumber,
+             steptype,  
+             ProficiencyID,
+             CreatedBy,
+             CreatedDate,
+             ModifiedBy,
+             ModifiedDate) 
+		VALUES     ( #{subActivityFlowchartStepDefId,jdbcType=INTEGER}, 
+             #{customStepId,jdbcType=VARCHAR}, 
+             #{stepName,jdbcType=VARCHAR}, 
+             0, 
+             #{disabledExcutionType},  
+             1, 
+             #{versionNumber}, 
+             #{stepType}, 
+             (select ProficiencyID from refdata.tbl_wf_proficiency_type where ProficiencyName='Experienced'),
+             #{loggedInSignum,jdbcType=VARCHAR},
+             dbo.GetDateIST(),
+             #{loggedInSignum,jdbcType=VARCHAR},
+             dbo.GetDateIST()) 
+    </insert>
+   
+   <select id='getListOfKPIsForEWF' resultType="com.ericsson.isf.model.KPIValueModel">
+  
+DECLARE @ASSESSEDPROFICIENCYID TINYINT,@EXPRPROFICIENCYID TINYINT
+SELECT  @ASSESSEDPROFICIENCYID=PROFICIENCYID   FROM REFDATA.TBL_WF_PROFICIENCY_TYPE WHERE PROFICIENCYNAME='ASSESSED'
+SELECT  @EXPRPROFICIENCYID=PROFICIENCYID   FROM REFDATA.TBL_WF_PROFICIENCY_TYPE WHERE PROFICIENCYNAME='EXPERIENCED' 
+    
+	select t.KpiID,t.KPIValueID,t.KpiValue,r.KpiName,r.KpiDataType,r.KpiDescription,r.isMandatory as mandatory,
+	t.isActive as active,r.KpiMinValue,r.KpiMaxValue
+    ,case when ProficiencyLevelSource=@ASSESSEDPROFICIENCYID Then 'Forward' when ProficiencyLevelSource=@EXPRPROFICIENCYID
+    Then 'Reverse' End Flag
+    from transactionalData.TBL_SubactivityFlowchart_Kpi_Value t
+    inner join refData.TBL_WF_Proficiency_KPI r on t.KpiID=r.KpiID
+    where t.SubActivityFlowChartDefID=#{subactivityFlowChartDefID} and t.isActive=1
+     
+   </select>
+   
+   <select id='getListOfAllKPIsForEWF' resultType="com.ericsson.isf.model.KPIValueModel">
+    
+DECLARE @ASSESSEDPROFICIENCYID TINYINT,@EXPRPROFICIENCYID TINYINT
+SELECT  @ASSESSEDPROFICIENCYID=PROFICIENCYID   FROM REFDATA.TBL_WF_PROFICIENCY_TYPE WHERE PROFICIENCYNAME='ASSESSED'
+SELECT  @EXPRPROFICIENCYID=PROFICIENCYID   FROM REFDATA.TBL_WF_PROFICIENCY_TYPE WHERE PROFICIENCYNAME='EXPERIENCED' 
+
+
+select KpiID,KpiName,KpiDataType,KpiDefaultValue,KpiMinValue,KpiMaxValue,KpiDescription,isMandatory as mandatory,isActive as active
+,case when ProficiencyLevelSource=@ASSESSEDPROFICIENCYID Then 'Forward' when ProficiencyLevelSource=@EXPRPROFICIENCYID
+Then 'Reverse' End Flag
+from refData.TBL_WF_Proficiency_KPI where isActive=1
+
+     
+   </select> 
+    
+   <delete id= 'deleteFlowChartDefIDFromSaveKPItable'>
+   delete from transactionalData.TBL_SubactivityFlowchart_Kpi_Value where SubActivityFlowChartDefID=#{newDefID}
+   
+   </delete>
+    <update id="updateUnassignedAndAssignedWf">
+     			declare @proficiencyid  tinyInt
+        SELECT @proficiencyid=proficiencyid 
+        FROM   refdata.tbl_wf_proficiency_type 
+        WHERE  proficiencyname = 'Assessed'
+   				SELECT woid into #woid 
+                FROM   transactionaldata.tbl_work_order wo 
+                       INNER JOIN transactionaldata.tbl_subactivity_flowchart_def sfd 
+                       ON sfd.subactivityflowchartdefid = wo.flowchartdefid 
+                       AND sfd.subactivityid = wo.subactivityid 
+                       WHERE  wo.status IN ( 'ASSIGNED', 'REOPENED','PLANNED' ) 
+                       AND wo.active = 1 
+                       AND sfd.wfid = #{workFlowId}  
+    	UPDATE transactionaldata.tbl_work_order 
+        SET    proficiencyid = @proficiencyid,
+        LastModifiedBy= #{loggedInSignum},
+        LastModifiedDate= dbo.getDateIST()
+        <if test="flag==false">
+        ,WorkFlowVersion=#{versionNumber} 
+        </if>
+        From    transactionaldata.tbl_work_order wo
+        join #woid w ON wo.woid=w.woid
+    </update>
+    
+     <update id="updateOldDefIDFromSaveKPItable">
+     
+     update transactionalData.TBL_SubactivityFlowchart_Kpi_Value set isActive=1 where SubActivityFlowChartDefID=#{oldDefID}
+     
+     </update>
+    <select id='getAllSignumForWfid' resultType='hashmap'>
+     		   <!-- 	SELECT Distinct wo.SignumID
+				FROM transactionaldata.tbl_work_order wo
+				INNER JOIN transactionaldata.tbl_subactivity_flowchart_def sfd
+				ON sfd.subactivityflowchartdefid = wo.flowchartdefid and wo.PROJECTID = sfd.ProjectID
+                       WHERE 
+                       wo.active = 1 
+                       AND sfd.wfid = #{workFlowProficiencyModel.workFlowId}
+	                   and wo.ProjectID = #{workFlowProficiencyModel.projectId} -->
+	            SELECT Distinct SignumID
+				FROM transactionaldata.TBL_WORK_FLOW_USER_PROFICIENCY wfup
+                WHERE wfup.wfid = #{workFlowProficiencyModel.workFlowId} 
+                AND wfup.ProjectID = #{workFlowProficiencyModel.projectId}
+    </select>
+   
+   <select id='getLatestProficiencyofUser' resultType="com.ericsson.isf.model.WorkflowProficiencyModel">
+ 
+ select * from (SELECT projectID, SignumID, SubactivityID, workFlowName, WFID, pt.proficiencyName as proficiencylevel, wfup.LastModifiedBy as modifiedBy,
+ ROW_NUMBER() OVER(PARTITION BY PROJECTID,WFID,SUBACTIVITYID,signumid ORDER BY LastModifiedOn DESC)RN
+ FROM TRANSACTIONALDATA.TBL_WORK_FLOW_USER_PROFICIENCY wfup
+ join  refData.tbl_wf_proficiency_type pt on pt.ProficiencyID=wfup.DisplayedMode
+ WHERE  
+ projectID= #{workFlowProficiencyModel.projectId}
+ and
+ SubActivityID= #{workFlowProficiencyModel.subActivityId} and 
+ WFID=#{workFlowProficiencyModel.workFlowId} 
+  and signumid= #{userSignum}) tbl where rn=1
+   
+   </select>
+   
+   <delete id="deleteDefIDFromAutoSenseRule">
+		delete  from transactionalData.TBL_WorkflowStepAutoSenseRule  where  SubActivityFlowChartDefID = #{newDefID};
+	</delete>
+	
+	<select id='validateStepIDForDecision' resultType='String'>
+	       select stepType from transactionalData.TBL_FLOWCHART_STEP_DETAILS where SubActivityFlowChartDefID= #{stepDetailsModel.flowChartDefID} and stepID=#{stepDetailsModel.flowChartStepId}
+	</select>
+	
+	
+	<select id='checkifPenguinOrMacro' resultType="Boolean">
+       if exists(select 1 from [transactionalData].[TBL_RPA_DeployedBOT]
+          where rpaRequestID= #{rpaID} and BOTLanguage in ('PENGUIN','MACRO'))
+       Begin
+	    Select 1 as Result
+       end
+       Else
+       Begin 
+	    Select 0 as Result
+       End
+   </select>
+	
+	<select id='getLoeMeasurementCriterion' resultType="com.ericsson.isf.model.LoeMeasurementCriterionModel">
+	      select * from [refData].[TBL_LOEMeasurementCriterion] where Active=1
+	</select>
+	
+	<select id="getParentLoeMeasurementCriterionID"  resultType='Integer'> 
+        SELECT LOEMeasurementCriterionID 
+        FROM [transactionalData].[TBL_SUBACTIVITY_FLOWCHART_DEF] 
+        where subactivityflowchartdefid = #{parentWFDefID}
+    </select>
+    
+    <select id='isPreCondtionSatisfied' resultType ="Boolean">
+    	Declare @FlowChartStepID varchar(200) = #{stepID}
+
+			IF EXISTS
+			(
+			select 1
+			from transactionalData.TBL_WORK_ORDER_BOOKING_DETAILS bd
+			left join transactionalData.TBL_WORK_ORDER wo on wo.woid = bd.woid
+			left join transactionalData.TBL_WORK_ORDER_FLOWCHART_STEP_DETAILS wofsd on
+			wofsd.flowchartdefid = bd.flowchartdefID and wofsd.woid = wo.woid and bd.FlowChartStepID = wofsd.FlowChartStepID
+			
+			
+			
+			where wo.Status = 'CLOSED'
+			and bd.FlowChartDefID= #{oldDefID}
+			and wo.Active = 1
+			and wofsd.FlowChartStepID = @FlowChartStepID
+			and bd.hours is not null
+			and bd.hours > 0
+			and bd.type != 'LEADTIME'
+			and Cast (wo.ClosedOn as Date ) &gt;= Cast( DATEADD(day, #{date},
+			dbo.GetDateIST()) as Date) and Cast ( wo.ClosedOn as Date ) &lt;= Cast
+			( dbo.GetDateIST() as Date)
+			Having count (distinct wo.woid) &gt;= #{count}
+			)
+			BEGIN
+			SELECT 1 AS 'RESULT'
+			END
+			ELSE
+			BEGIN
+			SELECT 0 AS 'RESULT'
+			END
+				
+    </select>
+    
+    <select id='getOldStepBotSavingDetails' resultType='java.util.LinkedHashMap'>
+
+	IF EXISTS
+	(
+	select VersionNumber from transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF
+	where active = 1 and WFID = #{botSavingModel.wfid} and VersionNumber = #{botSavingModel.newVersion} )
+
+	Begin
+
+	select fsd.SubActivityFlowChartDefID, fsd.ExecutionType, fsd.StepID,
+	fsd.RpaID, fsd.Savings, fsd.Task, fsd.StepName
+	from transactionalData.TBL_FLOWCHART_STEP_DETAILS fsd
+	join refdata.TBL_TASK t on t.TaskID = fsd.TaskID
+	where fsd.SubActivityFlowChartDefID = #{botSavingModel.oldDefID} and ( fsd.StepName like '%${term}%' ) and
+	fsd.StepID in
+	(
+	select StepID from transactionalData.TBL_FLOWCHART_STEP_DETAILS where
+	SubActivityFlowChartDefID = #{botSavingModel.oldDefID}
+	EXCEPT
+	select StepID from
+	transactionalData.TBL_FLOWCHART_STEP_DETAILS where
+	SubActivityFlowChartDefID = #{botSavingModel.newDefID}
+	)
+	order by StepName asc
+    OFFSET 0 ROWS FETCH NEXT #{pageLength}
+    ROWS ONLY	
+	End
+
+	Else
+	Begin
+
+	select fsd.SubActivityFlowChartDefID,
+	fsd.ExecutionType,
+	fsd.StepID,
+	fsd.RpaID,
+	fsd.Savings,
+	fsd.Task,
+	fsd.StepName
+	from [transactionalData].[TBL_FLOWCHART_STEP_DETAILS] fsd
+	join transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF sfd on
+	sfd.SubActivityFlowChartDefID = fsd.SubActivityFlowChartDefID
+
+	where sfd.SubActivityID = #{botSavingModel.subActivity}
+	and fsd.SubActivityFlowChartDefID = #{botSavingModel.oldDefID}
+	and sfd.ProjectID =  #{botSavingModel.projectID}
+	and sfd.WFID = #{botSavingModel.wfid}
+	and ( fsd.StepName  like  '%${term}%' )  
+	and StepType not in
+	('ericsson.EndStep','ericsson.StartStep','ericsson.Decision','ericsson.ManualDisabled') and
+	fsd.StepID in
+	(
+	select StepID from transactionalData.TBL_FLOWCHART_STEP_DETAILS where
+	SubActivityFlowChartDefID = #{botSavingModel.oldDefID}
+	EXCEPT
+	select StepID from
+	transactionalData.TBL_FLOWCHART_STEP_DETAILS where
+	SubActivityFlowChartDefID = #{botSavingModel.newDefID}
+	)
+	
+    order by StepName
+     OFFSET 0 ROWS FETCH NEXT #{pageLength}
+     ROWS ONLY
+	End 
+	
+    </select>
+   
+    
+
+</mapper> 

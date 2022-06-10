@@ -1,0 +1,106 @@
+﻿<!------ partial view for NETWORK ELEMENT Add/Edit functionality ----->
+
+@Scripts.Render("~/bundles/NetworkElementAddEdit")
+
+<style>
+    .textArea {
+        height: 37px;
+        width: 91%;
+        border-width: thin;
+    }
+
+    .labelFont {
+        color: black;
+    }
+
+    #btnValidateNEAddEdit {
+        height: 28px;
+        padding-top: 5px;
+        float: right;
+        margin-top: 22px;
+    }
+
+    .btnDisabledForNEAddEdit {
+        background-color: #94BDED;
+        border-color: #94BDED;
+        pointer-events: none;
+    }
+
+    .btnEnabledForNEAddEdit {
+        background-color: #007aff;
+        border-color: #007aff;
+        cursor: pointer;
+    }
+
+    .countTextBox {
+        width: 62px;
+        resize: none;
+        padding: 2px 0px 0px 8px;
+        overflow: hidden;
+        height: 33px;
+        border-width: thin;
+    }
+
+    .showThisDiv {
+        display: block;
+    }
+
+    .ui-autocomplete {
+        max-height: 100px;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+
+    .neInfo{
+        font-size:11px;
+    }
+</style>
+@{
+    string page = @Model;
+}
+<div class="row" id="commaSeparatedValidTextArea_@page">
+    <input type="hidden" id="isNEValidated_@page" value="false" />
+    <input type="hidden" id="woDetails_@page" />
+    <input type="hidden" id="tableName_@page" />
+    <input type="hidden" id="neNameCount_@page" />
+    <input type="hidden" id="networkElementType_@page" />
+    <input type="hidden" id="isNEFreeTextOrCountChanged_@page" value="false" />
+    <div class="col-xs-10">
+        <label class="labelFont">Network Element Name/ID:</label>&nbsp;<i class="fa fa-info-circle neInfo" title="Enter comma separated values in case of multiple value entry."></i>
+        <br />
+        <input type="text" class="textArea" id="textAreaForNE_@page" onpaste="checkInputOrPasteForNE('paste', '@page');" oninput="enableDisableValidation(this, '@page');checkInputOrPasteForNE('input', '@page');">&nbsp;&nbsp;&nbsp;
+        <label id="networkElementValidationMsg_@page" style="color:red; font-size:10px; text-align:center; display:none">Network Element not validated</label>
+    </div>
+    <div class="col-xs-2">
+        <button type="button" class="btn btn-primary btnDisabledForNEAddEdit" data-toggle="modal" data-target="#networkElementDuplicateModal" id="btnValidateNEAddEdit_@page" onclick="validateNetworkElements('@page')" style="margin-top:23px;">Validate</button>
+    </div>
+</div>
+<div class="row" id="neCountBoxForNeType_@page" style="display:none;">
+    <div class="col-xs-12">
+        <label class="labelFont" id="countBoxDynamicLabelForNeType_@page">Count of NETWORK ELEMENTS :</label>
+        <br />
+        <input class="countTextBox" id="textAreaForNECountForNeType_@page" value="" disabled>
+    </div>
+</div>
+<br />
+<div class="row" id="commaSeparatedFreeTextArea_@page" style="display:none">
+    <div class="col-xs-12">
+        <label class="labelFont" id="freeTextBoxDynamicLabel_@page">NETWORK ELEMENTS Name/ID worked under :</label> <span id="commaSeparatedLabelDynamic_@page"></span>
+        <i class="fa fa-info-circle neInfo" title="Enter comma separated values in case of multiple value entry."></i>
+        <br />
+        <textarea id="freeTextAreaForNE_@page" class="textArea" oninput="updateCountOnInput(this.value, '@page');changeinNeFreeTextOrCount('@page')" style="width:75%;resize:none;"></textarea>
+    </div>
+</div>
+<br />
+<div class="row" id="neCountBox_@page">
+    <div class="col-xs-12">
+        <label class="labelFont" id="countBoxDynamicLabel_@page">Count of NETWORK ELEMENTS :</label> <span id="countLabelDynamic_@page"></span>
+        <br />
+        <input class="countTextBox" id="textAreaForNECount_@page" value="" oninput="changeinNeFreeTextOrCount('@page')" disabled>
+    </div>
+</div>
+<div class="row" id="showSaveButtonEdit_@page" style="display:none">
+    <div class="col-xs-12">
+        <button class="btn btn-primary btnDisabledForNEAddEdit" id="btnEditSaveNEAddEdit_@page" style="float:right;" onclick="updateWorkOrderNE('@page')">Save</button>
+    </div>
+</div>

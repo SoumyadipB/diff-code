@@ -1,0 +1,51 @@
+﻿@{
+    ViewBag.Title = "Create Access Profile";
+}
+
+@Scripts.Render("~/bundles/Admin")
+<div class="widget-container fluid-height">
+    <div class="heading tabs">
+        <ul class="nav nav-tabs pull-right" data-tabs="tabs" id="tabs">
+            <li class="active">
+                <a data-toggle="tab" href="#tab1"><i class="fa fa-comments"></i><span>Create New Access Profile</span></a>
+            </li>
+        </ul>
+    </div>
+    <div class="tab-content padded" id="my-tab-content">
+        <div class="tab-pane active" id="tab1">
+            <fieldset style="margin-left:300px">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="col-lg-3"><br><label for="firstname">Access Profile Name</label></div>
+
+                        <div class="col-lg-5" style="padding-top:15px;"><select id="profileName" style="width:100%" class="select2able"></select></div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="col-lg-3"><br><label for="firstname">Role</label></div>
+
+                        <div class="col-lg-5" style="padding-top:15px;"><select id="role" style="width:100%" class="select2able"></select></div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="col-lg-3"><br><label for="firstname">Organization</label></div>
+
+                        <div class="col-lg-5" style="padding-top:15px;"><select id="organization" style="width:100%" class="select2able"></select></div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="col-lg-3"><br><label for="firstname">Capability Selection</label></div>
+
+                        <div class="col-lg-5"><div id="capability" style="width:300px;height:280px;overflow-y:auto;"></div></div>
+                    </div>
+                </div>
+                <center><input class="btn btn-primary" type="submit" value="Create" onclick="createNewAccessProfile();"></center>
+            </fieldset>
+        </div>
+    </div>
+</div>

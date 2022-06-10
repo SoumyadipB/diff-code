@@ -1,0 +1,131 @@
+﻿
+
+
+/*start for assign stop me*/
+
+a.divider:hover {
+    background-color: #eeeeee;
+}
+
+.divider.active {
+    background-color: #eeeeee;
+    text-decoration: none;
+}
+
+.divider {
+    border-right: 1px solid;
+    padding: 4px 0px 4px 0px;
+    color: #cec8c8;
+}
+
+.link {
+    margin: 0px 5px 0px 5px;
+    color: blue;
+}
+
+a {
+    color: inherit;
+
+}
+    a:hover {
+        background-color: inherit;
+    }
+
+.filterHrefs {
+    width: auto;
+    text-align: center;
+    text-transform: capitalize;
+    background-color: #ffffffc2;
+    padding: 4px;
+    border: 1px solid;
+    border-radius: 10px;
+    border-color: #cec8c8;
+    font-size: 10px;
+}
+
+.labelDist {
+    font-size: 10px;
+    float: left;
+    margin: 5px 2px 0px 15px;
+}
+
+
+tfoot {
+    display: table-header-group;
+}
+
+
+
+a.dividerStatus:hover {
+    background-color: #eeeeee;
+}
+
+.dividerStatus.active {
+    background-color: #eeeeee;
+    text-decoration: none;
+}
+
+.dividerStatus {
+    border-right: 1px solid;
+    padding: 4px 0px 4px 0px;
+    color: #cec8c8;
+}
+
+a.dividerPriority:hover {
+    background-color: #eeeeee;
+}
+
+.dividerPriority.active {
+    background-color: #eeeeee;
+    text-decoration: none;
+}
+
+.dividerPriority {
+    border-right: 1px solid;
+    padding: 4px 0px 4px 0px;
+    color: #cec8c8;
+}
+
+a.dividerStatusPQ:hover {
+    background-color: #eeeeee;
+}
+
+.dividerStatusPQ.active {
+    background-color: #eeeeee;
+    text-decoration: none;
+}
+
+.dividerStatusPQ {
+    border-right: 1px solid;
+    padding: 4px 0px 4px 0px;
+    color: #cec8c8;
+}
+
+a.dividerDate:hover {
+    background-color: #eeeeee;
+}
+
+.dividerDate.active {
+    background-color: #eeeeee;
+    text-decoration: none;
+}
+
+.dividerDate {
+    border-right: 1px solid;
+    padding: 4px 0px 4px 0px;
+    color: #cec8c8;
+}
+
+/*end for assign stop me*/
+
+.ui-autocomplete {
+    z-index: 2147483647;
+}
+
+
+.text-wrap {
+    white-space: normal;
+    /*width: 150px;*/
+    max-height:100px;
+    overflow-y:auto;
+}

@@ -1,0 +1,215 @@
+﻿@{
+    Layout = "";
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Work Flow</title>
+    @Scripts.Render("~/bundles/SessionManagement")
+    @Styles.Render("~/bundles/css/rappid")
+    @Styles.Render("~/bundles/css/bootstrap")
+    <link type="text/css" rel="stylesheet" href="~/Content/CSS/font-awesome.min.css" />
+    <link type="text/css" rel="stylesheet" href="~/Content/CSS/style.css" />
+    <style>
+        .icon-size {
+            font-size: 20px;
+        }
+
+        .joint-lightbox.modal {
+            display: block;
+        }
+
+        .joint-popup.joint-theme-modern {
+            background-color: lightcyan;
+            border: 2px solid #31d0c6;
+            border-radius: 10px;
+            padding: 10px;
+        }
+
+        .joint-toolbar.joint-theme-material button {
+            height: 29px;
+        }
+
+        .navigator-container {
+            bottom: 50px;
+        }
+
+        .joint-popup.joint-theme-dark {
+            background-color: lightcyan;
+            border: 2px solid #31d0c6;
+            border-radius: 10px;
+            padding: 10px;
+            font-family: lato-light,Arial,sans-serif;
+        }
+
+        .joint-popup.joint-theme-material {
+            background-color: lightcyan;
+            border: 2px solid #31d0c6;
+            border-radius: 10px;
+            padding: 10px;
+            font-family: lato-light,Arial,sans-serif;
+        }
+
+        .popover {
+            max-width: 100%;
+            // Max Width of the popover (depending on the container!)
+        }
+
+        .toolbar-container button.joint-widget[data-type="zoomIn"], .toolbar-container button.joint-widget[data-type="zoomOut"] {
+            display: block;
+        }
+
+
+
+        /*For Rappid overwrite*/
+        .app-title h1 {
+            font-size: 12px;
+            line-height: 33px !important;
+        }
+
+        .app-header {
+            height: 28px !important;
+        }
+
+        .joint-widget.joint-theme-material[data-type=zoomToFit]:after {
+            background-position: 0px -39px;
+        }
+
+        .joint-widget.joint-theme-material[data-type=zoomOut]:after {
+            background-position: -62px -4px;
+        }
+
+        .joint-widget.joint-theme-material[data-type=zoomIn]:after {
+            background-position: -27px -39px;
+        }
+
+        .joint-widget.joint-theme-material[data-type=fullscreen]:after {
+            background-position: -58px -33px;
+        }
+
+        .joint-widget.joint-theme-material[data-type=undo]:after, .joint-widget.joint-theme-material[data-type=redo]:after, .joint-widget.joint-theme-material[data-type=zoomToFit]:after, .joint-widget.joint-theme-material[data-type=zoomIn]:after, .joint-widget.joint-theme-material[data-type=zoomOut]:after, .joint-widget.joint-theme-material[data-type=fullscreen]:after {
+            background-size: 92px;
+        }
+
+
+        /*Navigater*/
+        .joint-navigator {
+            right: 18px !important;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            background-color: #fdfdfd;
+        }
+
+        .navigator-container {
+            bottom: 22px !important;
+        }
+
+        .joint-select-button-group.joint-theme-material {
+            display: none;
+        }
+    </style>
+
+</head>
+<body>
+    <div class="container">
+
+        <div id="wOdetailForWF"></div>
+        <hr />
+        <div class="row">
+            @*  <div class="col-md-2">MA Performed<span style="margin-left: 5px ;padding: 3px 10px 3px 10px;background-color:#6e88ff;"></span></div>
+                <div class="col-md-2" style="margin-left: -40px;">GSC Performed<span style=" margin-left 5px ;padding 3px 10px 3px 10px;background-color:#00983b;"></span></div>
+                <div class="col-md-2" style="margin-left: -40px;">Not Performed<span style="margin-left: 5px;"><img src="~/Content/images/rectangle.png"></span></div>
+                <div class="col-md-2" style="margin-left: -40px;">Automated<span style="margin-left: 5px;"><img src="~/Content/images/parallelogram.png"></span></div>*@
+
+            <div class="col-md-12">
+                Project ID:<span class=""><label id="projectId" style="width: auto" /></span>
+                WorkFlow Name:<span class=""><label id="WFName" style="width: auto" /></span>
+            </div>
+
+
+        </div>
+        <br />
+
+
+    </div>
+    <div class="container" id="app">
+        <div class="app-header" style="height:43px">
+            <div class="app-title">
+                <h1>VIEW WorkFlow</h1>
+            </div>
+            <div class="toolbar-container"></div>
+        </div>
+        <div class="app-body">
+            @*<div class="stencil-container"></div>*@
+            <div class="paper-container"></div>
+            @*<div class="inspector-container"></div>*@
+            <div class="navigator-container"></div>
+        </div>
+    </div>
+    <!-- Rappid/JointJS dependencies: -->
+    @Scripts.Render("~/bundles/rappid")
+    @Scripts.Render("~/bundles/GetSessionVars")
+    @Scripts.Render("~/bundles/config")
+    @Scripts.Render("~/bundles/bootstrap")
+    @Scripts.Render("~/bundles/datepicker")
+    @Scripts.Render("~/bundles/Project")
+    @Scripts.Render("~/bundles/global")
+    @Scripts.Render("~/bundles/FlowChartWorkOrderView")
+    @*<script src="~/Scripts/Login/AzureADLogin.js"></script>*@
+    @Scripts.Render("~/bundles/customConsole")
+    @Scripts.Render("~/bundles/ajaxRequest")
+    <script>
+        $(document).ready(function () {
+            var urlParams = new URLSearchParams(window.location.search);
+            subID = urlParams.get("subId");
+            projID = urlParams.get("projID");
+            version = urlParams.get("version");
+            wfid = urlParams.get("wfid");
+            var subActivityDefID = null;
+            flag = '';
+            viewFlowChartWorkOrder(projID, subID, version, wfid);
+
+            //Close of session timeout or logout
+            setInterval(function () {
+                var isUserLoggedin = signumGlobal;
+                if (isUserLoggedin == null) {
+                    //window.location.href = UiRootDir + "/";
+                    window.close();
+                }
+            }, 2000);
+        });
+        joint.setTheme('material');
+        app = new App.MainView({ el: '#app' });
+        themePicker = new App.ThemePicker({ mainView: app });
+        themePicker.render().$el.appendTo(document.body);
+
+        window.addEventListener('load', function () {
+
+        });
+
+
+    </script>
+    <!-- Local file warning: -->
+    <div id="message-fs" style="display: none;">
+        <p>The application was open locally using the file protocol. It is recommended to access it trough a <b>Web server</b>.</p>
+        <p>Please see <a href="README.md">instructions</a>.</p>
+    </div>
+    <script>
+        (function () {
+            var fs = (document.location.protocol === 'file:');
+            var ff = (navigator.userAgent.toLowerCase().indexOf('firefox') !== -1);
+            if (fs && !ff) {
+                (new joint.ui.Dialog({
+                    width: 300,
+                    type: 'alert',
+                    title: 'Local File',
+                    content: $('#message-fs').show()
+                })).open();
+            }
+        })();
+    </script>
+
+</body>
+</html>
+

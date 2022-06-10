@@ -1,0 +1,714 @@
+﻿
+@{
+    ViewBag.Title = "Delivery Execution";
+}
+
+
+@Styles.Render("~/bundles/css/DataTableStyle")
+@Styles.Render("~/bundles/css/DeliveryExecution")
+
+@Scripts.Render("~/bundles/DataTableScript")
+@Scripts.Render("~/bundles/DeliveryExecution")
+@*<script src="~/Scripts/jquery.signalR-2.2.3.js"></script>
+<script src="../signalr/hubs"></script>*@
+<script>
+
+    function addTaskCountOnFixedStrip() {
+
+    }
+
+    function adjustBodyOnScroll(passSroll) {
+
+        if (passSroll) {
+            $('#workOrderDetails').css({ 'padding-top': '100px' });
+        } else {
+            $('#workOrderDetails').css({ 'padding-top': '0px' });
+        }
+    }
+
+
+    function fixRunningTask() {
+        var $cache = $('#runningTaskArea');
+
+        if ($('#runningTaskArea').find('.running-task').length) {
+
+            if ($(window).scrollTop() > 65) {
+                $cache.addClass('setRunningTaskOnTop');
+                adjustBodyOnScroll(true);
+            } else {
+                $cache.removeClass('setRunningTaskOnTop');
+                adjustBodyOnScroll(false);
+            }
+        } else {
+            if ($('.setRunningTaskOnTop').length) {
+                $cache.removeClass('setRunningTaskOnTop');
+                adjustBodyOnScroll(false);
+            }
+        }
+    }
+    $(window).scroll(fixRunningTask);
+
+
+
+
+
+
+
+    var lastStatusCount = 0;
+    //$(function () {
+        
+    //    if (startServerPush) {
+    //        var curStatusCount = 0;
+    //        $.connection.hub.logging = true;
+    //        var serverpushhubproxy = $.connection.serverPush;
+            
+    //        serverpushhubproxy.client.updateWorkOrder = function (woData) {
+    //            //alert('SomeThing has been changed');
+    //            var obj = woData.find(function (obj) {
+    //                return (obj.SignumID).toLocaleUpperCase() === signumGlobal.toLocaleUpperCase();
+    //            });
+    //            if (obj != undefined) {
+    //                 curStatusCount = obj.StatusCount;
+    //            }
+                
+    //            console.log("current - %s --  Last-- %s", curStatusCount, lastStatusCount);
+
+    //            if (curStatusCount != lastStatusCount || curStatusCount == 1 ) {
+    //                console.log("true");
+    //                if (signumGlobal == null || signumGlobal.length == 0) {
+    //                    alert('Something went wrong!!');
+    //                }
+    //                else {
+    //                    runningWorkOrderDetails(signumGlobal);
+                        
+    //                }
+    //            }
+                
+    //            lastStatusCount = curStatusCount;
+    //            console.log("Last status Updated -- %s",  lastStatusCount);
+    //        };
+
+    //        $.connection.hub.start().done(function () {
+    //            console.log('Now connected, connection ID=' + $.connection.hub.id);
+    //            serverpushhubproxy.server.getAllData();
+    //            //alert('Data Fetch');
+    //        })
+    //            .fail(function () { console.log('Could not Connect!'); });
+    //    }       
+        
+
+    //});
+
+
+    $(function () {
+
+        if (startServerPush) {
+            var curStatusCount = 0;
+            $.connection.hub.logging = true;
+            var serverpushhubproxy = $.connection.serverPush;
+
+            //serverpushhubproxy.client.updateWorkOrder = function (woData) {
+            //    //alert('SomeThing has been changed');
+            //    var obj = woData.find(function (obj) {
+            //        return (obj.SignumID).toLocaleUpperCase() === signumGlobal.toLocaleUpperCase();
+            //    });
+            connection.invoke('updateWorkOrder', woData);
+                function updateWorkOrder(woData) {
+                    var obj = woData.find(function (obj) {
+                        return (obj.SignumID).toLocaleUpperCase() === signumGlobal.toLocaleUpperCase();
+                    });
+                }
+
+                if (obj != undefined) {
+                    curStatusCount = obj.StatusCount;
+                }
+
+                console.log("current - %s --  Last-- %s", curStatusCount, lastStatusCount);
+
+                if (curStatusCount != lastStatusCount || curStatusCount == 1) {
+                    console.log("true");
+                    if (signumGlobal == null || signumGlobal.length == 0) {
+                        alert('Something went wrong!!');
+                    }
+                    else {
+                        runningWorkOrderDetails(signumGlobal);
+
+                    }
+                }
+
+                lastStatusCount = curStatusCount;
+                console.log("Last status Updated -- %s", lastStatusCount);
+            };
+
+        connection.start()
+            .then(() => {
+                console.log('Now connected, connection ID=' + connection.connectionId);
+                // serverpushhubproxy.server.makeConnection(signumGlobal, $.connection.hub.id);
+                connection.invoke('getAllData');
+            }
+            ).catch(error => console.error(error.message));    
+
+
+    });
+
+</script>
+
+<style>
+
+    .panel-heading a:after {
+        /* symbol for "opening" panels */
+        font-family: 'FontAwesome'; /* essential for enabling font Awesome*/
+        /*content: "\f106";*/ /* fa angle-up */
+        float: right;
+    }
+
+    .panel-heading a.load-wf:not(.collapsed):after {
+        content: "\f106";
+    }
+
+    .panel-heading a.collapsed:after {
+        /*symbol for "closing panel"*/
+        content: "\f107"; /* fa angle-down */
+    }
+    
+
+    .nav-tabs {
+        /*border-bottom: 1px solid #2196f3;*/
+    }
+
+    .nav-tabs > li {
+        width: 50%;
+        text-align: center;
+        margin-bottom: -2px;
+    }
+
+        .nav-tabs > li.active > a, .nav-tabs > li.active > a:hover, .nav-tabs > li.active > a:focus {
+            border: 1px solid #e5e6e6;
+            border-bottom: 0px solid;
+            color: #2196f3;
+            /* background-color: transparent; */
+            cursor: default;
+            opacity: 1;
+            background-color: #fbfbfb;
+            border-top-left-radius: 5px;
+            border-top-right-radius: 5px;
+            /*font-weight:bold;*/
+        }
+
+        .nav-tabs > li > a {
+           
+            line-height: 0.846154;
+        }
+
+        /*Fixed running task*/
+
+    .setRunningTaskOnTop {
+        /*position: fixed;
+        top: 32px;
+        left: 32px;
+        width: 100%;
+        z-index: 1;*/
+        position: fixed;
+        top: 32px;
+        left: 32px;
+        width: 101%;
+        z-index: 1;
+        overflow: auto;
+        height: 76px;
+        background-color: #ced4ef;
+        border-bottom: 1px solid #a4a4f5;
+        padding-top: 0px;
+        text-align:center;
+    }
+
+        .setRunningTaskOnTop #runningTask {
+            /*background-color: #ced4ef;
+            border-bottom: 1px solid #a4a4f5;
+            overflow: auto;
+            overflow-y: hidden;
+            height: 63px;
+            display: flex;*/
+
+            overflow: auto;
+            overflow-y: hidden;
+            height: 63px;
+            display: inline-flex;
+        }
+
+        .setRunningTaskOnTop .running-task {
+            /*width: 17%;*/
+            width:220px;
+            display: block;
+            height: 60px;
+            margin: 0px 0px 0 3px;
+            background-color: white;
+        }
+
+        .setRunningTaskOnTop .running-header {
+            width: 0px !important;
+            height: 25px;
+            margin-right: 7%;
+            padding-right: 14px;
+            display:inline-block;
+            overflow:hidden;
+        }
+
+        .setRunningTaskOnTop .runningtask_woid {
+            width: 38%;
+            height: 25px;
+            display: inline-block;
+        }
+        .setRunningTaskOnTop .runningtask_projid {
+            width: 38%;
+            height: 25px;
+            display: inline-block;
+        }
+
+        .setRunningTaskOnTop .runningtask_action {
+            width: 37%;
+            padding: 0px;
+            text-align: left;
+            padding-left: 13px;
+            display: inline-block;
+        }
+
+        .setRunningTaskOnTop .runningtask_time {
+            width: 51%;
+            padding: 0px;
+            margin-left: 1%;
+            display: inline-block;
+        }
+
+            
+        .setRunningTaskOnTop .runningtask_name, .setRunningTaskOnTop .runningtask_desc {
+            display: none;
+        }
+
+        .setRunningTaskOnTop .aAreaOnFixedStrip {
+            /*position: absolute;
+            right: 35px;
+            border: 1px solid #968e8e;
+            top: 19px;
+            visibility: visible !important;
+            background-color: white;
+            padding: 10px;
+            border-radius: 4px;*/
+            position: fixed;
+            right: 9px;
+            border: 1px solid #968e8e;
+            top: 51px;
+            visibility: visible !important;
+            background-color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            z-index: 1;
+        }
+
+            .setRunningTaskOnTop .aAreaOnFixedStrip i {
+                font-size: 27px;
+                color: #5743ef;
+                cursor: pointer;
+            }
+
+            .divnowrap{
+              white-space: nowrap;
+              overflow: hidden;             
+             padding-right:0px;
+              text-overflow: ellipsis;
+
+            }
+            /*Fixed running tasks*/
+            .cssWFInfo {
+        /*text-align: center;
+        height: 0px;
+        line-height: 0;
+        padding: 0px !important;
+        background-color: transparent;
+        border-bottom: transparent;
+        margin-top: -7px;
+        border: none;
+        border: transparent;
+        border-color: transparent;*/
+        text-align: center;
+        height: 0px;
+        line-height: 0;
+        padding: 0px !important;
+        background-color: transparent !important;
+        border-bottom: transparent;
+        margin-top: -7px;
+        border: none;
+        border: transparent;
+        border-color: transparent;
+        height: 2px !important;
+    }
+
+
+    .panel-heading {
+        padding: 7px;
+        height: 33px;
+        text-transform: uppercase;
+        text-align: center;
+        font-size: 15px;
+    }
+
+    html, body, .joint-app{
+        height:459px !important;
+    }
+
+
+</style>
+@*<a href="#" onclick="$('.panel-body.in').collapse('hide');">dedededed</a>*@
+    <div class="panel-default">
+        <div class="panel-heading" style="background-color: #d0d0d0;">
+            WorkOrder - InProgress
+            <a href="#" onclick="location.reload();" class="pull-right"><span class="fa fa-refresh" style="color:blue; font-size:medium; margin-right:10px;" data-placement="bottom" data-toggle="tooltip" title="Refresh"></span></a>&nbsp;&nbsp;
+            <a onclick="this.href = downloadISFSetup" class="pull-right" data-toggle="tooltip" title="Download ISF setup" style="cursor: pointer"><span class="fa fa-download" style="color:forestgreen; font-size:medium; margin-right:10px;" data-placement="bottom" data-toggle="tooltip" title="Download ISF setup"></span></a>&nbsp;&nbsp;
+            <a href="#" class="pull-right pauseAll" data-toggle="tooltip" title="Pause All" style="display:none;"><span class="fa fa-pause" style="color:blue; font-size:medium; margin-right:10px;" data-placement="bottom" data-toggle="tooltip" title="Pause All"></span></a>&nbsp;&nbsp;
+
+        </div>
+        <div class="panel-body" id="runningTaskArea" style="padding:2px;">
+            <div class="aAreaOnFixedStrip" style="visibility:hidden;"><i class="fa fa-pause" title="Pause All tasks" onclick="$('.pauseAll').trigger('click');"></i></div>
+            @*<div class="container">*@
+            <div class="row" id="runningTask"></div>
+            <div class="row" id="autoRunningTask"></div>
+            @*</div>*@
+        </div>
+    </div>
+
+    <br />
+
+    <div class="container-fluid">
+        <div id="workOrderDetails"></div>
+    </div>
+
+
+    <div class="modal fade" id="modalDuplicate" role="dialog">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title text-center">Duplicate Work Order</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <input id="workOrderIDDup" type="hidden" value="" />
+                            <input id="commentDuplicate" class="form-control" type="text" placeholder="Enter comment" required />
+                        </div>
+                    </div>
+
+                    <hr />
+                    <div class="row">
+                        <button type="button" class="btn btn-default pull-right" onclick="createDuplicateWO(document.getElementById('workOrderIDDup').value,0,document.getElementById('commentDuplicate').value)">Submit</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalCompleted" role="dialog">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title text-center">Mark as Completed</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <input id="workOrderIDComp" type="hidden" value="" />
+                        <input id="workOrderNameComp" type="hidden" value="" />
+                        <input id="subActivityDefID" type="hidden" value="" />
+                        <input id="subActivityId" type="hidden" value="" />
+                        <input id="wfId" type="hidden" value="" />
+                        <input id="completedProjectId" type="hidden" value="" />
+                        <label>Delivery Status</label>
+                        <select id="delStatus" class="form-control" required>
+                            <option value="" selected>--Select one--</option>
+                            <option value="Failure">Failure</option>
+                            <option value="Success">Success</option>
+                        </select>
+                    </div>
+                    <div class="form-group" id="reasonDiv" style="display:none">
+                        <label>Delivery Reason</label>
+                        <select id="delReason" class="form-control"></select>
+                    </div>
+                    <div class="form-group">
+                        <input id="commentCompleted" class="form-control" type="text" placeholder="Enter comment (Max 1000 Character)" required />
+                    </div>
+                    <hr />
+                    <div class="row">
+                        <button type="button" class="btn btn-primary pull-right" onclick="workOrderClosure(document.getElementById('workOrderIDComp').value, document.getElementById('workOrderNameComp').value, document.getElementById('delStatus').value, document.getElementById('delReason').value, document.getElementById('commentCompleted').value, document.getElementById('subActivityDefID').value, document.getElementById('subActivityId').value, document.getElementById('wfId').value, document.getElementById('completedProjectId').value)">Submit</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalHold" role="dialog">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title text-center">Mark as on Hold</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <input id="workOrderIDHold" type="hidden" value="" />
+                            <input id="commentHold" class="form-control" type="text" placeholder="Enter comment" required />
+                        </div>
+                    </div>
+
+                    <hr />
+                    <div class="row">
+                        <button type="button" class="btn btn-default pull-right" onclick="updateWOStatus(document.getElementById('workOrderIDHold').value,'ONHOLD', document.getElementById('commentHold').value)">Submit</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <div class="modal fade" id="modalDeffered" role="dialog">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title text-center">Mark as Deferred</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <input id="workOrderIDDef" type="hidden" value="" />
+                            <input id="commentDeffered" class="form-control" type="text" placeholder="Enter comment" required />
+                        </div>
+                    </div>
+
+                    <hr />
+                    <div class="row">
+                        <button type="button" class="btn btn-default pull-right" onclick="updateWOStatus(document.getElementById('workOrderIDDef').value,'DEFERRED', document.getElementById('commentDeffered').value)">Submit</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalPauseAll" role="dialog">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 id="pauseHeader" class="modal-title text-center">Pause All</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-8">
+
+                            <div class="col-md-12" style="display:grid;"><label>Enter Comments: </label><select id="commentPauseAll" class="select2able"></select></div>
+                        </div>
+                    </div>
+                    <hr />
+                    <div class="row">
+                        <button type="button" class="btn btn-default pull-right" onclick="updateFlowChartTaskStatusForAll(arrPauseAll, 'ONHOLD', $('#commentPauseAll').val(), false)">Submit</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalSkipped" role="dialog">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 id="skippedHeader" class="modal-title text-center"></h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <input id="woId" type="hidden" value="" />
+                            <input id="bookId" type="hidden" value="" />
+                            <input id="taskId" type="hidden" value="" />
+                            <input id="execType" type="hidden" value="" />
+                            <input id="stepid" type="hidden" value="" />
+                            <input id="defid" type="hidden" value="" />
+                            <div class="col-md-12" style="display:grid;"><label>Enter Comments: </label><select id="commentSkipped" class="select2able"></select></div>
+                        </div>
+                    </div>
+                    <hr />
+                    <div class="row">
+                        <button type="button" class="btn btn-default pull-right" onclick="updateFlowChartTaskStatus($('#woId').val(), $('#defid').val(),$('#stepid').val(), $('#taskId').val(), $('#bookId').val(), 'SKIPPED', $('#commentSkipped').val(), $('#execType').val(),false)">Submit</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalTaskHold" role="dialog">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 id="taskHoldHeader" class="modal-title text-center"></h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <input id="woId" type="hidden" value="" />
+                            <input id="bookId" type="hidden" value="" />
+                            <input id="taskId" type="hidden" value="" />
+                            <input id="execType" type="hidden" value="" />
+                            <input id="stepid" type="hidden" value="" />
+                            <input id="defid" type="hidden" value="" />
+                            <input id="flowChartType" type="hidden" value="" />
+                            <div class="col-md-12" style="display:grid;"><label>Enter Comments: </label><select id="commentOnHold" class="select2able"></select></div>
+                        </div>
+                    </div>
+                    <hr />
+                    <div class="row">
+                        <button type="button" class="btn btn-default pull-right" onclick="updateFlowChartTaskStatus($('#woId').val(), $('#defid').val(), $('#stepid').val(), $('#taskId').val(), $('#bookId').val(), 'ONHOLD', $('#commentOnHold').val(), $('#execType').val(), false);">Submit</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalTransferWO" role="dialog">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title text-center">Transfer Work Order</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <input id="woId" type="hidden" value="" />
+                            <label>Signum</label><a class="text-danger">*</a>
+                            <select id="cbxSignumAR" class="select2able">
+                                <option value="" selected>Select Signum</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6" style='width:410px'>
+                            <label>Step Name :</label><a class="text-danger">*</a>
+                            <select class="select2able select2-offscreen select2-hidden-accessible" id="select_stepName" data-selectnext="0" tabindex="-1" aria-hidden="true">
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row" style="margin-top: 20px;">
+                        <div class="col-md-6">
+                            <textarea id="tWOcommentsBox" rows="4" cols="58" type="text" placeholder="Enter comment (Max 250 characters)" style="resize: none;"></textarea>
+                        </div>
+                    </div>
+                    <hr />
+                    <div class="row">
+                        <button type="button" class="btn btn-default pull-right" onclick="transferWOInProgress(document.getElementById('woId').value,$('#cbxSignumAR :selected').text(),$('#select_stepName').val(), $('textarea#tWOcommentsBox').val())">Submit</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="myModalMadEwo" role="dialog">
+        <div class="modal-dialog modal-lg" style="overflow-y: initial !important;width:60%">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title text-center">View Work Order</h4>
+                </div>
+                <div class="modal-body" style="height:600px;overflow-y: auto; ">
+
+                    @Html.Partial("WorkOrderViews")
+
+                    <hr />
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+    <div class="modal fade" id="viewBookingDetails" role="dialog">
+        <div class="modal-dialog modal-lg" style="width: 70%!important;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 id="viewBookingDetailsHeader" class="modal-title text-center"></h4>
+                </div>
+                <div id="viewBookingDetailsTable" class="modal-body">
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="modal fade" id="modalTaskBookingView" role="dialog">
+        <div class="modal-dialog modal-lg" style="width: 70%!important;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 id="viewTaskHeader" class="modal-title text-center"></h4>
+                </div>
+                <div id="viewTaskDetailTable" class="modal-body">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            if (signumGlobal == null || signumGlobal.length == 0) {
+                alert('Something went wrong!!');
+            }
+            else {
+
+                runningWorkOrderDetails(signumGlobal);
+
+                getInProgressWorkOrderDetails(signumGlobal);
+            }
+        });
+
+
+
+        $("#delStatus").change(function () {
+            var val = $(this).val();
+            document.getElementById("reasonDiv").style.display = "none";
+            $('#reasonDiv').find('option').remove().end();
+            if (val == "Failure") {
+                document.getElementById("reasonDiv").style.display = "block";
+                var failureReason = "";
+                var reasonType = "DeliveryFailure";
+                $.isf.ajax({
+                    type: "GET",
+                    url: service_java_URL + "woExecution/getWOFailureReasons/" + reasonType,
+                    success: function (data) {
+                        failureReason += "<option value=''>--Select one--</option>";
+                        if (data.isValidationFailed == false) {
+                            for (var i in data.responseData) {
+                                failureReason += "<option value='" + data.responseData[i].failureReason + "'>" + data.responseData[i].failureReason + "</option>";
+                            }
+                        }
+                        else {
+                            pwIsf.alert({ msg: data.formErrors[0], type: 'error' });
+                        }
+                        $('#delReason').append(failureReason);
+                    },
+                    error: function (xhr, status, statusText) {
+                        var err = JSON.parse(xhr.responseText);
+                        alert(err.errorMessage);
+                    }
+                });
+                $("#delReason").append(failureReason);
+            }
+        });
+
+
+    </script>
+
+
+
+
+
+

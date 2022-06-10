@@ -1,0 +1,38 @@
+@{
+    ViewBag.Title = "Session Expiry";
+}
+@{
+    Layout = null;
+}
+<html>
+
+<head>
+</head>
+<body>
+
+    <div class="row">
+        <div class="col-sm-1"><img src="~/Content/images/Ericssonlogo.png" style="background-color:darkblue;height:52px;" /> </div>
+        <span style="font-size:20px;">Integrated Service Flow</span>
+    </div>
+    <br /><br />
+    <div>
+        Sorry for the inconvineince, your session has been logged off for security reasons
+    </div>
+    <hr />
+    <div class="row">
+        <div class="col-md-3">
+            <a href="~/Login">Return to Login</a>
+        </div>
+        <div class="col-md-3">
+            <a href="#" onclick="close_window();//return false;">Close Window</a>
+        </div>
+    </div>
+    <script type="text/javascript">
+        function close_window() {
+            //if (confirm("Close Window?")) {
+                window.close();
+            //}
+        }
+    </script>
+</body>
+</html>

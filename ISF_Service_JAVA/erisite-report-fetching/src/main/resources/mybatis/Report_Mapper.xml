@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="com.ericsson.erisite.report.mapper.ReportMapper">
+
+<insert id='insertErisiteData'>
+		INSERT INTO [dbo].[ErisiteData]
+		([WorkPlanID]
+		,[WorkPlanName]
+		,[SiteName]
+		,[ProjectID]
+		,[ProjectName]
+		,[ActivityID]
+		,[ActivityName]
+		,[RecordName]
+		,[RecordState])
+		VALUES
+		(#{workPlanData.workPlanID}
+		,#{workPlanData.workPlanName}
+		,#{workPlanData.siteDatamodel.name}
+		,#{workPlanData.projectDataModel.id}
+		,#{workPlanData.projectDataModel.name}
+		,#{activityDataModel.id}
+		,#{activityDataModel.name}
+		,#{activityDataModel.recordName}
+		,#{activityDataModel.recordState})
+	</insert>
+
+	<insert id='insertErisiteAcivityData'>
+		INSERT INTO [dbo].[activity_fullstructure]
+		([FormName]
+		,[SystemRecordID]
+		,[RecordName]
+		,[ActivityID]
+		,[Name]
+		,[RecordState]
+		,[Project_ProjectID]
+		,[Workplan_WorkPlanID]
+		,[Workplan_SystemRecordID]
+		,[Workplan_WorkPlanName]
+		,[Workplan_Site_Name]
+		,[PlannedEndDate]
+		,[ActualEndDate]
+		,[ActualStartDate]
+		,[PlannedStartDate]
+		,[CreatedBy]
+		,[ForecastStartDate]
+		,[ForecastEndDate]
+		,[ModifiedBy])
+		VALUES
+		(#{activityDataModel.formName}
+		,#{activityDataModel.systemRecordID}
+		,#{activityDataModel.recordName}
+		,#{activityDataModel.id}
+		,#{activityDataModel.name}
+		,#{activityDataModel.recordState}
+		,#{activityDataModel.projectDataModel.id}
+		,#{activityDataModel.workPlanFullModel.workPlanID}
+		,#{activityDataModel.workPlanFullModel.systemRecordID}
+		,#{activityDataModel.workPlanFullModel.workPlanName}
+		,#{activityDataModel.workPlanFullModel.siteDatamodel.name}
+		,#{activityDataModel.plannedEndDate}
+		,#{activityDataModel.actualEndDate}
+		,#{activityDataModel.actualStartDate}
+		,#{activityDataModel.plannedStartDate}
+		,#{activityDataModel.createdBy}
+		,#{activityDataModel.forecastStartDate}
+		,#{activityDataModel.forecastEndDate}
+		,#{activityDataModel.modifiedBy})
+	</insert>
+	
+	
+	 <delete id = "truncateData">
+      DELETE from [dbo].activity_fullstructure
+      DELETE from [dbo].[ErisiteData]
+   </delete>
+</mapper>

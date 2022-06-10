@@ -1,0 +1,3706 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ericsson.isf.mapper.WorkOrderMapper">
+    
+    <resultMap type="WorkOrderPlanModel" id="WorkOrderPlanModelResult">
+        <id property="wOPlanID" column="WOPlanID" />
+        <result property="projectID" column="ProjectID" />
+        <result property="scopeID" column="ScopeID" />
+        <result property="periodicityDaily" column="Periodicity_Daily" />
+        <result property="periodicityWeekly" column="Periodicity_Weekly" />
+        <result property="startDate" column="StartDate" />
+        <result property="startTime" column="StartTime" />
+        <result property="endDate" column="EndDate" />
+        <result property="active" column="Active" />
+        <result property="priority" column="Priority"/>
+        <result property="signumID" column="PlanSignumID" />
+        <result property="createdBy" column="CreatedBy" />
+        <result property="createdDate" column="CreatedDate" />
+        <result property="lastModifiedBy" column="LastModifiedBy" />
+        <result property="lastModifiedDate" column="LastModifiedDate" />
+        <result property="doVolume" column="DOVolume" />
+        <result property="isNodeWise" column="isNodeWise" />
+        <collection property='listOfNode' ofType='WorkOrderPlanNodesModel'>
+            <id property='wNID' column='WNID'/>
+            <result property='wOPlanID' column='WOPlanID'/>
+            <result property='nodeType' column='NodeType'/>
+            <result property='nodeNames' column='NodeNames'/>
+        </collection>  
+        <collection property='listOfWorkOrder' ofType='WorkOrderModel'>
+            <id property="wOID" column="WOID" />
+        	<result property="wOName" column="WOName" />
+        	<result property="slaHrs" column="SLAHrs"/>
+            <result property='wOPlanID' column='WOPlanID'/>
+            <result property="subActivityID" column="SubActivityID" />
+            <result property='doID' column='DOID'/>
+            <result property="plannedStartDate" column="PlannedStartDate" />
+            <result property="plannedEndDate" column="PlannedEndDate" />
+            <result property="actualStartDate" column="ActualStartDate" />
+            <result property="actualEndDate" column="ActualEndDate" />
+            <result property="signumID" column="WoSignumID" />
+            <result property="status" column="Status" />
+            <result property="reason" column="Reason" />
+            <result property="closedOn" column="ClosedOn"/>
+            <result property="active" column="Active" />
+            <result property="priority" column="WoPriority"/>
+            <result property="wfVersion" column="WorkFlowVersion"/>          
+            <result property="WfVersionName" column="WorkFlowName"/>
+            <result property="isAutoSenseEnable" column="IsAutoSenseEnable"/>            
+            <result property="loe" column="Loe"/>
+            <result property='parentWorkOrderID' column='parentWorkOrderID'/>
+            <collection property='listOfNode' ofType='WorkOrderNodesModel'>
+                <id property='wNID' column='WoWNID'/>
+                <!-- <result property="wOID" column="WOID" /> -->
+                <result property='nodeType' column='WoNodeType'/>
+                <result property='nodeNames' column='WoNodeNames'/>
+            </collection>        
+        </collection>  
+        <collection property="subActivity" ofType="StandardActivityModel">
+            <id property='subActivityID' column='SubActivityID'/>
+            <result property='activity' column='Activity'/>
+            <result property='subActivityName' column='SubActivity'/>
+            <result property='avgEstdEffort' column='LOE'/>
+            
+        </collection> 
+        <collection property="activityDetails" ofType="ActivityMasterModel">
+            <id property="domainID" column="DomainID" />
+            <result property="serviceAreaID" column="ServiceAreaID" />
+            <result property="technologyID" column="TechnologyID" />
+            <result property="domain" column="Domain" />
+            <result property="serviceArea" column="ServiceArea" />
+            <result property="technology" column="Technology" />
+        </collection>   
+    </resultMap>
+
+<!-- model /getInprogressTask -->
+<resultMap type='java.util.LinkedHashMap'
+ id='InProgressTaskModelResultOld'>
+ <result property='BookingID' column='BookingID' />
+ <result property='Type' column='Type' />
+ <result property='Status' column='Status' />
+ <result property='FlowChartDefID' column='FlowChartDefID' />
+ <result property='FlowChartStepID' column='FlowChartStepID' />
+ <result property='StepName' column='StepName' />
+ <result property='ExecutionType' column='ExecutionType' />
+ <result property='RpaID' column='RpaID' />
+ <result property='StepType' column='StepType' />
+ <result property='TaskID' column='TaskID' />
+ <result property='StartDate' column='StartDate' />
+ <result property='EndDate' column='EndDate' />
+ <result property='Hours' column='Hours' />
+ <result property='woID' column='woID' />
+ <result property='woPlanID' column='woPlanID' />
+ <result property='Task' column='Task' />
+ <result property='Description' column='Description' />
+ <result property='ProjectID' column='ProjectID' />
+ <result property='ProjectName' column='ProjectName' />
+ <result property='VersionNumber' column='VersionNumber' />
+ <result property='OutputUpload' column='OutputUpload' />
+ <result property='DOID' column='DOID' />
+ <result property='PlannedEndDate' column='PlannedEndDate' />
+ <result property='WOName' column='WOName' />
+ <result property='flowcharttype' column='flowcharttype' />
+ <result property='workOrderAutoSenseEnabled' column='workOrderAutoSenseEnabled' />
+ <result property='workFlowAutoSenseEnabled' column='workFlowAutoSenseEnabled' />
+ <result property='isStepAutoSenseEnabled' column='isStepAutoSenseEnabled' />
+
+ <collection property='NodeNames'
+               ofType='java.lang.String' javaType="ArrayList">
+               <result property="NodeNames" column="NodeNames" />
+ </collection>                    
+</resultMap>
+<!-- Model for v1/getInprogressTask x-->
+<resultMap type="InProgressTaskModel" id="InProgressTaskModelResult">
+	<id  property="bookingID" column="BookingID"/>
+	<result property="type" column="BookingType" />
+	<result property="status" column="Status" />
+	<result property="flowChartDefID" column="FlowChartDefID" />
+	<result property="flowChartStepID" column="FlowChartStepID" />
+	<result property="stepName" column="StepName" />
+	<result property="executionType" column="ExecutionType" />
+	<result property="rpaID" column="RpaID" />
+	<result property="stepType" column="StepType" />
+	<result property="taskID" column="TaskID" />
+	<result property="startDate" column="StartDate" />
+	<result property="endDate" column="EndDate" />
+	<result property="hours" column="Hours" />
+	<result property="woID" column="woID" />
+	<result property="woPlanID" column="woPlanID" />
+	<result property="task" column="Task" />
+	<result property="projectID" column="ProjectID" />
+	<result property="projectName" column="ProjectName" />
+	<result property="versionNumber" column="VersionNumber" />
+	<result property="outputUpload" column="OutputUpload" />
+	<result property="doID" column="DOID" />
+	<result property="plannedEndDate" column="PlannedEndDate" />
+	<result property="woName" column="WOName" />
+	<result property="flowcharttype" column="flowcharttype" />
+	<result property="workOrderAutoSenseEnabled" column="workOrderAutoSenseEnabled" />
+	<result property="workFlowAutoSenseEnabled" column="workFlowAutoSenseEnabled" />
+	<result property="isStepAutoSenseEnabled" column="isStepAutoSenseEnabled" />
+	<result property="workFlow" column="WorkFlowName" />
+	<result property="serverTime" column="servertime" />
+	<result property="totalEffort" column="TotalEffort" />
+	<result property="botType" column="BOTLanguage" />
+	<result property="subActivityID" column="SubActivityID" />
+	
+	<association property="proficiencyType" javaType='ProficiencyTypeModal'>
+			<id property='proficiencyID' column='ProficiencyID'/>
+			<result property='proficiencyName' column='ProficiencyName' />
+			<result property='proficiencyLevel' column='ProficiencyLevel' />
+	</association>
+	<collection property='nodeNames' ofType='java.lang.String'>
+			<result property="nodeNames" column="NodeNames" />
+		</collection>
+</resultMap>
+
+
+<resultMap type="com.ericsson.isf.model.InProgressNextStepModal" id="InProgressNextStepModalResult">
+	<result property="isInputRequired" column="isInputRequired" />
+	<result property="isStepAutoSenseEnabled" column="RuleStatus" />
+	<result property="nextBotType" column="botType" />
+	<result property="nextStepType" column="nextStepType" />
+	<result property="nextStepName" column="NextStepName" />
+	<result property="nextStepID" column="NextStepID" />
+	<result property="bookingID" column="bookingID" />
+	<result property="isRunOnServer" column="isRunOnServer" />
+	<result property="nextTaskID" column="NextTaskID" />
+	<result property="bookingStatus" column="bookingStatus" />
+	<result property="nextStepRpaId" column="nextStepRpaId" />
+	<result property="nextExecutionType" column="NextExecutionType" />
+	<result property="outputUpload" column="OutputUpload" />
+</resultMap>
+
+ <resultMap type="com.ericsson.isf.model.WorkOrderPlanModel2" id="WorkOrderPlanModelResult2">
+        <id property="wOPlanID" column="WOPlanID" />
+        <result property='totalCount' column='TOTALCNT'/>
+        <result property="projectID" column="ProjectID" />
+        <!-- <result property="scopeID" column="ScopeID" /> -->
+        <result property="subActivityID" column="SubActivityID" />
+        <result property="periodicityDaily" column="Periodicity_Daily" />
+        <!-- <result property="periodicityWeekly" column="Periodicity_Weekly" /> -->
+        <result property="startDate" column="StartDate" />
+<!--         <result property="startTime" column="StartTime" /> -->
+        <result property="endDate" column="EndDate" />
+<!--         <result property="active" column="Active" /> -->
+<!--         <result property="priority" column="Priority"/> -->
+        <result property="slaHrs" column="SLAHrs"/>
+<!--         <result property="signumID" column="PlanSignumID" /> -->
+<!--         <result property="createdBy" column="CreatedBy" />
+        <result property="createdDate" column="CreatedDate" /> -->
+ <!--        <result property="lastModifiedBy" column="LastModifiedBy" /> -->
+        <result property="lastModifiedDate" column="LastModifiedDate" />
+        <result property="type" column="Type" />
+        <result property="deliverableName" column="deliverableName" />
+        <result property="deliverableUnitName" column="deliverableUnitName" />
+        <collection property='listOfWorkOrder' ofType='WorkOrderModel'>
+            <id property="wOID" column="WOID" />
+            <result property="wOName" column="WOName" />
+            <result property='wOPlanID' column='WOPlanID'/>
+            <result property='doID' column='DOID'/>  
+            <result property='wfid' column='WFID'/>
+            <result property="plannedStartDate" column="PlannedStartDate" />
+            <result property="plannedEndDate" column="PlannedEndDate" />
+            <result property="actualStartDate" column="ActualStartDate" />
+            <result property="actualEndDate" column="ActualEndDate" />
+            <result property="signumID" column="WoSignumID" />
+            <result property="status" column="Status" />
+            <result property="reason" column="Reason" />
+            <result property="closedOn" column="ClosedOn"/>
+            <result property="active" column="Active" />
+            <result property="priority" column="Priority"/>
+            <result property="wfVersion" column="WorkFlowVersion"/>          
+            <result property="WfVersionName" column="WorkFlowName"/>  
+            <result property="createdBy" column="CreatedBY"/>        
+            <result property="loe" column="Loe"/>
+            <result property="parentWorkOrderID" column="parentWorkOrderID"/>
+            <collection property='listOfNode' ofType='WorkOrderPlanNodesModel' >
+            	<id property='wNID' column='wNID'/>
+            	<result property='nodeNames' column='NodeNames'/>
+	            <result property='wOPlanID' column='WOPlanID'/>
+	            <result property='nodeType' column='NodeType'/>
+	            <result property='market' column='Market'/>
+	            
+	        </collection>   
+	          
+        </collection>  
+        <collection property="subActivity" ofType="com.ericsson.isf.model.ActivityModel">
+            <id property='subActivityID' column='SubActivityID'/>
+            <result property='activity' column='Activity'/>
+        	<result property='subActivity' column='SubActivity'/>            
+        </collection>
+        <collection property="activityDetails" ofType="ActivityMasterModel">
+            <result property="technology" column="Technology" />
+        </collection>   
+    </resultMap>
+
+	<insert id='addWorkOrderPlan' parameterType="WorkOrderPlanModel"
+		useGeneratedKeys="true" keyProperty="wOrderPlanModel.wOPlanID"
+		keyColumn="WOPlanID">
+		insert into
+		transactionalData.TBL_WORK_ORDER_PLAN(ProjectID,ScopeID,Periodicity_Daily,Periodicity_Weekly,StartDate,
+		StartTime,EndDate,SignumID,Active,CreatedBy,CreatedDate,LastModifiedBy,
+		LastModifiedDate,Priority,Type,PeriodicityHourly,DOVolume,isNodeWise)
+		values(
+		#{wOrderPlanModel.projectID}
+		,#{wOrderPlanModel.scopeID}
+		,#{wOrderPlanModel.periodicityDaily}
+		,#{wOrderPlanModel.periodicityWeekly}
+		,#{wOrderPlanModel.startDate}
+		,#{wOrderPlanModel.startTime}
+		,#{wOrderPlanModel.endDate}
+		,#{signumID}
+		,1
+		,#{wOrderPlanModel.createdBy}
+		,dbo.GetDateIST()
+		,NULL
+		,NULL
+		,#{wOrderPlanModel.priority}
+		,#{wOrderPlanModel.type}
+		,#{wOrderPlanModel.lstPeriodicityHourly}
+		,#{wOrderPlanModel.doVolume}
+		,#{wOrderPlanModel.isNodeWise}
+		)
+	</insert>
+    
+    <insert id = 'addWorkOrderPlanNodes' parameterType="com.ericsson.isf.model.CreateWorkOrderModel">
+        Insert into transactionalData.TBL_WORK_ORDER_PLAN_NODES
+				(WOPlanID,
+				NodeType,
+				NodeNames,
+				CreatedBy,
+				CreatedDate,
+				LastModifiedBy,
+				LastModifiedDate)
+				values(
+				 #{createWorkOrderModel.wOPlanID}
+				,#{nodeType}
+				,#{nodeName}
+				,#{createWorkOrderModel.createdBy}
+				,dbo.GetDateIST()
+				,NULL
+				,NULL
+				)
+    </insert>
+    
+    
+   
+    
+    
+    
+    
+	<insert id='createWorkOrder' parameterType="com.ericsson.isf.model.CreateWorkOrderModel2"
+		useGeneratedKeys="true" keyProperty='createWorkOrderModel.woId'
+			keyColumn="WOID">
+	
+		INSERT INTO transactionalData.TBL_WORK_ORDER
+		(
+		WOPlanID,PlannedStartDate,PlannedEndDate,SignumID,Status,Active,CreatedBy,CreatedDate,LastModifiedBy,LastModifiedDate,
+		Priority,WorkFlowVersion,projectID,flowchartDefId,ParentWorkOrderID,DOID,WOName,SubActivityID,slaHrs,isAutoSenseEnable)
+		VALUES
+		(#{createWorkOrderModel.wOPlanID},
+		#{createWorkOrderModel.plannedStartDate},
+		#{createWorkOrderModel.plannedEndDate},
+		#{createWorkOrderModel.signumID},
+		#{createWorkOrderModel.status},
+		1,
+		#{createWorkOrderModel.createBy},
+		dbo.GetDateIST(),
+		#{createWorkOrderModel.createBy},
+		dbo.GetDateIST(),
+		#{createWorkOrderModel.priority},
+		#{createWorkOrderModel.wfVersion},
+		#{createWorkOrderModel.projectID},
+		#{createWorkOrderModel.flowchartDefId},
+		#{createWorkOrderModel.parentWorkOrderId},
+		#{createWorkOrderModel.doID},
+		#{createWorkOrderModel.woName},
+		#{createWorkOrderModel.subActivityID},
+		#{createWorkOrderModel.slaHrs},
+		NULL)
+		
+	</insert>
+    
+    
+    
+	
+	
+    <select id='getWorkOrderPlanDetails' resultMap='WorkOrderPlanModelResult2'>
+       
+SELECT  wOPlan.WOPlanID
+        , wOPlan.ProjectID
+        , wOPlan.ScopeID
+        , wOrder.SubActivityID
+        , wOPlan.Periodicity_Daily
+        , wOPlan.Periodicity_Weekly
+        , wOPlan.StartDate
+        , wOPlan.StartTime
+        , wOPlan.EndDate
+        , wOrder.WOName
+        , wOPlan.SignumID as PlanSignumID
+        , wOPlan.Active
+        , wOPlan.Priority
+        , wOPlan.CreatedBy
+        , wOPlan.CreatedDate
+        , wOPlan.LastModifiedBy
+        , wOPlan.LastModifiedDate
+        , wOPlanNodes.WNID
+        , wOPlanNodes.NodeType
+        , wOPlanNodes.NodeNames 
+        , wOrder.WOID
+        , wOrder.WOPlanID
+        , wOrder.PlannedStartDate
+        , wOrder.PlannedEndDate
+        , wOrder.ActualStartDate
+        , wOrder.ActualEndDate
+        , wOrder.SignumID as WoSignumID
+        , wOrder.Status
+        , wOrder.ClosedOn
+        , wOrder.Active
+        , wOrder.Priority as WoPriority
+        , wOrder.parentWorkOrderID
+        , wONodes.WNID as WoWNID
+        , wONodes.WOID
+        , wONodes.NodeType as WoNodeType
+        , wONodes.NodeNames as WoNodeNames
+        , sub.SubActivityID
+        , sub.Activity
+        , sub.SubActivity
+        , sub.DomainID
+        , sub.ServiceAreaID
+        , sub.TechnologyID
+        , dom.Domain+'/'+dom.SubDomain as Domain
+        , ser.ServiceArea+'/'+ ser.SubServiceArea as ServiceArea
+        , tech.Technology, ne.Market, ven.Vendor,wOrder.WorkFlowVersion
+        FROM transactionalData.TBL_WORK_ORDER_PLAN wOPlan 
+        left join transactionalData.TBL_WORK_ORDER_PLAN_NODES wOPlanNodes on wOPlan.WOPlanID = wOPlanNodes.WOPlanID 
+        inner join transactionalData.TBL_WORK_ORDER wOrder on  wOPlan.WOPlanID = wOrder.WOPlanID
+        left join transactionalData.TBL_WORK_ORDER_NODES wONodes on wONodes.WOID = wOrder.WOID
+	inner join transactionalData.TBL_NETWORK_ELEMENT ne on wOPlan.ProjectID= ne.ProjectID
+	inner join refData.TBL_VENDOR ven on ne.VendorID= ven.VendorID and ven.Active=1
+        inner join refdata.TBL_SUBACTIVITY sub on wOrder.SubActivityID = sub.SubActivityID
+        inner join refdata.TBL_DOMAIN  dom on sub.DomainID = dom.DomainID
+        inner join refdata.TBL_SERVICEAREA ser on sub.ServiceAreaID = ser.ServiceAreaID
+        inner join refdata.TBL_TECHNOLOGY  tech on sub.TechnologyID = tech.TechnologyID
+        where wOPlan.WOPlanID=#{woPlanID}
+        and wOPlan.Active = 1;
+              
+    </select>
+    
+    
+    
+    
+    
+    <select id='getPlanDetailsById' resultMap='WorkOrderPlanModelResult'>
+        
+SELECT  wOPlan.WOPlanID
+        , wOPlan.ProjectID
+        , wOPlan.ScopeID
+        , wOPlan.Periodicity_Daily
+        , wOPlan.Periodicity_Weekly
+        , wOPlan.StartDate
+        , wOPlan.StartTime
+        , wOPlan.EndDate
+        , wOPlan.SignumID as PlanSignumID
+        , wOPlan.Active
+        , wOPlan.Priority
+        , wOPlan.CreatedBy
+        , wOPlan.CreatedDate
+        , wOPlan.LastModifiedBy
+        , wOPlan.LastModifiedDate
+        , wOPlan.DOVolume
+		, wOPlan.isNodeWise
+        , wOPlanNodes.WNID
+        , wOPlanNodes.NodeType
+        , wOPlanNodes.NodeNames 
+        , wOrder.WOID
+        , wOrder.DOID
+        , wOrder.WOPlanID
+        , wOrder.PlannedStartDate
+        , wOrder.PlannedEndDate
+        , wOrder.ActualStartDate
+        , wOrder.ActualEndDate
+        , wOrder.SignumID as WoSignumID
+        , wOrder.Status
+        , wOrder.ClosedOn
+        , wOrder.Active
+        , wOrder.Priority as WoPriority
+        , wOrder.SubActivityID
+        , wOrder.WOName
+        , wONodes.WNID as WoWNID
+        , wONodes.WOID
+        , wONodes.NodeType as WoNodeType
+        , wONodes.NodeNames as WoNodeNames
+         FROM transactionalData.TBL_WORK_ORDER_PLAN wOPlan 
+        left join transactionalData.TBL_WORK_ORDER_PLAN_NODES wOPlanNodes on wOPlan.WOPlanID = wOPlanNodes.WOPlanID 
+        inner join transactionalData.TBL_WORK_ORDER wOrder on  wOPlan.WOPlanID = wOrder.WOPlanID
+        left join transactionalData.TBL_WORK_ORDER_NODES wONodes on wONodes.WOID = wOrder.WOID
+	    where wOPlan.WOPlanID=#{woPlanID}
+        and wOPlan.Active = 1;
+              
+    </select>
+    
+    <update id='deleteWorkOrderPlan' statementType="CALLABLE"  parameterType="WorkOrderPlanModel">
+        {call user_sp_deleteWorkOrderPlan(
+        #{wOrderPlanModel.wOPlanID, jdbcType=INTEGER},
+        #{wOrderPlanModel.lastModifiedBy,jdbcType=VARCHAR})};
+
+    </update>
+    
+    <update id='updateWorkOrderPlanAndWOPlanNodes' statementType="CALLABLE"  parameterType="WorkOrderPlanModel">
+        {call user_sp_WorkOrderPlan_Updation(
+        #{wOrderPlanModel.wOPlanID,mode=IN, jdbcType=INTEGER},
+        #{wOrderPlanModel.startDate,mode=IN},
+        #{wOrderPlanModel.startTime,mode=IN, jdbcType=TIME},
+        #{wOrderPlanModel.priority,mode=IN, jdbcType=VARCHAR},
+        #{wOrderPlanModel.endDate,mode=IN},
+        #{wOrderPlanModel.signumID,mode=IN, jdbcType=VARCHAR},
+        #{wOrderPlanModel.lastModifiedBy,mode=IN, jdbcType=VARCHAR},
+        #{wOrderPlanModel.listOfNode[0].nodeNames,mode=IN, jdbcType=VARCHAR},
+        #{wOrderPlanModel.listOfNode[0].nodeType,mode=IN, jdbcType=VARCHAR},
+        #{wOrderPlanModel.subActivityID,mode=IN, jdbcType=INTEGER},
+        #{wOrderPlanModel.periodicityWeekly,mode=IN, jdbcType=VARCHAR},
+        #{wOrderPlanModel.periodicityDaily,mode=IN, jdbcType=VARCHAR},
+        #{wOrderPlanModel.wOName,mode=IN, jdbcType=VARCHAR}
+        )};
+    </update>
+    
+   
+    
+    <select id='searchWorkOrderPlanDetails' resultMap='WorkOrderPlanModelResult'>
+        {call SearchWorkOrderPlanDetails (
+        #{projectID,mode=IN, jdbcType=INTEGER}, 
+        #{domainID,mode=IN, jdbcType=INTEGER},
+        #{serviceAreaID,mode=IN, jdbcType=INTEGER},
+        #{technologyID,mode=IN, jdbcType=INTEGER},
+        #{activityName,mode=IN, jdbcType=VARCHAR},
+        #{subActivityID,mode=IN, jdbcType=INTEGER}
+        )};
+    </select>
+    
+    <select id='getWorkOrderPlans' resultMap='WorkOrderPlanModelResult2'>
+Drop Table If exists #tempWOAuditData
+Drop Table If exists #tempWOData
+Drop Table If exists #temprecs
+Drop Table If exists #ne
+
+declare @countryCustomerGroupId int
+
+Select @countryCustomerGroupId= CountryCustomerGroupID
+from
+transactionalData.TBL_PROJECTS p WITH (NOLOCK)
+inner join
+transactionalData.TBL_OPPORTUNITY O WITH (NOLOCK) on
+p.OpportunityID=O.OpportunityID and p.ProjectID = #{projectID} 
+inner join
+refData.TBL_CountryCustomerMapping ccm WITH (NOLOCK) on
+ccm.CountryID=o.CountryID and ccm.CustomerID=o.CustomerID 
+
+Select
+wOPlan.woplanid ,
+wOPlan.projectid ,
+wOrder.woname ,
+wOPlan.lastmodifiedby ,
+wOPlan.type ,
+wOPlan.startdate ,
+wOPlan.enddate ,
+wOrder.woid ,
+wOrder.plannedstartdate ,
+wOrder.plannedenddate ,
+wOrder.actualstartdate ,
+wOrder.actualenddate ,
+wOrder.parentworkorderid ,
+wOrder.status ,
+wOrder.signumid AS WoSignumID ,
+Upper(wOrder.createdby) AS CreatedBY ,
+Upper(wOrder.priority) AS Priority ,
+Upper(Datediff(hh,wOrder.plannedstartdate, wOrder.plannedenddate)) AS SlaHrs ,
+wOrder.closedon,
+worder.DOID,
+woplan.ScopeID,
+worder.SubActivityID,
+worder.flowchartdefid,
+worder.WorkFlowVersion
+into #tempWOData
+FROM transactionaldata.tbl_work_order_plan (nolock) wOPlan
+INNER JOIN transactionaldata.tbl_work_order (nolock) wOrder ON woPlan.woplanid = wOrder.woplanid
+Where wOPlan.active=1 
+AND wOrder.active =1
+AND Status in ('ASSIGNED', 'INPROGRESS', 'REOPENED','DEFERRED','ONHOLD')
+<if test ="projectID != 0"> 
+and wOPlan.ProjectID = #{projectID} 
+</if>
+<if test ="startDate != null and endDate != null"> 
+and PlannedStartDate between #{startDate} and #{endDate} 
+</if>
+<if test ="woStatus != null"> 
+<if test ="woStatus =='Unassigned' "> 
+and wOrder.SignumID is null
+</if>
+<if test ="woStatus !='Unassigned' ">
+and Status = #{woStatus}
+</if>
+</if>
+
+ 
+
+
+Select
+woplanid,projectid,woname,lastmodifiedby,type,startdate,enddate,woid,plannedstartdate,plannedenddate,actualstartdate,actualenddate,parentworkorderid,status,WoSignumID,CreatedBY,Priority,SlaHrs,closedon,DOID,ScopeID,SubActivityID,flowchartdefid,WorkFlowVersion,
+CONVERT(NVARCHAR(max), ad.datecreated,121)AS LastModifiedDate
+into #tempWOAuditData
+From
+#tempWOData td
+left join transactionaldata.tbl_auditgroup ag on td.woid = ag.auditPageId
+LEFT JOIN
+(
+SELECT Max(datecreated) dateCreated,
+auditgroupid
+FROM transactionaldata.tbl_auditdetails
+WHERE commentcategory IN ('WO_PRIORITY_EDIT',
+'WO_CREATE_PLAN',
+'CREATE_WORK_ORDER_PLAN')
+GROUP BY auditgroupid
+) ad ON ad.auditgroupid=ag.auditgroupid
+
+ 
+
+
+SELECT
+NAME,
+technologyid,
+market,
+elementtype,networkelementid,sector into #ne
+FROM transactionaldata.tbl_network_element (nolock)
+where countryCustomerGroupId = @countryCustomerGroupId
+
+
+ 
+
+SELECT
+td.woplanid ,
+td.projectid ,
+td.woname ,
+td.lastmodifiedby ,
+td.type ,
+td.startdate ,
+td.enddate ,
+td.LastModifiedDate ,
+CASE
+WHEN wONodes.nodetype IS NULL OR Len(wONodes.nodetype) &lt; 2 THEN ISNULL(NE.elementtype,'')
+ELSE ISNULL(wONodes.nodetype,'')
+END NodeType ,
+ISNULL(wONodes.nodenames,'') as nodenames ,
+ISNULL(Upper(NE.market),'') AS Market,
+td.woid ,
+subFlowDef.wfid ,
+td.plannedstartdate ,
+td.plannedenddate ,
+td.actualstartdate ,
+td.actualenddate ,
+td.parentworkorderid ,
+td.status ,
+td.WoSignumID ,
+td.CreatedBY ,
+td.Priority ,
+td.SlaHrs ,
+da.reason ,
+td.closedon ,
+sub.subactivityid ,
+Upper(sub.activity) AS Activity ,
+Upper(sub.subactivity) AS SubActivity ,
+sub.technologyid ,
+Upper(tech.technology) AS Technology ,
+subFlowDef.workflowname ,
+ps.scopename AS deliverableName ,
+pdu.deliverableunitname AS deliverableUnitName ,
+td.doid
+INTO #temprecs
+FROM #tempWOAuditData td
+INNER JOIN refdata.[tbl_subactivity] (nolock) sub ON td.subactivityid = sub.subactivityid
+INNER JOIN refdata.tbl_technology (nolock) tech ON sub.technologyid = tech.technologyid and tech.active=1
+INNER JOIN transactionaldata.tbl_projectscope ps ON ps.projectscopeid = td.scopeid
+INNER JOIN refdata.tbl_project_deliverable_unit pdu ON ps.deliverableunit = pdu.deliverableunitid
+LEFT JOIN transactionaldata.tbl_subactivity_flowchart_def (nolock) subFlowDef ON td.projectid = subFlowDef.projectid AND subflowdef.subactivityflowchartdefid=td.flowchartdefid AND td.subactivityid = subFlowDef.subactivityid AND subFlowDef.versionnumber= td.workflowversion AND subFlowDef.flowchartjson IS NOT NULL
+LEFT JOIN transactionaldata.tbl_work_order_delivery_acceptance (nolock) da ON da.woid= td.woid
+LEFT JOIN transactionaldata.tbl_work_order_nodes (nolock) wONodes ON wONodes.woid = td.woid
+LEFT JOIN
+#ne NE ON NE.networkelementid =wONodes.networkelementid
+where tech.active=1;
+
+ 
+
+ 
+
+WITH before_limit AS 
+( 
+SELECT
+woplanid ,projectid ,woname ,lastmodifiedby ,type ,startdate ,enddate ,LastModifiedDate ,NodeType ,nodenames ,Market,woid ,wfid ,plannedstartdate ,plannedenddate ,actualstartdate ,actualenddate ,parentworkorderid ,status ,WoSignumID ,CreatedBY ,
+Priority ,SlaHrs ,reason ,closedon ,subactivityid ,Activity ,SubActivity ,technologyid ,Technology ,workflowname ,deliverableName ,deliverableUnitName ,doid, 
+Dense_rank() OVER(ORDER BY t.woplanid, t.woid) AS rnk 
+FROM ( 
+        SELECT woplanid, 
+        projectid , 
+        woname , 
+        lastmodifiedby , 
+        type , 
+        startdate , 
+        enddate , 
+        lastmodifieddate , 
+        nodetype , 
+        nodenames , 
+        market , 
+        woid , 
+        wfid , 
+        plannedstartdate , 
+        plannedenddate , 
+        actualstartdate , 
+        actualenddate , 
+        parentworkorderid , 
+        status , 
+        wosignumid , 
+        createdby , 
+        priority , 
+        slahrs , 
+        reason , 
+        closedon , 
+        subactivityid , 
+        activity , 
+        subactivity , 
+        technologyid , 
+        technology , 
+        workflowname , 
+        deliverablename , 
+        deliverableunitname , 
+        doid 
+        FROM ( 
+                SELECT Row_number() OVER (partition BY woplanid, projectid ,woname ,lastmodifiedby ,type ,startdate ,enddate ,lastmodifieddate ,
+                nodetype ,nodenames ,market ,woid ,wfid ,plannedstartdate ,plannedenddate ,actualstartdate ,actualenddate ,parentworkorderid ,status 
+                ,wosignumid ,createdby ,priority ,slahrs ,reason ,closedon ,subactivityid ,activity ,subactivity ,technologyid ,technology ,workflowname 
+                ,deliverablename ,deliverableunitname ,doid ORDER BY projectid ) AS rnum,
+                woplanid ,projectid ,woname ,lastmodifiedby ,type ,startdate ,enddate ,LastModifiedDate ,NodeType ,nodenames ,Market,woid ,wfid ,plannedstartdate ,plannedenddate ,actualstartdate ,actualenddate ,parentworkorderid ,status ,WoSignumID ,CreatedBY ,
+                Priority ,SlaHrs ,reason ,closedon ,subactivityid ,Activity ,SubActivity ,technologyid ,Technology ,workflowname ,deliverableName ,deliverableUnitName ,doid
+                FROM #temprecs a 
+            )b 
+        WHERE rnum = 1 
+    ) t
+where 1=1 
+<foreach item="column" index="index" collection="dataTableReq.columns">
+<if test ="column.search != ''">
+and ${column.data} like #{column.search}
+</if>
+</foreach>
+
+ 
+
+<if test ='dataTableReq.search != null and dataTableReq.search != ""'>
+and (WorkFlowName like #{dataTableReq.search}
+or WOID like #{dataTableReq.search}
+or Status like #{dataTableReq.search}
+or Reason like #{dataTableReq.search}
+or NodeNames like #{dataTableReq.search}
+or WoSignumID like #{dataTableReq.search}
+or PlannedStartDate like #{dataTableReq.search}
+or PlannedEndDate like #{dataTableReq.search}
+or deliverableName like #{dataTableReq.search}
+or DeliverableUnitName like #{dataTableReq.search}
+or UPPER(Priority) like #{dataTableReq.search}
+or DOID like #{dataTableReq.search}
+<foreach item="column" index="index" collection="dataTableReq.columns" >
+or ${column.data} like #{dataTableReq.search}
+</foreach> 
+) 
+</if>
+) 
+
+ 
+
+SELECT woplanid ,projectid ,woname ,lastmodifiedby ,type ,startdate ,enddate ,LastModifiedDate ,NodeType ,nodenames ,Market,woid ,wfid ,plannedstartdate ,plannedenddate ,actualstartdate ,actualenddate ,parentworkorderid ,status ,WoSignumID ,CreatedBY ,
+Priority ,SlaHrs ,reason ,closedon ,subactivityid ,Activity ,SubActivity ,technologyid ,Technology ,workflowname ,deliverableName ,deliverableUnitName ,doid, 
+rnk , 
+( 
+SELECT Max(before_limit.rnk) 
+FROM before_limit ) AS totalcnt 
+FROM before_limit 
+<if test ='dataTableReq.order != null and dataTableReq.order.sortDir!=null and dataTableReq.order.data != ""'>
+order by ${dataTableReq.order.data} ${dataTableReq.order.sortDir}
+</if>
+<if test ='dataTableReq.length != -1'>
+OFFSET ${dataTableReq.start} ROWS
+FETCH NEXT ${dataTableReq.length} ROWS ONLY
+</if>
+</select>
+    
+  
+    
+    
+    <select id='getWorkOrderPlansCount' resultType="Integer" >
+  SELECT count(distinct WOPlanID) FROM
+(
+SELECT distinct wOPlan.WOPlanID
+,wOPlan.ProjectID
+,wOPlan.StartDate
+,wOPlan.EndDate
+,wOrder.WOName
+,wOPlan.CreatedBy
+,wOPlan.LastModifiedBy
+,convert(nvarchar(MAX), ad.dateCreated,121)as LastModifiedDate
+,UPPER(wOplan.Priority) as Priority
+,case when wONodes.NodeType is null or len(wONodes.NodeType) &lt; 2 then NE.ElementType else wONodes.NodeType end NodeType
+, wONodes.NodeNames
+,UPPER(NE.Market) as Market
+, wOrder.WOID
+,subFlowDef.WFID
+, wOrder.PlannedStartDate
+, wOrder.PlannedEndDate
+, wOrder.ActualStartDate
+, wOrder.ActualEndDate
+, wOrder.parentWorkOrderID
+, wOrder.Status
+, wOrder.SignumID as WoSignumID
+, UPPER(wOrder.CreatedBY) AS WoCreatedBY
+, UPPER(wOrder.Priority) AS WoPriority
+, UPPER(DATEDIFF(HH,wOrder.plannedstartdate, wOrder.plannedenddate)) AS SlaHrs
+, da.Reason
+, wOrder.ClosedOn
+, sub.SubActivityID
+, UPPER(sub.Activity) as Activity
+, UPPER(sub.SubActivity) as SubActivity
+, sub.DomainID
+, sub.ServiceAreaID
+, sub.TechnologyID
+, CONCAT(dom.Domain,'/',dom.SubDomain) as Domain
+, UPPER(tech.Technology) as Technology
+, subFlowDef.WorkFlowName
+, ps.ScopeName as deliverableName
+, pdu.DeliverableUnitName as deliverableUnitName
+, doi.DOID
+FROM
+transactionalData.TBL_WORK_ORDER_PLAN (NOLOCK) wOPlan
+inner join transactionalData.TBL_Deliverable_Order_ID(nolock) doi on doi.WOPlanID=wOPlan.WOPlanID
+inner join transactionaldata.tbl_work_order (nolock) wOrder on doi.DOID = wOrder.DOID
+inner join refData.[TBL_SUBACTIVITY] (NOLOCK) sub on wOrder.SubActivityID = sub.SubActivityID
+inner join refData.TBL_DOMAIN (NOLOCK) dom on sub.DomainID = dom.DomainID
+inner join refData.TBL_SERVICEAREA (NOLOCK) ser on sub.ServiceAreaID = ser.ServiceAreaID
+inner join refData.TBL_TECHNOLOGY (NOLOCK) tech on sub.TechnologyID = tech.TechnologyID
+inner join transactionalData.TBL_PROJECTSCOPE ps on ps.ProjectScopeID = wOPlan.ScopeID
+inner join refData.TBL_Project_Deliverable_Unit pdu on ps.deliverableUnit = pdu.DeliverableUnitID
+left join transactionalData.TBL_WORK_ORDER_NODES (NOLOCK) wONodes on wONodes.WOID = wOrder.WOID
+left join transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF (NOLOCK) subFlowDef on wOPlan.ProjectID = subFlowDef.ProjectID and subflowdef.SubActivityFlowChartDefID=worder.flowchartdefid
+and wOrder.SubActivityID = subFlowDef.SubActivityID and subFlowDef.VersionNumber= wOrder.WorkFlowVersion and subFlowDef.flowchartJSON is not null
+left join transactionaldata.tbl_work_order_delivery_acceptance (NOLOCK) da on da.woID= wOrder.woID
+left join transactionalData.TBL_NETWORK_ELEMENT (nolock) NE on NE.ProjectID=wOPlan.ProjectID and NE.Name=wONodes.NodeNames
+left join transactionalData.TBL_AuditGroup ag on ag.auditPageId=wOrder.WOID
+left join
+(select max(dateCreated) dateCreated,auditgroupid from transactionalData.TBL_AuditDetails where commentCategory in ('WO_PRIORITY_EDIT','WO_CREATE_PLAN','CREATE_WORK_ORDER_PLAN') group by auditgroupid) ad on ad.auditgroupid=ag.auditgroupid
+where wOPlan.Active=1 and wOrder.Active =1
+and dom.active=1 and ser.active=1 and tech.active=1
+and Status in ('ASSIGNED', 'INPROGRESS', 'REOPENED','DEFERRED','ONHOLD')
+<if test ="projectID != 0">
+and wOPlan.ProjectID = #{projectID}
+</if>
+<if test ="startDate != null and endDate != null">
+and PlannedStartDate between #{startDate} and #{endDate}
+</if>
+<if test ="woStatus != null">
+<if test ="woStatus =='Unassigned' ">
+and wOrder.SignumID is null
+</if>
+<if test ="woStatus !='Unassigned' ">
+and Status = #{woStatus}
+</if>
+</if>
+) t
+where 1=1
+<foreach item="column" index="index" collection="dataTableReq.columns">
+<if test ="column.search != ''">
+<if test="column.data != 'priority'">
+and ${column.data} like #{column.search}
+</if>
+<if test ="column.data == 'priority'">
+and WoPriority like #{column.search}
+</if>
+</if>
+</foreach>
+<if test ='dataTableReq.search != null and dataTableReq.search != ""'>
+and (
+WorkFlowName like #{dataTableReq.search}
+or WOID like #{dataTableReq.search}
+or Status like #{dataTableReq.search}
+or Reason like #{dataTableReq.search}
+or NodeNames like #{dataTableReq.search}
+or WoSignumID like #{dataTableReq.search}
+or PlannedStartDate like #{dataTableReq.search}
+or PlannedEndDate like #{dataTableReq.search}
+or deliverableName like #{dataTableReq.search}
+or deliverableUnitName like #{dataTableReq.search}
+or WoPriority like #{dataTableReq.search}
+or DOID like #{dataTableReq.search}
+<foreach item="column" index="index" collection="dataTableReq.columns" >
+or ${column.data} like #{dataTableReq.search}
+</foreach>
+)
+</if>
+    </select>
+    
+    
+
+    <select id='getDomainDetailsByWOPlanID' resultType="java.util.LinkedHashMap">
+  		select  top 1 wp.woplanid, p.ProjectID ,d.parentDomainID as DomainID, d.domainID as subDomainID,ps.ProjectScopeID, 
+          ps.ScopeName,d.domain, d.SubDomain, sa.SubServiceArea, t.TechnologyID, t.Technology,s.Activity, s.SubActivityID,s.SubActivity , 
+          wo.WorkFlowVersion as wfVersion,flow.WorkFlowName,wo.flowchartdefID,ps.vendorCode
+              from transactionalData.TBL_PROJECTS p
+              join transactionalData.TBL_PROJECTSCOPE ps on p.ProjectID = ps.ProjectID
+              join transactionalData.TBL_PROJECTSCOPEDETAIL psd on psd.ProjectScopeID = ps.ProjectScopeID 
+              join refData.TBL_DOMAIN d on psd.DomainID = d.DomainID
+              join refData.TBL_SERVICEAREA sa on psd.ServiceAreaID = sa.ServiceAreaID
+              join refData.TBL_TECHNOLOGY t on psd.TechnologyID = t.TechnologyID
+              join transactionalData.TBL_ACTIVITYSCOPE as1 on as1.ProjectScopeDetailID = psd.ProjectScopeDetailID 
+              join refData.TBL_SUBACTIVITY s on as1.SubActivityID = s.SubActivityID
+              join [transactionalData].[TBL_WORK_ORDER_PLAN] wp on wp.projectid = p.projectid
+              join [transactionalData].[TBL_WORK_ORDER] wo on wp.woplanid = wo.woplanid  and wo.subactivityid=s.subactivityid
+              join transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF flow on flow.subactivityid =  s.subactivityid and flow.ProjectID=p.ProjectID
+              where psd.active=1 and as1.active=1 and ps.active=1 and wo.active=1 and flow.type='PROJECTDEFINED' and flow.active = 1 and wp.woplanid = #{woPlanId}
+                       order by flow.versionNumber desc
+ </select>
+
+    <select id='getPlanDataByWOPlanID' resultType="java.util.LinkedHashMap">
+    	select TOP 1 woplan.[WOPlanID],woplan.[ProjectID],[ScopeID],[SubActivityID],[Periodicity_Daily],
+		[Periodicity_Weekly],convert(varchar(25), [StartDate], 120) as StartDate,
+		convert(varchar(25), [StartTime], 120) as StartTime, convert(varchar(25), [EndDate], 120)
+		as EndDate,[WOName],woplan.[SignumID],woplan.[Active],woplan.[CreatedBy],
+		woplan.[CreatedDate],woplan.[LastModifiedBy],woplan.[LastModifiedDate],
+		woplan.[Priority],wo.SLAHrs,[PeriodicityHourly] from [transactionalData].[TBL_WORK_ORDER_PLAN] woplan
+		join transactionalData.TBL_WORK_ORDER wo on wo.WOPlanID = woplan.WOPlanID
+		where woplan.woplanid = #{woPlanId}
+    </select>
+    
+    <select id='getNodeTypeByWOPlanID' resultType="java.util.LinkedHashMap">
+    	select distinct NodeType from [transactionalData].[TBL_WORK_ORDER_PLAN_NODES] where woplanid = #{woPlanId}
+    </select>
+    
+    <select id='getNodeNamesByWOPlanID' resultType="java.util.LinkedHashMap">
+    	select distinct NodeNames from [transactionalData].[TBL_WORK_ORDER_PLAN_NODES] where woplanid = #{woPlanId}
+    </select>
+    
+    <select id='getAssignedUsersByWOPlanID' resultType="java.util.LinkedHashMap">
+    	select distinct wo.SignumID, emp.EmployeeName from [transactionalData].[TBL_WORK_ORDER] wo
+		join [refData].[TBL_Employees] emp on wo.signumid = emp.signum 
+ 		where woplanid = #{woPlanId}
+    </select>
+    
+    <select id='getCheckBoxData' resultType="java.util.LinkedHashMap">
+		select PlannedStartDate, PlannedEndDate ,WOPlanID, count(woid) [wocount] from (
+		select  distinct wop.WOPlanID , wo.WOID,wo.PlannedStartDate, wo.PlannedEndDate ,count(nodenames) [nodecount] from transactionalData.TBL_WORK_ORDER_PLAN wop
+		inner join transactionalData.TBL_WORK_ORDER_PLAN_NODES  won on won.WOPlanID=wop.WOPlanID
+		inner join transactionalData.TBL_WORK_ORDER wo on wo.WOPlanID=wop.WOPlanID
+		where  wop.WOPlanID = #{woPlanId} and wop.active = 1 and wo.active =1 
+		group by wop.WOPlanID , wo.WOID,wo.PlannedStartDate, wo.PlannedEndDate
+		having count(nodenames)>1
+		) x
+		group by PlannedStartDate, PlannedEndDate ,WOPlanID
+		having  count(woid)>1
+    </select>
+     
+     <resultMap type='SubactivityModel' id='SubactivityModelResult'>
+        <id property='subActivityID' column='SubActivityID'/>
+        <result property='domainID' column='DomainID'/>
+        <result property='serviceAreaID' column='ServiceAreaID'/>
+        <result property='technologyID' column='TechnologyID'/>
+        <result property='activity' column='Activity'/>
+        <result property='subActivity' column='SubActivity'/>
+        <result property='avgEstdEffort' column='AvgEstdEffort'/>
+        <result property='active' column='Active'/>
+        <result property='createdBy' column='CreatedBy'/>
+        <result property='createdDate' column='CreatedDate'/>
+        <result property='lastModifiedBy' column='LastModifiedBy'/>
+        <result property='lastModifiedDate' column='LastModifiedDate'/>
+    </resultMap>
+    
+    
+     <select id='getEstdHrs' resultType="Integer">
+        <!--select AvgEstdEffort from refData.TBL_SUBACTIVITY where SubActivityID= #{subActId};-->
+        select a.AvgEstdEffort from transactionalData.TBL_PROJECTS  p
+        inner join transactionalData.TBL_PROJECTSCOPE ps on p.ProjectID = ps.ProjectID and ps.Active = 1
+        inner join transactionalData.TBL_PROJECTSCOPEDETAIL pd on pd.ProjectScopeID =ps.ProjectScopeID and pd.Active = 1
+        inner join transactionalData.TBL_ACTIVITYSCOPE a on a.ProjectScopeDetailID =pd.ProjectScopeDetailID 
+         where p.ProjectID=#{projectID} and a.SubActivityID=#{subActId} and a.Active=1 and p.isDeleted =0
+     </select>
+    
+    <resultMap type='WorkOrderPlanNodesModel' id='WorkOrderPlanNodesModelResult'>
+        <id property='wNID' column='WNID'/>
+        <result property='wOPlanID' column='WOPlanID'/>
+        <result property='nodeType' column='NodeType'/>
+        <result property='nodeNames' column='NodeNames'/>
+        <result property='createdBy' column='CreatedBy'/>
+        <result property='createdDate' column='CreatedDate'/>
+        <result property='lastModifiedBy' column='LastModifiedBy'/>
+        <result property='lastModifiedDate' column='LastModifiedDate'/>
+    </resultMap>
+    
+    <resultMap type="WorkOrderModel" id="WorkOrderModelResult">
+        <id property="wOID" column="WOID" />
+        <result property="wOPlanID" column="wOPlanID" />
+        <result property="plannedStartDate" column="PlannedStartDate" />
+        <result property="plannedEndDate" column="PlannedEndDate" />
+        <result property="actualStartDate" column="ActualStartDate" />
+        <result property="actualEndDate" column="ActualEndDate" />
+        <result property="signumID" column="SignumID" />
+        <result property="status" column="Status" />
+        <result property="active" column="Active" />
+        <result property="createdBy" column="CreatedBy" />
+        <result property="createdDate" column="CreatedDate" />
+        <result property="lastModifiedBy" column="LastModifiedBy" />
+        <result property="lastModifiedDate" column="LastModifiedDate" />
+        <result property="priority" column="Priority"/>
+        <result property="closedOn" column="ClosedOn"/>
+        <result property="adHocWoID" column="AdhocWOID"/>
+        <result property="flowchartdefid" column="flowchartdefid"/>
+        <result property='projectid' column='projectid'/>
+        <result property='wfVersion' column='WorkFlowVersion'/>
+        <result property='parentWorkOrderID' column='parentWorkOrderID'/>
+        <result property='doID' column='DOID'/>
+        <result property='wOName' column='WOName'/>
+        <result property='slaHrs' column='SLAHrs'/>
+        <result property='subActivityID' column='SubActivityID'/>
+        <result property='workOrderAutoSenseEnabled' column='IsAutoSenseEnable'/>
+		<result property='proficiencyID' column='ProficiencyID'/>
+        <collection property='listOfNode' ofType='WorkOrderNodesModel'>
+            <id property='wNID' column='WNID'/>
+            <result property='wOID' column='WOID'/>
+            <result property='nodeType' column='NodeType'/>
+            <result property='nodeNames' column='NodeNames'/>
+            <result property='createdBy' column='CreatedBy'/>
+            <result property='createdDate' column='CreatedDate'/>
+            <result property='lastModifiedBy' column='LastModifiedBy'/>
+            <result property='lastModifiedDate' column='LastModifiedDate'/>
+        </collection>        
+    </resultMap>
+    
+    
+    <select id='checkIFWOExists' resultType="Boolean">
+        IF EXISTS(SELECT 1 FROM TRANSACTIONALDATA.TBL_WORK_ORDER WHERE WOID=#{woid} AND ACTIVE=1)
+            BEGIN
+                SELECT 1 AS "Result"
+            END
+        ELSE
+            BEGIN
+                SELECT 0 AS "Result"
+            END
+    </select>
+        
+    <select id='checkNotStartedStatusOfWorkOrderPlan' resultMap='WorkOrderModelResult'>
+        SELECT WOPlanID , SignumID , Status , Active , WOID , DOID  , SubActivityID  , PROJECTID , flowchartdefid
+        FROM transactionalData.TBL_WORK_ORDER where WOPlanID = #{wOPlanId} and Status = 'ASSIGNED' and Active = 1;     
+    </select>
+         
+    <select id = 'updateWorkOrderAndWorkOrderNodes' statementType="CALLABLE" parameterType="WorkOrderPlanModel">
+        {call user_sp_WorkOrder_Updation(
+        #{wOrderPlanModel.wOPlanID,mode=IN, jdbcType=INTEGER},
+        #{wOrderPlanModel.startDate,mode=IN},
+        #{wOrderPlanModel.startTime,mode=IN, jdbcType=TIME},
+        #{wOrderPlanModel.priority,mode=IN, jdbcType=VARCHAR},
+        #{wOrderPlanModel.endDate,mode=IN},
+        #{wOrderPlanModel.signumID,mode=IN, jdbcType=VARCHAR},
+        #{wOrderPlanModel.lastModifiedBy,mode=IN, jdbcType=VARCHAR},
+        #{wOrderPlanModel.listOfNode[0].nodeNames,mode=IN, jdbcType=VARCHAR},
+        #{wOrderPlanModel.listOfNode[0].nodeType,mode=IN, jdbcType=VARCHAR},
+        #{wOrderPlanModel.subActivityID,mode=IN, jdbcType=INTEGER},
+        #{wOrderPlanModel.periodicityWeekly,mode=IN, jdbcType=VARCHAR},
+        #{wOrderPlanModel.periodicityDaily,mode=IN, jdbcType=VARCHAR}
+        )};
+    </select> 
+    
+    <resultMap type='WorkOrderNodesModel' id='WorkOrderNodesModelResult'>
+        <id property='wNID' column='WNID'/>
+        <result property='wOID' column='WOID'/>
+        <result property='nodeType' column='NodeType'/>
+        <result property='nodeNames' column='NodeNames'/>
+        <result property='createdBy' column='CreatedBy'/>
+        <result property='createdDate' column='CreatedDate'/>
+        <result property='lastModifiedBy' column='LastModifiedBy'/>
+        <result property='lastModifiedDate' column='LastModifiedDate'/>
+    </resultMap>
+    
+
+    <resultMap type='WorkOrderViewProjectModel' id='WorkOrderViewProjectModelResult'>
+        <result property='projectID' column='ProjectID'/>
+        <result property='projectName' column='ProjectName'/>
+        <result property='marketArea' column='MarketArea'/>
+        <result property='productArea' column='ProductArea'/>
+        <result property='country' column='Country'/>
+        <result property='operator' column='Operator'/>
+        <result property='project_StartDate' column='Project_StartDate'/>
+        <result property='project_EndDate' column='Project_EndDate'/>
+        <result property='projectHours' column='ProjectHours'/>
+        <result property='projectDays' column='ProjectDays'/>
+        <result property='projectWOCount' column='ProjectWOCount'/>
+        <collection property="woOutputLink" ofType="com.ericsson.isf.model.WOOutputFileResponseModel" >
+        <result property='woid' column="WOID" />
+    	</collection>
+        <collection property='listOfScope' ofType='WorkOrderViewScopeModel'>
+            <result property='scopeID' column='ScopeID'/>
+            <result property='scopeName' column='ScopeName'/>
+            <collection property='listOfActivities' ofType='WorkOrderViewActivityModel'>
+                <result property='subActivityID' column='SubActivityID'/>
+                <result property='subActivityName' column='SubActivity'/>
+                <result property='subActivityStartDate' column='SubActivityStartDate'/>
+                <result property='subActivityEndDate' column='SubActivityEndDate'/>
+                <result property='subActivityWOCount' column='SubActivityWOCount'/>
+                <result property='subActivityHours' column='SubActivityHours'/>
+                <result property='subActivityDays' column='SubActivityDays'/>
+                <result property='workFlowName' column='WorkFlowName'/>
+                <collection property='listOfWorkOrder' ofType='WorkOrderViewModel'>
+                    <result property='wOID' column='WOID'/>
+                    <result property='wOName' column='WOName'/>
+                    <result property='startDate' column='StartDate'/>
+                    <result property='endDate' column='EndDate'/>
+                    <result property='assignedTo' column='SignumID'/>
+                    <result property='status' column='Status'/>
+                    <result property='woHours' column='WOHours'/>
+                    <result property='woDays' column='WODays'/>
+                    <result property='subActivityID' column='SubActivityID'/>
+                    <result property='nodeType' column='NodeType'/>
+                    <result property='nodeCount' column='NodeCount'/>
+                    <result property='nodeNames' column='NodeNames'/>
+                    <result property='actualStartDate' column='ActualStartDate'/>
+                    <result property='actualEndDate' column='ActualEndDate'/>
+                    <result property='priority' column='Priority'/>
+                    <result property='createdby' column='createdby'/>
+                    <result property='proficiencyID' column='ProficiencyID'/>
+                    <result property='proficiencyName' column='ProficiencyName'/>
+                    <collection property='listOfBookingDetails' ofType='WOBookingDetailsModel'>
+                        <result property='bookingID' column='BookingID'/>
+                        <result property='bookingStartDate' column='BookingStartDate'/>
+                        <result property='bookingEndDate' column='BookingEndDate'/>
+                        <result property='hours' column='HoursBooked'/>
+                        <result property='parentBookingDetailsID' column='ParentBookingDetailsID'/>
+                        <result property='type' column='Type'/>
+                    </collection>
+                </collection>
+            </collection>  
+        </collection>
+    </resultMap>
+    
+    <select id='getWorkOrderViewDetails' resultMap='WorkOrderViewProjectModelResult' statementType="CALLABLE">
+        
+        {call user_sp_getWorkOrderViewDetails_V3 (
+        #{projectID,mode=IN, jdbcType=VARCHAR}, 
+        #{scope,mode=IN, jdbcType=VARCHAR},
+        #{activity,mode=IN, jdbcType=VARCHAR},
+        #{WOID,mode=IN, jdbcType=VARCHAR},
+        #{startDate,mode=IN, jdbcType=VARCHAR},
+        #{endDate,mode=IN, jdbcType=VARCHAR},
+        #{assignedTo,mode=IN, jdbcType=VARCHAR},
+        #{signum_LoggedIn,mode=IN, jdbcType=VARCHAR},
+        #{isWeekEndIncluded,mode=IN, jdbcType=VARCHAR},
+        #{isOddHoursIncluded,mode=IN, jdbcType=VARCHAR},
+        #{status,mode=IN, jdbcType=VARCHAR},
+        #{nodeName,mode=IN, jdbcType=VARCHAR},
+        #{marketArea,mode=IN, jdbcType=VARCHAR},
+        #{assignedBy,mode=IN, jdbcType=VARCHAR}
+        )};
+    </select>
+	<select id='getNEIDByProjectID'
+		resultType="java.util.LinkedHashMap">
+		DECLARE @CountryCustomerGroupID int
+		SELECT top 1 @CountryCustomerGroupID = CountryCustomerGroupID
+		FROM transactionalData.TBL_PROJECTS p
+		INNER JOIN transactionalData.TBL_OPPORTUNITY O ON
+		p.OpportunityID=O.OpportunityID
+		AND p.ProjectID = #{projectID}
+		INNER JOIN refData.TBL_CountryCustomerMapping ccm ON
+		ccm.CountryID=o.CountryID
+		AND ccm.CustomerID=o.CustomerID
+
+		select distinct Name FROM transactionalData.TBL_NETWORK_ELEMENT
+		where Name like #{term} and CountryCustomerGroupID=
+		@CountryCustomerGroupID
+		
+	</select>
+    
+    <select id='checkNotStartedStatusOfWorkOrder' resultType="Boolean">
+        IF Exists(SELECT 1 FROM transactionalData.TBL_WORK_ORDER where WOID = #{wOID} and Status in ('ASSIGNED','REOPENED','DEFERRED') and Active = 1)
+        Begin
+        Select 1 as 'Result'
+        End
+        else
+        Begin
+        Select 0 as 'Result'
+        End
+    </select>
+   
+    <delete id ="deleteWorkOrdeNodesByWOID">
+        DELETE FROM transactionalData.TBL_WORK_ORDER_NODES where WOID IN (select WOID from TBL_WORK_ORDER where WOPlanID = #{wOPlanID});
+    </delete>
+    
+    
+    <update id='deleteWorkOrder' parameterType="WorkOrderModel">
+        update transactionalData.tbl_work_order set ACTIVE = 0, LastModifiedBy = #{signumID}, LastModifiedDate = dbo.GetDateIST() where WOID = #{wOID};  
+    </update>
+    
+    <update id='updateWorkOrderStatusNew'>
+        update transactionalData.TBL_WORK_ORDER set ACTIVE = 0 where WOPlanID = #{workOrderPlanID} ;  
+    </update>
+    
+    <update id='updateWorkOrderParentId'>
+        update transactionalData.TBL_WORK_ORDER set ParentWorkOrderID = #{parentWorkOrderID} where woid = #{woid} ; 
+       </update>
+    <update id='updatePreviousWOID'>
+         update transactionalData.TBL_WORK_ORDER set Active=0  where woid=#{workOrderId};
+    </update>
+    <update id='closeDeferedWorkOrder'>
+         update transactionalData.TBL_WORK_ORDER set Active=0  where woid=#{workOrderId};
+    </update>
+    <update id='setInprogressDeferedWorkOrder'>
+         update transactionalData.TBL_WORK_ORDER set  Status='INPROGRESS' where woid=#{workOrderId};
+    </update>
+    <update id='setAssignedDeferedWorkOrder'>
+         update transactionalData.TBL_WORK_ORDER set  Status='ASSIGNED' where woid=#{workOrderId};
+    </update>
+    
+    <select id = 'getDeferedWorkOrderDetails' resultType="String">
+    select WOID from transactionalData.TBL_WORK_ORDER_BOOKING_DETAILS where WOID=#{workOrderId};
+    </select>
+    
+    <update id='updateWorkOrderPlanStatus'>
+        update transactionalData.TBL_WORK_ORDER_PLAN set ACTIVE = 0 where WOPlanID = #{workOrderPlanID} ;  
+    </update>
+    
+    <delete id='deleteWONodes' parameterType="WorkOrderModel">
+        delete from transactionalData.tbl_work_order_nodes where WOID = #{wOID};
+    </delete>
+
+    <update id = 'updateWorkOrder' statementType="CALLABLE" parameterType="WorkOrderModel">
+        {call user_sp_updateWorkOrderAndNodes(
+        #{workOrderModel.wOID,mode=IN, jdbcType=INTEGER},
+        #{workOrderModel.signumID,mode=IN, jdbcType=VARCHAR},
+        #{workOrderModel.lastModifiedBy,mode=IN, jdbcType=VARCHAR},
+        #{workOrderModel.priority,mode=IN, jdbcType=VARCHAR},
+        #{workOrderModel.listOfNode[0].nodeNames,mode=IN, jdbcType=VARCHAR},
+        #{workOrderModel.listOfNode[0].nodeType,mode=IN, jdbcType=VARCHAR}
+        )};
+    </update>
+
+    <select id = 'getWorkOrderDetails' resultMap="WorkOrderModelResult">
+    
+    <!-- Old Query  -->
+        <!-- select wo.WOID, wo.WOPlanID, wo.SignumID, wo.PlannedStartDate, wo.PlannedEndDate, wo.ActualStartDate, wo.ActualEndDate, wo.ClosedOn, 
+	wo.Active, wo.Status, wo.Priority, wo.CreatedBy, wo.CreatedDate,wo.flowchartdefid,  wn.NodeType, wn.NodeNames from transactionalData.tbl_work_order wo
+        left join transactionalData.tbl_work_order_nodes wn on wo.woID = wn.woID
+        where wo.WOID =  #{woID,jdbcType=INTEGER} -->
+        
+    <!-- New Query -->
+        with CTE_NODES_WO AS
+		(select  wn.woID,wn.NodeType, wn.NodeNames
+		from transactionalData.tbl_work_order_nodes wn
+		where WOID= #{woID,jdbcType=INTEGER})
+		select wo.WOID, wo.WOPlanID, wo.SignumID, wo.PlannedStartDate, wo.PlannedEndDate, wo.ActualStartDate, wo.ActualEndDate, wo.ClosedOn, 
+		wo.Active, wo.Status, wo.Priority, wo.CreatedBy, wo.CreatedDate,wo.flowchartdefid,  wn.NodeType, wn.NodeNames 
+		from transactionalData.tbl_work_order wo
+		left join CTE_NODES_WO wn on wo.woID = wn.woID
+		where wo.WOID =  #{woID,jdbcType=INTEGER}
+    </select>
+    
+     <select id = 'getWorkOrderDetailsById' resultMap="WorkOrderModelResult">
+        select wo.WOID, wo.WOPlanID, wo.SignumID, wo.PlannedStartDate, wo.PlannedEndDate, wo.ActualStartDate, wo.ActualEndDate, wo.ClosedOn, 
+	wo.Active, wo.Status, wo.Priority, wo.CreatedBy, wo.CreatedDate,wo.flowchartdefid,wo.projectId,
+	wo.WorkFlowVersion,wo.DOID,wo.slaHrs,wo.SubActivityID,wo.WOName,wo.IsAutoSenseEnable, wo.ProficiencyID from transactionalData.tbl_work_order wo
+        where wo.WOID =  #{woID,jdbcType=INTEGER}
+    </select>
+    
+    <insert id='insertNodeDetails' parameterType="WorkOrderModel">
+        insert into transactionalData.TBL_WORK_ORDER_NODES(WOID,NodeNames,NodeType) values(#{woid},#{nodeName},#{nodeType}) 
+      
+    </insert>
+    
+    <delete id='deleteNodeforWO' parameterType="WorkOrderModel">
+        delete from transactionalData.TBL_WORK_ORDER_NODES where WOID=#{woid}
+    </delete>
+    
+    <select id='checkWOStatus' resultType="Boolean">
+        
+        IF Exists(SELECT 1 FROM TRANSACTIONALDATA.TBL_WORK_ORDER WHERE WOID=#{wOID} AND STATUS IN ('CLOSED','DEFERRED'))
+            BEGIN
+                select 1 as 'Result'
+            END
+        ELSE
+            BEGIN
+                select 0 as 'Result'
+            END
+    </select> 
+     
+    <update id = 'transferWorkOrder' parameterType="WorkOrderModel">
+        UPDATE transactionalData.TBL_WORK_ORDER set lastModifiedBy=#{senderID},
+        signumID=#{receiverID},lastModifiedDate=dbo.GetDateIST(),IsAutoSenseEnable=null
+        where WOID=#{wOID};
+        <!--INSERT INTO TRANSACTIONALDATA.TBL_WORK_ORDER_TRANSFER_LOG_HISTORY(WOID,SENDERID,RECEIVERID) VALUES(#{wOID},#{senderID},#{receiverID})-->
+    </update>
+    
+    
+    
+     <update id = 'massUpdateWorkOrder' parameterType="WorkOrderModel">
+        UPDATE transactionalData.TBL_WORK_ORDER set lastModifiedBy=#{senderID}
+        <if test ="receiverID != null"> 
+         		,signumID=#{receiverID}   
+        </if> 
+        <if test ="plannedStartDate != null"> 
+         		,PlannedStartDate=#{plannedStartDate}   
+        </if> 
+        <if test ="plannedEndDate != null"> 
+         		,PlannedEndDate=#{plannedEndDate}   
+        </if> 
+        ,lastModifiedDate=dbo.GetDateIST(),
+        IsAutoSenseEnable=NULL
+        where WOID=#{wOID};
+        <!--INSERT INTO TRANSACTIONALDATA.TBL_WORK_ORDER_TRANSFER_LOG_HISTORY(WOID,SENDERID,RECEIVERID) VALUES(#{wOID},#{senderID},#{receiverID})-->
+    </update>
+    
+     <insert  id='updateTransferWOLOG' parameterType="WorkOrderModel">            
+     <!--UPDATE TRANSACTIONALDATA.TBL_WORK_ORDER_BOOKING_DETAILS SET SIGNUMID=#{receiverID} WHERE WOID=#{wOID};-->
+        INSERT INTO TRANSACTIONALDATA.TBL_WORK_ORDER_TRANSFER_LOG_HISTORY(WOID,SENDERID,RECEIVERID) VALUES(#{wOID},#{senderID},#{receiverID})
+    </insert>
+    
+    <select id = 'sendSuccessMail' statementType="CALLABLE">
+        {call user_sp_WorkOrderTransfer_SendNotification(#{woIDs,mode=IN, jdbcType=VARCHAR},#{senderID,mode=IN, jdbcType=VARCHAR},#{receiverID,mode=IN, jdbcType=VARCHAR})}
+
+    </select>
+    
+     <resultMap type='AdhocWorkOrderModel' id='AdhocWorkOrderModelResult'>
+        <id property='adhocWOID' column='AdhocWOID'/>
+        <result property='woName' column='WoName'/>
+        <result property='projectID' column='ProjectID'/>
+        <result property='domainID' column='DomainID'/>
+        <result property='serviceAreaID' column='ServiceAreaID'/>
+        <result property='technologyID' column='TechnologyID'/>
+        <result property='subActivityID' column='SubActivityID'/>
+        <result property='startDate' column='StartDate'/>
+        <result property='startTime' column='StartTime'/>
+        <result property='avgEstdEffort' column='AvgEstdEffort'/>
+        <result property='vendor' column='Vendor'/>
+        <result property='priority' column='Priority'/>
+        <result property='createdBy' column='CreatedBy'/>
+        <result property='createdDate' column='CreatedDate'/>
+        <result property='active' column='Active'/>
+    </resultMap>
+    
+       
+    <select id='getAdhocWorkOrderDetails' resultMap='AdhocWorkOrderModelResult'>
+        SELECT *FROM transactionalData.TBL_ADHOC_WORK_ORDER WHERE CREATEDBY=#{signumID} AND ACTIVE= 1
+    </select>
+    
+    <select id='getAdhocWorkOrderDetailsByID' resultMap='AdhocWorkOrderModelResult'>
+        SELECT *FROM transactionalData.TBL_ADHOC_WORK_ORDER WHERE CREATEDBY=#{signumID} AND AdhocWOID=#{adhocWOID} AND ACTIVE= 1
+    </select>
+    
+    <insert id='saveFeedback'>
+        INSERT INTO transactionalData.TBL_EMPLOYEE_FEEDBACK(SignumID,FeedBack) values (#{signumID},#{feedback})
+    </insert>
+    
+    <select id='checkIFWOIDExists' resultType="Boolean">
+        IF Exists(SELECT 1 FROM transactionalData.TBL_WORK_ORDER where WOID = #{woID} and Active=1)
+        Begin
+        Select 1 as 'Result'
+        End
+        else
+        Begin
+        Select 0 as 'Result'
+        End
+    </select>
+    
+    <update id='updateWorkOrderStatus'>
+        UPDATE transactionalData.TBL_WORK_ORDER SET STATUS= #{status}, LASTMODIFIEDDATE=dbo.getDateIST(), LASTMODIFIEDBY= #{signumID} WHERE WOID=#{woID}
+    </update>
+    
+    <!-- Removing WO Duplicate functionality from 9.0 -->
+    <!-- 
+    <select id='createDuplicateWorkOrder' statementType="CALLABLE">
+        {call user_sp_createDuplicateWorkOrder(
+        #{wOID,mode=IN, jdbcType=VARCHAR},
+        #{signum,mode=IN, jdbcType=VARCHAR},
+        #{projectID,mode=IN, jdbcType=VARCHAR},
+        #{comment, mode=IN, jdbcType=VARCHAR})}
+    </select>
+     -->
+     
+    <select id="getPriority" resultType = "String">
+        select Priority from refData.TBL_WORK_ORDER_PRIORITY 
+    </select>
+    
+    <resultMap type="ProjectNodeTypeModel" id="ProjectNodeTypeModelResult">
+        <result property="projectID" column="ProjectID" />
+        <result property="nodeType" column="ElementType" />
+        <result property="sector" column="Sector" />
+         <collection property='lstNodeName' ofType='String'> 
+            <result property="nodeName" column="Name" /> 
+         </collection>
+    </resultMap>
+    
+    <resultMap type="NodeTypeModel" id="NodeTypeModelResult">
+        <result property="projectID" column="ProjectID" />
+        <collection property='lstNodeType' ofType='String'> 
+            <result property="Type" column="Type" /> 
+        </collection>
+        <collection property='lstElementType' ofType='String'> 
+            <result property="ElementType" column="ElementType" /> 
+        </collection>
+    </resultMap>
+      
+    <select id='getNodeType' resultType ="String">
+   			
+			Select distinct 
+			ElementType
+			from transactionalData.TBL_Network_element ne WITH (NOLOCK)
+			where CountryCustomergroupID= #{countryCustomerGroupID} and active=1
+			
+   
+ </select>
+    
+    <select id='getMarketArea' resultType ="String">
+      	Select distinct  market
+		from transactionalData.TBL_Network_element  WITH (NOLOCK)
+		where CountryCustomergroupID= #{countryCustomerGroupID} and
+		ElementType = #{type} and Type=#{nodeType} and active =1
+    </select>
+    
+    <select id='getVendor' resultType ="String">
+     	Select distinct v.vendor
+		from transactionalData.TBL_Network_element ne  WITH (NOLOCK)
+		inner join refData.TBL_VENDOR v on v.VendorID=ne.VendorID
+		where ne.CountryCustomergroupID= #{countryCustomerGroupID} and ne.market=#{marketArea}  and ne.ElementType =#{nodeType} and ne.active =1
+		 
+    </select>
+    
+    <select id='getNodeNames' resultMap ="ProjectNodeTypeModelResult">
+      select distinct Name,ProjectID,ElementType from transactionalData.TBL_NETWORK_ELEMENT where ProjectID =#{projectID} and ElementType = #{elementType} and Type=#{type}  
+    </select>
+    
+    <select id='getNodeNamesFilter' resultMap ="ProjectNodeTypeModelResult">
+      select distinct Name,ProjectID,ElementType from transactionalData.TBL_NETWORK_ELEMENT where 
+        ProjectID =#{projectID} and 
+        ElementType = #{elementType} and 
+                Type=#{type}  and  
+        vendorId in (select vendorID  from refData.TBL_VENDOR where  Vendor = #{vendor}) and 
+        MARKET = #{market} and
+        DomainSubDomainID in (select DomainID  from refData.TBL_DOMAIN where  Domain=#{domain} and SubDomain=#{subDomain}) 
+        and TechnologyID in (select TechnologyID  from refData.TBL_TECHNOLOGY where  Technology = #{tech})
+    </select>
+    
+      <select id='getNodeNamesByFilter' resultMap ="ProjectNodeTypeModelResult">
+     		 Declare @CountryCustomerGroupID int
+
+			 Select distinct @CountryCustomerGroupID = CountryCustomerGroupID
+             from transactionalData.TBL_PROJECTS p WITH (NOLOCK)
+			 inner join transactionalData.TBL_OPPORTUNITY O WITH (NOLOCK) on p.OpportunityID=O.OpportunityID and p.ProjectID = #{projectID}
+			 inner join refData.TBL_CountryCustomerMapping ccm WITH (NOLOCK) on ccm.CountryID=o.CountryID and ccm.CustomerID=o.CustomerID
+
+			 Drop table IF exists #tempProjects
+
+			 Select distinct projectid
+			 into #tempProjects
+			 from transactionaldata.tbl_projects p WITH (NOLOCK)
+			 inner join transactionalData.TBL_OPPORTUNITY O WITH (NOLOCK) on p.OpportunityID=O.OpportunityID and p.IsDeleted=0 and p.Status!='Closed' and p.Status!='Rejected'
+             inner join refData.TBL_CountryCustomerMapping ccm WITH (NOLOCK) on ccm.CountryID=o.CountryID and ccm.CustomerID=o.CustomerID and ccm.CountryCustomerGroupID = @CountryCustomerGroupID
+
+			Select distinct ne.Name,ne.ProjectID,ne.ElementType
+			from transactionalData.TBL_NETWORK_ELEMENT ne WITH (NOLOCK)
+            Join #tempProjects p WITH (NOLOCK) on ne.ProjectID = p.ProjectID
+
+			and ne.ElementType = #{elementType} and NE.Type= #{type} and ne.Market = #{market}  and ne.name like #{term}
+
+			inner join refData.TBL_VENDOR v WITH (NOLOCK) on v.VendorID=ne.VendorID 
+			and Vendor = #{vendor}
+
+			inner join refData.TBL_DOMAIN d WITH (NOLOCK) on d.DomainID=ne.DomainSubDomainID
+ 			<if test ="domain != 'NA' and subDomain != 'NA'">
+				and d.Domain = #{domain} and d.SubDomain = #{subDomain}
+			</if>
+
+				inner join refData.TBL_TECHNOLOGY t WITH (NOLOCK) on t.TechnologyID=ne.TechnologyID 
+ 			<if test ="tech != 'NA'"> 
+				and t.Technology = #{tech}
+ 			</if>
+     
+  </select>
+    
+    <select id='getNodeNamesFilterValidate' resultType ="String">
+        Declare @CountryCustomerGroupID int 
+
+		Select distinct @CountryCustomerGroupID = CountryCustomerGroupID
+		from transactionalData.TBL_PROJECTS p WITH (NOLOCK) 
+		inner join transactionalData.TBL_OPPORTUNITY  O WITH (NOLOCK)  on p.OpportunityID=O.OpportunityID and p.ProjectID = #{projectID}
+		inner join refData.TBL_CountryCustomerMapping ccm WITH (NOLOCK)  on ccm.CountryID=o.CountryID and ccm.CustomerID=o.CustomerID
+
+		Drop table IF exists #tempProjects
+
+		Select distinct projectid
+		into #tempProjects
+		from transactionaldata.tbl_projects p WITH (NOLOCK)  
+		inner join transactionalData.TBL_OPPORTUNITY O WITH (NOLOCK)  on p.OpportunityID=O.OpportunityID and p.IsDeleted=0 and p.Status!='Closed' and p.Status!='Rejected'
+		inner join refData.TBL_CountryCustomerMapping ccm WITH (NOLOCK)  on ccm.CountryID=o.CountryID and ccm.CustomerID=o.CustomerID and ccm.CountryCustomerGroupID = @CountryCustomerGroupID
+
+		select distinct ne.Name, ne.ProjectID, ne.ElementType 
+		from transactionalData.TBL_NETWORK_ELEMENT  ne WITH (NOLOCK) 
+           Join #tempProjects p on ne.ProjectID = p.ProjectID     
+        	where 1=1
+        	<if test ="domain != 'NA' and subDomain != 'NA'"> 
+        		and ne.DomainSubDomainID in (select DomainID  from refData.TBL_DOMAIN WITH (NOLOCK)  where  Domain=#{domain} and SubDomain=#{subDomain})
+         	</if>
+        	<if test ="tech != 'NA'"> 
+        		and ne.TechnologyID in (select TechnologyID  from refData.TBL_TECHNOLOGY WITH (NOLOCK)  where  Technology = #{tech})
+        	</if>
+        		and ne.name in (${nodeNames})
+        	<if test ="elementType != 'NA'"> 
+           		and ( ne.ElementType = #{elementType} OR   ne.Type = #{elementType} )
+        	</if>
+        	<if test ="type != 'NA'">
+              		and ( ne.ElementType = #{type} OR  ne.Type = #{type} )
+        	</if>
+        	<if test =" vendor != 'NA'"> 
+              		and ne.vendorId in (select vendorID  from refData.TBL_VENDOR WITH (NOLOCK)  where  Vendor = #{vendor})  
+        	</if>
+        	<if test ="market != 'NA'"> 
+              		and ne.MARKET = #{market} 
+        	</if>
+        
+    </select>
+    
+      <select id='getNodeNamesForSite' resultMap ="ProjectNodeTypeModelResult">
+        select distinct Name,ProjectID,ElementType from transactionalData.TBL_NETWORK_ELEMENT where ProjectID = #{projectID} and ElementType ='SITE'  
+    </select>
+    
+    <select id='getNodeNamesForSiteFilter' resultMap ="ProjectNodeTypeModelResult">
+        select distinct Name,ProjectID,ElementType from transactionalData.TBL_NETWORK_ELEMENT where ProjectID = #{projectID} and ElementType ='SITE' 
+        and vendorId in (select vendorID  from refData.TBL_VENDOR where  Vendor = #{vendor}) AND MARKET = #{market} and
+        DomainSubDomainID in (select DomainID  from refData.TBL_DOMAIN where  Domain=#{domain} and SubDomain=#{subDomain}) 
+        and TechnologyID in (select TechnologyID  from refData.TBL_TECHNOLOGY where  Technology = #{tech})
+    </select>
+    
+     <select id='getNodeNamesBySiteFilter' resultMap ="ProjectNodeTypeModelResult">
+        select distinct Name,ProjectID,ElementType from transactionalData.TBL_NETWORK_ELEMENT where ProjectID = #{projectID} and ElementType ='SITE' 
+        and vendorId in (select vendorID  from refData.TBL_VENDOR where  Vendor = #{vendor}) AND MARKET = #{market} and
+        DomainSubDomainID in (select DomainID  from refData.TBL_DOMAIN where  Domain=#{domain} and SubDomain=#{subDomain}) 
+        and TechnologyID in (select TechnologyID  from refData.TBL_TECHNOLOGY where  Technology = #{tech}) and Name like #{term}
+    </select>
+    
+    <select id='getNodeNamesForSiteFilterValidate' resultType ="String">
+        	 Declare @CountryCustomerGroupID int 
+
+			Select distinct @CountryCustomerGroupID = CountryCustomerGroupID
+			from transactionalData.TBL_PROJECTS p WITH (NOLOCK) 
+			inner join transactionalData.TBL_OPPORTUNITY  O WITH (NOLOCK)  on p.OpportunityID=O.OpportunityID and p.ProjectID = #{projectID}
+			inner join refData.TBL_CountryCustomerMapping ccm WITH (NOLOCK)  on ccm.CountryID=o.CountryID and ccm.CustomerID=o.CustomerID
+
+			Drop table IF exists #tempProjects
+
+			Select distinct projectid
+			into #tempProjects
+			from transactionaldata.tbl_projects p WITH (NOLOCK)  
+			inner join transactionalData.TBL_OPPORTUNITY O WITH (NOLOCK)  on p.OpportunityID=O.OpportunityID and p.IsDeleted=0 and p.Status!='Closed' and p.Status!='Rejected'
+			inner join refData.TBL_CountryCustomerMapping ccm WITH (NOLOCK)  on ccm.CountryID=o.CountryID and ccm.CustomerID=o.CustomerID and ccm.CountryCustomerGroupID = @CountryCustomerGroupID
+
+		 	select distinct Name from transactionalData.TBL_NETWORK_ELEMENT ne WITH (NOLOCK) 
+           	Join #tempProjects p on ne.ProjectID = p.ProjectID
+			where  ElementType ='SITE' 
+        		<if test ="domain != 'NA' and subDomain != 'NA'"> 
+        			and DomainSubDomainID in (select DomainID  from refData.TBL_DOMAIN WITH (NOLOCK)  where  Domain=#{domain} and SubDomain=#{subDomain})
+         		</if>
+         		<if test ="tech != 'NA'"> 
+        			and TechnologyID in (select TechnologyID  from refData.TBL_TECHNOLOGY WITH (NOLOCK)  where  Technology = #{tech})
+        		</if>
+        			and name in (${nodeNames})
+        
+        
+        		<if test =" vendor != 'NA'"> 
+              			and vendorId in (select vendorID  from refData.TBL_VENDOR WITH (NOLOCK)  where  Vendor = #{vendor})  
+        		</if>
+        		<if test ="market != 'NA' "> 
+              			and MARKET = #{market} 
+        		</if>
+        
+    
+    </select>
+    
+    <select id='getNodeNamesForSector' resultMap ="ProjectNodeTypeModelResult">
+       select distinct Name, Sector,ProjectID,ElementType from transactionalData.TBL_NETWORK_ELEMENT where ProjectID = #{projectID} and ElementType = 'SITE'    
+    </select>
+    
+    <select id='getNodeNamesForSectorFilter' resultMap ="ProjectNodeTypeModelResult">
+       select distinct Name, Sector,ProjectID,ElementType from transactionalData.TBL_NETWORK_ELEMENT where ProjectID = #{projectID} and ElementType = 'SITE'
+        and vendorId in (select vendorID  from refData.TBL_VENDOR where  Vendor = #{vendor}) AND MARKET = #{market} and
+        DomainSubDomainID in (select DomainID  from refData.TBL_DOMAIN where  Domain=#{domain} and SubDomain=#{subDomain}) 
+        and TechnologyID in (select TechnologyID  from refData.TBL_TECHNOLOGY where  Technology = #{tech})
+    </select>
+    
+     <select id='getNodeNamesBySectorFilter' resultMap ="ProjectNodeTypeModelResult">
+       select distinct Name, Sector,ProjectID,ElementType from transactionalData.TBL_NETWORK_ELEMENT where ProjectID = #{projectID} and ElementType = 'SITE'
+        and vendorId in (select vendorID  from refData.TBL_VENDOR where  Vendor = #{vendor}) AND MARKET = #{market} and
+        DomainSubDomainID in (select DomainID  from refData.TBL_DOMAIN where  Domain=#{domain} and SubDomain=#{subDomain}) 
+        and TechnologyID in (select TechnologyID  from refData.TBL_TECHNOLOGY where  Technology = #{tech}) and Name like #{term}
+    </select>
+    
+  <select id='getNodeNamesForSectorFilterValidate' resultType ="String">
+      		 Declare @CountryCustomerGroupID int 
+
+			Select distinct @CountryCustomerGroupID = CountryCustomerGroupID
+			from transactionalData.TBL_PROJECTS p WITH (NOLOCK)
+			inner join transactionalData.TBL_OPPORTUNITY  O WITH (NOLOCK) on p.OpportunityID=O.OpportunityID and p.ProjectID = #{projectID}
+			inner join refData.TBL_CountryCustomerMapping ccm WITH (NOLOCK) on ccm.CountryID=o.CountryID and ccm.CustomerID=o.CustomerID
+
+			Drop table IF exists #tempProjects
+
+			Select distinct projectid
+			into #tempProjects
+			from transactionaldata.tbl_projects p WITH (NOLOCK)
+			inner join transactionalData.TBL_OPPORTUNITY O WITH (NOLOCK) on p.OpportunityID=O.OpportunityID and p.IsDeleted=0 and p.Status!='Closed' and p.Status!='Rejected'
+			inner join refData.TBL_CountryCustomerMapping ccm WITH (NOLOCK) on ccm.CountryID=o.CountryID and ccm.CustomerID=o.CustomerID and ccm.CountryCustomerGroupID = @CountryCustomerGroupID
+
+			select distinct  Sector from transactionalData.TBL_NETWORK_ELEMENT ne WITH (NOLOCK)
+           	Join #tempProjects p on ne.ProjectID = p.ProjectID
+        	where ElementType = 'SITE'
+        		<if test ="domain != 'NA' and subDomain != 'NA'"> 
+        			and DomainSubDomainID in (select DomainID  from refData.TBL_DOMAIN WITH (NOLOCK) where  Domain=#{domain} and SubDomain=#{subDomain}) 
+        		</if>
+        		<if test ="tech != 'NA'">
+        			and TechnologyID in (select TechnologyID  from refData.TBL_TECHNOLOGY WITH (NOLOCK) where  Technology = #{tech})
+        		</if>
+        			and sector in (${nodeNames})
+       
+        		<if test =" vendor != 'NA'"> 
+              			and vendorId in (select vendorID  from refData.TBL_VENDOR WITH (NOLOCK) where  Vendor = #{vendor})  
+        		</if>
+        		<if test ="market != 'NA' "> 
+              			and MARKET = #{market} 
+        		</if>
+        
+      		 
+    </select> 
+    
+    <select id='getClusterNames' resultMap ="ProjectNodeTypeModelResult">
+       select distinct Name,ProjectID,ElementType from transactionalData.TBL_NETWORK_ELEMENT where ProjectID =#{projectID} and ElementType = 'Cluster' and Type=#{type}  
+    </select>
+    
+    <select id='getClusterNamesFilter' resultMap ="ProjectNodeTypeModelResult">
+       select distinct Name,ProjectID,ElementType from transactionalData.TBL_NETWORK_ELEMENT where ProjectID =#{projectID} and ElementType = 'Cluster' 
+        and Type=#{type}  
+        and vendorId in (select vendorID  from refData.TBL_VENDOR where  Vendor = #{vendor}) AND MARKET = #{market} and
+        DomainSubDomainID in (select DomainID  from refData.TBL_DOMAIN where  Domain=#{domain} and SubDomain=#{subDomain}) 
+        and TechnologyID in (select TechnologyID  from refData.TBL_TECHNOLOGY where  Technology = #{tech})
+    </select>
+    
+    
+     <select id='getClusterNamesByFilter' resultMap ="ProjectNodeTypeModelResult">
+        Declare @CountryCustomerGroupID int
+
+Select distinct @CountryCustomerGroupID = CountryCustomerGroupID
+from transactionalData.TBL_PROJECTS p WITH (NOLOCK)
+inner join transactionalData.TBL_OPPORTUNITY O WITH (NOLOCK) on p.OpportunityID=O.OpportunityID and p.ProjectID = #{projectID}
+inner join refData.TBL_CountryCustomerMapping ccm WITH (NOLOCK) on ccm.CountryID=o.CountryID and ccm.CustomerID=o.CustomerID
+
+Drop table IF exists #tempProjects
+
+Select distinct projectid
+into #tempProjects
+from transactionaldata.tbl_projects p WITH (NOLOCK)
+inner join transactionalData.TBL_OPPORTUNITY O WITH (NOLOCK) on p.OpportunityID=O.OpportunityID and p.IsDeleted=0 and p.Status!='Closed' and p.Status!='Rejected'
+inner join refData.TBL_CountryCustomerMapping ccm WITH (NOLOCK) on ccm.CountryID=o.CountryID and ccm.CustomerID=o.CustomerID and ccm.CountryCustomerGroupID = @CountryCustomerGroupID
+
+Select distinct ne.Name,ne.ProjectID,ne.ElementType
+from transactionalData.TBL_NETWORK_ELEMENT ne WITH (NOLOCK)
+Join #tempProjects p WITH (NOLOCK) on ne.ProjectID = p.ProjectID
+
+and ne.ElementType = 'Cluster' and NE.Type= #{type} and ne.Market = #{market}  and ne.name like #{term}
+
+inner join refData.TBL_VENDOR v WITH (NOLOCK) on v.VendorID=ne.VendorID 
+and Vendor = #{vendor}
+
+inner join refData.TBL_DOMAIN d WITH (NOLOCK) on d.DomainID=ne.DomainSubDomainID
+ <if test ="domain != 'NA' and subDomain != 'NA'">
+and d.Domain = #{domain} and d.SubDomain = #{subDomain}
+</if>
+
+inner join refData.TBL_TECHNOLOGY t WITH (NOLOCK) on t.TechnologyID=ne.TechnologyID 
+ <if test ="tech != 'NA'"> 
+and t.Technology = #{tech}  
+</if>
+       
+   </select>
+    
+    <select id='getClusterNamesFilterValidate' resultType ="String">
+      	Declare @CountryCustomerGroupID int 
+
+		Select distinct @CountryCustomerGroupID = CountryCustomerGroupID
+		from transactionalData.TBL_PROJECTS p WITH (NOLOCK)
+		inner join transactionalData.TBL_OPPORTUNITY  O WITH (NOLOCK) on p.OpportunityID=O.OpportunityID and p.ProjectID = #{projectID}
+		inner join refData.TBL_CountryCustomerMapping ccm WITH (NOLOCK) on ccm.CountryID=o.CountryID and ccm.CustomerID=o.CustomerID
+
+		Drop table IF exists #tempProjects
+
+		Select distinct projectid
+		into #tempProjects
+		from transactionaldata.tbl_projects p WITH (NOLOCK)
+		inner join transactionalData.TBL_OPPORTUNITY O WITH (NOLOCK) on p.OpportunityID=O.OpportunityID and p.IsDeleted=0 and p.Status!='Closed' and p.Status!='Rejected'
+		inner join refData.TBL_CountryCustomerMapping ccm WITH (NOLOCK) on ccm.CountryID=o.CountryID and ccm.CustomerID=o.CustomerID and ccm.CountryCustomerGroupID = @CountryCustomerGroupID
+
+		 select distinct Name from transactionalData.TBL_NETWORK_ELEMENT ne WITH (NOLOCK)
+		 Join #tempProjects p on ne.ProjectID = p.ProjectID
+ 		 where
+        		 ne.ElementType = 'Cluster'
+        		<if test ="domain != 'NA' and subDomain != 'NA'"> 
+         			and ne.DomainSubDomainID in (select DomainID  from refData.TBL_DOMAIN WITH (NOLOCK) where  Domain=#{domain} and SubDomain=#{subDomain}) 
+        		</if> 
+        		<if test ="tech != 'NA'"> 
+        			and ne.TechnologyID in (select TechnologyID  from refData.TBL_TECHNOLOGY WITH (NOLOCK) where  Technology = #{tech}) 
+        		</if> 
+        			and ne.name in (${nodeNames})
+        		<if test ="type != 'NA'">  
+              			and ne.Type=#{type} 
+        		</if> 
+        		<if test =" vendor != 'NA'"> 
+              			and ne.vendorId in (select vendorID  from refData.TBL_VENDOR WITH (NOLOCK) where  Vendor = #{vendor})  
+        		</if>
+        		<if test ="market != 'NA'"> 
+              			and ne.MARKET = #{market} 
+        		</if>
+         </select>
+    
+        <select id='getProjectBySignum' resultType="com.ericsson.isf.model.ProjectModel">
+		SELECT t1.ProjectID,t1.ProjectName
+FROM [transactionalData].[TBL_PROJECTS] as t1 join
+transactionalData.TBL_OPPORTUNITY t2 on t1.OpportunityID=t2.OpportunityID
+join refData.TBL_MARKETAREAS as t3 on t2.MarketAreaID=t3.MarketAreaID
+<if test ="role =='Delivery Responsible'">
+join [transactionalData].[TBL_DELIVERY_RESPONSIBLE] TDR on TDR.ProjectID=t1.ProjectID and TDR.signumid=#{signum} and TDR.Active!=0
+</if>
+where t1.IsDeleted=0
+<if test ="marketArea !='All' and marketArea !='llA'">
+and t3.MarketAreaName=#{marketArea}
+</if>
+<if test ="role =='Project Manager'">
+and t1.ProjectCreator=#{signum}
+</if>
+
+<if test ="role =='Operational Manager'">
+and t1.OperationalManager=#{signum}
+</if>
+and t1.Status != 'Closed'
+    </select>
+    
+          <resultMap type='java.util.LinkedHashMap' id='linkedhashmap'>
+	           
+    </resultMap>
+    <resultMap type='MailModel' id='MailModelResult'>
+        <result property='projectID' column='ProjectID'/>
+        <result property="projectCreatorSignum" column="ProjectCreatorSignum" />
+        <result property="projectCreatorEmailID" column="ProjectCreatorEmailID" />
+        <result property="projectCreatorName" column="ProjectCreator_Name" />
+        <result property='cpmSignum' column='CPM_Signum'/>
+        <result property='cpmName' column='CPM_Name'/>
+        <result property='cpmEmailID' column='CPMEmailID'/>
+        <result property='employeeSignum' column='EmployeeSignum'/>
+        <result property='employeeName' column='Employee_Name'/>
+        <result property='employeeEmailID' column='EmployeeEmailID'/>
+        <result property='createdBy_Signum' column='CreatedBy_Signum'/>
+        <result property='created_EmployeeEmailID' column='Created_EmployeeEmailID'/>
+        <result property='created_EmployeeName' column='Created_EmployeeName'/>
+        <collection property='dR_Signum' ofType='java.lang.String'>
+            <result column='DR_Signum'></result>
+        </collection>
+        <collection property='dR_EmailID' ofType='java.lang.String'>
+            <result column='DR_EmailID'></result>
+        </collection>
+        <collection property='dR_Name' ofType='java.lang.String'>
+            <result column='DR_Name'></result>
+        </collection>
+         </resultMap>
+    
+    <select id= 'getWoMailNotificationDetails' resultMap="MailModelResult">
+          select distinct wop.projectid as ProjectID,
+        emp.Signum as EmployeeSignum,pro.ProjectCreator as ProjectCreatorSignum,pro.cpm as CPM_Signum,dr.SignumID as DR_Signum,
+        empProCreator.EmployeeName as ProjectCreator_Name,emp.EmployeeName as Employee_Name,empCPM.EmployeeName as CPM_Name,empDR.EmployeeName as DR_Name,
+        empProCreator.EmployeeEmailID as ProjectCreatorEmailID,emp.EmployeeEmailID as EmployeeEmailID,
+        empDR.EmployeeEmailID as DR_EmailID, empCPM.EmployeeEmailID as CPMEmailID,wop.CreatedBy as CreatedBy_Signum,empCreatedBy.EmployeeEmailID as Created_EmployeeEmailID,empCreatedBy.EmployeeName as Created_EmployeeName
+        from transactionaldata.tbl_work_order wo 
+            inner join transactionalData.TBL_WORK_ORDER_PLAN wop on wo.woplanid=wop.woplanid
+            inner join transactionalData.TBL_PROJECTS pro on wop.projectid= pro.ProjectID
+	    left join transactionalData.TBL_DELIVERY_RESPONSIBLE dr on wop.ProjectID= dr.ProjectID and dr.active=1
+            inner join refData.TBL_Employees emp on emp.signum= wo.SignumID
+            left join refData.TBL_Employees empDR on empDR.Signum= dr.SignumID
+            left join refData.TBL_Employees empCPM on empCPM.Signum=pro.CPM
+			left join refData.TBL_Employees empCreatedBy on empCreatedBy.Signum=wop.CreatedBy
+            inner join refData.TBL_Employees empProCreator on empProCreator.Signum = pro.ProjectCreator
+        where wo.WOID= #{woID}
+    </select>
+     <select id= 'getWoMailNotificationDetailsForDAC' resultType="String">
+select empDAC.EmployeeEmailID as dAC_EmailID
+     from transactionaldata.tbl_work_order wo 
+            inner join transactionalData.TBL_WORK_ORDER_PLAN wop on wo.woplanid=wop.woplanid
+            inner join transactionalData.TBL_PROJECTS pro on wop.projectid= pro.ProjectID
+	        left join  transactionalData.TBL_DELIVERY_ACCEPTANCE da on da.ProjectID=wop.ProjectID
+            inner join refData.TBL_Employees emp on emp.signum= wo.SignumID
+            left join refData.TBL_Employees empDAC on empDAC.Signum=da.SignumID 
+           where wo.WOID=#{woID} and da.Active=1 
+    </select>
+    
+    <select id="getEmailIDs" resultType="String">
+      SELECT EmployeeEmailID
+      FROM refdata.tbl_employees emp
+      WHERE signum in
+      <foreach item="lstSignumID" index="index" collection="lstSignumID"
+          open="(" separator="," close=")">
+            #{lstSignumID}
+      </foreach>
+    </select> 
+    
+    <select id='getCreatorEmailID' resultType ='java.util.LinkedHashMap'>
+        select EmployeeEmailID,EmployeeName as Employee_Name from refdata.tbl_employees where signum= #{createdBy}
+    </select>
+    
+    <select id='SendMailNotification' statementType="CALLABLE">
+        
+        {call user_sp_SendEmailNotification (
+        #{senderSignumID,mode=IN, jdbcType=VARCHAR},
+        #{body,mode=IN, jdbcType=VARCHAR},
+        #{receiverSignumID,mode=IN, jdbcType=VARCHAR}
+        )};
+    </select>
+ 
+    <select id ='getWorkFlowVersion' resultType='java.util.HashMap'>
+        select distinct d1.VersionNumber,d1.SubActivityFlowChartDefID 
+        from transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF d1
+        inner join 
+        (
+        select ProjectID, SubActivityID, MAX(VersionNumber) as MaxVersionNumber
+        from transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF where FlowChartJSON is not null
+        group by ProjectID, SubActivityID
+        ) as d2 on d1.VersionNumber = d2.MaxVersionNumber
+        and d1.ProjectID = d2.ProjectID
+        and d1.SubActivityID = d2.SubActivityID
+        where d1.ProjectID = #{projectID} and d1.SubActivityID = #{subActivityID}
+        and d1.FlowChartJSON is not null 
+    </select> 
+    
+      <select id ='getWorkFlowVersionWhileUpload' resultType='Integer'>
+        select d1.VersionNumber 
+        from transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF d1
+        inner join 
+        (
+        select ProjectID, SubActivityID, MAX(VersionNumber) as MaxVersionNumber
+        from transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF
+        group by ProjectID, SubActivityID
+        ) as d2 on d1.VersionNumber = d2.MaxVersionNumber
+        and d1.ProjectID = d2.ProjectID
+        and d1.SubActivityID = d2.SubActivityID
+        where d1.ProjectID = #{projectID} and d1.SubActivityID = #{subActivityID} 
+    </select>     
+    
+    <select id ='getWorkFlowVersionList' resultType='Integer'>
+        select VersionNumber
+        from transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF 
+        where ProjectID = #{projectID} and SubActivityID = #{subActivityID} 
+        and FlowChartJSON is not null and type='PROJECTDEFINED'
+	order by VersionNumber asc
+    </select>   
+    
+    <update id='updateWOWFVersion'>
+        update transactionalData.TBL_WORK_ORDER set WorkFlowVersion = #{wfVersion},flowchartdefID = #{workFlowDefID} where WOID = #{woID}
+    </update>
+    
+    <select id='getEstdHrsForScope' resultType="Integer">
+        select a.AvgEstdEffort from transactionalData.TBL_PROJECTS  p
+        inner join transactionalData.TBL_PROJECTSCOPE ps on p.ProjectID = ps.ProjectID and ps.Active = 1
+        inner join transactionalData.TBL_PROJECTSCOPEDETAIL pd on pd.ProjectScopeID =ps.ProjectScopeID and pd.Active = 1
+        inner join transactionalData.TBL_ACTIVITYSCOPE a on a.ProjectScopeDetailID =pd.ProjectScopeDetailID 
+        where p.ProjectID=#{projectID} and a.SubActivityID=#{subActivityID} and a.Active=1 and p.isDeleted =0 and ps.ProjectScopeID=#{scopeID}
+    </select>
+    
+    
+    <select id ='getLatestWorkFlowVersion' resultType='Integer'>
+        select ISNULL((select d1.VersionNumber
+        from transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF d1
+        inner join 
+        (
+        select ProjectID, SubActivityID, MAX(VersionNumber) as MaxVersionNumber
+        from transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF 
+        group by ProjectID, SubActivityID
+        ) as d2 on d1.VersionNumber = d2.MaxVersionNumber
+        and d1.ProjectID = d2.ProjectID
+        and d1.SubActivityID = d2.SubActivityID
+         where d1.ProjectID = #{projectID} and d1.SubActivityID = #{subActivityID} and d1.FlowChartJSON is not null),0)as VersionNumber
+    </select>
+	
+	
+	 <select id ='getSourcesForMapping' resultType="java.util.LinkedHashMap">
+	 SELECT [sourceId],[sourceName]
+  			FROM [refData].[TBL_IntegrationSources] where sourcename!='ISF'
+    </select>
+    
+    
+     <select id ='getSourcesForPlan' resultType="java.util.LinkedHashMap">
+     
+     
+     SELECT distinct s.sourceId , s.sourceName
+  			FROM [refData].[TBL_IntegrationSources] s
+				left join [refData].[TBL_ExternalApplicationReference] er on s.sourceid=er.sourceid
+				where (projectid=#{projectId} and er.isactive=1) or (sourceName='ISF')
+    </select>
+	
+    <select id='uploadFileForWOCreation' statementType="CALLABLE">
+        {call user_sp_File_Based_Work_Order_Creation(#{projectID,mode=IN, jdbcType=INTEGER},
+                                                     #{createdBy,mode=IN, jdbcType=VARCHAR},
+                                                     #{fileName,mode=IN, jdbcType=VARCHAR})}
+    </select> 
+    
+    <update id="setInactiveExistingExecPlan">
+    	update transactionalData.TBL_ExecutionPlan_master 
+    	set isactive = 0
+    	where projectId = #{projectId} and planName = #{planName}
+    </update>
+          
+	<insert id='saveExecutionPlan' parameterType="com.ericsson.isf.model.ExecutionPlanModel" useGeneratedKeys="true" keyProperty="executionPlanModel.executionPlanId" keyColumn="executionPlanId">  
+				INSERT INTO [transactionalData].[TBL_ExecutionPlan_master]
+				           ([planName]
+				           ,[planSourceid]
+				           ,[planExternalReference]
+				           ,[version]
+				           ,[projectId]
+				           ,[isactive]
+				           ,[createdby]
+				           ,[createdOn]
+				           ,[updatedBy]
+				           ,[lastupdatedon]
+				           ,[links]
+				           ,[planExternalProject] )
+				     VALUES
+				           (
+				           #{executionPlanModel.planName}
+				           ,#{executionPlanModel.planSourceid}
+				           ,#{executionPlanModel.planExternalReference}
+				           ,#{executionPlanModel.version}
+				           ,#{executionPlanModel.projectId}
+				           ,1
+				           ,#{executionPlanModel.currentUser}
+				           ,dbo.GetDateIST()
+				           ,#{executionPlanModel.currentUser}
+				           ,dbo.GetDateIST()
+				           ,#{executionPlanModel.linksJson}
+				           ,#{executionPlanModel.externalProjectId}
+				           )
+
+    </insert>
+    <insert id='saveExecutionPlanFlow' parameterType="com.ericsson.isf.model.ExecutionPlanFlow">  
+		INSERT INTO [transactionalData].[TBL_ExecutionPlan_Flow]
+	           ([executionPlanDetailId]
+	           ,[woid]
+	           ,[isComplete]
+	           ,[planid]
+	           ,[execPlanGroupId]
+	           ,[DOID]
+	           )
+	     VALUES
+	           (#{executionPlanFlow.executionPlanDetailId} 
+	           ,#{executionPlanFlow.woid} 
+	           ,#{executionPlanFlow.isComplete} 
+	           ,#{executionPlanFlow.planId}
+	           ,#{executionPlanFlow.execPlanGroupId}
+	           ,#{executionPlanFlow.doID} 
+	           )
+	</insert>
+	
+	
+	<update id='updateExecutionPlanFlowWoId'>  
+		update [transactionalData].[TBL_ExecutionPlan_Flow]
+			set [woid]=#{newWoId},
+			planid=#{newPlanId}
+	    where woid=#{woId}
+	</update>
+	
+	
+	
+	<select id='getExecutionPlanFlowByGroupId' resultType="com.ericsson.isf.model.ExecutionPlanFlow">  
+		select * from  [transactionalData].[TBL_ExecutionPlan_Flow]
+		where execPlanGroupId= #{execPlanGroupId} and executionPlanDetailId=#{executionPlanDetailId} 
+		
+	</select>
+	
+	
+	<update id='markExecutionPlanFlowComplete' parameterType="com.ericsson.isf.model.ExecutionPlanFlow">  
+		update  [transactionalData].[TBL_ExecutionPlan_Flow] set iscomplete=1
+		where woid=#{flowDetails.woid}
+		
+	</update> 
+	   
+	
+	<insert id="saveExecutionPlanDetails" parameterType="com.ericsson.isf.model.ExecutionPlanModel">
+        INSERT INTO [transactionalData].[TBL_ExecutionPlan_details] (
+        	[executionPlanId]
+           ,[workFlowVersionNo]
+           ,[taskJson]
+           ,[tasknumber]
+           ,[isRoot]
+           ,[scopeid]
+           ,[subactivityId]
+           ,[duration]
+           ,[ActivityScopeId]
+           )
+        VALUES
+        <foreach collection="executionPlanModel.tasks" item="task" index="index" open="(" separator="),("  close=")">
+            #{executionPlanModel.executionPlanId},
+            #{task.workFlowVersionNo},
+            #{task.taskJson},
+            #{task.id},
+            #{task.root},
+            #{task.scopeId},
+            #{task.subActivityID},
+            #{task.duration},
+            #{task.activityScopeId}
+       </foreach>
+    </insert>
+	<select id="getExecutionPlansByProjectId"  resultType="com.ericsson.isf.model.ExecutionPlanModel">
+		select doi.[DOID],ps.ProjectScopeID,pdu.DeliverableUnitName,
+		[executionPlanId],[planName],[planSourceid],wo.SubActivityID,
+		[planExternalReference],[version],epm.[projectId],epm.[isactive],epm.[createdby],epm.[createdOn],
+		[updatedBy],[lastupdatedon],[links] as linksJson
+		from [transactionalData].[TBL_ExecutionPlan_master] epm
+		inner join transactionalData.TBL_PROJECTS p on epm.projectId = p.ProjectID
+		inner join transactionalData.TBL_WORK_ORDER wo on p.ProjectID = wo.ProjectID
+		inner join transactionalData.TBL_Deliverable_Order_ID doi on doi.WOPlanID = wo.WOPlanID
+		inner join transactionalData.TBL_PROJECTSCOPE ps on ps.ScopeName = epm.planName
+		inner join refData.TBL_Project_Deliverable_Unit pdu on ps.deliverableUnit = pdu.DeliverableUnitID
+		where p.projectId = #{projectId};
+    </select>
+    
+    <select id="getExecutionFlowByWoid"  resultType="com.ericsson.isf.model.ExecutionPlanFlow">
+       select  executionPlanDetailId , woid , isComplete , planid , execPlanGroupId  , executionPlanFlowId , Doid
+       from [transactionalData].[TBL_ExecutionPlan_Flow] where woid=#{woid}
+    </select>
+    
+    <select id="getExecutionPlanDetailsByExecutionPlanId"  resultType="com.ericsson.isf.model.ExecutionPlanDetail">
+    <!-- Old Query -->
+    SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED 
+	select  ed.executionPlanId , ed.workFlowVersionNo , ed.taskJson , ed.tasknumber , ed.isRoot , ed.scopeid ,
+	ed.subactivityId , ed.duration , ed.ActivityScopeId , ed.InstanceID , ed.executionPlanDetailId
+	,(select count(1) from transactionalData.TBL_ACTIVITYSCOPE tas
+	join transactionalData.TBL_PROJECTSCOPE ps on ps.ProjectScopeID =
+	ed.scopeid
+	join transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF sdf on ps.ProjectID =
+	sdf.ProjectID and ed.subactivityId = sdf.SubActivityID
+	where tas.ActivityScopeId = ed.ActivityScopeId and tas.Active = 1 and
+	sdf.Active = 1) as isActive
+	from [transactionalData].[TBL_ExecutionPlan_details] as ed
+	where executionPlanId = #{executionPlanId} order by ed.executionPlanDetailId
+	asc
+   <!-- Optimized Query -->
+<!-- 	Select ed.*,
+	(case when exists(select 1 from
+	transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF sdf where ps.ProjectID
+	= sdf.ProjectID and ed.subactivityId = sdf.SubActivityID and sdf.Active
+	= 1) then 1 else 0 end) isActive
+	From [transactionalData].[TBL_ExecutionPlan_details] ed
+	join transactionalData.TBL_ACTIVITYSCOPE tas on tas.ActivityScopeId =
+	ed.ActivityScopeId
+	join transactionalData.TBL_PROJECTSCOPE ps on ps.ProjectScopeID =
+	ed.scopeid
+	where tas.Active = 1
+	and executionPlanId = #{executionPlanId}
+	order by ed.executionPlanDetailId asc -->
+    </select>
+    
+    <select id="getExecutionPlanDetailsByExecutionPlanDetailId"  resultType="com.ericsson.isf.model.ExecutionPlanDetail">
+        select  executionPlanId , workFlowVersionNo , taskJson , taskNumber , isRoot , scopeid , 
+        subactivityId , duration , ActivityScopeId , executionPlanDetailId
+        from [transactionalData].[TBL_ExecutionPlan_details] where executionPlanDetailId=#{executionPlanDetailId}
+    </select>
+    
+     <select id="searchExecutionPlans"  resultType="com.ericsson.isf.model.ExecutionPlanModel">
+        SELECT distinct  PM.planName , PM.executionPlanId , PM.planSourceid , PM.projectID , pd.subactivityId , pd.workFlowVersionNo
+        FROM [transactionalData].[TBL_ExecutionPlan_master] pm 
+		inner join [transactionalData].[TBL_ExecutionPlan_details] pd on pm.executionplanid=pd.executionplanid 
+		where   pm.isactive=1
+		
+		 <if test ="subactivityId != null"> 
+         		and pd.subactivityid=#{subactivityId}   
+        </if>
+		
+		 <if test ="workFlowVersionNo != null"> 
+         		and pd.workFlowVersionNo=#{workFlowVersionNo}   
+        </if>
+		
+    </select>
+    
+    <select id="getActiveExecutionPlanByid"  resultType="com.ericsson.isf.model.ExecutionPlanModel">
+        SELECT [executionPlanId]
+      ,[planName]
+      ,[planSourceid]
+      ,[planExternalReference]
+      ,[version]
+      ,[projectId]
+      ,[isactive]
+      ,[createdby]
+      ,[createdOn]
+      ,[updatedBy]
+      ,[lastupdatedon]
+      ,[links] as LinksJson  FROM [transactionalData].[TBL_ExecutionPlan_master]  
+		where executionPlanId= #{executionPlanId}
+    </select>
+    
+    <update id="updateExecutionPlanDetails"  parameterType="com.ericsson.isf.model.ExecutionPlanModel">	
+		
+		<foreach collection="executionPlanModel.tasks" item="task" index="index">
+           UPDATE [transactionalData].[TBL_ExecutionPlan_details]
+   			SET [workFlowVersionNo] =#{task.workFlowVersionNo}
+   			,[taskJson] = #{task.taskJson}
+   			,[tasknumber] =  #{task.id}
+   			,[isRoot]=#{task.root}
+   			,scopeId=#{task.scopeId}
+            ,subactivityId=#{task.subActivityID}
+            ,duration=#{task.duration}
+ 			WHERE executionPlanId=#{executionPlanModel.executionPlanId} and tasknumber=#{task.id}
+       </foreach>
+    </update>
+    
+    <update id="deleteExecutionPlanDetails" >	
+		
+		<foreach collection="executionPlanModel.tasks" item="task" index="index">
+           delete from [transactionalData].[TBL_ExecutionPlan_details]
+   			WHERE executionPlanId=#{executionPlanModel.executionPlanId} and tasknumber=#{task.id}
+       </foreach>
+    </update>
+    
+	<update id="updateExecutionPlanStatus">	
+           UPDATE [transactionalData].[TBL_ExecutionPlan_master]
+   			SET isactive=#{isActive}
+   			,[updatedBy]=#{userName}
+   			,[lastupdatedon]=dbo.GetDateIST()
+ 			WHERE executionPlanId=#{executionPlanId} 
+    </update>
+    <update id="updateExecutionPlan" parameterType="com.ericsson.isf.model.ExecutionPlanModel">	
+           UPDATE [transactionalData].[TBL_ExecutionPlan_master]
+   			SET links=#{executionPlanModel.linksJson}
+   			,[lastupdatedon]=dbo.GetDateIST()
+   			,[updatedBy]=#{executionPlanModel.currentUser}
+ 			WHERE executionPlanId=#{executionPlanModel.executionPlanId} 
+    </update>
+    
+    <select id='checkProjectEditByProjID' resultMap='WorkOrderPlanModelResult'>
+    	select projectId as ProjectId ,min(startDate) as startDate , max(endDate) as endDate from transactionalData.TBL_WORK_ORDER_PLAN where projectId = #{projectID} and active =1 group by ProjectID
+    </select>
+    
+    <select id='isPlanInExecution' resultType="String" >
+ 	select distinct * from [transactionalData].[TBL_ExecutionPlan_Flow] ef 
+	  
+	  left join [transactionalData].[TBL_ExecutionPlan_details] pd 
+	  on pd.executionplandetailid=ef.executionplandetailid 
+
+		where (isComplete!=1 or iscomplete is null) and  executionPlanId=#{executionPlanId}
+	  
+	</select>
+	
+	
+	<select id='getExecutionPlandDetilsbyWoPlanId' resultType="com.ericsson.isf.model.ExecutionPlanModel" >
+	 	select distinct pm.executionplanid,pm.planname from
+		  [transactionalData].[TBL_ExecutionPlan_details] pd 
+		  left join [transactionalData].[TBL_ExecutionPlan_master] pm on pm.executionplanid=pd.executionPlanId
+		  left join [transactionalData].[TBL_ExecutionPlan_Flow] ef  on pd.executionplandetailid=ef.executionplandetailid 
+		  
+		 
+	
+			where ef.planid=#{planid}
+	  
+	</select>
+	
+    
+        <select id="getWOIdbyWoplanID" resultType="Integer">
+            select  WOID from transactionalData.tbl_work_order WHERE WOPLANID = #{woPlanId}
+        </select>
+        
+<!-- <resultMap type='java.util.LinkedHashMap'
+		id='InProgressTaskModelResult'>
+		<result property='BookingID' column='BookingID' />
+		<result property='Type' column='Type' />
+		<result property='Status' column='Status' />
+		<result property='FlowChartDefID' column='FlowChartDefID' />
+		<result property='FlowChartStepID' column='FlowChartStepID' />
+		<result property='StepName' column='StepName' />
+		<result property='ExecutionType' column='ExecutionType' />
+		<result property='RpaID' column='RpaID' />
+		<result property='StepType' column='StepType' />
+		<result property='TaskID' column='TaskID' />
+		<result property='StartDate' column='StartDate' />
+		<result property='EndDate' column='EndDate' />
+		<result property='Hours' column='Hours' />
+		<result property='woID' column='woID' />
+		<result property='woPlanID' column='woPlanID' />
+		<result property='Task' column='Task' />
+		<result property='Description' column='Description' />
+		<result property='ProjectID' column='ProjectID' />
+		<result property='ProjectName' column='ProjectName' />
+		<result property='VersionNumber' column='VersionNumber' />
+		<result property='OutputUpload' column='OutputUpload' />
+		<result property='DOID' column='DOID' />
+		<result property='PlannedEndDate' column='PlannedEndDate' />
+		<result property='WOName' column='WOName' />
+		<result property='flowcharttype' column='flowcharttype' />
+		<result property='workOrderAutoSenseEnabled' column='workOrderAutoSenseEnabled' />
+		<result property='workFlowAutoSenseEnabled' column='workFlowAutoSenseEnabled' />
+		<result property='isStepAutoSenseEnabled' column='isStepAutoSenseEnabled' />
+
+		<collection property='NodeNames'
+			ofType='java.lang.String' javaType="ArrayList">
+			<result property="NodeNames" column="NodeNames" />
+		</collection>		
+</resultMap> -->        
+     <!-- <select id='getInprogressTask' resultType="java.util.LinkedHashMap"> -->
+<!-- 	<select id='getInprogressTask' resultType="com.ericsson.isf.model.InProgressTaskModel"> 	
+		DROP TABLE IF EXISTS #wobd;
+		select
+		BookingID,
+		TaskID,
+		StartDate,
+		EndDate,
+		Hours,
+		Type,
+		Status,
+		WOID,
+		SignumID
+		into #wobd
+		from
+		[transactionalData].[TBL_WORK_ORDER_BOOKING_DETAILS] wobd (NOLOCK)
+		where
+		wobd.status='STARTED'
+		and wobd.SignumID=#{signum}
+		
+		select
+		wobd.BookingID,
+		wobd.Type,
+		wobd.Status,
+		wofsd.FlowChartDefID,
+		wofsd.FlowChartStepID,
+		fsd.StepName,
+		fsd.ExecutionType,
+		fsd.RpaID,
+		fsd.StepType,
+		wobd.TaskID,
+		wobd.StartDate,
+		wobd.EndDate,
+		wobd.Hours,wobd.Type,wobd.Status,wobd.woID,wo.woPlanID,tsk.Task ,
+		tsk.Description ,
+		wo.ProjectID,
+		p.ProjectName,
+		fsd.VersionNumber,
+		fsd.OutputUpload,
+		wo.DOID,
+		wo.PlannedEndDate,
+		wo.WOName,
+		wcdef.Type as flowcharttype,
+		wo.isAutoSenseEnable as workOrderAutoSenseEnabled,
+		wcdef.IsAutoSenseEnable as workFlowAutoSenseEnabled,
+		wfasr.RuleStatus as isStepAutoSenseEnabled
+		from
+		#wobd wobd
+		inner join [transactionalData].[TBL_WORK_ORDER_FLOWCHART_STEP_DETAILS] wofsd (NOLOCK) on wofsd.BookingID = wobd.BookingID
+		inner join [refData].[TBL_TASK] tsk (NOLOCK) on tsk.TaskID = wofsd.TaskID
+		inner join [transactionalData].[TBL_WORK_ORDER] wo (NOLOCK) on wo.woid = wobd.woid
+		inner join [transactionalData].[TBL_FLOWCHART_STEP_DETAILS] fsd (NOLOCK) on wofsd.flowChartStepID = fsd.StepID
+		left join [transactionalData].[TBL_WorkflowStepAutoSenseRule] wfasr on fsd.FCStepDetailsID = wfasr.FCStepDetailsID
+		inner join transactionalData.TBL_PROJECTS p on p.ProjectID = wo.PROJECTID and wofsd.FlowChartDefID = fsd.SubActivityFlowChartDefID
+		Inner join transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF wcdef on wcdef.ProjectID=wo.ProjectID and wcdef.SubActivityID = wo.SubActivityID and wcdef.VersionNumber = wo.WorkFlowVersion and wcdef.SubActivityFlowChartDefID=wo.flowchartdefid
+		where wobd.Type!='QUEUED' or wofsd.ExecutionType!='MANUAL'
+		order by
+		bookingid desc		
+	</select> -->
+	
+	<!-- New Query After merging Node details-->
+		<select id='getInprogressTask' resultMap="InProgressTaskModelResultOld"> 	
+    	DROP TABLE IF EXISTS #wobd;
+        select
+        BookingID,
+        TaskID,
+        StartDate,
+        EndDate,
+        Hours,
+        Type,
+        Status,
+        WOID,
+        SignumID
+        into #wobd
+        from
+        [transactionalData].[TBL_WORK_ORDER_BOOKING_DETAILS] wobd (NOLOCK)
+        where
+        wobd.status='STARTED'
+        and wobd.SignumID=#{signum}
+       
+        select
+        wobd.BookingID,
+        wobd.Type,
+        wobd.Status,
+        wofsd.FlowChartDefID,
+        wofsd.FlowChartStepID,
+        fsd.StepName,
+        fsd.ExecutionType,
+        fsd.RpaID,
+        fsd.StepType,
+        wobd.TaskID,
+        wobd.StartDate,
+        wobd.EndDate,
+        wobd.Hours,wobd.Type,wobd.Status,wobd.woID,wo.woPlanID,tsk.Task ,
+        tsk.Description ,
+        wo.ProjectID,
+        p.ProjectName,
+        fsd.VersionNumber,
+        fsd.OutputUpload,
+        wo.DOID,
+        wo.PlannedEndDate,
+        wo.WOName,
+        wcdef.Type as flowcharttype,
+        wo.isAutoSenseEnable as workOrderAutoSenseEnabled,
+        wcdef.IsAutoSenseEnable as workFlowAutoSenseEnabled,
+        wfasr.RuleStatus as isStepAutoSenseEnabled,
+        wo.SubActivityID,
+        wond.nodetype,
+        wond.NodeNames,
+        count(nodenames) over(partition by wo.woid) as NodeCount,
+        ne.Market
+        from
+        #wobd wobd
+        inner join [transactionalData].[TBL_WORK_ORDER_FLOWCHART_STEP_DETAILS] wofsd (NOLOCK) on wofsd.BookingID = wobd.BookingID
+        left join [refData].[TBL_TASK] tsk (NOLOCK) on tsk.TaskID = wofsd.TaskID
+        inner join [transactionalData].[TBL_WORK_ORDER] wo (NOLOCK) on wo.woid = wobd.woid
+        inner join [transactionalData].[TBL_FLOWCHART_STEP_DETAILS] fsd (NOLOCK) on wofsd.flowChartStepID = fsd.StepID
+        left join [transactionalData].[TBL_WorkflowStepAutoSenseRule] wfasr on fsd.FCStepDetailsID = wfasr.FCStepDetailsID
+        inner join transactionalData.TBL_PROJECTS p on p.ProjectID = wo.PROJECTID and wofsd.FlowChartDefID = fsd.SubActivityFlowChartDefID
+        Inner join transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF wcdef on wcdef.ProjectID=wo.ProjectID and wcdef.SubActivityID = wo.SubActivityID and wcdef.VersionNumber = wo.WorkFlowVersion and wcdef.SubActivityFlowChartDefID=wo.flowchartdefid
+        inner join refdata.[tbl_subactivity] sub on wo.SubActivityID = sub.SubActivityID
+        left join transactionalData.TBL_WORK_ORDER_NODES wond on wo.WOID=wond.WOID
+        left join transactionalData.TBL_NETWORK_ELEMENT (nolock) NE on NE.ProjectID=WO.ProjectID and NE.Name=wond.NodeNames and sub.TechnologyID=NE.TechnologyID and sub.DomainID=NE.DomainSubDomainID
+        where wobd.Type!='QUEUED' or wofsd.ExecutionType!='MANUAL'
+        order by
+        bookingid desc	
+	</select>
+        
+    <select id='getWoTotalTime'   resultType="Double">
+       select sum(CAST(DATEDIFF(SECOND, startDate, ISNULL(endDate,dbo.GetDateIST())) as bigint)) totalEffort from [transactionalData].[TBL_WORK_ORDER_BOOKING_DETAILS] where type='booking' 
+		 and woid=#{woid} group by  woid
+
+    </select>
+        
+    <select id='getNextStepData' statementType="CALLABLE"  resultType="com.ericsson.isf.model.NextSteps">
+        {call usp_getNextstepdata(
+        #{stepID, jdbcType=VARCHAR},
+        #{defID,jdbcType=INTEGER})};
+    </select>
+    
+   <select id='getNextStepDataModel' statementType="CALLABLE"  resultType="com.ericsson.isf.model.NextStepModel">
+        {call usp_getNextstepdata(
+        #{stepID, jdbcType=VARCHAR},
+        #{defID,jdbcType=INTEGER})};
+    </select>
+      
+    <!-- <select  id='getServerTimeByTaskID'   resultType="com.ericsson.isf.model.ServerTimeModel">
+        
+	Drop table if exists #WOID_TaskIDTime
+	select  BK.woID,BK.TaskId, sum(CAST(DATEDIFF(SECOND, startDate, ISNULL(endDate,dbo.GetDateIST())) as bigint)) as serverTime
+    into #WOID_TaskIDTime
+    from [transactionalData].[TBL_WORK_ORDER_BOOKING_DETAILS] BK
+    INNER JOIN transactionalData.TBL_WORK_ORDER_FLOWCHART_STEP_DETAILS FS ON BK.WOID=FS.WOID and BK.TaskID =FS.TaskID 
+    and BK.BookingID = FS.BookingID
+    where BK.TaskID in(${listTaskID}) and FS.FlowChartStepID in(${listStepID}) and BK.startDate is NOT NULL 
+    AND BK.WOID in (${listWOID}) AND BK.Type not in ('LEADTIME')
+    group by BK.WOID,BK.taskID order by taskId 
+
+	Drop table if exists #WOID_Time
+    select woid,sum(CAST(DATEDIFF(SECOND, startDate, ISNULL(endDate,dbo.GetDateIST())) as bigint)) totalEffort 
+    into #WOID_Time
+    from [transactionalData].[TBL_WORK_ORDER_BOOKING_DETAILS]  where type='booking' 
+    and woid in(${listWOID}) group by  woid
+    Select wtt.woid, wtt.TaskID,wtt.serverTime,wt.totalEffort
+    from #WOID_TaskIDTime WTT
+    inner join #WOID_Time WT on wtt.WOID = wt.WOID
+        
+    </select> -->
+    
+    <select id='getServerTimeByTaskID' resultType="com.ericsson.isf.model.ServerTimeModel">
+	select BK.woID,BK.TaskId, sum(CAST(DATEDIFF(SECOND, startDate, ISNULL(endDate,dbo.GetDateIST())) as bigint)) as serverTime
+	from [transactionalData].[TBL_WORK_ORDER_BOOKING_DETAILS] BK
+	INNER JOIN transactionalData.TBL_WORK_ORDER_FLOWCHART_STEP_DETAILS FS ON BK.WOID=FS.WOID and BK.TaskID =FS.TaskID
+	and BK.BookingID = FS.BookingID
+	where BK.TaskID in(${listTaskID}) and FS.FlowChartStepID in(${listStepID}) and BK.startDate is NOT NULL
+	AND BK.WOID in (${listWOID}) AND BK.Type not in ('LEADTIME')
+	group by BK.WOID,BK.taskID order by taskId
+</select>
+    
+    
+    <select id='getBookingDetails'   resultType="java.util.LinkedHashMap">
+       select distinct BK.WOID,BK.BookingID,BK.StartDate,BK.EndDate,BK.hours,BK.type,BK.status,BK.signumID,BK.TaskID,WOFS.FlowChartStepID,FS.StepName,FS.ExecutionType from 
+		 transactionalData.TBL_WORK_ORDER WO
+		 INNER JOIN transactionalData.TBL_WORK_ORDER_BOOKING_DETAILS BK ON BK.WOID=WO.WOID
+		 left JOIN transactionalData.TBL_WORK_ORDER_FLOWCHART_STEP_DETAILS WOFS ON BK.BookingID=WOFS.BookingID
+		 and BK.WOID=WOFS.WOID and BK.TaskID=WOFS.TaskID 
+		 left JOIN transactionalDAta.TBL_FLOWCHART_STEP_DETAILS FS ON fs.SubActivityFlowChartDefID=wofs.FlowChartDefID and FS.StepID = WOFS.FlowChartStepID 
+		 and FS.VersionNumber = WO.WorkFlowVersion
+		 WHERE BK.WOID = #{WoID} and BK.SignumID=#{SignumID} and type='booking'
+		 ORDER BY WOFS.FlowChartStepID
+    </select>
+    
+     <select id ='isPlanEditable' resultType="Integer">
+        SELECT count(1)
+        FROM transactionalData.TBL_WORK_ORDER_PLAN (NOLOCK) wOPlan      		   
+		inner join  transactionaldata.tbl_work_order (nolock)  wOrder on  wOPlan.WOPlanID = wOrder.WOPlanID
+		WHERE wOPlan.WOPlanID=#{woPlanId} AND wOrder.status !='ASSIGNED'
+    </select>
+    
+    
+    <select id='getPlannedDateForWoPlanID' resultType='java.util.LinkedHashMap'>
+        select CAST(WOID as varchar(24))as WOID,SignumID,CAST(PlannedStartDate as varchar(24)) as PlannedStartDate 
+        from transactionalData.TBL_WORK_ORDER where WOPlanID =#{woPlanId}
+    </select>
+    
+    <select id='getBotIDByWFSignum' resultType='java.util.LinkedHashMap'>
+  		select rr.rpaRequestID,rr.requestName,rr.isInputRequired,rr.ProjectID,rr.WorkflowDEFID,rr.WFSTEPID,rr.SubactivityID,rr.TaskID,rr.SPOCSignum,rr.Description,
+  		rr.CurrentExecutioncountWeekly,rr.CurrentAvgExecutiontime,rr.RequestStatus,rr.CreatedBY,rr.CreatedOn,rr.ModifiedBy,rr.ModifiedOn,rr.isActive,rr.SubactivityName,
+  		rr.TaskName, sfd.WorkFlowName ,pp.ProjectName, sfd.NENeededForExecution,sfd.MultiView,sfd.WFOwner,sfd.SLAHours,
+  		sfd.FTR,bs.[Saving Calculated] as savings ,CONCAT(sub.Activity,'/',sub.SubActivity) as SubActivityName, sub.TechnologyID,sub.DomainID,sfd.WFID
+  		,sfd.LOEMeasurementCriterionID
+  		from [transactionalData].[TBL_SUBACTIVITY_FLOWCHART_DEF]  sfd 
+  		join  [transactionalData].[TBL_RPA_REQUEST] rr on rr.WorkflowDEFID = sfd.SubActivityFlowChartDefID
+		join  transactionalData.TBL_PROJECTS pp  on rr.projectID = pp.ProjectID
+		join [refData].[TBL_SUBACTIVITY] sub on sub.SubActivityID = rr.SubactivityID
+		left join [transactionalData].[TBL_BOT_SAVING] bs on rr.rpaRequestID = bs.BOTID
+		outer apply (SELECT top(1) * 
+    			FROM transactionalData.TBL_RPA_BOTSTAGING as stg WHERE rr.rpaRequestID=stg.rpaRequestID 
+    			and stg.isActive=1 order by stg.SRNO desc) as stg1 
+  		where (CASE WHEN sfd.WFOwner is null THEN sfd.CreatedBy ELSE sfd.WFOwner END) = #{signum} and rr.isActive = 1 and pp.Status!='Closed' and isnull(stg1.BOTLanguage,'')!='MACRO'
+    </select>
+    
+    <select id='getWoIDByProjectID' resultType='java.util.LinkedHashMap'>
+		select  DEF.VersionNumber,sa.activity,sa.SubActivity,d.domain,d.SubDomain,ser.SubServiceArea,tech.technology,def.MultiView,DEF.WFID	  
+		from transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF DEF
+		  LEFT JOIN refdata.TBL_SUBACTIVITY sa on sa.SubActivityID = def.SubActivityID
+		 left join refData.TBL_DOMAIN d on sa.DomainID=d.DomainID
+		 left join refdata.TBL_SERVICEAREA ser on sa.ServiceAreaID = ser.ServiceAreaID
+		 left join refdata.TBL_TECHNOLOGY  tech on sa.TechnologyID = tech.TechnologyID
+		 where DEF.SubActivityFlowChartDefID =#{subActivityFlowChartDefID}
+    </select>
+    
+    <select id='getLatestVersionOfWfBySubactivityID' resultType='java.util.LinkedHashMap'>
+		select top 1 DEF.VersionNumber,sa.activity,sa.SubActivity,d.domain,d.SubDomain,ser.SubServiceArea,tech.technology,def.MultiView	  
+		from transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF DEF
+		  LEFT JOIN refdata.TBL_SUBACTIVITY sa on sa.SubActivityID = def.SubActivityID
+		 left join refData.TBL_DOMAIN d on sa.DomainID=d.DomainID
+		 left join refdata.TBL_SERVICEAREA ser on sa.ServiceAreaID = ser.ServiceAreaID
+		 left join refdata.TBL_TECHNOLOGY  tech on sa.TechnologyID = tech.TechnologyID
+		 where sa.SubActivityID = #{subactivityID} and def.ProjectID = #{projectID} 
+<!-- 		 and DEF.WorkFlowName = #{workFlowName}  -->
+         and DEF.WFID=#{wfid}
+		 and DEF.active = 1
+		 and DEF.Type in ('PROJECTDEFINED')
+		 order by DEF.VersionNumber desc
+    </select>
+    
+    
+    <select id='getWoStartDate' resultType="String">
+
+    declare @bkmindate datetime
+    select @bkmindate = min(startdate) from transactionalData.TBL_WORK_ORDER_BOOKING_DETAILS where woid =#{getwOID}
+    
+    select
+    statdate= case when min(ActualStartDate) is null then @bkmindate
+    else min(ActualStartDate) end
+     from transactionalData.TBL_WORK_ORDER wo
+    where wo.woid =#{getwOID}
+
+	</select>
+    
+    
+    <update id='updateWoStartDateByCurrentDate'>
+        update transactionalData.TBL_WORK_ORDER set ActualStartDate = dbo.GetDateIST() where woid = #{getwOID}
+    </update>
+    
+        <update id='updateWoStartDates'>
+        update transactionalData.TBL_WORK_ORDER set ActualStartDate = #{startDate} where woid = #{getwOID}
+    </update>
+    <select  id='getWorkOrderDetailsByName' resultType='java.util.LinkedHashMap'>
+        SELECT * FROM transactionalData.TBL_WORK_ORDER w
+			inner join transactionalData.TBL_WORK_ORDER_PLAN p on w.WOPlanID=p.WOPlanID 
+			where woname=#{woName} and w.SignumID=#{signum}
+    </select>
+    
+     <select  id='getAdditionalInfoOfPlan' resultType='java.util.LinkedHashMap'>
+		select ps.ScopeName,
+		s.Activity,
+		s.SubActivity
+		from
+		transactionalData.TBL_WORK_ORDER wo
+		left join [transactionalData].[TBL_WORK_ORDER_PLAN] wop on wo.WOPlanID=wop.WOPlanID
+		left join [transactionalData].[TBL_PROJECTSCOPE] ps on ps.ProjectScopeID=wop.ScopeID
+		left join refData.TBL_SUBACTIVITY s on wo.SubActivityID=s.SubActivityID
+		where wop.WOPlanID=#{WOPlanID}
+    </select>
+    
+    <select  id='getActivity' resultType='java.util.LinkedHashMap'>
+		select Activity,SubActivity	from refData.TBL_SUBACTIVITY  where SubActivityID=#{subActivityID}
+    </select>
+     
+    
+    <select id='getWorkOrderNodes' resultType='String'>
+        select NodeNames from transactionalData.TBL_WORK_ORDER_NODES where WOID=#{woID}
+    </select>
+    
+    <select id='getWorkFlowDefID' resultType='Integer'>
+        select TOP 1 SubActivityFlowChartDefID from transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF 
+        where projectID=#{projectID} and subactivityID=#{subActivityID} and VersionNumber=#{workFlowVersionNo} and WFID=#{wfid} order by SystemID DESC
+    </select>
+    
+    <select id ='getFlowChartDefID' resultType='Integer'>
+        select DEF.SubActivityFlowChartDefID from transactionalData.TBL_WORK_ORDER WO
+		JOIN transactionalData.TBL_WORK_ORDER_PLAN PLN on WO.WOPLANID = PLN.WOPLANID
+		JOIN transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF DEF on DEF.ProjectID = PLN.ProjectID and DEF.SubActivityFlowChartDefID=WO.flowchartdefid
+		AND DEF.SubActivityID = WO.SubActivityID 
+		where WO.WOID = #{woID} and DEF.VersionNumber = #{workFlowVersionNo} and DEF.Type not in ('CUSTOM')								
+    </select>
+    
+    <select id='checkNotStartedStatusOfWorkOrder1'  resultType="Boolean">
+       IF EXISTS  ( SELECT 1 FROM (
+		  SELECT SUM( CASE WHEN  Status IN('ASSIGNED','DEFERRED','REOPENED')  THEN 0 ELSE 1 END ) STAT
+		   FROM transactionalData.TBL_WORK_ORDER where WOID in
+		   <foreach item="woid" index="index" collection="woid" open="(" separator="," close=")">
+                           #{woid} 
+                   </foreach> 
+		   
+		   and   Active = 1
+		   )TBL WHERE STAT &gt; 0)
+        Begin
+        Select 0 as 'Result'
+        End
+        else
+        Begin
+        Select 1 as 'Result'
+        End
+    </select> 
+    
+    
+         <delete id='deleteWONodes1' parameterType="com.ericsson.isf.model.DeleteWOListModel">
+        delete from transactionalData.tbl_work_order_nodes where WOID in 
+      <foreach item="item" index="index" collection="deleteWOListModel.woID" open="(" separator="," close=")">
+        #{item}
+        </foreach> 
+    </delete> 
+    <update id='deleteWorkOrder1' parameterType="com.ericsson.isf.model.DeleteWOListModel">
+        update transactionalData.tbl_work_order set ACTIVE = 0, LastModifiedBy = #{deleteWOListModel.signum}, LastModifiedDate = dbo.GetDateIST() where  woid in
+        <foreach item="item" index="index" collection="deleteWOListModel.woID" open="(" separator="," close=")">
+        #{item}
+        </foreach> 
+    </update> 
+    <resultMap type="com.ericsson.isf.model.EmployeeBasicDetails" id="EmployeeBasicDetails">
+            <id property="signum" column="Signum" />
+        <result property="employeeName" column="EmployeeName" />
+        <result property="employeeEmailId" column="EmployeeEmailID" />
+        </resultMap>
+    <select id='getEmpInfo' resultMap='EmployeeBasicDetails' useCache="true">
+     SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED
+	 select EmployeeName,EmployeeEmailID,Signum from refData.TBL_Employees where Signum=#{lastModifiedBy}
+	</select>
+	
+	    <select id='getWOPlanList' resultType='Integer'  >
+	 select distinct WOPlanID from transactionalData.TBL_WORK_ORDER where WOID in
+	 <foreach item="item" index="index" collection="woid" open="(" separator="," close=")">
+        #{item}
+        </foreach>
+	  </select>
+	  
+	   <select id='checkPlanStatus' resultType="Boolean">
+        IF EXISTS(SELECT 1 FROM TRANSACTIONALDATA.TBL_WORK_ORDER WHERE WOPlanID=#{woplan} AND ACTIVE=1)
+            BEGIN
+                SELECT 1 AS "Result"
+            END
+        ELSE
+            BEGIN
+                SELECT 0 AS "Result"
+            END
+    </select>
+    <!-- this is used in case of deleteWorkOrderList api -->
+      <update id='inactiveWOPlanList'>
+       update transactionalData.TBL_WORK_ORDER_PLAN set Active=0 where WOPlanID in 
+       <foreach item="item" index="index" collection="woplanlist" open="(" separator="," close=")">
+        #{item}
+        </foreach>
+      </update> 
+    
+    
+      <update id='inactiveWOPlan' >
+       update transactionalData.TBL_WORK_ORDER_PLAN set Active=0 where WOPlanID = #{woplan}
+     </update> 
+    
+      <select id='getWOPlanByWOID' resultType='Integer'  >
+	 select WOPlanID from transactionalData.TBL_WORK_ORDER where WOID=#{wOID}
+	 
+	  </select>
+ 	<select id='updateWoFcDefIdForAssignedWo'  >
+ 		drop table if exists #SubActivityFlowChartDefID
+
+      select SubActivityFlowChartDefID 
+      into #SubActivityFlowChartDefID
+      from transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF
+       where projectid=#{projectId} and subActivityID=#{subActivityId} and WFID=#{workFlowId}
+       
+       create clustered index ci_SubActivityFlowChartDefID on #SubActivityFlowChartDefID
+       (SubActivityFlowChartDefID)
+       
+        update transactionalData.TBL_WORK_ORDER set flowchartdefid=#{flowchartDefId}
+         ,WorkFlowVersion=#{newVersion}
+         from transactionalData.TBL_WORK_ORDER WO
+         Join #SubActivityFlowChartDefID S on S.SubActivityFlowChartDefID=wo.flowchartdefid
+        where wo.status IN ('ASSIGNED','REOPENED','PLANNED')  
+  	</select>
+  	
+  	<select id='getStepBookingDetailsByWoidV1'  resultType="com.ericsson.isf.model.FcStepDetails">
+ 		SELECT  [WOFCStepDetailsID]
+	      ,[WOID]
+	      ,[FlowChartDefID]
+	      ,[FlowChartStepID]
+	      ,[TaskID]
+	      ,[ExecutionType]
+	      ,[BookingID]
+	      ,[Status]
+	      ,[DecisionValue]
+	      ,[SignumID]
+	      ,[BookedOn]
+	      ,[botPlatform]
+	  FROM [transactionalData].[TBL_WORK_ORDER_FLOWCHART_STEP_DETAILS] where WOID=#{woId} order by bookedon desc
+  	</select>
+  	
+  	<!-- Replica  getStepBookingDetailsByWoid-->
+  	<select id='getStepBookingDetailsByWoid'  resultType="java.util.LinkedHashMap">
+ 		SELECT  [WOFCStepDetailsID]
+	      ,[WOID]
+	      ,[FlowChartDefID]
+	      ,[FlowChartStepID]
+	      ,[TaskID]
+	      ,[ExecutionType]
+	      ,[BookingID]
+	      ,[Status]
+	      ,[DecisionValue]
+	      ,[SignumID]
+	      ,[BookedOn]
+	      ,[botPlatform]
+	  FROM [transactionalData].[TBL_WORK_ORDER_FLOWCHART_STEP_DETAILS] where WOID=#{woId} order by bookedon desc
+  	</select>
+  	
+  	<insert id = 'addDeliverablePlanMapping'>
+    	insert into transactionalData.TBL_Deliverable_Plan_Mapping(
+    		scopeId,
+    		executionPlanId,
+    		isActive,
+    		createdBy,
+    		createdOn,
+    		modifiedBy,
+    		modifiedOn
+    	)values(
+    		#{scopeId},
+    		#{executionPlanId},
+    		1,
+    		#{currentUser},
+    		dbo.GetDateIST(),
+    		#{currentUser},
+    		dbo.GetDateIST()
+    	)
+    </insert>
+    <update id = 'deleteDeliverablePlanMapping'>
+    	update transactionalData.TBL_Deliverable_Plan_Mapping
+    	set isActive = 0
+    	where scopeId = #{scopeId}
+    </update>
+    <select id="getExecutionPlanIdByScopeId" resultType="Integer">
+    	select executionPlanId 
+    	from transactionalData.TBL_Deliverable_Plan_Mapping
+    	where scopeId = #{scopeId} and isActive = 1
+    </select>
+  	
+  	<insert id='insertOutputFileWO' parameterType="com.ericsson.isf.model.WorkOrderOutputFileModel" > 
+  	INSERT INTO  transactionalData.TBL_WORK_ORDER_OUTPUT_FILE (WOID,OutputName,OutputUrl,Active,CreatedBy,CreatedOn
+        	)VALUES
+        	<foreach collection="workOrderOutputFileModel.file" item="file" index="index" open="(" separator="),("  close=")">
+            #{workOrderOutputFileModel.woid},
+            #{file.outputName},
+            #{file.outputUrl},
+            1,
+            #{workOrderOutputFileModel.createdBy},
+            dbo.GetDateIST()
+            </foreach> 
+				</insert>
+				
+   <insert id='insertInputFileWO' parameterType="com.ericsson.isf.model.WorkOrderInputFileModel" > 
+  	INSERT INTO  transactionalData.TBL_WORK_ORDER_INPUT_FILE (WOID,InputName,InputUrl,Active,CreatedBy,CreatedOn
+        	)VALUES
+        	<foreach collection="inputFile.file" item="file" index="index" open="(" separator="),("  close=")">
+            #{inputFile.woid},
+            #{file.inputName},
+            #{file.inputUrl},
+            1,
+            #{inputFile.createdBy},
+            dbo.GetDateIST()
+            </foreach> 
+				</insert>
+				
+  	 <select id='getWOOutputFile' resultType="com.ericsson.isf.model.WOOutputFileResponseModel">
+  		select ID,WOID,OutputName,OutputUrl,CreatedBy from transactionalData.TBL_WORK_ORDER_OUTPUT_FILE where WOID=#{woid} and Active=1 order by CreatedOn desc
+ </select>
+  	 	 <select id='getWOInputFile' resultType = "com.ericsson.isf.model.WOInputFileModel">
+  		select ID,InputName,InputUrl from transactionalData.TBL_WORK_ORDER_INPUT_FILE where WOID=#{woid} and Active=1 order by CreatedOn desc
+ </select>
+ 
+ 	 <select id='getCountOfUnassignedWOByWOPLAN' resultType="Integer">
+  		select count(WOID) as CountWOID from transactionalData.TBL_WORK_ORDER where woplanid=#{woplanid} and SignumID is null and Active=1
+ </select>
+ 
+ <select id='checkIfStepInStartedState' resultType="Boolean">
+       IF EXISTS(SELECT 1 FROM TRANSACTIONALDATA.TBL_WORK_ORDER_BOOKING_DETAILS WHERE WOID=#{woid} AND Status  = 'STARTED')
+            BEGIN
+                SELECT 1 AS "Result"
+            END
+        ELSE
+            BEGIN
+                SELECT 0 AS "Result"
+            END
+    </select>
+    
+        <update id='deleteInputFile'>
+        update transactionalData.TBL_WORK_ORDER_INPUT_FILE set Active=0,LastModifiedBy=#{signumID},LastModifiedON=dbo.GetDateIST() where ID=#{id}  
+    </update>
+    
+     <update id='deleteOutputFile' >
+         update transactionalData.TBL_WORK_ORDER_OUTPUT_FILE set Active=0,LastModifiedBy=#{signumID},LastModifiedON=dbo.GetDateIST()
+         
+         where ID=#{id} 
+          
+         
+    </update>
+  
+           
+             <insert id='editOutputFile' parameterType="com.ericsson.isf.model.WorkOrderOutputFileModel" > 
+ INSERT INTO  transactionalData.TBL_WORK_ORDER_OUTPUT_FILE (WOID,OutputName,OutputUrl,Active,CreatedBy,CreatedOn,LastModifiedBy,LastModifiedON
+        	)VALUES
+        	<foreach collection="workOrderOutputFileModel.file" item="file" index="index" open="(" separator="),("  close=")">
+            #{workOrderOutputFileModel.woid},
+            #{file.outputName},
+            #{file.outputUrl},
+            1,
+            #{workOrderOutputFileModel.createdBy},
+            dbo.GetDateIST(),
+            #{workOrderOutputFileModel.lastModifiedBy},
+            dbo.GetDateIST()
+            </foreach> 
+	
+           </insert>
+           
+            <update id='deleteOutputFile1' parameterType="com.ericsson.isf.model.WorkOrderOutputFileModel">
+            update transactionalData.TBL_WORK_ORDER_OUTPUT_FILE set Active=0,LastModifiedBy=#{workOrderOutputFileModel.createdBy},LastModifiedON=dbo.GetDateIST()
+           where ID in
+         <foreach collection="workOrderOutputFileModel.file" item="file" index="index" open="(" separator=","  close=")">
+         #{file.id} 
+         </foreach> 
+
+         
+    </update>
+    
+
+           
+            <update id='deleteInputFile1' parameterType="com.ericsson.isf.model.WorkOrderInputFileModel">
+            update transactionalData.TBL_WORK_ORDER_INPUT_FILE set Active=0,LastModifiedBy=#{workOrderInputFileModel.createdBy},LastModifiedON=dbo.GetDateIST()
+           where ID in
+         <foreach collection="workOrderInputFileModel.file" item="file" index="index" open="(" separator=","  close=")">
+         #{file.id} 
+         </foreach> 
+
+         
+    </update>
+    
+      <select id="checkNameIsPresentOrNot" resultType = "String">
+       select OutputName from transactionalData.TBL_WORK_ORDER_OUTPUT_FILE where WOID=#{woid} and Active=1 and OutputName in 
+        <foreach collection="file" item="file" index="index" open="(" separator=","  close=")">
+         #{file.outputName} 
+         </foreach>    
+    </select>
+    
+    <update id="updateExecutionPlanName" parameterType="com.ericsson.isf.model.ExecutionPlanModel">	
+           UPDATE [transactionalData].[TBL_ExecutionPlan_master]
+   			SET [planName]=#{newPlanName}
+ 			WHERE isactive=1 and  projectId=#{projectId} and planName = #{oldPlanName}
+    </update>
+    
+    <select id="getPriorityByName" resultType = "com.ericsson.isf.model.botstore.TblWorkOrderPriority">
+        select  Priority  , WOPriority  , Active , Description
+        from refData.TBL_WORK_ORDER_PRIORITY where Priority=#{priority}
+    </select>
+    
+    <select id='isExternalSourceExists' resultType="Boolean">
+        
+        IF Exists(SELECT 1 FROM refData.TBL_IntegrationSources  WHERE sourceName=#{source})
+            BEGIN
+                select 1 as 'Result'
+            END
+		ELSE IF Exists(SELECT 1 FROM refData.TBL_IntegrationSources  WHERE source_system_id=#{source})
+            BEGIN
+                select 1 as 'Result'
+            END
+		ELSE 
+            BEGIN
+                select 0 as 'Result'
+            END
+    </select> 
+    
+    <select id='isValidNodeNameAndNodeType' resultType="Boolean">
+        
+        IF Exists(SELECT 1 FROM transactionalData.TBL_NETWORK_ELEMENT  WHERE ElementType=#{nodeType} and Name=#{nodeName} and ProjectID=#{projectID})
+            BEGIN
+                select 1 as 'Result'
+            END
+        ELSE
+            BEGIN
+                select 0 as 'Result'
+            END
+    </select> 
+    
+    <insert id = 'createWorkOrder2' parameterType="com.ericsson.isf.model.CreateWorkOrderModel2" 
+    useGeneratedKeys="true" keyProperty='createWorkOrderModel.woId' keyColumn="WOID">
+    	INSERT INTO  transactionalData.TBL_WORK_ORDER
+           (WOPlanID,PlannedStartDate,PlannedEndDate,ActualStartDate,ActualEndDate,SignumID,Status,ClosedOn,Active,CreatedBy,CreatedDate 
+           ,LastModifiedBy,LastModifiedDate,Priority,WorkFlowVersion,projectID,flowchartDefId,ParentWorkOrderID)
+     		VALUES(#{createWorkOrderModel.wOPlanID},
+     		#{createWorkOrderModel.plannedStartDate},
+     		#{createWorkOrderModel.plannedEndDate},
+       		NULL,NULL,
+       		#{createWorkOrderModel.signumID},
+       		#{createWorkOrderModel.status},NULL,1,
+       		#{createWorkOrderModel.createBy},dbo.GetDateIST(),
+       		#{createWorkOrderModel.createBy},dbo.GetDateIST(),
+       		#{createWorkOrderModel.priority},
+       		#{createWorkOrderModel.wfVersion},
+       		#{createWorkOrderModel.projectID} ,
+       		#{createWorkOrderModel.flowchartDefId},
+       		#{createWorkOrderModel.parentWorkOrderId})
+    </insert>
+    
+    <insert id = 'createNodesForSingleWorkOrder'>
+    	insert into transactionalData.TBL_WORK_ORDER_NODES(WOID,NodeType,NodeNames,CreatedBy,CreatedDate,LastModifiedBy,LastModifiedDate)
+		select wo.WOID, NodeType,NodeNames,wopn.CreatedBy,wopn.CreatedDate,wopn.LastModifiedBy,wopn.LastModifiedDate 
+		from transactionalData.TBL_WORK_ORDER_PLAN_NODES(NOLOCK) wopn, transactionalData.TBL_WORK_ORDER(NOLOCK) wo
+		where wo.WOPlanID=wopn.WOPlanID and wopn.woplanID = #{wOPlanID} and wopn.NodeNames in 
+		<foreach item="item" index="index" collection="nodeNames" open="(" separator="," close=")">
+			#{item} 
+		</foreach>
+    </insert>
+    
+        <update id='editWOPriority'>
+	update transactionalData.TBL_WORK_ORDER set
+	Priority=#{priority},LastModifiedBy=#{signumID},LastModifiedDate=dbo.GetDateIST(), PriorityLastModifiedOn=dbo.GetDateIST()
+	where WOID=#{woid}  
+    </update>
+    
+    <select id='getWorkOrdersByProjectID' resultType="java.util.LinkedHashMap">	
+	select wo.WOID,wo.WOName from transactionalData.TBL_WORK_ORDER wo
+	 inner join transactionalData.TBL_WORK_ORDER_PLAN wop on wo.WOPlanID = wop.WOPLanID
+	 where wo.Active=1 and wop.Active=1 and ((ISNUMERIC(${woName})=0 and wo.WOName LIKE '%'+ ${woName}+'%') or (ISNUMERIC(${woName})=1 and wo.WOID LIKE ${woName}+'%'))
+	<if test="projectScopeID !=0">
+		 and wop.ScopeID = #{projectScopeID}
+	</if>
+	
+	<if test="nodeName !='all'">
+			and wo.WOID IN
+			(select WOID from transactionalData.TBL_WORK_ORDER_NODES where LOWER(NodeNames) = #{nodeName})
+	</if>
+	
+	<if test="assignedTo !='all'">
+			and LOWER(wo.SignumID) = #{assignedTo}
+	</if>
+	<if test="assignedBy !='all'">
+			and LOWER(wo.CreatedBy) = #{assignedBy}
+	</if>
+	<if test ="projectID != 'all'"> 
+         	and wo.ProjectID =  #{projectID}  
+     </if>
+	<if test ="projectID == 'all'">
+			and wo.ProjectID IN (SELECT t1.ProjectID
+ 	   	FROM [transactionalData].[TBL_PROJECTS] as t1 join
+		transactionalData.TBL_OPPORTUNITY t2 on t1.OpportunityID=t2.OpportunityID
+		join refData.TBL_MARKETAREAS as t3 on t2.MarketAreaID=t3.MarketAreaID
+		<if test ="role =='Delivery Responsible'"> 
+ 		join  [transactionalData].[TBL_DELIVERY_RESPONSIBLE] TDR on TDR.ProjectID=t1.ProjectID and  TDR.signumid=#{signum} and TDR.Active!=0
+ 		</if>
+		where t1.IsDeleted=0 
+		<if test ="marketArea !='All'"> 
+ 		and t3.MarketAreaName=#{marketArea}
+ 		</if>
+ 		<if test ="role =='Project Manager'"> 
+ 		and t1.ProjectCreator=#{signum}
+ 		</if>
+		
+ 			<if test ="role =='Operational Manager'"> 
+ 		and t1.OperationalManager=#{signum}
+ 		</if>
+ 		and t1.Status != 'Closed')
+	</if>
+	</select>
+     <select id='getWorkOrdersByWoplanid' resultType="Integer">
+        select WOID from transactionalData.TBL_WORK_ORDER where WOPlanID=#{woplnid}
+    </select>
+    
+    <select id="getWFListForDeliverablePlan" resultType="hashmap">
+<!--    select ps.ScopeName,ps.projectscopeid as ScopeId,fcd.WFID,fcd.WorkFlowName,fcd.VersionNumber, fcd.SubActivityFlowChartDefID
+		from transactionalData.TBL_PROJECTS p
+		inner join transactionalData.TBL_PROJECTSCOPE ps on p.ProjectID = ps.ProjectID
+		inner join transactionalData.TBL_PROJECTSCOPEDETAIL psd on psd.ProjectScopeID = ps.ProjectScopeID 
+		inner join transactionalData.TBL_ACTIVITYSCOPE as1 on as1.ProjectScopeDetailID = psd.ProjectScopeDetailID 
+		inner join refData.TBL_SUBACTIVITY s on as1.SubActivityID = s.SubActivityID
+		left join transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF fcd on p.ProjectID = fcd.ProjectID and fcd.SubActivityID = s.SubActivityID
+		where psd.active=1 and as1.active=1 and ps.active=1 and fcd.active = 1 and fcd.type='PROJECTDEFINED'
+		and p.projectid = #{projectID}
+		and ps.projectscopeid = #{scopeID}
+		order by fcd.WFID asc
+ -->
+		select JSON_VALUE(taskJson, '$.workflow') as workFlowName 
+		from [transactionalData].[TBL_ExecutionPlan_details] 
+		where executionPlanId= #{executionPlanId};
+	</select>    
+	
+	<resultMap type="com.ericsson.isf.model.FinalRecordsForWOCreationModel"	id="FinalRecordsForWOCreationMap">
+		<result property="woHistoryID" column="WOHistoryID" />
+		<collection property='createWorkOrderModels' ofType='com.ericsson.isf.model.CreateWorkOrderModel'>
+			<result property="projectID" column="ProjectID" />
+			<result property="executionPlanId" column="ExecutionPlanID" />
+			<result property="subActivityID" column="SubActivityID" />
+			<result property="startDate" column="StartDate" />
+			<result property="startTime" column="StartTime" />
+			<result property="endDate" column="EndDate" />
+			<result property="wOName" column="WOName" />
+			<result property="slaHrs" column="SLAHours" />
+			<result property="priority" column="Priority" />
+			<result property="type" column="Type" />
+			<result property="createdBy" column="CreatedBy" />
+			<result property="nodeNames" column="NodeNames" />
+			<result property="nodeType" column="NodeType" />
+			<result property="assignedTo" column="AssignTo" />
+			<result property="woCreationID" column="WoCreationID" />
+			<result property="woHistoryID" column="WOHistoryID" />
+			<result property="inputName" column="InputName" />
+			<result property="inputUrl" column="InputUrl" />
+			<result property="externalSourceName" column="SourceName" />
+			<result property="executionPlanName" column="ExecutionPlanName" />
+			<result property="comment" column="Comments" />
+			<result property="status" column="Status" />
+			<result property="uploadedBy" column="UploadedBy" />
+		</collection>
+	</resultMap>
+	
+	<select id="getWorkOrderModelForBulkCreation"
+	resultMap="FinalRecordsForWOCreationMap">
+	<!-- Old Query --> 
+	<!-- select * from transactionalData.tbl_FinalRecordsForWOCreation order by
+	WOHistoryID asc -->
+    <!-- New Query --> 
+	select
+	ProjectID,ExecutionPlanID,StartDate,StartTime,WOName,SLAHours,Priority,Type,CreatedBy,NodeNames,
+	NodeType,AssignTo,WoCreationID,WOHistoryID,InputName,InputUrl,SourceName,Comments,Status,UploadedBy
+	from transactionalData.tbl_FinalRecordsForWOCreation
+	where Source=#{source}
+	order by WOHistoryID asc
+</select>
+	
+	<delete id='deleteProcessedDataFromWOCreationTable'>
+        delete from transactionalData.tbl_FinalRecordsForWOCreation where woHistoryID=#{woHistoryID}
+    </delete>
+    
+    <insert id = 'createDOID' parameterType="com.ericsson.isf.model.DOIDModel"
+     useGeneratedKeys="true" keyProperty="doID.doID" keyColumn="DOID">
+        insert into transactionalData.TBL_Deliverable_Order_ID(WOPlanID,CreatedBy,CreatedOn,isActive) 
+			values(
+			 #{doID.wOPlanID}
+			,#{doID.createdBy}
+			,dbo.GetDateIST()
+			,1
+			)
+    </insert>
+    
+     <update id = 'saveEditedWorkOrderDetails' parameterType="com.ericsson.isf.model.WorkOrderCompleteDetailsModel">
+        UPDATE transactionalData.TBL_WORK_ORDER 
+        <set>
+     	 <if test="oldWorkOrderDetails.signumID != null">
+     	 	SignumID=#{oldWorkOrderDetails.signumID,jdbcType=VARCHAR},
+     	 	IsAutoSenseEnable=NULL,
+     	 </if>
+
+      	 <if test="oldWorkOrderDetails.wOName != null and oldWorkOrderDetails.wOName!=''">
+      	 	WOName=#{oldWorkOrderDetails.wOName,jdbcType=VARCHAR},
+      	 </if>
+  
+   		 <if test="oldWorkOrderDetails.priority != null">
+   		 	Priority=#{oldWorkOrderDetails.priority,jdbcType=VARCHAR},
+   		 </if>
+
+		<if test="oldWorkOrderDetails.startDate != null or oldWorkOrderDetails.startTime != null">
+ 	     	PlannedStartDate = #{plannedStartDate},
+ 	     	PlannedEndDate = #{plannedEndDate},
+ 	     </if>
+
+ 	     LastModifiedBy = #{oldWorkOrderDetails.lastModifiedBy},
+ 	     LastModifiedDate = dbo.GetDateIST()
+    	</set>
+    	where 
+		WOID=#{oldWorkOrderDetails.wOID} 
+    </update>
+    
+    <select id='getDeliverableIdByNameAndProjectID' resultType="Integer">
+         select ProjectScopeID from transactionalData.TBL_PROJECTSCOPE where ProjectID = #{projectID} and ScopeName=#{deliverableName} and active=1
+    </select>  
+    
+    <update id = 'markWoHistoryIDCompleted'>
+        UPDATE transactionalData.TBL_BULK_WORK_ORDER_CREATION_HISTORY 
+        set UploadStatus='COMPLETED',
+        ProcessedON=dbo.GetDateIST(),
+        <if test ="modifiedBy != null">  
+	        ModifiedBy = #{modifiedBy},
+        </if> 
+        ModifiedDate = dbo.GetDateIST()
+    	where WOHistoryID=#{woHistoryID} 
+    </update>
+
+	<insert id = 'insertWOCreationTable' parameterType="com.ericsson.isf.model.CreateWorkOrderModel">
+	
+     		INSERT into transactionalData.WOCreation(WoCreationID,WOID,AssignTo,UploadedBy,Createdon,Sources) 
+			values
+    	<foreach collection="createWorkOrderModel2List" item="createWorkOrderModel2" separator="," >
+			 <!-- open="(" separator="," close=")" -->
+			 (
+			 #{woPlanObject.woCreationID}
+			,#{createWorkOrderModel2.woId}
+			,#{createWorkOrderModel2.signumID}
+			,#{woPlanObject.createdBy}
+			,dbo.GetDateIST()
+			,'INSERTED'
+			)
+    	</foreach>
+       
+    </insert>
+    
+    <insert id = 'createNodesForWorkOrder' parameterType="com.ericsson.isf.model.CreateWorkOrderModel2">
+    	insert into transactionalData.TBL_WORK_ORDER_NODES(WOID,NodeType,NodeNames,CreatedBy,CreatedDate,LastModifiedBy,LastModifiedDate)
+    	values
+		 <foreach item="item" index="index" collection="nodeNames" open="(" separator="),("  close=")">
+		#{createWorkOrderModel.woId},
+		#{createWorkOrderModel.nodeType},
+		#{item},
+		#{createWorkOrderModel.createBy},
+		dbo.GetDateIST(),
+		#{createWorkOrderModel.createBy},
+		dbo.GetDateIST()
+		</foreach>
+    </insert>
+    
+    <select id='getExecutionPlanFlowByDOID' resultType="com.ericsson.isf.model.ExecutionPlanFlow">  
+		select isComplete from  [transactionalData].[TBL_ExecutionPlan_Flow]
+		where DOID=#{doID} and executionPlanDetailId=#{executionPlanDetailId} 
+		
+	</select>
+	
+	<insert id = 'insertBulkWoErrorTable' parameterType= "com.ericsson.isf.model.CreateWorkOrderModel">
+	
+	INSERT into transactionalData.TBL_BULK_WORK_ORDER_ERROR_TABLE(WOCreationID,ProjectID,WorkFlowName,Priority,AssignTo,StartTime,StartDate,ErrorDetails,ErrorCategory,ScopeName,SubActivityID,SLAHours,WorkOrderName,NodeType,NodeNames,CreatedBy,CreatedDate,LastModifiedBy,LastModifiedDate,ExecutionPlanID,ExternalSourceName,UploadedBy)
+	values
+			 (
+			 #{woPlanObject.woCreationID}
+			,#{woPlanObject.projectID}
+			,#{woPlanObject.workFlowName}
+			,#{woPlanObject.priority}
+			,#{woPlanObject.assignedTo}
+			,#{woPlanObject.startTime}
+			,#{woPlanObject.startDate}
+			,#{errorDetails}
+			,#{ERROR_CATEGORY}
+			,#{woPlanObject.executionPlanName}
+			,#{woPlanObject.subActivityID}
+			,#{woPlanObject.slaHrs}
+			,#{woPlanObject.wOName}
+			,#{woPlanObject.nodeType}
+			,#{woPlanObject.nodeNames}
+			,#{woPlanObject.createdBy}
+			,dbo.GetDateIST()
+			,#{woPlanObject.createdBy}
+			,dbo.GetDateIST()
+			,#{woPlanObject.executionPlanId}
+			,#{woPlanObject.externalSourceName}
+			,#{woPlanObject.createdBy}
+			
+			)
+	
+	
+	</insert>
+	
+	<select id="getNodesByWOId" resultType="WorkOrderPlanNodesModel">
+		select  WOID   , WNID , NodeNames ,  NodeType ,networkelementid,active
+		from transactionalData.TBL_WORK_ORDER_NODES 
+		where WOID = #{workOrderId}
+	</select>
+	
+	 <delete id="deleteWorkOrderFromExecutionPlanFlow">
+       delete from transactionalData.TBL_ExecutionPlan_Flow where woid=#{parentWorkOrderID}
+    </delete>
+    
+	<update id='updateWoPlanStartEndDateAndTime'>
+        DECLARE @StartDate VARCHAR(10), 
+        @StartTime VARCHAR(20), 
+        @EndDate   VARCHAR(10) 
+
+SELECT @StartDate = CONVERT(CHAR(10), Min(plannedstartdate), 126), 
+       @StartTime = CONVERT(VARCHAR, Min(plannedstartdate), 114), 
+       @EndDate = CONVERT(CHAR(10), Max(plannedenddate), 126) 
+FROM   transactionaldata.tbl_work_order 
+WHERE  woplanid = #{woPlanID} 
+
+UPDATE transactionaldata.tbl_work_order_plan 
+SET    startdate = @StartDate, 
+       starttime = @StartTime, 
+       enddate = @EndDate 
+WHERE  woplanid = #{woPlanID} 
+    </update>
+    
+    <resultMap type="com.ericsson.isf.model.DOWOModel" id="DOWOModel">
+        <id property="woid" column="woid" />
+        <result property="doid" column="doid" />
+        <result property="wfid" column="wfid" />
+        <result property="wfName" column="wfName" />
+        <result property="wfVersion" column="wfVersion" />
+        <result property="status" column="status" />
+        <result property="signum" column="signum" />
+        <result property="wfInfo" column="wfInfo" />
+        <result property="woplanid" column="woplanid" />
+        <collection property='listOfNode' ofType='WorkOrderNodesModel'>
+            <result property='nodeType' column='nodeType' />
+            <result property='nodeNames' column='nodeNames' />
+            <result property='market' column='market' />
+            </collection>
+        </resultMap> 
+    
+	<select id='getWorkOrdersByDoid' resultMap='DOWOModel'>
+        select distinct wo.DOID doid,wo.WOID woid,ISNULL(won.NodeNames,'') nodeNames,
+		case when won.NodeType is null or len(won.NodeType) &lt; 2 then ISNULL(ne.ElementType,'') else ISNULL(won.NodeType,'') end nodeType,
+		ISNULL(ne.Market,'') market,won.WNID wNID,def.WFID wfid,def.WorkFlowName wfName,wo.WorkFlowVersion wfVersion,
+		wo.Status status,wo.SignumID signum,CONCAT(def.WFID,'_',def.WorkFlowName,'_',wo.WorkFlowVersion) wfInfo,
+		wo.WOPlanID woplanid
+		from transactionalData.TBL_WORK_ORDER wo
+		join transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF def on def.SubActivityFlowChartDefID=wo.flowchartdefid
+		left join transactionalData.TBL_WORK_ORDER_NODES won on won.WOID=wo.WOID
+		left join transactionalData.TBL_NETWORK_ELEMENT ne on ne.networkelementid = won.networkelementid
+		where DOID=#{doid}
+	</select>
+	
+	<select id="getNodeNamesForDeliverable" resultMap ="ProjectNodeTypeModelResult">
+	    Declare @CountryCustomerGroupID int 
+
+		Select distinct @CountryCustomerGroupID = CountryCustomerGroupID
+		from transactionalData.TBL_PROJECTS p WITH (NOLOCK)
+		inner join transactionalData.TBL_OPPORTUNITY  O WITH (NOLOCK) on p.OpportunityID=O.OpportunityID and p.ProjectID = #{projectID}
+		inner join refData.TBL_CountryCustomerMapping ccm WITH (NOLOCK) on ccm.CountryID=o.CountryID and ccm.CustomerID=o.CustomerID
+
+		Drop table IF exists #tempProjects
+
+		Select distinct projectid
+		into #tempProjects
+		from transactionaldata.tbl_projects p WITH (NOLOCK)
+		inner join transactionalData.TBL_OPPORTUNITY O WITH (NOLOCK) on p.OpportunityID=O.OpportunityID and p.IsDeleted=0 and p.Status!='Closed' and p.Status!='Rejected'
+		inner join refData.TBL_CountryCustomerMapping ccm WITH (NOLOCK) on ccm.CountryID=o.CountryID and ccm.CustomerID=o.CustomerID and ccm.CountryCustomerGroupID = @CountryCustomerGroupID
+
+		select distinct Name,ne.ProjectID,ElementType 
+	    from transactionalData.TBL_NETWORK_ELEMENT ne WITH (NOLOCK)
+        Join #tempProjects p on ne.ProjectID = p.projectid
+ 		join refData.TBL_VENDOR ven on ne.vendorid = ven.vendorid and ven.Vendor =  #{vendor}
+		join refData.TBL_DOMAIN Dom on ne.DomainSubDomainID = dom.DomainID and dom.DomainID in (${domainCommaSeparated})
+		join refdata.TBL_TECHNOLOGY tech on ne.TechnologyID = tech.TechnologyID and tech.TechnologyID in (${techCommaSeparated})
+		 where 
+          ne.ElementType = #{elementType}
+                  and ne.Type = #{type}
+                and ne.MARKET = #{market}
+                and ne.Name like #{term}
+	</select>
+	
+	<select id="getNodeValidateForDeliverable" resultType ="String">
+	    Declare @CountryCustomerGroupID int 
+
+		Select distinct @CountryCustomerGroupID = CountryCustomerGroupID
+		from transactionalData.TBL_PROJECTS p WITH (NOLOCK)
+		inner join transactionalData.TBL_OPPORTUNITY  O WITH (NOLOCK) on p.OpportunityID=O.OpportunityID and p.ProjectID = #{projectID}
+		inner join refData.TBL_CountryCustomerMapping ccm WITH (NOLOCK) on ccm.CountryID=o.CountryID and ccm.CustomerID=o.CustomerID
+
+		Drop table IF exists #tempProjects
+
+		Select distinct projectid
+		into #tempProjects
+		from transactionaldata.tbl_projects p WITH (NOLOCK)
+		inner join transactionalData.TBL_OPPORTUNITY O WITH (NOLOCK) on p.OpportunityID=O.OpportunityID and p.IsDeleted=0 and p.Status!='Closed' and p.Status!='Rejected'
+		inner join refData.TBL_CountryCustomerMapping ccm WITH (NOLOCK) on ccm.CountryID=o.CountryID and ccm.CustomerID=o.CustomerID and ccm.CountryCustomerGroupID = @CountryCustomerGroupID
+
+		select distinct ne.Name,ne.ProjectID,ne.ElementType 
+        	
+	    from transactionalData.TBL_NETWORK_ELEMENT ne WITH (NOLOCK)
+			Join #tempProjects p on ne.ProjectID = p.projectid 
+		<if test="elementType != 'NA'">
+		    and ElementType = #{elementType} 	
+		</if>
+        	<if test ="type != 'NA'">  
+              		and Type=#{type} 
+        	</if> 
+        	<if test =" vendor != 'NA'"> 
+              		and vendorId in (select vendorID  from refData.TBL_VENDOR WITH (NOLOCK) where  Vendor = #{vendor})  
+        	</if>
+        	<if test ="market != 'NA'"> 
+              		and MARKET = #{market} 
+        	</if>
+        		and DomainSubDomainID in (select DomainID  from refData.TBL_DOMAIN WITH (NOLOCK) where DomainID in (${domainCommaSeparated}))
+        		and TechnologyID in (select TechnologyID  from refData.TBL_TECHNOLOGY WITH (NOLOCK) where TechnologyID in (${techCommaSeparated}))
+        		and Name in (${nodeNamesCommaSeparated})
+	   
+	</select>
+	
+	 <select id='getValidateJsonForExternalSource' resultType="String">
+        
+       SELECT ValidateJsonForWOCreation FROM refData.TBL_IntegrationSources  WHERE sourceName=#{externalSourceName} or source_system_id=#{externalSourceName}
+    </select>
+    
+    <select id='getExecutionPlanDetailsByProjectIDSubactivityID' resultType="java.util.LinkedHashMap">
+		
+		select epd.executionPlanId, epm.planName , epd.scopeid , sfd.subactivityId , epd.ActivityScopeId , epd.executionPlanDetailId , sfd.WFID , pro.ProjectID
+	    from transactionalData.TBL_ExecutionPlan_details epd
+		inner join transactionalData.TBL_ExecutionPlan_master epm on epd.executionPlanId = epm.executionPlanId
+		inner join transactionalData.TBL_PROJECTS pro on pro.ProjectID = epm.projectId
+		inner join transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF sfd on sfd.SubActivityID = epd.SubActivityID  
+		and sfd.VersionNumber=epd.workFlowVersionNo
+		where  ISJSON(epd.taskJson)=1
+        and (len(replace(JSON_VALUE(epd.taskJson,'$.workflow'),'/','12'))-len(JSON_VALUE(epd.taskJson,'$.workflow')))=2
+		and pro.projectId = #{projectID} and epd.subactivityId=#{subActivityID} and epm.isactive=1
+		and sfd.SubActivityFlowChartDefID=#{subActivityFlowChartDefID}
+		and JSON_VALUE(taskJson, '$.workflow') like '%'+sfd.WorkFlowName+'%'
+		and sfd.SubActivityFlowChartDefID=#{subActivityFlowChartDefID}
+		and JSON_VALUE(taskJson, '$.workflow') like '%'+sfd.WorkFlowName+'%'
+	</select>
+	
+	<resultMap type="com.ericsson.isf.model.WorkOrderOutputFileModel" id="WOOutputFileDetails">
+		<result property="woid" column="WOID" />
+		<result property="active" column="Active" />
+		<collection property='file' ofType='com.ericsson.isf.model.WOOutputFileModel'>
+			<result property="outputName" column="OutputName" />
+			<result property="outputUrl" column="OutputUrl" />
+			<result property="id" column="ID" />
+		</collection>
+	</resultMap>
+
+	 <select id='getWOOutputFileDetails' resultMap="WOOutputFileDetails">
+  		select WOID,Active,OutputName,OutputUrl,ID
+  		from transactionalData.TBL_WORK_ORDER_OUTPUT_FILE where WOID=#{woid} and Active=1
+ 	</select>
+ 	
+ 	 <select id='getWOOutputFileDetailsByWoIDAndWoOutputFileModel' resultMap="WOOutputFileDetails" parameterType="com.ericsson.isf.model.WOOutputFileModel">
+  		select WOID,Active,OutputName,OutputUrl,ID
+  		from transactionalData.TBL_WORK_ORDER_OUTPUT_FILE where WOID=#{woid} and Active=1
+  		<if test="woOutputFileModel.outputName != null">
+  			and OutputName = #{woOutputFileModel.outputName}
+  		</if>
+ 	</select>
+ 	
+ 	 <select id='getAllBookingDetails'   resultType="java.util.LinkedHashMap">
+         select distinct fsd.TaskID,fsd.ExecutionType,fsd.StepID,fsd.StepName from  transactionalData.TBL_WORK_ORDER WO 
+		 left join  transactionalDAta.TBL_FLOWCHART_STEP_DETAILS fsd
+		 on wo.flowchartdefid=fsd. SubActivityFlowChartDefID
+		 left join transactionalData.TBL_WORK_ORDER_FLOWCHART_STEP_DETAILS wfsd
+		 on wo.WOID=wfsd.WOID and fsd. SubActivityFlowChartDefID=wfsd.FlowChartDefID
+		 WHERE WO.WOID = #{WoID} and wo.SignumID=#{SignumID}
+		 <if test="flag==true">
+		 and StepID=#{stepId}
+		 </if>
+    </select>
+    
+    <select id="checkOutputFileCount" parameterType="com.ericsson.isf.model.WorkOrderOutputFileModel" resultType="int">
+    	select COUNT(1) from transactionalData.TBL_WORK_ORDER_OUTPUT_FILE where WOID = #{woOutputFileModel.woid} and Active=1
+    </select>
+    
+    
+      <select id = 'validateStepIdAndExecutionType' resultType="String">
+       select ExecutionType from transactionalData.TBL_FLOWCHART_STEP_DETAILS where SubActivityFlowChartDefID=#{flowChartDefID}
+		and StepID=#{flowChartStepId}
+    </select>
+    
+    <select id = 'getValidateJsonForApi' resultType="String" useCache="true">
+    select ValidateJSON from Refdata.TBL_SourceApiValidateJson validate
+		inner join refData.TBL_IntegrationSources sources on sources.sourceId=validate.sourceid
+		where SourceAPI=#{apiName} and (sources.sourceName=#{externalSourceName} OR sources.source_system_id=#{externalSourceName})
+    </select>
+    
+    
+	<select id="updateDefIdForAssignWo">
+		update transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF set
+		IsAutoSenseEnable=0
+		where SubActivityFlowChartDefID = #{oldDefID}
+</select>
+<select id='validateFailureReason' resultType="java.lang.Boolean">
+	   IF EXISTS(SELECT 1 FROM refData.TBL_WORK_ORDER_FAILURE_REASON
+	   WHERE FailureReason= #{reason} 
+	   <if  test ="category != null and category != '' ">
+	   and FailureCategory =#{category}
+		</if>
+		)
+	   begin
+	   select 1 as result
+	   end
+	   else
+	   begin
+	   select 0 as result
+	   end
+	   
+	</select>
+	
+	<select id="getStepWOIDBookings" resultType="String">
+		select top 1 booking.Status from transactionalData.TBL_WORK_ORDER_BOOKING_DETAILS booking
+				inner join transactionalData.TBL_WORK_ORDER_FLOWCHART_STEP_DETAILS woStep on woStep.BookingID=booking.BookingID
+				where booking.WOID=#{wOID} and woStep.FlowChartStepID=#{stepid} order by booking.StartDate DESC
+	
+	</select>
+	
+	<select id = 'getExecutionType' resultType="String" useCache="true">
+        select top 1 ExecutionType from transactionalData.TBL_FLOWCHART_STEP_DETAILS
+        where StepID=#{stepid} and TaskID=#{taskID}
+        and SubActivityFlowChartDefID=#{flowChartDefID}
+    </select>
+    
+    <select id='validateStepIDforStepType' resultType="java.lang.Boolean">
+      IF EXISTS
+	   (
+		select StepID from transactionalData.TBL_FLOWCHART_STEP_DETAILS where StepID in
+		
+		(select StepID from transactionalData.TBL_FLOWCHART_STEP_DETAILS where StepType='ericsson.Decision' and 
+		 StepID=#{flowChartStepId} and SubActivityFlowChartDefID=#{flowChartDefId})
+		 
+	   )
+		
+	   begin
+	   select 1 as result
+	   end
+	   else
+	   begin
+	   select 0 as result
+	   end
+	   </select>
+	   
+	   <select id="getTaskIdONStepIdAndFlowChartdefId" resultType="int">
+	   select TaskID from transactionalData.TBL_FLOWCHART_STEP_DETAILS 
+       where stepId=#{flowChartStepId} and SubActivityFlowChartDefID=#{flowChartDefID}
+	    </select>
+	    <select id="getPreviousStepStepId" resultType="String">
+	   select FlowchartSourceID from transactionalData.TBL_WORK_ORDER_FLOWCHART_STEP_LINK_DETAILS link
+			inner join transactionalData.TBL_FLOWCHART_STEP_DETAILS SD on
+			 SD.StepID=link.FlowchartSourceID and link.SubActivityFlowChartDefID=SD.SubActivityFlowChartDefID
+			where link.FlowchartTargetID=#{flowChartStepId} and link.SubActivityFlowChartDefID=#{flowChartDefID} and SD.StepType NOT IN('ericsson.StartStep')
+	    </select>
+	    <select id='checkPreviousStepCompleted' resultType="java.lang.Boolean">
+        IF EXISTS (SELECT top 1 tfsd.BookingID
+           FROM   transactionaldata.tbl_work_order_flowchart_step_details tfsd 
+                  LEFT JOIN transactionaldata.tbl_work_order_booking_details tbd 
+                         ON tfsd.woid = tbd.woid 
+                            AND tfsd.bookingid = tbd.bookingid 
+           WHERE  tfsd.woid = #{woId} 
+                  AND tfsd.flowchartdefid = #{flowChartDefID} 
+                  AND flowchartstepid = #{previousStepStepId} 
+                  AND tfsd.status IN ( 'completed', 'skipped') 
+           ORDER  BY tfsd.BookingID DESC) 
+  BEGIN 
+      SELECT 1 AS result 
+  END 
+ELSE 
+  BEGIN 
+      SELECT 0 AS result 
+  END 
+	   </select>
+	    
+	     <select id='checkDecisionStepComplitionStatus' resultType="java.lang.Boolean">
+        IF EXISTS (SELECT top 1 tfsd.BookingID
+           FROM   transactionaldata.tbl_work_order_flowchart_step_details tfsd 
+                  LEFT JOIN transactionaldata.tbl_work_order_booking_details tbd 
+                         ON tfsd.woid = tbd.woid 
+                            AND tfsd.bookingid = tbd.bookingid 
+           WHERE  tfsd.woid = #{woId} 
+                  AND tfsd.flowchartdefid = #{flowChartDefID} 
+                  AND flowchartstepid = #{previousStepStepId} 
+                  AND tfsd.status IN ( 'completed', 'skipped') 
+           ORDER  BY tfsd.BookingID DESC) 
+  BEGIN 
+      SELECT 1 AS result 
+  END 
+ELSE 
+  BEGIN 
+      SELECT 0 AS result 
+  END 
+	   </select>
+	   
+	    <select id='checkStepWithDecisionValue' resultType="java.lang.Boolean">
+        IF EXISTS (SELECT top 1 tfsd.BookingID
+           FROM   transactionaldata.TBL_WORK_ORDER_FLOWCHART_STEP_DETAILS tfsd 
+           WHERE  tfsd.woid = #{woId} 
+                  AND tfsd.flowchartdefid = #{flowChartDefID} 
+                  AND flowchartstepid = #{previousStepStepId} 
+                  AND tfsd.DecisionValue = #{decisionValue} 
+           ORDER  BY tfsd.BookingID DESC) 
+  BEGIN 
+      SELECT 1 AS result 
+  END 
+ELSE 
+  BEGIN 
+      SELECT 0 AS result 
+  END 
+	   </select>
+<select id="getBookingDetailsOnWoidTaskIdDefIdStepId"
+		resultType="com.ericsson.isf.model.BookingDetailsModel">
+		select top 1 tfsd.woId,tfsd.taskId,tfsd.flowChartDefID,tfsd.status  from transactionalData.TBL_WORK_ORDER_BOOKING_DETAILS tbd
+inner join transactionalData.TBL_WORK_ORDER_FLOWCHART_STEP_DETAILS tfsd
+on tbd.BookingID=tfsd.BookingID
+where tfsd.WOID=#{woId} and tfsd.TaskID=#{taskID} and tfsd.FlowChartDefID=#{flowchartdefid} and tfsd.FlowChartStepID
+=#{stepID};
+	</select>
+		<select id='updateWoAutoSense'  >
+ 		update transactionalData.TBL_WORK_ORDER set IsAutoSenseEnable=NULL
+		where status IN ('ASSIGNED','REOPENED','PLANNED') and flowchartdefid =#{flowcharDefId}
+		AND PROJECTID=#{projectID} AND SubActivityID=#{subActivityID}
+  	</select>
+  	
+  	<select id='getInprogressTaskBySignum' statementType="CALLABLE" resultMap="InProgressTaskModelResult">
+  		{call usp_getinprogresstask(#{signum,jdbcType=VARCHAR})};
+  	</select>
+  	
+  	<select id='getNextStepInfoForSignumId' statementType="CALLABLE" resultMap="InProgressNextStepModalResult">
+  		{call usp_getNextstepdata(
+        #{flowChartStepID, jdbcType=VARCHAR},
+        #{flowChartDefID,jdbcType=INTEGER})};
+  	</select>
+  	<select id='getNextStepInfoWithProficiency' statementType="CALLABLE" resultMap="InProgressNextStepModalResult">
+  		{call usp_getNextstepdataWithProficiency(
+        #{flowChartStepID, jdbcType=VARCHAR},
+        #{flowChartDefID,jdbcType=INTEGER},
+        #{proficiencyID,jdbcType=INTEGER}
+        )};
+  	</select>
+  	
+  	<select id="getLatestConpletedEnabledStep" resultType="String">
+  		IF EXISTS(select top 1 BookingID from transactionalData.TBL_WORK_ORDER_FLOWCHART_STEP_DETAILS where WOID=#{woID} and ExecutionType !='ManualDisabled')
+			BEGIN
+				select top 1  FlowChartStepID, FlowChartDefID, DecisionValue, BookingID into #tempNextStep from transactionalData.TBL_WORK_ORDER_FLOWCHART_STEP_DETAILS 
+				where WOID=#{woID} and ExecutionType !='ManualDisabled' order by BookedOn desc
+
+				IF EXISTS(select FlowChartStepID from  #tempNextStep where BookingID=0 )
+				BEGIN
+					select cells.TargetID from #tempNextStep 
+						inner join transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF sfd
+						cross apply OPENJSON(sfd.FlowChartJSON)
+						WITH(
+						cells nvarchar(max) as json
+						)as FlowChart
+						 CROSS APPLY OPENJSON (FlowChart.cells) WITH (
+						SourceID  NVARCHAR(600) '$.source.id',
+						TargetID NVARCHAR(600) '$.target.id',
+						LabelText  NVARCHAR(400) '$.labels[0].attrs.text.text'
+						)cells on sfd.SubActivityFlowChartDefID=#tempNextStep.FlowChartDefID and  cells.SourceID=#tempNextStep.FlowChartStepID and cells.LabelText=#tempNextStep.DecisionValue
+				END
+				ELSE
+				BEGIN
+					select FlowChartStepID from #tempNextStep
+				END
+			END
+		ELSE
+			BEGIN
+				select top 1 LINK.FlowchartTargetID from transactionalData.TBL_WORK_ORDER WO
+				inner join transactionalData.TBL_FLOWCHART_STEP_DETAILS FSD on FSD.SubActivityFlowChartDefID=WO.flowchartdefid
+				inner join transactionalData.TBL_WORK_ORDER_FLOWCHART_STEP_LINK_DETAILS LINK on LINK.FlowchartSourceID=FSD.StepID and LINK.SubActivityFlowChartDefID=FSD.SubActivityFlowChartDefID
+				where FSD.StepName='Start' and WO.WOID=#{woID}
+			END
+  	
+  	</select>
+  	
+  	<select id="checkIfNextStepDisabled" resultType="boolean">
+  		IF EXISTS(select top 1 profType.ProficiencyName from transactionalData.TBL_FLOWCHART_STEP_DETAILS stepD
+					INNER JOIN transactionalData.TBL_WORK_ORDER_FLOWCHART_STEP_LINK_DETAILS link
+					ON stepD.StepID =link.FlowchartTargetID and stepD.SubActivityFlowChartDefID=link.SubActivityFlowChartDefID
+					INNER JOIN refData.tbl_WF_Proficiency_Type profType 
+					ON profType.ProficiencyID=stepD.ProficiencyID
+					WHERE link.FlowchartSourceID=#{flowChartStepID} AND link.SubActivityFlowChartDefID=#{flowChartDefID}
+					AND profType.ProficiencyLevel &lt; #{workOrderProficiencyLevel})
+			BEGIN
+				 SELECT 1 AS result
+			END
+		ELSE
+			BEGIN
+				 SELECT 0 AS result
+			END
+  	
+  	</select>
+  	
+  	<select id="checkWorkOrderForSrRequest" resultType="String">
+  			SELECT TOP 1 sr.SRID FROM transactionaldata.tbl_work_order wo 
+         	INNER JOIN  transactionaldata.tbl_service_request sr 
+         	ON wo.doid = sr.doid 
+         	AND wo.projectid = sr.projectid 
+         	WHERE woid IN
+  		<foreach collection="listofWoid" item="Item" index="index" open="(" separator="," close=")">
+  		 	 #{Item} 
+         	</foreach>
+         	AND wo.active = 1
+	</select>
+	
+	<select id="checkWorkOrderLinkedWithSRID" resultType="Integer">
+  			IF EXISTS(SELECT TOP 1 sr.SRID FROM transactionaldata.tbl_work_order wo 
+         	INNER JOIN  transactionaldata.tbl_service_request sr 
+         	ON wo.doid = sr.doid 
+         	AND wo.projectid = sr.projectid 
+         	WHERE woid = #{wOID}
+  		    AND wo.active = 1)
+    BEGIN 
+    SELECT TOP 1 sr.SRID FROM transactionaldata.tbl_work_order wo 
+         	INNER JOIN  transactionaldata.tbl_service_request sr 
+         	ON wo.doid = sr.doid 
+         	AND wo.projectid = sr.projectid 
+         	WHERE woid =  #{wOID}
+  		    AND wo.active = 1
+    END
+    ELSE
+    BEGIN
+    select 0 as 'SRID'
+    END
+	</select>
+	
+		 
+	 <select id='validateWoid' resultType='Boolean'>
+        IF EXISTS (select 1 from transactionalData.TBL_Work_Order
+					where WOID= #{wOID} and Active=1
+					)
+			BEGIN
+			  select 1 as 'Result'
+			END
+		ELSE
+			BEGIN
+			 select 0 as 'Result'
+			END 			 
+    </select>
+    
+    <select id='validateWOStatusForWOName' resultType='Boolean'>
+        IF EXISTS (
+                    select 1 from transactionalData.TBL_WORK_ORDER 
+                    where WOID =#{wOID} and Status in ('REJECTED','CLOSED','PLANNED')
+				  )
+			BEGIN
+			  select 0 as 'Result'
+			END
+		ELSE
+			BEGIN
+			 select 1 as 'Result'
+			END 			 
+    </select>
+    
+    <select id='validateWOStatusForStartDate' resultType='Boolean'>
+        IF EXISTS (
+                    select 1 from transactionalData.TBL_WORK_ORDER 
+                    where WOID =#{wOID} and Status in ('ASSIGNED','REOPENED')
+				  )
+			BEGIN
+			  select 1 as 'Result'
+			END
+		ELSE
+			BEGIN
+			 select 0 as 'Result'
+			END 			 
+    </select>
+    
+     <select id='validateSource' resultType='Boolean'>
+        IF EXISTS (
+                    select 1 from refData.TBL_IntegrationSources
+                    where sourceName =#{externalSourceName} 
+				  )
+			BEGIN
+			  select 1 as 'Result'
+			END
+		ELSE
+			BEGIN
+			 select 0 as 'Result'
+			END 			 
+    </select>
+    
+    <select id='validateSignumForPMDR' resultType='Boolean'>
+       IF EXISTS (select 1 from transactionalData.TBL_PROJECTS where ProjectID=#{projectID} and ProjectCreator=#{signumID}
+             union 
+			 select 1 from transactionalData.TBL_DELIVERY_RESPONSIBLE where ProjectID=#{projectID} and SignumID=#{signumID} and Active=1)
+			
+			BEGIN
+			  select 1 as 'Result'
+			END
+		ELSE
+			BEGIN
+			 select 0 as 'Result'
+			END 			 
+    </select>
+    
+      <select id='validateExternalSourceForErisite' resultType='Boolean'>
+        IF EXISTS (
+                    select 1 from refData.TBL_IntegrationSources
+                    where sourceName =#{externalSourceName} and externalGroup='ERISITE'
+				  )
+			BEGIN
+			  select 1 as 'Result'
+			END
+		ELSE
+			BEGIN
+			 select 0 as 'Result'
+			END 			 
+    </select> 
+    
+     <select id='validateExternalSourceForErisiteWO' resultType='Boolean'>
+        IF EXISTS (
+                    select 1 from refData.TBL_IntegrationSources
+                    where source_system_id=#{createdBy} and externalGroup='ERISITE'
+				  )
+			BEGIN
+			  select 1 as 'Result'
+			END
+		ELSE
+			BEGIN
+			 select 0 as 'Result'
+			END 			 
+    </select>   
+    
+     <select id='getCreatedByOfWOID' resultType='String'>   
+      select CreatedBy from transactionalData.TBL_WORK_ORDER where WOID=#{wOID}
+	 </select>  
+	
+  	<insert id='addNetworkWorkOrderPlan' parameterType="WorkOrderPlanModel"
+		useGeneratedKeys="true" keyProperty="wOrderPlanModel.wOPlanID"
+		keyColumn="WOPlanID">
+		insert into
+		transactionalData.TBL_WORK_ORDER_PLAN(ProjectID,ScopeID,Periodicity_Daily,Periodicity_Weekly,StartDate,
+		StartTime,EndDate,SignumID,Active,CreatedBy,CreatedDate,LastModifiedBy,
+		LastModifiedDate,Priority,Type,PeriodicityHourly,DOVolume,isNodeWise)
+		values(
+		#{wOrderPlanModel.projectID}
+		,#{wOrderPlanModel.scopeID}
+		,#{wOrderPlanModel.periodicityDaily}
+		,#{wOrderPlanModel.periodicityWeekly}
+		,#{wOrderPlanModel.startDate}
+		,#{wOrderPlanModel.startTime}
+		,#{wOrderPlanModel.endDate}
+		,#{signumID}
+		,1
+		,#{wOrderPlanModel.createdBy}
+		,dbo.GetDateIST()
+		,NULL
+		,NULL
+		,#{wOrderPlanModel.priority}
+		,#{wOrderPlanModel.type}
+		,#{wOrderPlanModel.lstPeriodicityHourly}
+		,#{wOrderPlanModel.doVolume}
+		,#{wOrderPlanModel.isNodeWise}
+		)
+	</insert>
+	
+	<insert id = 'createWorkOrderNodes' parameterType="com.ericsson.isf.model.CreateWorkOrderModel2">
+    	insert into transactionalData.TBL_WORK_ORDER_NODES(WOID,NodeType,NodeNames,CreatedBy,CreatedDate,LastModifiedBy,LastModifiedDate,networkElementId,Active)
+    	values
+		 <foreach item="item" index="index" collection="listOfNode" open="(" separator="),("  close=")">
+		#{createWorkOrderModel.woId},
+		#{item.nodeType},
+		#{item.nodeNames},
+		#{createWorkOrderModel.createBy},
+		dbo.GetDateIST(),
+		#{createWorkOrderModel.createBy},
+		dbo.GetDateIST(),
+		#{item.networkElementID},
+		1
+		</foreach>
+    </insert>
+
+	<select id='getProjectBySignumForProjectQueue'
+		resultType="com.ericsson.isf.model.ProjectModel">
+	   SELECT DISTINCT RR.projectid 
+       FROM   transactionaldata.tbl_resourcerequests RR (nolock) 
+       JOIN transactionaldata.tbl_resourceposition RP (nolock) 
+         ON RR.resourcerequestid = RP.resourcerequestid 
+       JOIN transactionaldata.tbl_workeffort WF (nolock) 
+         ON WF.resourcepositionid = RP.resourcepositionid 
+       WHERE  WF.signum = #{signum} 
+       AND WF.enddate >= CONVERT(VARCHAR(8), dbo.Getdateist(), 1) 
+       AND WF.positionstatus = 'DEPLOYED' 
+       AND WF.isactive = 1 
+       AND RP.isactivie = 1 
+       UNION 
+       SELECT DISTINCT dr.projectid 
+       FROM   transactionaldata.tbl_delivery_responsible DR (nolock) 
+       INNER JOIN transactionaldata.tbl_projects p 
+               ON p.projectid = dr.projectid 
+       WHERE  DR.signumid = #{signum}
+       AND DR.active = 1 
+       AND isdeleted = 0 
+       AND status != 'closed' 
+	</select>
+	
+	 	 <select id="validateLastModifiedByForPMDRNE" resultType="Boolean">
+		IF EXISTS(select 1 from transactionalData.TBL_Delivery_Responsible where signumID = #{logedInSignum} and projectID = #{projectId} and Active = 1)
+ or exists(
+         select 1 from transactionalData.TBL_Projects where projectCreator = #{logedInSignum} and projectID = #{projectId} 
+         )
+          or exists(
+         select 1 from transactionalData.tbl_work_order where SignumID = #{logedInSignum} and woid= #{woid} and Active=1
+        
+         )
+            BEGIN
+                SELECT 1 AS 'RESULT'
+            END
+        ELSE
+            BEGIN
+                SELECT 0 AS 'RESULT'
+            END
+    </select>
+    
+    
+     <select id="validateLastModifiedForPMDRBookedResource" resultType="Boolean">
+			IF EXISTS(select 1 from transactionalData.TBL_Delivery_Responsible where signumID = #{lastModifiedBy} and projectID = #{projectID} and Active = 1)
+ or exists(
+         select 1 from transactionalData.TBL_Projects where projectCreator = #{lastModifiedBy} and projectID = #{projectID}
+        
+         )
+		  or exists(
+      
+		SELECT 1
+       FROM   transactionaldata.tbl_resourcerequests RR (nolock) 
+       JOIN transactionaldata.tbl_resourceposition RP (nolock) 
+         ON RR.resourcerequestid = RP.resourcerequestid 
+       JOIN transactionaldata.tbl_workeffort WF (nolock) 
+         ON WF.resourcepositionid = RP.resourcepositionid 
+       WHERE  WF.signum = #{lastModifiedBy}
+       AND WF.enddate >= CONVERT(VARCHAR(8), dbo.Getdateist(), 1) 
+       AND WF.positionstatus = 'DEPLOYED' 
+       AND WF.isactive = 1 
+       AND RP.isactivie = 1 
+	   and RR.ProjectID = #{projectID}
+        
+         )
+            BEGIN
+                SELECT 1 AS 'RESULT'
+            END
+        ELSE
+            BEGIN
+                SELECT 0 AS 'RESULT'
+            END
+    </select>
+    
+    
+    <select id='checkNotStartedStatusOfWorkOrderV1' resultType="Boolean">
+        IF Exists(SELECT 1 FROM transactionalData.TBL_WORK_ORDER where WOID = #{wOID} and Status in ('ASSIGNED','REOPENED') and Active = 1)
+        Begin
+        Select 1 as 'Result'
+        End
+        else
+        Begin
+        Select 0 as 'Result'
+        End
+    </select>
+</mapper>

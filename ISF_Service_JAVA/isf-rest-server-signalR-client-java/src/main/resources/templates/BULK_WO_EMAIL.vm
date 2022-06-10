@@ -1,0 +1,90 @@
+<HTML>
+    <BODY>
+		<style>
+body{
+	font-family: "Ericsson Hilda";
+	font-size: 15px;
+}
+table {
+border-collapse: collapse;
+}
+.head {
+   text-transform: uppercase;
+   color:#102a63;
+   background: #f2f2f2;
+  
+}
+table.datatable td{
+	
+	border: 2px solid #a3a6a8;
+	padding: 10px;
+}
+.isf-logo {
+    padding: 7px;
+    height: 28px;
+
+}
+.isf-name {
+    font-size:8pt;
+	color:#102a63;
+	align:right
+}
+span{
+font-family: "Ericsson Hilda";
+	font-size: 15px;
+}
+</style>
+	<table width="100%">
+		<tr>
+			<td width="10%"><img src="http://www.ericsson.com/shared/eipa/images/elogo.png" /></td>
+			<td width="90%"  style=    "width: 90%; vertical-align: bottom;text-align: right"><span >ISF Alerts</span></td>
+		</tr>
+	</table>
+	
+	 <hr style="margin: 0 -10px">
+	<BR/>
+	 <span   style="font-size:15pt;font-family:Arial,sans-serif; color:#89BA17 ;text-transform:uppercase"><B>Bulk Workorder Request </B></span>
+	  
+	  <BR/>
+	   <span>
+	   <BR/><BR/>
+      Dear User,<BR/>
+	   This email alert is sent to you regarding your bulk workorder creation request via email. #if(!$v.error)Records received and sent for work order generation. 
+	   You will receive mail once process is completed.#end Below are the details: <br/><span>
+		
+	  <BR/>
+	  <TABLE class="datatable">
+	  <TR class="head">
+			<TD>Filename</TD>
+			<TD>Status</TD>
+			<TD>Processing Date</TD>
+			<TD>No Of records</TD>
+			<TD>Description</TD>
+	   </TR>
+	   <TR>
+			<TD>$v.filename</TD>
+			<TD>#if(!$v.error)<span style="color:green;font-weight:bold;">Success </span>#else <span style="color:red;;font-weight:bold;">Failure</span>	#end </TD>
+			<TD>$dateTime.format($v.processingDate)</TD>
+			<TD>$v.processedRecords</TD>
+			<TD>#if($v.error)$v.error #end</TD>
+		</TR>
+       </TABLE>
+	   </br>
+	    </br>
+	  <br/>
+	  <span>
+	  Link : <a href="$v.ISF_HOME_LINK/$v.pageLink/">Click here to open ISF</a>
+	  <br/><br/>Please refresh your Work Order page to view the updated Work Orders.
+	  <br/>This is an auto-generated message. Please do not reply.
+	  <br/>Have a good day.
+	  <br><br>Best Regards,
+	  <br>ISF Team<br></pre><br>
+	  </br>
+	  <span>
+	 
+    </BODY>
+  </HTML>
+  
+    
+    
+  

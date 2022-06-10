@@ -1,0 +1,236 @@
+﻿@{
+    ViewBag.Title = "Project";
+}
+
+@*<div id="base">
+    <div id="content">*@
+@*@Scripts.Render("~/Scripts/services/JsProject")*@
+
+
+@{ string WOVid = "workOrderViewIdPrefix_"; }
+<script src="~/Scripts/NetworkElement/networkElementAddEdit.js"></script>
+
+<style>
+
+    #nodeNames .select2-container .select2-selection {
+        height: 70px;
+        overflow: auto;
+    }
+
+    .form-group .form-control:focus ~ label:after,
+    .form-group .form-control:focus ~ .form-control-line:after {
+        visibility: hidden;
+    }
+
+    .bodyWidth {
+        width: 100%;
+    }
+
+    .hideThisDiv {
+        display: none;
+    }
+
+    .showThisDiv {
+        display: block;
+    }
+</style>
+
+<script>
+    // show NE Add/Edit box
+    function showNEAddEdit(page) {
+        var neAddEditOnEditButton = document.getElementById('divNEEdit');
+        if (neAddEditOnEditButton.classList.contains('hideThisDiv')) {
+            neAddEditOnEditButton.classList.remove('hideThisDiv');
+            neAddEditOnEditButton.classList.add('showThisDiv');
+        }
+        $(`#showSaveButtonEdit_${page}`).css('display', 'block');
+        var nodePanel = document.getElementById('nodePanel');
+        nodePanel.classList.add('in');
+        nodePanel.classList.remove('collapse');
+    }
+</script>
+
+<div class="content">
+    <section>
+        <div class="row bodyWidth">
+            <div class="col-lg-12">
+                <div class="panel panel-default">
+                    <div class="panel panel-default">
+
+                        <a class="pull-right fa fa-angle-down" href="#DODetailPanel" aria-expanded="false" aria-controls="DODetailPanel" data-toggle="collapse" style="cursor:pointer;font-size:20px;"></a>
+                        <div id="DODetailHeader" class="panel-heading">
+
+                        </div>
+
+                        <div class="panel-body" id="DODetailPanel" style="padding:10px;">
+                            <div class="row" style="overflow-y:auto">
+                                <table id="table_do_details" class="display table-bordered" cellspacing="0" width="100%"></table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row bodyWidth">
+            <div class="col-lg-12">
+                <div class="panel panel-default">
+                    <div class="panel panel-default">
+                        <a class="pull-right fa fa-angle-down" href="#WODetailPanel" aria-expanded="false" aria-controls="WODetailPanel" data-toggle="collapse" style="cursor:pointer;font-size:20px;"></a>
+                        <a class="pull-right projectDetailsIcon" onclick="getWODetails()" style="padding-right: 10px;color:green;font-size:20px;cursor:pointer"><i class="fa fa-edit" style="color:green"></i></a>
+                        <div id="wODetailHeader" class="panel-heading">
+                            <input class="form-control" id="@(WOVid)hidden_status" type="hidden">
+                        </div>
+                        <div class="panel-body collapse" id="WODetailPanel">
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <form role="form">
+                                        <div class="form-group">
+                                            <label>Project Name</label>
+                                            <input class="form-control" placeholder="Project Name" id="@(WOVid)project_name" disabled>
+                                            <input class="form-control" id="@(WOVid)project_id" type="hidden">
+                                        </div>
+                                        <div class="form-group" id="woNameDiv" style="margin-bottom: 0px;">
+                                            <label>WO Name</label>
+                                            <div class="form-group col-lg-12" style="display:inline;">
+                                                <input class="form-control" style="width:auto; margin-top: 2px;padding-left: 0px;" data-toggle="tooltip" placeholder="WO Name" id="woNameBefore" onmouseover="tooltipValWO()" disabled />
+                                                <label data-toggle="tooltip" placeholder="MarketArea_Country" id="woNameAfter" style="padding-left:100px; margin-bottom: 0px;margin-top: 28px;"></label>
+                                            </div>
+                                            <input class="form-control" id="@(WOVid)wo_id" type="hidden">
+                                        </div>
+                                        <div class="form-group" id="woNameDivErisite" style="display:none;">
+                                            <label>WO Name</label>
+                                            <input class="form-control" id="@(WOVid)full_wo_name" disabled>
+                                            <input class="form-control" id="@(WOVid)wo_id" type="hidden">
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label> Start Date </label>
+                                            <input id="@(WOVid)start_date" class="form-control" type="text" disabled readonly="readonly">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Start Time</label>
+                                            <input class="form-control" type="time" id="@(WOVid)start_time" disabled>
+                                            <input class="form-control" type="hidden" id="@(WOVid)hiddenDateTime">
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-lg-6">
+                                    <form role="form">
+                                        <div class="form-group">
+                                            <label>Assigned To</label>
+                                            <input class="form-control" type="text" id="@(WOVid)assigned_to" disabled>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label>Estimated Effort</label>
+                                            <input class="form-control" type="number" id="@(WOVid)estimated_effort" disabled>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label>Priority</label>
+                                            <select class="form-control" id="@(WOVid)priority" disabled>
+                                                <option value="0">Select one</option>
+                                            </select>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <button class="btn btn-primary" id="btn_update_project" onclick="updateWODetails()" style="float:right" disabled>Save</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row bodyWidth">
+            <div class="col-lg-12">
+                <div class="panel panel-default">
+                    <a class="pull-right fa fa-angle-down" href="#activityPanel" aria-expanded="false" aria-controls="activityPanel" data-toggle="collapse" style="cursor:pointer;font-size:20px;"></a>
+                    <div class="panel-heading">
+                        Activity Details
+                    </div>
+                    <div class="panel-body collapse" id="activityPanel">
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <form role="form">
+                                    <div class="form-group">
+                                        <label>Domain -Subdomain</label>
+                                        <input class="form-control" type="text" id="@(WOVid)domain-subdomain" disabled>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Service area - Sub Service Area</label>
+                                        <input class="form-control" type="text" id="@(WOVid)service-area-sub-service-area" disabled>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="col-lg-6">
+                                <form role="form">
+                                    <div class="form-group">
+                                        <label>Technology</label>
+                                        <input class="form-control" type="text" id="@(WOVid)technology" disabled>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Activity - Subactivity</label>
+                                        <input class="form-control" type="text" id="@(WOVid)activity-subactivity" disabled>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row bodyWidth">
+            <div class="col-lg-12">
+                <div class="panel panel-default">
+                    <a class="pull-right fa fa-angle-down nodeColl" href="#nodePanel" aria-expanded="false" aria-controls="nodeDetailPanel" data-toggle="collapse" style="cursor:pointer;font-size:20px;"></a>
+                    <a class="pull-right nodeDetailsIcon" onclick="showNEAddEdit('edit'); resetNetworkElementFields('edit'); setDefaultValuesForNEAndCount('edit');" style="padding-right:10px;color:green;font-size:20px;cursor:pointer"><i class="fa fa-edit" style="color:green"></i></a>
+                    <div class="panel-heading">
+                        <p>Network Element Details</p>
+                    </div>
+                    <div id="nodePanel" class="panel-body collapse">
+                        <div class="panel-body" id="nodeDetailPanel">
+                            <div class="row">
+                                <table id="table_wo_nodes_detail_edit" class="display table-bordered" cellspacing="0" width="100%"></table>
+                            </div>
+                            <input type="hidden" id="projectIdWarning" />
+                            <input type="hidden" id="domainWarning" />
+                            <input type="hidden" id="technologyWarning" />
+                            <hr />
+                            <div id="divNEEdit" class="hideThisDiv">
+                                @Html.Partial("_NetworkElementAddEdit", "edit")
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="scopeModal2" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">Project Created</h4>
+                    </div>
+                    <div class="modal-body">
+
+                        <div class="form-group">
+                            <label class="control-label col-lg-8" id="modal_text" style="text-align: center;">Your project was created successfully.</label>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </section>
+</div>
+
+
+

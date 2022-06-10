@@ -1,0 +1,103 @@
+﻿
+
+    @{
+        ViewBag.Title = "Instant Feedback";
+    }
+        
+@Scripts.Render("~/bundles/DataTableScript")
+@Styles.Render("~/bundles/css/DataTableStyle")
+@Styles.Render("~/bundles/css/DeliveryTracker")
+
+<style>
+    .addFeedbackDiv {
+        border: 1px solid lightgray;
+        padding: 5px;
+        margin-left: 0px;
+        margin-right: 0px;
+    }
+
+    .EditCssInstantFeedback {
+        border: 1px solid #ccc;
+        background-color: #ecf7ec;
+        border-radius: 4px;
+    }
+
+    a.icon-edit:hover {
+        background-color: #1169b5;
+    }
+
+    .colorChange {
+        background-color: #ccf5cc !important;
+    }
+</style>
+
+<script type="text/javascript" src="~/Scripts/ActivityMaster/InstantFeedback.js"></script>
+
+<div class="col-lg-12" style="padding-right: 0px;padding-left: 0px;">
+    <div class="panel panel-default" style="margin: 10px;">
+        <div class="panel-heading ">
+            <h3 class="panel-title" style="text-align:center;font-weight:bold;" title=""> Add Instant Feedback </h3>
+
+        </div>
+        <div class="panel-body" id="" style="padding: 10px;">
+            <div class="row addFeedbackDiv">
+                <form id="addFeedbackForm" action="#">
+                    <div class="col-sm-4">
+                        <label for="feedbackText">Instant Feedback Text</label> <a class="text-danger">*</a>:
+                        <input type="text" id="feedbackText" name="feedbackText" class="form-control" placeholder="Feedback" maxlength="100" onkeyup="validateForEnablingAddButton();" required />
+                        @*<div class="row">
+                                <label id="instantFeedbackRequired" style="color: red; font-size: 10px; padding-left: 11px;"></label>
+                            </div>*@
+                        @*<span id="requiredText" style="display:none"></span>*@
+                        <input type="hidden" id="feedbackID" />
+
+
+                    </div>
+
+                    <div class="col-sm-2" style="margin-top: 9px;">
+                        <label style="margin-left:4px">Type</label> <a class="text-danger">*</a>:
+                        @*<div style="width: 20px;  margin-left: 1px; margin-top: -25px; font-size: 17px; color:red;"></div>*@
+                        <select class="select2able select2-offscreen" id="typeOfInstantFeedback">
+                            @*<option value=""></option>*@
+                            <option value="STEP" selected>STEP</option>
+                            @*<option value="WF">WF</option>*@
+
+
+
+                        </select>
+                        @*<div class="row">
+                                <label id="typeOfInstantFeedbackRequired" style="color: red; font-size: 10px; padding-left: 15px;"></label>
+                            </div>*@
+
+                    </div>
+
+                    <div class="col-sm-2" style="margin-left: 75px;top: 27px;">
+                        <label for="radioActive">Active: </label>
+                        <input type="radio" id="radioActive" name="feedbackState" value="True" class="" checked />
+                    </div>
+
+                    <div class="col-sm-1" id="radioButtonDiv" style="top: 25px;padding-right: 10px;margin-right: 20px;margin-left: 0px;padding-left: 0px;left: auto;right: 23px;">
+                        <label for="radioInactive">Inactive: </label>
+                        <input type="radio" id="radioInactive" name="feedbackState" value="False" class="" />
+                    </div>
+
+
+                    <div class="col-lg-2" id="addCancelButtonDiv" style="margin-top: 23px;">
+                        <div class="form-group" style="margin-left: 18px;">
+                            <input type="button" class="btn btn-primary btnaddInstantFeedback" id="btnaddInstantFeedback" style="width: 68px;margin-right: 2px;margin-left: 0px;" value="Add" onclick="" />
+                            <input type="button" class="btn btn-danger  btnCancelInstantFeedback" id="btnCancelInstantFeedback" style="font-size: 12px;" value="Cancel" onclick="" />
+                        </div>
+                    </div>
+                </form>
+                <label id="output"></label>
+
+
+            </div>
+
+            <div class="table-responsive" style="margin-top:15px;">
+                <table id="instantFeedbackTable" class="table table-bordered table-striped table-hover"></table>
+            </div>
+        </div>
+    </div>
+</div>
+

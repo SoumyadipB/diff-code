@@ -1,0 +1,284 @@
+<?xml version="1.0" encoding="windows-1252"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ericsson.isf.mapper.TestMapper">
+	
+    
+    <select id='getProjectID' resultType='Integer'>
+         <![CDATA[
+          select distinct ProjectID from transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF_temp_13
+          where  flowchartJSON is not null 
+          and  flowchartJSON <> '{"cells":[]}' order by ProjectID asc
+         ]]>
+    </select>
+    
+    <select id='getSubActivityList' resultType='Integer'>
+         <![CDATA[
+        select distinct SubActivityID from transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF_temp_13
+        where  flowchartJSON is not null 
+        and ProjectID=#{projectID} and  flowchartJSON <> '{"cells":[]}'
+         ]]>
+    </select>
+    
+    <resultMap type="FlowChartDefModel" id="FlowChartDefModelResult">
+        <id property="subActivityFlowChartDefID" column="SubActivityFlowChartDefID"/>
+        <result property="projectID" column="ProjectID"/>
+        <result property="subActivityID" column="SubActivityID"/>
+        <result property="flowChartJSON" column="FlowChartJSON" />
+        <result property="sourceProjectID" column="SourceProjectID" />
+        <result property="createdBy" column="CreatedBy" />
+        <result property="createdDate" column="CreatedDate" />
+        <result property="active" column="Active" />
+        <result property="versionNumber" column="VersionNumber" />
+        <result property="workFlowName" column="WorkFlowName" />
+        <result property="type" column="Type" />
+        <collection property='lstErrorBean' ofType='ErrorBean'>
+            <result property="errorCategory" column="ErrorCategory"/>
+            <result property="errorDescription" column="ErrorDescription"/>
+            <result property="details" column ="Details"/>
+        </collection>
+    </resultMap> 
+    
+      <select id='getFlowChartJSONForSID' resultMap='FlowChartDefModelResult'>
+         <![CDATA[
+         select SubActivityFlowChartDefID,FlowChartJSON,VersionNumber 
+         from transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF_temp_13
+         where  flowchartJSON is not null 
+         and projectID =#{projectID} 
+         and SubActivityID=#{subActivityID}
+         and flowchartJSON <> '{"cells":[]}'
+         ]]>
+    </select>
+    
+     <resultMap type="FlowChartStepInformationModel" id="FlowChartStepInformationModelResult">
+        <id property="fcStepDetailsID" column="FCStepDetailsID"/>
+        <result property="subActivityFlowChartDefID" column="SubActivityFlowChartDefID"/>
+        <result property="stepID" column="StepID"/>
+        <result property="stepName" column="StepName" />
+        <result property="taskID" column="TaskID" />
+        <result property="task" column="Task" />
+        <result property="executionType" column="ExecutionType" />
+        <result property="avgEstdEffort" column="AvgEstdEffort" />
+        <result property="toolID" column="ToolID" />
+        <result property="versionNumber" column="VersionNumber" />
+        <result property="rpaID" column="RpaID" />
+        <result property="masterTask" column="MasterTask" />
+    </resultMap> 
+    
+   <!--   <select id='getFlowChartStepDetails' resultMap='FlowChartStepInformationModelResult'>
+         select SubActivityFlowChartDefID,StepID,StepName,TaskID
+                Task,ExecutionType,AvgEstdEffort,ISNULL(ToolID,2) as ToolID,
+		Active,VersionNumber,RpaID,StepType
+	from transactionalData.TBL_FLOWCHART_STEP_DETAILS
+        where SubactivityFlowchartDefID=#{subActivityFlowChartDefID} 
+        and VersionNumber = #{versionNumber} and Active=1
+    </select> --> 
+    
+    <select id='checkIFDataExists' resultType='Boolean'>
+        IF  EXISTS(select * from transactionalData.TBL_FLOWCHART_JSON_UPDATE_STATUS_temp_13 where projectID =#{projectID}  
+			   and SubActivityID=#{subActivityID} and SubactivityFlowchartDefID =#{subActivityFlowChartDefID} 
+                           and VersionNumber=#{versionNumber} and Status='Success')
+        BEGIN
+              Select 1 as 'Result'
+        END
+        ELSE
+        BEGIN
+              Select 0 as 'Result'
+        END
+    </select>
+          
+    
+    <select id='getToolName' resultType='String'>
+      select ISNULL(Tool,'No Tool') as Tool 
+      from refData.TBL_TOOL_INVENTORY where toolID=#{toolID}
+    </select>
+    
+    <update id='updateFlowChartJSON'>
+        update transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF_temp_13
+        set FlowChartJSON =#{flowChartJSON}, LastModifiedDate = dbo.GetDateIST()
+        where projectID=#{projectID} and subActivityID=#{subActivityID} and SubactivityFlowchartDefID=#{subActivityFlowChartDefID} 
+        and VersionNumber = #{versionNumber}
+    </update>
+    
+    <insert id='saveUpdateStatus' >
+        INSERT INTO transactionalData.TBL_FLOWCHART_JSON_UPDATE_STATUS values
+        (#{projectID},#{subActivityID},#{subActivityFlowChartDefID},#{versionNumber},#{status})
+    </insert>
+    
+    <select id='getFlowChartDefID' resultType='Integer'>
+        <![CDATA[
+        select DEF.SubActivityFlowChartDefID from transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF DEF
+        LEFT JOIN transactionalData.TBL_WORK_ORDER_FLOWCHART_STEP_LINK_DETAILS L on DEF.SubActivityFlowChartDefID = L.SubActivityFlowChartDefID
+        where DEF.FlowChartJSON is not NULL AND l.SubActivityFlowChartDefID is NULL AND  flowchartJSON <> '{"cells":[]}' order by SubActivityFlowChartDefID 
+
+        ]]>
+    </select>
+    
+    <select id='getFlowChartJSON' resultType='String'>
+        select FlowChartJSON from transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF where SubActivityFlowChartDefID =#{DefID}
+    </select>
+    
+    <select id='getFlowChartJSONForStep' resultMap='FlowChartDefModelResult'>
+        select SubActivityFlowChartDefID,ProjectID,SubActivityID,FlowChartJSON,VersionNumber
+        from transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF where SubActivityFlowChartDefID =#{DefID}
+    </select>
+    
+     <select id='getFlowChartDefIDForStep' resultType='Integer'>
+        <![CDATA[
+        select distinct def.SubActivityFlowChartDefID from transactionalData.TBL_FLOWCHART_STEP_DETAILS st
+        inner join transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF def on st.SubActivityFlowChartDefID=def.SubActivityFlowChartDefID
+        where StepType is null  and def.FlowChartJSON is not null and DEF.flowchartJSON <> '{"cells":[]}' order by def.SubActivityFlowChartDefID 
+        ]]>
+    </select>
+    
+    <update id='updateFlowChartStepDetailsValue'>
+         
+            update transactionalData.TBL_FLOWCHART_STEP_DETAILS  
+            set StepType=#{stepType},RPAID = #{rpaID},ToolID = #{toolID}
+            where SubActivityFlowChartDefID = #{subActFCDefID}
+            and Task=#{taskName} 
+            and TaskID=#{taskID}
+            and StepID=#{stepID}
+            and StepName=#{stepName}
+            and VersionNumber =#{versionNo}
+         
+     </update>
+     
+     <insert id="insertInFlowChartStepDetails">
+        Insert into transactionalData.TBL_FLOWCHART_STEP_DETAILS(SubActivityFlowChartDefID,StepID,StepName,
+                                                                 TaskID,Task,ExecutionType,ToolID,TaskReason,
+                                                                 Active,VersionNumber,MasterTask,StepType,RPAID) 
+        Values(#{subActFCDefID,jdbcType=INTEGER},
+        #{stepId,jdbcType=INTEGER},
+        #{stepName,jdbcType=VARCHAR},
+        #{taskId,jdbcType=INTEGER},
+        #{taskName,jdbcType=VARCHAR},
+        #{exeType, jdbcType=VARCHAR},
+        #{toolId,jdbcType=INTEGER},
+        #{reason},1,#{versionNO},
+        #{masterTask},#{stepType},
+        #{rpaID,jdbcType=INTEGER})
+    </insert>
+    
+    <select id='getFlowChartDefIDToUpdateJSON' resultType='Integer'>
+          select distinct SubActivityFlowChartDefID 
+          from transactionalData.TBL_FLOWCHART_STEP_DETAILS 
+          where ToolID!=toolIDjson and toolIDJson is not null
+          order by SubActivityFlowChartDefID
+    </select>
+    
+      <resultMap type="FlowChartStepModel" id="FlowChartStepModelResult">
+        <id property="subActivityFlowChartStepID" column="SubActivityFlowChartStepID"/>
+        <result property="subActivityFlowChartDefID" column="SubActivityFlowChartDefID"/>
+        <result property="stepName" column="StepName" />
+        <result property="displayStepName" column="DisplayStepName" />
+        <result property="graphicalRepresentation" column="GraphicalRepresentation" />
+        <result property="executionType" column="ExecutionType" />
+        <result property="responsible" column="Responsible" />
+        <result property="isTaskOrSubTask" column="IsTaskOrSubTask" />
+        <result property="taskOrParentTaskMapped" column="TaskOrParentTaskMapped" />
+        <result property="ordering" column="Ordering" />
+        <result property="stepJSON" column="StepJSON" />
+        <result property="toolName" column="ToolName" />
+        <result property="toolID" column="ToolID" />
+        <result property="taskName" column="TaskName" />
+        <result property="taskID" column="TaskID" />
+    </resultMap>
+    
+    <resultMap type="FlowChartDependencyModel" id="FlowChartDependencyModelResult">
+        <result property="subActivityFlowChartDepID" column="SubActivityFlowChartDepID"/>
+        <result property="srcFlowChartStepID" column="SourceFlowChartStepID"/>
+        <result property="srcStepName" column="SourceStepName"/>
+        <result property="destFlowChartStepID" column="DestFlowChartStepID" />
+        <result property="destStepName" column="DestStepName" />
+        <result property="linkJson" column="LinkJSON" />
+        <result property="linkText" column = "DependencyCondition"/>
+    </resultMap>
+     
+	<select id ="uploadExcel" statementType="CALLABLE">
+        {call user_sp_FlowChart_UploadExcel_Migration (#{FileTable,mode=IN, jdbcType=VARCHAR},
+        #{subActivityFlowChartDefID,mode=IN, jdbcType=INTEGER})}
+    </select>
+    
+     <select id  ='getFlowChartStepDetails' resultMap ='FlowChartStepModelResult'>
+        select * from transactionalData.TBL_SUBACTIVITY_FLOWCHART_STEP_MIGRATION 
+        where subActivityFlowChartDefID = #{subActivityFlowChartDefID}
+    </select> 
+    
+    <select id ='getDependencyStep' resultMap = 'FlowChartDependencyModelResult'>
+        select distinct 
+        src.SubActivityFlowChartStepID as SourceFlowChartStepID, src.StepName as SourceStepName, 
+        dest.SubActivityFlowChartStepID as DestFlowChartStepID, dest.StepName as destStepName,
+        dep.DependencyCondition
+        from transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEP_MIGRATION dep
+        inner join transactionalData.TBL_SUBACTIVITY_FLOWCHART_STEP_MIGRATION src on dep.SubActivityFlowChartDependentStepID = src.SubActivityFlowChartStepID
+        inner join transactionalData.TBL_SUBACTIVITY_FLOWCHART_STEP_MIGRATION dest on dep.SubActivityFlowChartStepID = dest.SubActivityFlowChartStepID
+        where src.subActivityFlowChartDefID = #{subActivityFlowChartDefID}  and dest.subActivityFlowChartDefID = #{subActivityFlowChartDefID}
+    </select> 
+    
+    <select id ="getFlowChartSubActivityID" resultType='Integer'>
+    
+    	select SubActivityID from transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF where subActivityFlowChartDefID = #{flowChartDefID}
+    </select>
+    
+    <update id='updateFlowChartJsonDATA'>
+       update  transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF set FlowChartJSON =#{jsonData}  where SubActivityFlowChartDefID = #{flowChartDefID} 
+    </update>
+    
+    <insert id='insertStatus'>
+    
+     INSERT into transactionalData.TBL_MIGRATION_STATUS(FlowchartDefID,Status) Values(#{flowChartDefID},#{status})    
+    </insert>
+    
+    
+    <select id='viewWorkFlow' resultType="String">
+    
+    	select FlowChartJSON  from transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF  where SubActivityFlowChartDefID = #{flowChartDefID} 
+    
+    </select>
+    
+    
+    <select id='getWorkFlowInformation' resultType="java.util.LinkedHashMap">
+    
+		select distinct data.* from(
+		select  def.ProjectID,def.SubActivityID,def.WorkFlowName,def.VersionNumber, 
+		case when def.WFOwner = p.CreatedBy then def.WFOwner+'[PM]'
+		when def.WFOwner = dr.SignumID then def.WFOwner+'[DR]' end as WFOwnerName
+		from transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEF  def
+		INNER JOIN transactionalData.TBL_PROJECTS p on def.projectID = p.projectID
+		INNER JOIN transactionalData.TBL_DELIVERY_RESPONSIBLE dr on dr.ProjectID = def.ProjectID 
+		where SubActivityFlowChartDefID = #{flowChartDefID} 
+		)as data where data.WFOwnerName is not null
+    
+    </select>
+    
+     <select id = 'getTaskDetailForSID' resultType="java.util.LinkedHashMap">
+	 select tsk.TaskID,tsk.Task,
+			tsk.AvgEstdEffort
+			from refData.TBL_TASK tsk
+			where tsk.SubActivityID = #{subActivityID} and tsk.TaskID = #{taskID}
+			and tsk.Active=1 
+    </select>
+    
+     <select id = 'getToolDetailForWF' resultType="java.util.LinkedHashMap">
+	 select top 1 CAST(ToolID as varchar(12)) as ToolID,Tool as ToolName  
+         from refData.TBL_TOOL_INVENTORY where toolID= #{toolID} and Active =1
+         order by toolID desc
+    </select>
+    
+    <delete id='deleteMigrationData'>
+    
+    DELETE FROM transactionalData.TBL_SUBACTIVITY_FLOWCHART_DEP_MIGRATION 
+	WHERE SubActivityFlowChartStepID in 
+	(select SubActivityFlowChartStepID from transactionalData.TBL_SUBACTIVITY_FLOWCHART_STEP_MIGRATION 
+	where SubActivityFlowChartDefID = #{flowChartDefID} )
+	
+    </delete>
+    
+     <delete id='deleteMigrationStepData'>
+   
+    DELETE FROM transactionalData.TBL_SUBACTIVITY_FLOWCHART_STEP_MIGRATION
+	WHERE SubActivityFlowChartDefID =#{flowChartDefID}
+    
+    </delete>
+     
+</mapper> 

@@ -1,0 +1,14 @@
+
+<div style="display:flex"> 
+    <mat-icon [color]="data.response == 'Success' ? 'primary' : 'warn'" style="padding-top: 4px;margin-right: 5px;">{{data.response == 'Success' ? 'check_circle' : 'error'}}</mat-icon>
+    <h1 mat-dialog-title class="responseHeader">{{data.response}}</h1>
+</div>
+
+  
+<div mat-dialog-content>
+  <p class="msgCSS">{{data.message}}</p>  
+</div>
+<div  id="buttonClose" mat-dialog-actions align="end">
+  <button mat-raised-button (click)="onNoClick()" >OK</button>
+  <!-- <button mat-button [mat-dialog-close]="data.animal" cdkFocusInitial>Ok</button> -->
+</div>

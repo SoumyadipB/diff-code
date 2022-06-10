@@ -1,0 +1,12 @@
+table{
+    width: 100%;
+}
+
+.close {
+    position: absolute;
+    background: red;
+    color: white;
+    top: -10px;
+    right: -10px;
+}
+

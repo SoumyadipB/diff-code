@@ -1,0 +1,950 @@
+﻿@{
+    ViewBag.Title = "ActivityMaster";
+}
+@Styles.Render("~/bundles/css/DataTableStyle")
+
+@*<link href="~/Content/CSS/font-awesome.min.css" rel="stylesheet" />*@
+
+@Scripts.Render("~/bundles/DataTableScript")
+@Scripts.Render("~/bundles/DataTablesAdvancedScript")
+
+@Scripts.Render("~/bundles/ActivityMaster")
+
+<script>
+    $(document).ready(function () {
+        $('#tbAddSAAvgEstdEffort').keypress(function (tecla) {
+            var letterNumber = /^[0-9]+$/;
+            if (!$('#tbAddSAAvgEstdEffort').val().match(letterNumber)) {
+                var text = $('#tbAddSAAvgEstdEffort').val();
+                text = $('#tbAddSAAvgEstdEffort').val().substring(0, text.length - 1);
+                $('#tbAddSAAvgEstdEffort').val(text);
+                $('#tbAddSAAvgEstdEffort-Required').text("Only numbers");
+            }
+            else
+                $('#tbAddSAAvgEstdEffort-Required').text("");
+        });
+        
+    });
+
+</script>
+
+<div class="col-lg-12">
+    <div class="panel panel-default">
+        <div class="panel-heading">Delivery Catalogue</div>
+        <section>
+
+            <div id="page-body">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="widget-container fluid-height">
+                            <div class="heading tabs">
+                                <label class="panel-heading" style="font-size:medium;color:#000">Activity Master</label>
+                                <ul class="nav nav-tabs pull-right" data-tabs="tabs" id="tabs">
+                                    <li class="active">
+                                        <a data-toggle="tab" href="#tab1" onclick="getDomains()"><span>Domain</span></a>
+                                    </li>
+                                    <li>
+                                        <a data-toggle="tab" href="#tab2" onclick="getServiceAreas()"><span>Service Area</span></a>
+                                    </li>
+                                    <li>
+                                        <a data-toggle="tab" href="#tab3" onclick="getTechnologies()"><span>Technology</span></a>
+                                    </li>
+                                    <li>
+                                        <a data-toggle="tab" href="#tab4" onclick="onLoadSubActivity()"><span>Activity</span></a>
+                                    </li>
+
+                                </ul>
+                            </div>
+                            <div class="tab-content padded" id="my-tab-content">
+                                <div class="tab-pane active" id="tab1">
+                                    <br><button class="btn btn-primary" data-toggle="modal" data-target="#AddDomain" onclick="ClearData()"><i class="icon-plus"></i>Add Domain</button>
+                                    <img id="domainLoader" src="../Content/images/loading-1.gif" style="width:50px; height:50px;" /><br>
+                                    <div style="display: block; overflow-x: auto;" id="div_tabledomain">
+
+                                        <table class="table table-striped table-bordered table-hover" id="tblDomains">
+                                            <thead>
+                                                <tr>
+                                                    <th>Domain/SubDomain</th>
+                                                    <th>Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="tbodyDomains"></tbody>
+
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="tab-pane" id="tab2">
+                                    <br><button class="btn btn-primary" data-toggle="modal" data-target="#AddSA" onclick="ClearData()"><i class=" icon-plus"></i>Add Service Area</button>
+                                    <img id="serviceLoader" src="../Content/images/loading-1.gif" style=" width:50px; height:50px;" /><br>
+                                    <div class="dataTable_wrapper">
+                                        <table class="table table-striped table-bordered table-hover" id="tblServiceAreas">
+                                            <thead>
+                                                <tr>
+                                                    <th>Service Area/Sub Service Area</th>
+                                                    <th>Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="tbodyServiceAreas"></tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="tab-pane" id="tab3">
+                                    <br><button class="btn btn-primary" data-toggle="modal" data-target="#AddTech" onclick="ClearData()"><i class=" icon-plus"></i>Add Technology</button>
+                                    <img id="techLoader" src="../Content/images/loading-1.gif" style=" width:50px; height:50px;" /><br>
+
+                                    <div class="dataTable_wrapper">
+                                        <table class="table table-striped table-bordered table-hover" id="tblTechnology">
+                                            <thead>
+                                                <tr>
+                                                    <th>Technology</th>
+                                                    <th>Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="tbodyTechnology"> </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="tab-pane" id="tab4">
+                                    <div class="col-lg-12">
+                                        <div class="col-lg-4">
+                                            <label>Domain/SubDomain</label>
+                                            <div style="width:300px;">
+                                                <select id="cbxDomain" class="select2able"></select>
+                                            </div>
+                                            <div class="row">
+                                                <label id="cbxDomain-Required" style="color: red; font-size: 10px; padding-left: 15px;"></label>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-4">
+                                            <label>Service Area/SubService Area</label>
+                                            <div style="width: 300px;">
+                                                <select id="cbxSA" class="select2able"></select>
+                                            </div>
+                                            <div class="row">
+                                                <label id="cbxSA-Required" style="color: red; font-size: 10px; padding-left: 15px;"></label>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-4">
+                                            <label>Technology</label>
+                                            <div style="width: 300px;">
+                                                <select id="cbxTechnology" class="select2able"></select>
+                                            </div>
+                                            <div class="row">
+                                                <label id="cbxTechnology-Required" style="color: red; font-size: 10px; padding-left: 15px;"></label>
+                                            </div>
+                                        </div>
+                                        <div style="text-align:right">
+                                            <button class="btn btn-primary" type="button" title="Search" onclick="ValidateSearchSubActivity()">Search</button>
+                                            <button class="btn btn-primary" type="button" title="Add New Activity" onclick="ValidateComboxAddSubActivity()">Add New</button>
+                                        </div>
+                                    </div>
+
+
+                                    <div>
+                                        <div class="dataTable_wrapper">
+                                            <table class="table table-striped table-bordered table-hover" id="tbsubactivities">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Domain/Sub Domain</th>
+                                                        <th>Service Area/Sub Service Area</th>
+                                                        <th>Technology</th>
+                                                        <th>Activity/Subactivity</th>
+                                                        <th>Execution Type</th>
+                                                        <th>AvgEstdEffort</th>
+                                                        <th>Actions</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="tbodySubActivities"></tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- /.panel -->
+            <!-- /.Popup Domain tab1-->
+            <!--Add New Domain-->
+            <div class="modal fade" id="AddDomain" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title" id="scopeTitleModal">Add Domain</h4>
+                        </div>
+                        <div class="modal-body" id="scopeContentModal">
+                            <div class="widget-container fluid-heightA clearfix">
+
+                                <div class="widget-content padded">
+                                    <form action="#" class="form-horizontal">
+                                        <div class="form-group">
+                                            <label class="control-label col-md-2">
+                                                Domain
+                                            </label>
+                                            <div class="col-md-7">
+                                                <input id="tbAddNewDomain" class="form-control" placeholder="Domain" type="text">
+                                                <div style="width: 20px; margin-left: 280px; margin-top: -26px; font-size: 17px; color:red;">*</div>
+                                                <div class="row">
+                                                    <label id="tbAddNewDomain-Required" style="color: red; font-size: 10px; text-align: center; padding-left:15px;"></label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-1">
+
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="control-label col-md-2">
+                                                Subdomain
+                                            </label>
+                                            <div class="col-md-7">
+                                                <input id="tbAddNewSubDomain" class="form-control" placeholder="Subdomain" type="text">
+                                                <div style="width: 20px; margin-left: 280px; margin-top: -26px; font-size: 17px; color:red;">*</div>
+                                                <div class="row">
+                                                    <label id="tbAddNewSubDomain-Required" style="color: red; font-size: 10px; text-align: center; padding-left:15px;"></label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <a id="submitModal" class="btn btn-primary" onclick="ValidateAddDomain()">Submit</a>
+                            <button id="cancelModal" type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--Edit Domain-->
+            <div class="modal fade" id="EditDomain" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title" id="scopeTitleModal">Edit Domain</h4>
+                        </div>
+                        <div class="modal-body" id="scopeContentModal">
+                            <div class="widget-container fluid-heightA clearfix">
+                                <div class="widget-content padded">
+                                    <form action="#" class="form-horizontal">
+                                        <div class="form-group">
+                                            <label hidden id="lblEditDomain" class="control-label col-md-2"></label>
+                                            <label class="control-label col-md-4">
+                                                Domain
+
+                                            </label>
+                                            <div class="col-md-6">
+                                                <input id="tbEditDomain" class="form-control" placeholder="Domain" type="text">
+                                                <div style="width: 20px; margin-left: 240px; margin-top: -26px; font-size: 17px; color:red;">*</div>
+                                                <div class="row">
+                                                    <label id="tbEditDomain-Required" style="color: red; font-size: 10px; text-align: center; padding-left:15px;"></label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="control-label col-md-4">
+                                                Subdomain
+
+                                            </label>
+                                            <div class="col-md-6">
+                                                <input id="tbEditSubdomain" class="form-control" placeholder="Subdomain" type="text">
+                                                <div style="width: 20px; margin-left: 240px; margin-top: -26px; font-size: 17px; color:red;">*</div>
+                                                <div class="row">
+                                                    <label id="tbEditSubdomain-Required" style="color: red; font-size: 10px; text-align: center; padding-left:15px;"></label>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <a id="submitModal" class="btn btn-primary" onclick="ValidateEditDomain()">Submit</a>
+                            <button id="cancelModal" type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--Delete Domain-->
+            <div class="modal fade" id="DeleteDomain" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title" id="scopeTitleModal">Delete Domain</h4>
+                        </div>
+                        <div class="modal-body" id="scopeContentModal">
+                            <div class="widget-container fluid-heightA clearfix">
+                                <div class="widget-content padded">
+                                    <form action="#" class="form-horizontal">
+                                        <center>
+                                            <label hidden id="lblDeleteDomain"></label>
+                                            <p>Are you sure?</p>
+                                            <a id="submitModal" class="btn btn-primary" onclick="deleteDomain()">Yes</a>
+                                            &thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;
+                                            <button id="cancelModal" type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                                        </center>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- /.Popup Domain tab1-->
+            <!-- /.Popup Service Area tab2-->
+            <!--Add New Service Area-->
+            <div class="modal fade" id="AddSA" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title" id="scopeTitleModal">Add Service Area</h4>
+                        </div>
+                        <div class="modal-body" id="scopeContentModal">
+                            <div class="widget-container fluid-heightA clearfix">
+                                <div class="widget-content padded">
+                                    <form action="#" class="form-horizontal">
+                                        <div class="form-group">
+                                            <label class="control-label col-md-4" style="text-align:left; padding-left:50px"> Service Area</label>
+                                            <div class="col-md-6">
+                                                <input class="form-control" id="tbServiceArea" placeholder="Service Area" type="text">
+                                                <div style="width: 20px; margin-left: 240px; margin-top: -26px; font-size: 17px; color:red;">*</div>
+                                                <div class="row">
+                                                    <label id="tbServiceArea-Required" style="color: red; font-size: 10px; text-align: center; padding-left:15px;"></label>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="control-label col-md-4" style="text-align: left; padding-left: 50px"> Sub Service Area</label>
+                                            <div class="col-md-6">
+                                                <input class="form-control" id="tbSubServiceArea" placeholder="Sub Service Area" type="text">
+                                                <div style="width: 20px; margin-left: 240px; margin-top: -26px; font-size: 17px; color:red;">*</div>
+                                                <div class="row">
+                                                    <label id="tbSubServiceArea-Required" style="color: red; font-size: 10px; text-align: center; padding-left:15px;"></label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-1">
+
+                                            </div>
+
+                                        </div>
+
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <a id="submitModal" onclick="ValidateAddServiceArea()" class="btn btn-primary">Submit</a>
+                            <button id="cancelModal" type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--Edit Service Area-->
+            <div class="modal fade" id="EditSA" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title" id="scopeTitleModal">Edit Service Area</h4>
+                        </div>
+                        <div class="modal-body" id="scopeContentModal">
+                            <div class="widget-container fluid-heightA clearfix">
+                                <div class="widget-content padded">
+                                    <form action="#" class="form-horizontal">
+
+                                        <div class="form-group">
+                                            <label hidden id="lblEditSA" class="control-label col-md-2">ID</label>
+                                            <label class="control-label col-md-4" style="text-align:left; padding-left:50px">
+                                                Service
+
+                                            </label>
+                                            <div class="col-md-7">
+                                                <input id="tbEditServiceArea" class="form-control" placeholder="Service Area" type="text">
+                                                <div style="width: 20px; margin-left: 280px; margin-top: -26px; font-size: 17px; color:red;">*</div>
+                                                <div class="row">
+                                                    <label id="tbEditServiceArea-Required" style="color: red; font-size: 10px; text-align: center; padding-left:15px;"></label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="control-label col-md-4" style="text-align:left; padding-left:50px">  Sub Service Area</label>
+                                            <div class="col-md-7">
+                                                <input id="tbEditSubServiceArea" class="form-control" placeholder="Sub Service Area" type="text">
+                                                <div style="width: 20px; margin-left: 280px; margin-top: -26px; font-size: 17px; color:red;">*</div>
+
+
+                                                <div class="row">
+                                                    <label id="tbEditSubServiceArea-Required" style="color: red; font-size: 10px; text-align: center; padding-left:15px;"></label>
+                                                </div>
+                                            </div>
+
+                                        </div>
+
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <a id="submitModal" onclick="ValidateEditServiceArea()" class="btn btn-primary">Submit</a>
+                            <button id="cancelModal" type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--Delete Service Area-->
+            <div class="modal fade" id="DeleteSA" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title" id="scopeTitleModal">Delete  Service Area</h4>
+                        </div>
+                        <div class="modal-body" id="scopeContentModal">
+                            <div class="widget-container fluid-heightA clearfix">
+                                <div class="widget-content padded">
+                                    <form action="#" class="form-horizontal">
+                                        <center>
+                                            <label hidden id="lblDelServiceArea"></label>
+                                            <p>Are you sure?</p>
+                                            <a id="submitModal" class="btn btn-primary" onclick="deleteServiceArea()">Yes</a>
+                                            &thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;
+                                            <button id="cancelModal" type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                                        </center>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- /.Popup tab2 finish-->
+            <!-- /.Popup technology tab3-->
+            <!--Add New Technology-->
+            <div class="modal fade" id="AddTech" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title" id="scopeTitleModal">Add Technology</h4>
+                        </div>
+                        <div class="modal-body" id="scopeContentModal">
+                            <div class="widget-container fluid-heightA clearfix">
+
+                                <div class="widget-content padded">
+                                    <form action="#" class="form-horizontal">
+                                        <center>
+                                            <div class="form-group">
+                                                <label class="control-label col-md-2">
+                                                    Technology
+
+                                                </label>
+                                                <div class="col-md-7">
+                                                    <input id="tbNewTechnology" class="form-control" placeholder="Technology" type="text">
+                                                    <div style="width: 20px; margin-left: 270px; margin-top: -26px; font-size: 17px; color:red;">*</div>
+                                                    <div class="row">
+                                                        <label id="tbNewTechnology-Required" style="color: red; font-size: 10px; text-align: center; padding-left:15px;"></label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </center>
+
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <a id="submitModal" class="btn btn-primary" onclick="ValidateAddTechnology()">Submit</a>
+                            <button id="cancelModal" type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--Edit Technology-->
+            <div class="modal fade" id="EditTech" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title" id="scopeTitleModal">Edit Technology</h4>
+                        </div>
+                        <div class="modal-body" id="scopeContentModal">
+                            <div class="widget-container fluid-heightA clearfix">
+                                <div class="widget-content padded">
+                                    <form action="#" class="form-horizontal">
+                                        <center>
+                                            <div class="form-group">
+                                                <label hidden id="lblEditTechnology" class="control-label col-md-2"></label>
+                                                <label class="control-label col-md-2">
+                                                    Technology
+
+                                                </label>
+                                                <div class="col-md-7">
+                                                    <input id="tbEditTechnology" class="form-control" placeholder="Technology" type="text">
+                                                    <div style="width: 20px; margin-left: 270px; margin-top: -26px; font-size: 17px; color:red;">*</div>
+                                                    <div class="row">
+                                                        <label id="tbEditTechnology-Required" style="color: red; font-size: 10px; text-align: center; padding-left:15px;"></label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </center>
+
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <a id="submitModal" class="btn btn-primary" onclick="ValidateEditTechnology()">Submit</a>
+                            <button id="cancelModal" type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--Delete Technology-->
+            <div class="modal fade" id="DeleteTech" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title" id="scopeTitleModal">Delete</h4>
+                        </div>
+                        <div class="modal-body" id="scopeContentModal">
+                            <div class="widget-container fluid-heightA clearfix">
+                                <div class="heading">
+                                    <i class="fa fa-trash-o"></i>Delete Technology
+                                </div>
+                                <div class="widget-content padded">
+                                    <form action="#" class="form-horizontal">
+                                        <center>
+                                            <p>Are you sure?</p>
+                                            <label hidden id="lblDeleteTechnology"></label>
+                                            <a id="submitModal" class="btn btn-primary" onclick="deleteTechnology()">Yes</a>
+                                            &thinsp;&thinsp;&thinsp;&thinsp;&thinsp;&thinsp;
+                                            <button id="cancelModal" type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                                        </center>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- /.Popup Domain tab1-->
+            <!-- /.Popup Sub-Activity tab4-->
+            <!--Add New-->
+            <div class="modal fade" id="modalAddAct" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title" id="scopeTitleModal">Add Activity</h4>
+                        </div>
+                        <div class="modal-body" id="scopeContentModal">
+                            <div class="row">
+                                <div class="form-group">
+                                    <label class="control-label col-md-4" style="text-align: left; padding-left: 20px"> Activity</label>
+                                    <div class="col-md-3">
+                                        <div style="width:300px;">
+                                            <input id="tbAddSAActivity" class="form-control" placeholder="Activity">
+                                        </div>
+                                        <div style="width: 20px; margin-left: 310px; margin-top: -26px; font-size: 17px; color:red;">*</div>
+                                        <div class="row">
+                                            <label id="tbAddSAActivity-Required" style="color: red; font-size: 10px; text-align: center; padding-left:15px;"></label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="form-group">
+                                    <label class="control-label col-md-4" style="text-align: left; padding-left: 20px"> SubActivity</label>
+                                    <div class="col-md-6">
+                                        <div style="width:300px;">
+                                            <input id="tbAddSASubActivity" class="form-control" placeholder="Sub-Activity">
+                                        </div>
+                                        <div style="width: 20px; margin-left: 310px; margin-top: -26px; font-size: 17px; color:red;">*</div>
+                                        <div class="row">
+                                            <label id="tbAddSASubActivity-Required" style="color: red; font-size: 10px; text-align: center; padding-left:15px;"></label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="form-group">
+                                    <label class="control-label col-md-4" style="text-align: left; padding-left: 20px">Estimated Work Effort</label>
+                                    <div class="col-md-6">
+                                        <div style="width:300px;">
+                                            <input id="tbAddSAAvgEstdEffort" type="number" class="form-control" placeholder="Estimated Work Effort">
+                                        </div>
+                                        <div style="width: 20px; margin-left: 310px; margin-top: -26px; font-size: 17px; color:red;">*</div>
+                                        <div class="row">
+                                            <label id="tbAddSAAvgEstdEffort-Required" style="color: red; font-size: 10px; text-align: center; padding-left:15px;"></label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <a id="submitModal" class="btn btn-primary" onclick="ValidateAddSubActivity()">Submit</a>
+                            <button id="cancelModal" type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!--modal Add tab 4 boton 1-->
+            <div class="modal fade" id="modalAddTask" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                <div class="modal-dialog2" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title" id="scopeTitleModal">Add New Task</h4>
+                        </div>
+                        <div class="modal-body" id="scopeContentModal">
+                            <div class="col-lg-12">
+                                <table border="0">
+                                    <tr>
+                                        <td style="vertical-align:text-top;" align="left">
+                                            <div class="form-group">
+                                                <label hidden id="lblAddTask"></label>
+                                                <label>
+                                                    Task
+
+                                                </label>
+
+                                                <div style="width:250px;">
+                                                    <input id="tbTask" class="form-control" placeholder="Task">
+                                                </div>
+                                                <div style="width: 20px; margin-left: 260px; margin-top: -26px; font-size: 17px; color:red;">*</div>
+                                                <div class="row">
+                                                    <label id="tbTask-Required" style="color: red; font-size: 10px; padding-left: 15px;"></label>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td style="vertical-align:text-top;" align="left">
+                                            <div class="form-group">
+                                                <label>Description</label>
+                                                <div style="width:250px;">
+                                                    <input id="tbDescription" class="form-control" placeholder="Description">
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td style="vertical-align:text-top;" align="left">
+                                            <div class="form-group">
+                                                <label> Execution Type </label>
+                                                <div style="width:250px;">
+                                                    <select id="cbxExecutionType" class="form-control">
+                                                        <option value="0">Select One</option>
+                                                        <option value="Manual">Manual</option>
+                                                        <option value="Automatic">Automatic</option>
+                                                    </select>
+                                                </div>
+                                                <div style="width: 20px; margin-left: 260px; margin-top: -26px; font-size: 17px; color: red;">*</div>
+                                                <div class="row">
+                                                    <label id="cbxExecutionType-Required" style="color: red; font-size: 10px; padding-left: 15px;"></label>
+                                                </div>
+                                            </div>
+                                        </td>
+
+                                    </tr>
+
+                                    <tr>
+                                        <td style="vertical-align:text-top;" align="left">
+                                            <div class="form-group">
+                                                <label>
+                                                    Tools
+                                                </label>
+                                                <div style="width:250px;">
+                                                    <select class="form-control" id="select_Tools"></select>
+                                                </div>
+                                                <div style="width: 20px; margin-left: 260px; margin-top: -26px; font-size: 17px; color: red;">*</div>
+                                                <div class="row">
+                                                    <label id="select_Tools-Required" style="color: red; font-size: 10px; padding-left: 15px;"></label>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td style="vertical-align:text-top;" align="left">
+                                            <div class="form-group">
+                                                <label>
+                                                    Estimated Work Effort
+
+                                                </label>
+                                                <div style="width:250px;">
+                                                    <input id="tbAvgEstd" type="number" class="form-control" placeholder="Estimated Work Effort">
+                                                </div>
+                                                <div style="width: 20px; margin-left: 260px; margin-top: -26px; font-size: 17px; color: red;">*</div>
+                                                <div class="row">
+                                                    <label id="tbAvgEstd-Required" style="color: red; font-size: 10px; padding-left: 15px;"></label>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td colspan="5" align="right">
+                                            <a id="submitModal" class="btn btn-primary" onclick="ValidateAddTask()">Add Task</a>
+                                        </td>
+                                    </tr>
+                                </table>
+                                <div class="dataTable_wrapper">
+                                    <table class="table table-striped table-bordered table-hover" id="tblTasks">
+                                        <thead>
+                                            <tr>
+                                                <th>Task</th>
+                                                <th>Description</th>
+                                                <th>Execution Type</th>
+                                                <th>Tools</th>
+                                                <th>AvgEstEffort</th>
+                                                <th>Edit / Delete</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="tbodyTasks"></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button id="cancelModal" type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--modal Edit task-->
+            <div class="modal fade" id="modalEditTask" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" style="border-color:black;">
+                <div class="modal-dialog2" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title" id="scopeTitleModal">Edit Task</h4>
+                        </div>
+                        <div class="modal-body" id="scopeContentModal">
+                            <div class="row">
+                                <label hidden id="lblEditTask"></label>
+                                <label hidden id="lblSubActID"></label>
+                                <div class="form-group">
+                                    <label class="control-label col-md-4">Task</label>
+                                    <div class="col-md-6">
+                                        <div style="width:250px;">
+                                            <input id="tbTask_edit" class="form-control" placeholder="Task">
+                                        </div>
+                                        <div style="width: 20px; margin-left: 260px; margin-top: -26px; font-size: 17px; color: red;">*</div>
+                                        <div class="row">
+                                            <label id="tbTask_edit-Required" style="color: red; font-size: 10px; padding-left: 15px;"></label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-4">Description</label>
+                                    <div class="col-md-6">
+                                        <div style="width:250px;">
+                                            <input id="tbDescription_edit" class="form-control" placeholder="Description">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-4">Execution Type</label>
+                                    <div class="col-md-6">
+                                        <div style="width:250px;">
+                                            <select id="cbxExecutionType_edit" class="form-control">
+                                                <option value="0">Select One</option>
+                                                <option value="Manual">Manual</option>
+                                                <option value="Automatic">Automatic</option>
+                                            </select>
+                                            <div style="width: 20px; margin-left: 260px; margin-top: -26px; font-size: 17px; color: red;">*</div>
+                                            <div class="row">
+                                                <label id="cbxExecutionType_edit-Required" style="color: red; font-size: 10px; padding-left: 15px;"></label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-4">Tools </label>
+                                    <div class="col-md-6">
+                                        <div style="width:250px;">
+                                            <select class="form-control" id="select_ToolsEdit"></select>
+                                        </div>
+                                        <div style="width: 20px; margin-left: 260px; margin-top: -26px; font-size: 17px; color: red;">*</div>
+                                        <div class="row">
+                                            <label id="select_ToolsEdit-Required" style="color: red; font-size: 10px; padding-left: 15px;"></label>
+                                        </div>
+                                    </div>
+                                </div><br />
+                                <div class="form-group">
+                                    <label class="control-label col-md-4">
+                                        Estimated Work Effort
+                                    </label>
+                                    <div class="col-md-6">
+                                        <div style="width:250px;">
+                                            <input id="tbAvgEstd_edit" type="number" class="form-control" placeholder="Estimated Work Effort">
+                                        </div>
+                                        <div style="width: 20px; margin-left: 260px; margin-top: -26px; font-size: 17px; color: red;">*</div>
+                                        <div class="row">
+                                            <label id="tbAvgEstd_edit-Required" style="color: red; font-size: 10px; padding-left: 15px;"></label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <br /><br /><br /><br />
+                            <div class="modal-footer">
+                                <a class="btn btn-primary" onclick="ValidateEditTask($('#lblSubActID')[0].innerText)">Save</a>
+                                <button id="cancelModal" type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div><br /><br /><br /><br />
+            </div>
+            <!--modal Delete task-->
+            <div class="modal fade" id="modalDeleteTask" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title" id="scopeTitleModal">Delete Task</h4>
+                        </div>
+                        <div class="modal-body" id="scopeContentModal">
+                            <div class="col-lg-6">
+                                <center>
+                                    <label hidden id="lblDeleteTask"></label>
+                                    <p>Are you sure to delete this task?</p>
+                                    <a class="btn btn-primary" onclick="deleteTask()">Submit</a>&thinsp;&thinsp;&thinsp;&thinsp;
+                                    <button id="cancelModal" type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                                </center>
+                            </div>
+                        </div>
+                        <div class="modal-footer"></div>
+                    </div>
+                </div>
+            </div>
+            <!--modal Edit-->
+            <div class="modal fade" id="modalEditAct" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                <div class="modal-dialog2" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title" id="scopeTitleModal">Edit Activity</h4>
+                        </div>
+                        <div class="modal-body" id="scopeContentModal">
+                            <div class="widget-container fluid-heightA clearfix">
+                                <div class="widget-content padded">
+                                    <div class="col-lg-3">
+                                        <div class="form-group">
+                                            <br>
+                                            <label hidden id="lblEditSA"></label>
+                                            <label style="padding-left: 15px;">Domain/SubDomain</label>
+                                        </div>
+                                        <div class="form-group">
+                                            <br>
+                                            <label style="padding-left: 15px;">Service Area/Sub Service Area</label>
+                                        </div>
+                                        <div class="form-group">
+                                            <br>
+                                            <label style="padding-left: 15px;">Technology</label>
+                                        </div>
+                                        <div class="form-group">
+                                            <br>
+
+                                            <label style="padding-left: 15px;">Activity</label>
+                                        </div>
+                                        <div class="form-group">
+                                            <br>
+
+                                            <label style="padding-left: 15px;"> Sub Activity</label>
+                                        </div>
+                                        <div class="form-group">
+                                            <br>
+
+                                            <label style="padding-left: 15px;"> Estimated Work Effort</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <div class="form-group">
+                                            <input id="tbEditDomainSA" class="form-control" value="Domain" readonly>
+                                        </div>
+                                        <div class="form-group">
+                                            <input id="tbEditServAreaSA" class="form-control" value="Service Area" readonly>
+                                        </div>
+                                        <div class="form-group">
+                                            <input id="tbEditTechSA" class="form-control" value="Technology" readonly>
+                                        </div>
+                                        <div class="form-group">
+                                            <div style="width:500px;">
+                                                <input id="tbEditActivitySA" class="form-control" placeholder="Activity">
+                                            </div>
+                                            <div style="width: 20px; margin-left: 510px; margin-top: -26px; font-size: 17px; color:red;">*</div>
+                                            <div class="row">
+                                                <label id="tbEditActivitySA-Required" style="color: red; font-size: 10px; text-align: center; padding-left:15px;"></label>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div style="width:500px;">
+                                                <input id="tbEditSubActivitySA" class="form-control" placeholder="Sub-Activity">
+                                            </div>
+                                            <div style="width: 20px; margin-left: 510px; margin-top: -26px; font-size: 17px; color:red;">*</div>
+                                            <div class="row">
+                                                <label id="tbEditSubActivitySA-Required" style="color: red; font-size: 10px; text-align: center; padding-left:15px;"></label>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div style="width:500px;">
+                                                <input id="tbEditAvgSA" class="form-control" type="number" placeholder="Estimated Work Effort">
+                                            </div>
+                                            <div style="width: 20px; margin-left: 510px; margin-top: -26px; font-size: 17px; color:red;">*</div>
+                                            <div class="row">
+                                                <label id="tbEditAvgSA-Required" style="color: red; font-size: 10px; text-align: center; padding-left:15px;"></label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <a id="submitModal" class="btn btn-primary" onclick="ValidateEditSubActivity()">Submit</a>
+                            <button id="cancelModal" type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!--modal delete-->
+            <div class="modal fade" id="modalDeleteAct" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title" id="scopeTitleModal">Delete Activity</h4>
+                        </div>
+                        <div class="modal-body" id="scopeContentModal">
+                            <div class="col-lg-6">
+                                <center>
+                                    <label hidden id="lblDeleteSubActivity"></label>
+                                    <p>Are you sure?</p>
+                                    <a class="btn btn-primary" onclick="deleteSubActivity()">Submit</a>
+                                    &thinsp;&thinsp;&thinsp;&thinsp;
+                                    <button id="cancelModal" type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                                </center>
+                            </div>
+
+                        </div>
+                        <div class="modal-footer">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- /.Popup Sub-Activity tab4-->
+        </section>
+    </div>
+</div>

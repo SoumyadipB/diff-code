@@ -1,0 +1,166 @@
+﻿@{
+    ViewBag.Title = "Work Instructions";
+}
+
+
+@Styles.Render("~/bundles/css/DataTableStyle")
+
+<style>
+    tfoot {
+        display: table-header-group;
+    }
+
+    .heading {
+        font-weight: bold;
+    }
+</style>
+
+<div class="col-lg-12">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            WORK INSTRUCTIONS
+            <a class="btn btn-success pull-right" data-toggle="modal" href="#WrkInsAddModal"><i class="fa fa-plus-square"></i>Add Work Instructions</a>
+        </div>
+
+        <div class="panel-body">
+
+            <div class="table-responsive" style="overflow-x: auto;">
+                <table id="tblWorkInstructions" class="table table-striped table-bordered table-hover" style="width:100%"></table>
+            </div>
+            <div id="WrkInsAddModal" class="modal fade in" role="dialog">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h4 class="modal-title well well-sm text-center">
+                                Add Work Instructions
+                            </h4>
+                        </div>
+                        <div class="modal-body">
+                            <form id="Wrk_Ins_Add" enctype="multipart/form-data" method="POST">
+
+                                <div class="col-md-12" id="WrkInsFileDiv">
+                                    <b> Attach File (PDF only): </b>
+                                    <input class="btn btn-default" type="file" id="workInstructionfile" name="workInstructionfile" accept=".pdf">
+                                </div>
+                                <div class="col-md-12" id="WrkInsNmediv">
+                                    <b> Work Instruction Name: </b>
+                                    <input type="text" class="form-control" id="textAreaWrkInsNme" name="workInsModal{}workInstructionName" rows="1" style="border:outset 2px lightblue;" required pattern="^\S{1,100}" />
+                                </div>
+                                <br />
+                                <div class="col-md-12" id="WrkInsdescDiv">
+                                    <label for="textAreaWrkIns"><b>Description :</b></label>
+                                    <input type="text" class="form-control" id="textAreaWrkIns" name="workInsModal{}description" rows="1" style="border:outset 2px lightblue;" required pattern="^\S{1,500}" />
+                                </div>
+                                <br />
+                                <div class="col-lg-12">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            Applicable For
+                                        </div>
+                                        <div class="panel-body">
+                                            <div id="WrkInsDomaindiv" class="col-md-12">
+                                                Domain:
+                                                <select id="WrkInsDomain" class="select2able" required></select>
+                                            </div>
+                                            <br />
+                                            <div id="WrkInsTchnlgydiv" class="col-md-12">
+                                                Technology:
+                                                <select id="WrkInsTchnlgy" class="select2able" required></select>
+                                            </div>
+                                            <br />
+                                            <div id="WrkInsVendorNmediv" class="col-md-12">
+                                                Vendor  :
+                                                <br>
+                                                <select id="WrkInsVendorNme" class="select2able" required></select>
+                                            </div>
+                                            <br />
+                                            <div class="col-md-12" id="WrkInsSwDiv">
+                                                SW Release:
+                                                <input type="text" class="form-control" id="textAreaWrkInsSw" name="workInsModal{}sWrelease" rows="1" style="border:outset 2px lightblue;" required pattern="^\S{1,100}" />
+                                            </div>
+                                            <br />
+                                            <div id="WrkInsKpiNmediv" class="col-md-12">
+                                                KPI Name:
+                                                <input type="text" class="form-control" id="textAreaWrkInsKpi" name="workInsModal{}kPIName" rows="1" style="border:outset 2px lightblue;" required pattern="^\S{1,100}" />
+                                            </div>
+                                            <input type="hidden" id="hiddenDomain" name="workInsModal{}domainID" />
+                                            <input type="hidden" id="hiddenVendor" name="workInsModal{}vendorID" />
+                                            <input type="hidden" id="hiddenTechnology" name="workInsModal{}technologyID" />
+                                            <input type="hidden" id="hiddenCreatedBy" name="workInsModal{}createdBy" />
+                                            <input type="hidden" id="hiddenLastModifiedBy" name="workInsModal{}modifiedBy" />
+                                            <input type="hidden" id="hiddenflowchartowner" name="workInsModal{}flowchartOwner" />
+                                            <input type="hidden" id="hiddenrevision" name="workInsModal{}revNumber" />
+                                            <input type="hidden" id="hiddenactive" name="workInsModal{}active" />
+
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-2 pull-right">
+                                        <button id="closeModal" type="button" class="btn btn-danger" onclick="closeWrkInsModal();">Close</button>
+                                    </div>
+                                    <div class="col-md-2 pull-right">
+                                        <button type="button" id="addWorkInsButton" onclick="validationForAdd();" class="btn btn-success">ADD</button>
+                                    </div>
+
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="updateWrkIns" class="modal fade in" role="dialog">
+
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title well well-sm text-center">UPDATE INSTRUCTIONS</h4>
+                    </div>
+                    <div class="modal-body" id="updateWrkInsBody">
+
+                    </div>
+                </div>
+
+            </div>
+
+            <div id="deleteRole" class="modal" role="dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title well well-sm text-center">Delete Capability</h4>
+                    </div>
+                    <div class="modal-body" id="deleteDetails">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@Scripts.Render("~/bundles/global")
+@Scripts.Render("~/bundles/WorkInstructions")
+
+
+@Scripts.Render("~/bundles/DataTableScript")
+
+
+@Scripts.Render("~/bundles/DataTablesAdvancedScript")
+
+@Scripts.Render("~/bundles/Admin")
+
+<style>
+    .required:before {
+        content: '* ';
+        color: red;
+        font-weight: 300;
+    }
+
+    header {
+        background-color: #666;
+        padding: 30px;
+        text-align: center;
+        font-size: 35px;
+        color: white;
+    }
+</style>

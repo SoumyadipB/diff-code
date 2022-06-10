@@ -1,0 +1,917 @@
+@{
+    ViewBag.Title = "ResourceRequestFulfilment";
+}
+
+@Scripts.Render("~/bundles/Resource")
+@Scripts.Render("~/bundles/DataTableScript")
+
+@Styles.Render("~/bundles/css/DataTableStyle")
+@Scripts.Render("~/bundles/DataTablesAdvancedScript")
+@Styles.Render("~/bundles/css/Resource")
+
+@Styles.Render("~/bundles/css/bootstrapDatepicker")
+@Scripts.Render("~/bundles/datepicker")
+
+<style>
+    thead label {
+        font-weight: 600 !important;
+    }
+
+    thead {
+        text-transform: uppercase;
+    }
+
+    .select2able {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+
+    tfoot {
+        text-transform: uppercase;
+        display: table-header-group;
+    }
+
+    .select2 .select2-container {
+        width: 100%;
+    }
+
+
+
+    .select2-dropdown {
+        z-index: 2055;
+    }
+
+    /*For selected signum*/
+
+    .tag {
+        font-size: 12px;
+        /*padding: .3em .4em .4em;
+        margin: 0 .1em;*/
+    }
+
+        .tag a {
+            color: #fff;
+            cursor: pointer;
+            /*opacity: 0.6;*/
+        }
+
+            .tag a:hover {
+                opacity: 1.0;
+            }
+
+        .tag .remove {
+            vertical-align: bottom;
+            top: 0;
+        }
+
+        .tag a {
+            margin: 0 0 0 .3em;
+        }
+
+            .tag a .glyphicon-white {
+                color: #fff;
+                margin-bottom: 2px;
+            }
+
+    /*For selected signum*/
+
+    .spn_availability {
+        cursor: pointer;
+        color: blue;
+    }
+
+
+    /*FOR USER AVAILABILITY MODAL*/
+
+
+    
+    #userAvailabilityModal .modal-header {
+        padding: 8px;
+    }
+
+    #userAvailabilityModal .modal-body .dt_availability_parent_div {
+        max-height: 300px;
+        overflow: scroll;
+        overflow-x: hidden;
+        background-color: #f1f1f163;
+        padding: 6px;
+        border: 1px solid #e6e4e4;
+    }
+
+
+    #userAvailabilityModal .modal-body .details_div {
+        margin-bottom:10px;
+    }
+    
+    
+    #userAvailabilityModal .modal-body .month_name {
+        font-size: 14px;
+        font-weight: bold;
+        border-bottom: 1px solid #CCC;
+        margin-bottom: 5px;
+    }
+
+
+    #userAvailabilityModal .modal-body .dt_row {
+        display: flex;
+        margin-bottom: 8px;
+    }
+
+    #userAvailabilityModal .modal-body .dt_box {
+        border: 1px solid #CCC;
+        margin: 1px;
+        width: 3.4%;
+    }
+
+    #userAvailabilityModal .modal-body .dt_box_weekend {
+        width: 1px;
+        background-color: #e09d9d;
+    }
+
+
+    #userAvailabilityModal .modal-body .dt {
+        text-align: center;
+        font-size: 12px;
+        background-color: #CCD;
+        height: 27px;
+        font-weight: bold;
+        padding-top: 4px;
+    }
+
+    #userAvailabilityModal .modal-body .req_hr {
+        height: 31px;
+        background-color: #f1f1f1;
+        border-bottom: 1px solid #CCC;
+        text-align: center;
+        padding-top: 7px;
+        font-size: 13px;
+    }
+
+    #userAvailabilityModal .modal-body .avai_hr {
+        height: 34px;
+        background-color: #f1f1f1;
+        text-align: center;
+        padding-top: 5px;
+        font-size: 14px;
+    }
+
+        #userAvailabilityModal .modal-body .avai_hr.available { /*availabile*/
+            background-color: #4ed04c;
+        }
+
+        #userAvailabilityModal .modal-body .avai_hr.availableOutofRange {
+            background-color: #7ecc7d;
+        }
+
+        #userAvailabilityModal .modal-body .avai_hr.available.with_in_range {
+            border-bottom: 4px solid darkslategray;
+        }
+
+        #userAvailabilityModal .modal-body .avai_hr.available.start_slot {
+            border-bottom-left-radius: 20px;
+            border-top-left-radius: 20px;
+        }
+
+        #userAvailabilityModal .modal-body .avai_hr.available.end_slot {
+            border-bottom-right-radius: 20px;
+            border-top-right-radius: 20px;
+        }
+
+        #userAvailabilityModal .modal-body .avai_hr.notAvailable { /*not available*/
+            background-color: #f55a5a;
+        }
+
+
+
+    #userAvailabilityModal .modal-body .dt_box_label {
+        padding: 10px;
+    }
+
+
+    #userAvailabilityModal .modal-body .req_hr_label {
+        height: 42px;
+        padding-top: 10px;
+    }
+
+    /*footer*/
+    #userAvailabilityModal .modal-footer {
+        padding: 2px 20px 30px;
+        display: flex;
+    }
+
+        #userAvailabilityModal .modal-footer .legends {
+            width: 70%;
+            text-align: left;
+        }
+
+            #userAvailabilityModal .modal-footer .legends .legend_row {
+                display: flex;
+                margin-bottom:5px;
+            }
+
+            #userAvailabilityModal .modal-footer .legends .legend_icons {
+                width:75px;
+            }
+            #userAvailabilityModal .modal-footer .legends .legend_caption {
+                width: 161px;
+            }
+
+            #userAvailabilityModal .modal-footer .legends .recommended_slot_icon {
+                background-color: #4ed04c;
+                width: 55px;
+                height: 25px;
+                border-bottom: 4px solid darkslategray;
+                border-bottom-right-radius: 14px;
+                border-bottom-left-radius: 14px;
+                border-top-right-radius: 13px;
+                border-top-left-radius: 13px;
+            }
+
+            #userAvailabilityModal .modal-footer .legends .available_icon {
+                background-color: #7ecc7d;
+                width: 23px;
+                height: 25px;
+                float:right;
+            }
+
+            #userAvailabilityModal .modal-footer .legends .not_available_icon {
+                background-color: #f55a5a;
+                width: 23px;
+                height: 25px;
+               
+                margin-left: 19px;
+            }
+            
+             #userAvailabilityModal .modal-footer .modalBtns {
+                text-align: right;
+                width: 30%;
+            }
+
+
+    /*FOR USER AVAILABILITY MODAL*/
+
+
+
+    /*for progress bar*/
+
+    .progress {
+        overflow: visible;
+        margin-bottom: 26px;
+        height: 4px;
+    }
+
+    .progress-bar {
+        background-color: #5c4084;
+        position: relative;
+        border-radius: 4px;
+    }
+
+        .progress-bar span {
+            background-color: #5c4084;
+            position: absolute;
+            bottom: -20px;
+            font-size: 10px;
+            line-height: 10px;
+            padding: 2px 3px 2px 4px;
+            right: -1.4em;
+            border-radius: 2px;
+        }
+
+            .progress-bar span:after {
+                bottom: 100%;
+                left: 50%;
+                border: solid transparent;
+                content: " ";
+                height: 0;
+                width: 0;
+                position: absolute;
+                pointer-events: none;
+                border-color: rgba(255, 255, 255, 0);
+                border-bottom-color: #5c4084;
+                border-width: 5px;
+                margin-left: -5px;
+            }
+
+    .p_bar_red_color .progress-bar, .p_bar_red_color .progress-bar span {
+        background-color: #f55a5a;
+    }
+
+        .p_bar_red_color .progress-bar span:after {
+            border-bottom-color: #f55a5a;
+        }
+
+    .p_bar_green_color .progress-bar, .p_bar_green_color .progress-bar span {
+        background-color: #4ed04c;
+    }
+
+        .p_bar_green_color .progress-bar span:after {
+            border-bottom-color: #4ed04c;
+        }
+
+    .p_bar_yellow_color .progress-bar, .p_bar_yellow_color .progress-bar span {
+        background-color: #d6b40c;
+    }
+
+        .p_bar_yellow_color .progress-bar span:after {
+            border-bottom-color: #d6b40c;
+        }
+    /*for progress bar*/
+
+
+    input[type="checkbox"][readonly] {
+        pointer-events: none;
+    }
+
+
+
+</style>
+<script>
+
+    $(function () {
+        var getUrlParameter = function getUrlParameter(sParam) {
+            var sPageURL = decodeURIComponent(window.location.search.substring(1)),
+                sURLVariables = sPageURL.split('&'),
+                sParameterName,
+                i;
+
+            for (i = 0; i < sURLVariables.length; i++) {
+                sParameterName = sURLVariables[i].split('=');
+
+                if (sParameterName[0] === sParam) {
+                    return sParameterName[1] === undefined ? true : sParameterName[1];
+                }
+            }
+        };
+        var rrid = getUrlParameter("RRID");
+
+        $("#rrid").text(rrid);
+
+        getDemandRequestDetail(rrid);
+
+    });
+
+
+    function clearSelected() {
+
+        $('#domain_checkbox').prop('checked', true);
+        $('#search_select_domain').select2('val', '0');
+
+        $('#service_checkbox').prop('checked', true);
+        $('#search_select_service').select2('val', '0');
+        $('#jobstage_checkbox').prop('checked', true);
+        $('#search_select_jobstage').select2('val', '0');
+        $('#jobrole_checkbox').prop('checked', true);
+        $('#search_select_jobrole').select2('val', '0');
+
+        $('#rri_radio').prop('checked', true);
+        showDropdown('rrid');
+
+        $('#we_search_result').html('');
+
+    }
+
+
+</script>
+
+
+
+<div id="userAvailabilityModal" class="modal fade" role="dialog">
+    <div class="modal-dialog" style="width:850px;">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Modal Header</h4>
+            </div>
+            <div class="modal-body">
+
+                <div class="details_div">
+                    <div class="progress p_bar_red_color">
+                        <div class="progress-bar" role="progressbar" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100" style="width: 100%;">
+                            <span>Availability 10.53%</span>
+                        </div>
+                    </div>
+
+                    <div class="date_range">
+                        <label>Between</label>
+                        <input class="datepicker" name="availability_sdate" id="availability_sdate" data-date-format="yyyy-mm-dd">
+                        <label> and </label>
+                        <input class="datepicker" name="availability_edate" id="availability_edate" data-date-format="yyyy-mm-dd">
+                    </div>
+
+                </div>
+
+                <div class="dt_availability_parent_div">
+                    <div class="month_name">MAR-2018</div>
+                    <div class="dt_row">
+                        <div class="dt_box_label">
+                            <div class="dt_label">Date</div>
+                            <div class="hr_part">
+                                <div class="req_hr_label">
+                                    <span class="hr_caption">Req. Hr</span>
+
+                                </div>
+                                <div class="avai_hr_label">
+                                    <span class="hr_caption">Ava. Hr</span>
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="dt_box">
+                            <div class="dt">1</div>
+                            <div class="hr_part">
+                                <div class="req_hr">
+
+                                    <span class="req_hr_value">8</span>
+                                </div>
+                                <div class="avai_hr available">
+
+                                    <span class="hr_value">8</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="dt_box">
+                            <div class="dt">2</div>
+                            <div class="hr_part">
+                                <div class="req_hr">
+
+                                    <span class="req_hr_value">8</span>
+                                </div>
+                                <div class="avai_hr">
+
+                                    <span class="hr_value">4</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="dt_box">
+                            <div class="dt">3</div>
+                            <div class="hr_part">
+                                <div class="req_hr">
+
+                                    <span class="req_hr_value">8</span>
+                                </div>
+                                <div class="avai_hr notAvailable">
+
+                                    <span class="hr_value">0</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="dt_box">
+                            <div class="dt">4</div>
+                            <div class="hr_part">
+                                <div class="req_hr">
+
+                                    <span class="req_hr_value">8</span>
+                                </div>
+                                <div class="avai_hr">
+
+                                    <span class="hr_value">4</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="dt_box">
+                            <div class="dt">5</div>
+                            <div class="hr_part">
+                                <div class="req_hr">
+
+                                    <span class="req_hr_value">8</span>
+                                </div>
+                                <div class="avai_hr">
+
+                                    <span class="hr_value">4</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="dt_box">
+                            <div class="dt">6</div>
+                            <div class="hr_part">
+                                <div class="req_hr">
+
+                                    <span class="req_hr_value">8</span>
+                                </div>
+                                <div class="avai_hr available start_slot">
+
+                                    <span class="hr_value">4</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="dt_box">
+                            <div class="dt">7</div>
+                            <div class="hr_part">
+                                <div class="req_hr">
+
+                                    <span class="req_hr_value">8</span>
+                                </div>
+                                <div class="avai_hr available">
+
+                                    <span class="hr_value">4</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="dt_box">
+                            <div class="dt">8</div>
+                            <div class="hr_part">
+                                <div class="req_hr">
+
+                                    <span class="req_hr_value">8</span>
+                                </div>
+                                <div class="avai_hr available">
+
+                                    <span class="hr_value">4</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="dt_box">
+                            <div class="dt">9</div>
+                            <div class="hr_part">
+                                <div class="req_hr">
+
+                                    <span class="req_hr_value">8</span>
+                                </div>
+                                <div class="avai_hr available end_slot">
+
+                                    <span class="hr_value">4</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="dt_box">
+                            <div class="dt">10</div>
+                            <div class="hr_part">
+                                <div class="req_hr">
+
+                                    <span class="req_hr_value">8</span>
+                                </div>
+                                <div class="avai_hr">
+
+                                    <span class="hr_value">4</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="dt_box">
+                            <div class="dt">11</div>
+                            <div class="hr_part">
+                                <div class="req_hr">
+
+                                    <span class="req_hr_value">8</span>
+                                </div>
+                                <div class="avai_hr">
+
+                                    <span class="hr_value">4</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="dt_box">
+                            <div class="dt">12</div>
+                            <div class="hr_part">
+                                <div class="req_hr">
+
+                                    <span class="req_hr_value">8</span>
+                                </div>
+                                <div class="avai_hr">
+
+                                    <span class="hr_value">4</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="dt_row">
+                        <div class="dt_box_label">
+                            <div class="dt_label">Date</div>
+                            <div class="hr_part">
+                                <div class="req_hr_label">
+                                    <span class="hr_caption">Req. Hr</span>
+
+                                </div>
+                                <div class="avai_hr_label">
+                                    <span class="hr_caption">Ava. Hr</span>
+
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="month_name">APR-2018</div>
+                    <div class="dt_row">
+                        <div class="dt_box_label">
+                            <div class="dt_label">Date</div>
+                            <div class="hr_part">
+                                <div class="req_hr_label">
+                                    <span class="hr_caption">Req. Hr</span>
+
+                                </div>
+                                <div class="avai_hr_label">
+                                    <span class="hr_caption">Ava. Hr</span>
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="dt_box">
+                            <div class="dt">1</div>
+                            <div class="hr_part">
+                                <div class="req_hr">
+
+                                    <span class="req_hr_value">8</span>
+                                </div>
+                                <div class="avai_hr available">
+
+                                    <span class="hr_value">8</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="dt_box">
+                            <div class="dt">2</div>
+                            <div class="hr_part">
+                                <div class="req_hr">
+
+                                    <span class="req_hr_value">8</span>
+                                </div>
+                                <div class="avai_hr">
+
+                                    <span class="hr_value">4</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="month_name">May-2018</div>
+                    <div class="dt_row">
+                        <div class="dt_box_label">
+                            <div class="dt_label">Date</div>
+                            <div class="hr_part">
+                                <div class="req_hr_label">
+                                    <span class="hr_caption">Req. Hr</span>
+
+                                </div>
+                                <div class="avai_hr_label">
+                                    <span class="hr_caption">Ava. Hr</span>
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="dt_box">
+                            <div class="dt">1</div>
+                            <div class="hr_part">
+                                <div class="req_hr">
+
+                                    <span class="req_hr_value">8</span>
+                                </div>
+                                <div class="avai_hr available">
+
+                                    <span class="hr_value">8</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="dt_box">
+                            <div class="dt">2</div>
+                            <div class="hr_part">
+                                <div class="req_hr">
+
+                                    <span class="req_hr_value">8</span>
+                                </div>
+                                <div class="avai_hr">
+
+                                    <span class="hr_value">4</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+
+                <div class="legends">
+                    <div class="legend_row">
+                        <div class="legend_icons">
+                            <div class="not_available_icon"></div>
+
+                        </div>
+                        <div class="legend_caption">Not Available as Requested</div>
+                        <div class="legend_icons">
+
+                            <div class="available_icon"></div>
+                        </div>
+                        <div class="legend_caption" style="padding-left: 9px;">Available</div>
+                    </div>
+                    <div class="legend_row">
+                        
+                        <div class="legend_icons">
+                            <div class="recommended_slot_icon"></div>
+                        </div>
+                        <div class="legend_caption">Recommended Available Slot</div>
+                        <div class="legend_icons" style="padding-right: 10px;">
+                            <div style="width: 3px; background-color: #e09d9d; height: 25px; float: right;"></div>
+                        </div>
+                        <div class="legend_caption" style="padding-left: 9px;">Weekend</div>
+                    </div>
+                </div>
+                <div class="modalBtns">
+
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+
+                
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+
+
+<!--MainDiv-->
+<div>
+    <!--.row -->
+    <div class="row">
+        <!--.col-md-12 -->
+        <div class="col-md-12">
+            <!--.panel-default-->
+            <div class="panel panel-default">
+                <!-- .panel-heading -->
+                <div class="panel-heading">
+                    <h4>Resource Request ID :<var id="rrid">rrid</var></h4>
+                </div>
+                <!-- /.panel-heading -->
+                <a data-toggle="collapse" href="#workEffortDiv" aria-expanded="false" aria-controls="workEffortDiv" style="width:100%"><span class="pull-right clickable" style="padding:5px;"><i class="fa fa-angle-up"></i></span></a>
+                <!-- .panel-body -->
+                <div class="panel-body">
+
+                    <!--WORK EFFORT DIV-->
+                    <div class="collapse in" id="workEffortDiv" class="col-lg-12" style="padding:5px;">
+
+                    </div>
+                    <!--/WORK EFFORT DIV-->
+                    <!--SEARCH DIV-->
+                    <div class="col-md-12" id="search_div" style="border: 1px solid #d0d0d0;background-color: #f3f3f3;padding:25px;">
+                        <a data-toggle="collapse" href="#searchSAR" aria-expanded="false" aria-controls="searchSAR" style="float:right;width:100%">
+                            <span class="pull-right clickable"><i class="fa fa-angle-up"></i></span>
+                            <h5 style="font-weight:600;">SEARCH <label style="font-size: 11px;">more Signums with details here :</label></h5>
+                        </a>
+                        <div class="collapse" id="searchSAR">
+
+                            <div id="adv-search">
+                                <!--class="input-group"-->
+
+                                <div class="row">
+
+                                    <form class="form-horizontal" role="form" id="projectSearchForm">
+                                        <div class="col-lg-6 form-group">
+
+                                            <div class="col-md-3">
+                                                <input checked type="checkbox" id="domain_checkbox">
+                                                <label for="domain_checkbox"><b>Domain : </b></label>
+                                                <label hidden id="subdomainlbl"></label>
+                                                <label id="domainlbl"></label> 
+                                            </div>
+                                            <div class="col-md-9">
+                                                <select id="search_select_domain" name="search_select_domain">
+                                                    <option value="0">Select one</option>
+                                                </select>
+                                            </div>
+                                            
+                                            
+                                        </div>
+                                        <div class="col-lg-6 form-group">
+
+                                            <div class="col-md-3">
+                                                <input checked type="checkbox" id="service_checkbox">
+                                                <label for="service_checkbox"><b>Sub Service Area : </b></label>
+                                                <label id="servicelbl"></label>
+                                            </div>
+                                            <div class="col-md-9">
+                                                <select id="search_select_service" name="search_select_service">
+                                                    <option value="0">Select one</option>
+                                                </select>
+                                            </div>
+
+                                                
+                                                
+                                            </div>
+                                        <div class="col-lg-6 form-group" style="display:none;">
+
+                                            <div class="col-md-3">
+                                                <input checked type="checkbox" id="jobstage_checkbox">
+                                                <label for="jobstage_checkbox"><b>JobStage : </b></label>
+                                                <label id="jobstagelbl"></label>
+                                            </div>
+                                            <div class="col-md-9">
+                                                <select id="search_select_jobstage" name="search_select_jobstage">
+                                                    <option value="0">Select one</option>
+                                                </select>
+                                            </div>
+
+                                            
+                                            
+                                        </div>
+                                        <div class="col-lg-6 form-group">
+
+                                            <div class="col-md-3">
+                                                <input checked type="checkbox" id="jobrole_checkbox">
+                                                <label for="jobrole_checkbox"><b>JobRole : </b></label>
+                                                <label id="jobrolelbl"></label>
+
+                                            </div>
+                                            <div class="col-md-9">
+                                                <select id="search_select_jobrole" name="search_select_jobrole">
+                                                    <option value="0">Select one</option>
+                                                </select>
+                                            </div>
+
+                                           
+                                            
+                                        </div>
+                                    </form>
+
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-1" style="width:135px;">
+                                        <label style="font-weight:bold;">Start Date</label>
+                                        </div>
+                                    <div class="col-md-2">
+                                        <input class="datepicker" name="advanceSearch_sdate" id="advanceSearch_sdate" data-date-format="yyyy-mm-dd" readonly>
+                                    </div>
+
+                                    <div class="col-md-1">
+                                        <label style="font-weight:bold;">End Date</label>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <input class="datepicker" name="advanceSearch_edate" id="advanceSearch_edate" data-date-format="yyyy-mm-dd" readonly>
+                                    </div>
+
+                                </div>
+                                <div class="row" style="padding-top:20px;">
+                                    <div class="col-md-2">
+                                        <button type="button" class="btn btn-primary disabled" style="font-weight:bold !important">Search By :</button>
+                                    </div>
+                                    <div class="col-md-10">
+                                        <label class="radio-inline col-lg-2"><input type="radio" id="rri_radio" checked="checked" onclick="showDropdown('rrid');" name="optradio">Request Resource ID</label>
+
+                                        <label class="radio-inline col-lg-2"><input type="radio" onclick="showDropdown('manager');" name="optradio">Manager</label>
+
+                                        <label class="radio-inline col-lg-2"><input type="radio" onclick="showDropdown('signum');" name="optradio">Signum </label>
+
+                                    </div>
+                                    <div class="row">
+                                        @*<div class="col-lg-6 btn-group" id="searchbyDiv">
+                                                <button type="button" class="btn btn-primary disabled" style="font-weight:bold !important">Search By :</button>
+                                                <button type="button" colindex="1" class="searchByBtns btn btn-primary" onclick="showDropdown('rrid');">ResourceRequestID</button>
+                                                <button type="button" colindex="2" class="searchByBtns btn btn-primary" onclick="showDropdown('manager');">Manager</button>
+                                                <button type="button" colindex="3" class="searchByBtns btn btn-primary" onclick="showDropdown('signum');">Signum</button>
+
+                                            </div>*@
+                                        <div class="col-lg-3" style="display:none;" id="dropdown_manager_signum"></div>
+
+                                        <div class="col-lg-2">
+
+
+                                            <button id="searchbtn' + resourcePositionID + '" onclick="searchWorkEffortTableGrid('resourcePositionID ','rrid');" type="button" class="btn btn-primary"><span class="fa fa-search" aria-hidden="true"></span></button>
+
+                                            <button id="refreshbtn' + resourcePositionID + '" onclick="clearSelected();" type="reset" class="btn btn-primary" title="Reset Search"><span class="fa fa-refresh" aria-hidden="true"></span></button>
+
+                                        </div>
+                                    </div>
+
+
+                                    <div id="we_search_result"></div>
+
+
+                                </div>
+
+
+
+
+                            </div>
+
+
+                        </div>
+
+                    </div>
+                    <!--/SEARCH DIV-->
+
+
+                    <div id="alertErrSAR" style="display:none" class="alert alert-danger">
+                        <strong>Error!</strong>
+                        No data found
+                    </div>
+                </div>
+
+                <!--Panel Footer-->
+
+            </div>
+            <!--/.panel-default-->
+        </div>
+        <!--/.col-md-12 -->
+    </div>
+    <!-- /.row -->
+</div>
+
+<!--/MainDiv-->

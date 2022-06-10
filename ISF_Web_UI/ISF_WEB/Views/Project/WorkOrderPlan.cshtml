@@ -1,0 +1,1552 @@
+﻿@{
+    ViewBag.Title = "Plan Landing";
+}
+@Styles.Render("~/bundles/css/DataTableStyle")
+@Scripts.Render("~/bundles/DataTableScript")
+@Scripts.Render("~/bundles/DataTablesAdvancedScript")
+@Scripts.Render("~/bundles/WorkOrderPlan")
+@*<script src="http://code.jquery.com/ui/1.10.2/jquery-ui.js"></script>*@
+@*<script type="text/javascript" src="~/Scripts/jquery-ui.min.js"></script>*@
+
+<script type="text/javascript" src="~/Scripts/TimeZone/TimeZone.js"></script>
+<script type="text/javascript" src="~/Scripts/TimeZone/TimeZoneColumnsConfigs.js"></script>
+
+
+<style>
+    .actionCss {
+        padding-left: 6px !important;
+    }
+
+    .linkHover:hover {
+        color: #007aff !important;
+    }
+
+    .woCountClass {
+        width: 100%;
+        padding: 4px;
+        display: inline-block;
+        border: 1px solid #aaa;
+        border-radius: 4px;
+        box-sizing: border-box;
+    }
+
+    /*----------------CSS for custom checkbox-----------------*/
+    /* The container */
+    .containerClass {
+        display: block;
+        position: relative;
+        padding-left: 35px;
+        margin-bottom: 12px;
+        cursor: pointer;
+        font-size: 22px;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+    }
+
+        /* Hide the browser's default checkbox */
+        .containerClass input {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+            height: 0;
+            width: 0;
+        }
+
+    /* Create a custom checkbox */
+    .checkmark {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 15px;
+        width: 15px;
+        background-color: #eee;
+        border-style: solid;
+        border-width: 1px;
+        border-radius: 2px;
+        border-color: #8dadca;
+    }
+
+    /* On mouse-over, add a grey background color */
+    .containerClass:hover input ~ .checkmark {
+        background-color: #ccc;
+    }
+
+    /* When the checkbox is checked, add a blue background */
+    .containerClass input:checked ~ .checkmark {
+        background-color: #2196F3;
+    }
+
+    /* Create the checkmark/indicator (hidden when not checked) */
+    .checkmark:after {
+        content: "";
+        position: absolute;
+        display: none;
+    }
+
+    /* Show the checkmark when checked */
+    .containerClass input:checked ~ .checkmark:after {
+        display: block;
+    }
+
+    /* Style the checkmark/indicator */
+    .containerClass .checkmark:after {
+        left: 4px;
+        top: 1px;
+        width: 5px;
+        height: 10px;
+        border: solid white;
+        border-width: 0 3px 3px 0;
+        -webkit-transform: rotate(45deg);
+        -ms-transform: rotate(45deg);
+        transform: rotate(45deg);
+    }
+
+    /* The container */
+    .container2 {
+        display: block;
+        position: relative;
+        padding-left: 25px;
+        margin-bottom: 12px;
+        cursor: pointer;
+        font-size: 22px;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+    }
+
+        /* Hide the browser's default checkbox */
+        .container2 input {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+            height: 0;
+            width: 0;
+        }
+
+
+
+        /* On mouse-over, add a grey background color */
+        .container2:hover input ~ .checkmark {
+            background-color: #ccc;
+        }
+
+        /* When the checkbox is checked, add a blue background */
+        .container2 input:checked ~ .checkmark {
+            background-color: #2ada4d;
+        }
+
+
+
+            /* Show the checkmark when checked */
+            .container2 input:checked ~ .checkmark:after {
+                display: block;
+            }
+
+        /* Style the checkmark/indicator */
+        .container2 .checkmark:after {
+            left: 4px;
+            top: 1px;
+            width: 5px;
+            height: 10px;
+            border: solid white;
+            border-width: 0 3px 3px 0;
+            -webkit-transform: rotate(45deg);
+            -ms-transform: rotate(45deg);
+            transform: rotate(45deg);
+        }
+
+    a.divider:hover {
+        background-color: #eeeeee;
+    }
+
+    .divider.active {
+        background-color: #eeeeee;
+    }
+
+    .dividerStatusWOPlan.active {
+        background-color: #eeeeee;
+        text-decoration: underline;
+    }
+
+    a.dividerWOView:hover {
+        background-color: #eeeeee;
+    }
+
+    .dividerWOView.active {
+        background-color: #eeeeee;
+    }
+
+    .dividerStatusWOView.active {
+        background-color: #eeeeee;
+        text-decoration: underline;
+    }
+
+    .labelDist {
+        font-size: 10px;
+        float: left;
+        margin: 5px 2px 0px 15px;
+    }
+
+    .filterHrefs {
+        width: auto;
+        text-align: center;
+        text-transform: capitalize;
+        background-color: #ffffffc2;
+        padding: 4px;
+        border: 1px solid;
+        border-radius: 10px;
+        border-color: #cec8c8;
+        font-size: 10px;
+    }
+
+    .divider {
+        border-right: 1px solid;
+        padding: 4px 0px 4px 0px;
+        color: #cec8c8;
+    }
+
+    .dividerStatusWOPlan {
+        border-right: 1px solid;
+        padding: 4px 0px 4px 0px;
+        color: #cec8c8;
+    }
+
+    .dividerWOView {
+        border-right: 1px solid;
+        padding: 4px 0px 4px 0px;
+        color: #cec8c8;
+    }
+
+    .dividerStatusWOView {
+        border-right: 1px solid;
+        padding: 4px 0px 4px 0px;
+        color: #cec8c8;
+    }
+
+    .link {
+        margin: 0px 5px 0px 5px;
+        color: blue;
+    }
+
+    .expandButton {
+        margin: 0px 10px 0px -25px;
+        /*margin-left:-30px;
+        margin-right:10px;*/
+        padding: 10px 10px;
+        background: url('../Content/images/details_open.png') no-repeat center center;
+        cursor: pointer;
+    }
+
+    .collapseButton {
+        margin: 0px 10px 0px -25px;
+        /*margin-left:-30px;
+        margin-right:10px;*/
+        padding: 10px 10px;
+        background: url('../Content/images/details_close.png') no-repeat center center;
+    }
+
+    td.details-control {
+        //background: url('~/Content/images/details_open.png') no-repeat center center;
+        background: url('../Content/images/details_open.png') no-repeat center center;
+        cursor: pointer;
+    }
+
+    tr.shown td.details-control {
+        background: url('../Content/images/details_close.png') no-repeat center center;
+    }
+
+    td.details-control-rpa {
+        //background: url('~/Content/images/details_open.png') no-repeat center center;
+        background: url('../Content/images/details_open.png') no-repeat center center;
+        cursor: pointer;
+    }
+
+    tr.shown td.details-control-rpa {
+        background: url('../Content/images/details_close.png') no-repeat center center;
+    }
+
+    table.display {
+        overflow-x: scroll;
+    }
+
+    .work_table {
+        overflow-x: scroll;
+    }
+
+
+    #summary:hover {
+        cursor: pointer;
+        color: blue;
+    }
+
+    #detail {
+        width: 300px;
+        height: 300px;
+        display: inline;
+    }
+
+    .infoWO {
+        color: #0c13f5 !important;
+        border-radius: 10px !important;
+        background-color: #cbdcf1 !important;
+    }
+    .info_icon {
+        font-size: 1.8em;
+        position: relative;
+        top: 4.6px;
+    }
+    /*.Wfdetails1{
+        width:100px;
+    }*/
+
+</style>
+
+
+<div class="panel panel-default">
+
+    <div class="panel-heading" style="text-align:left;padding-right: 0px;">
+        <div class="col-lg-12" style="padding-right: 0px;">
+            <div class="row" style="margin-right: 0px;padding-right: 0px;">
+                <div class="col-lg-1" style="font-size:13px;padding-right: 0px;padding-left: 0px;margin-top: 4px;">
+                   @*WO Plan View*@ DO Plan View
+                </div>
+                <label class="labelDist">Duration Till:</label>
+                <div class="col-lg-2 filterHrefs">
+                    <a href="#" class="divider" onclick="getDurationWO(this.innerText, this)"><span class="link">Last Month</span></a>
+                    <a href="#" class="divider" onclick="getDurationWO(this.innerText, this)"><span class="link">Last Week</span></a>
+                    <a href="#" class="divider" onclick="getDurationWO(this.innerText, this)"><span class="link">Today</span></a>
+                    <a href="#" class="divider active" onclick="getDurationWO(this.innerText, this)"><span class="link">This Week</span></a>
+                    <a href="#" class="divider" onclick="getDurationWO(this.innerText, this)"><span class="link">Next Week</span></a>
+                    <a href="#" class="divider" onclick="getDurationWO(this.innerText, this)"><span class="link">This Month</span></a>
+                    <a href="#" class="divider" onclick="getDurationWO(this.innerText, this)" style="border-right:0px;"><span class="link">Next Month</span></a>
+                </div>
+
+                <label class="labelDist">WO Status:</label>
+                <div class="col-lg-2 filterHrefs" style="">
+                    <a href="#" class="dividerStatusWOPlan" onclick="getStatusWO(this)"><span class="link">All</span></a>
+                    <a href="#" class="dividerStatusWOPlan active" onclick="getStatusWO(this)"><span class="link">Assigned</span></a>
+                    <a href="#" class="dividerStatusWOPlan" onclick="getStatusWO(this)"><span class="link">InProgress</span></a>
+                    <a href="#" class="dividerStatusWOPlan" onclick="getStatusWO(this)"><span class="link">OnHold</span></a>
+                    <a href="#" class="dividerStatusWOPlan" onclick="getStatusWO(this)"><span class="link">Deferred</span></a>
+                    <a href="#" class="dividerStatusWOPlan" onclick="getStatusWO(this)" style="border-right:0px;"><span class="link">Unallocated</span></a>
+                </div>
+
+                <div class="col-lg-1" style="display: inline; width: 129px; margin-bottom: 0px;">
+                    <div id="WOPlanViewButtons" class="pull-left" style="width: 30px !important;margin-right: 0px !important;">
+                    </div>
+                    <a href="#" class="pull-right" data-toggle="tooltip" title="Click to Download Deliverable Order View Data" id="btnDownloadDOViewData" onclick="downloadDOPlanFile(this)"><i class="fa fa-download glyphicon-green" style="padding:4px;background:#129c12;color:white;"></i></a>
+                    <div id="createDOPlanButton">
+                        @Html.Partial("WorkOrderCreatePopUp")
+                    </div>
+                </div>
+                <div>
+                    <a class="fa fa-angle-down" href="#WoPlanPanel" aria-expanded="false" aria-controls="WoPlanPanel" data-toggle="collapse"></a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+
+    </div>
+
+
+    <div class="panel-body collapse" id="WoPlanPanel">
+
+        @*<input type="checkbox" title="Select All Work Orders" value="wOID" id="ckbCheckAllWO" style="display:none;">*@
+        <div class="widget-container fluid-height">
+
+            <br />
+            <label id="table_message">Data does not exists for selected filters.</label>
+
+            <div id="my-tab-content" style="padding-top:  0px !important;">
+
+                @*<button id="btn-show-all-children" type="button">Expand All</button>
+                    <button id="btn-hide-all-children" type="button" disabled>Collapse All</button>*@
+
+                @*<div class="table-responsive" style="overflow-x: auto;">*@
+                <div class="col-lg-12">
+                    <div class="table-responsive" style="overflow-x: auto;">
+
+                        <table id="table_wo_planning" class="table table-striped table-bordered table-hover" style="width:100%">
+
+                            <tfoot>
+                                <tr>
+                                    <th></th>
+                                    <th></th>
+                                    <th>Deliverable Plan Name</th>
+                                    <th>Deliverable Unit</th>
+                                    <th>DO Plan ID</th>
+                                    <th>WO Name</th>
+                                    <th>SLA</th>
+                                    <th>Technology</th>
+                                    <th>Start Date</th>
+                                    <th>End Date</th>
+                                    <th>Activity</th>
+                                    <th>Sub Activity</th>
+                                    <th>Type</th>
+                                </tr>
+                            </tfoot>
+                            @*<thead>
+                                    <tr>
+                                        <th></th>
+                                        <th>projectID</th>
+                                        <th>scopeID</th>
+                                        <th>createdBy</th>
+                                        <th>priority</th>
+                                    </tr>
+                                </thead>
+                                <tfoot>
+                                    <tr>
+                                        <th></th>
+                                        <th>projectID</th>
+                                        <th>scopeID</th>
+                                        <th>createdBy</th>
+                                        <th>priority</th>
+                                    </tr>
+                                </tfoot>*@
+                        </table>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        @*</div>*@
+
+        <!-- Modal Plan WO -->
+        <!-- Modal Plan WO RPA -->
+
+
+        <div class="modal fade" id="modalTransferRPA" role="dialog" aria-labelledby="myModalLabel">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="scopeTitleModal">Transfer Work Order</h4>
+                    </div>
+                    <div class="modal-body" id="scopeContentModal">
+
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <div class="form-group">
+                                    <label>Work Order ID</label>
+                                </div>
+
+
+                                <div class="form-group">
+                                    <label>Signum ID</label>
+
+                                </div>
+                            </div>
+
+                            <div class="col-lg-6">
+                                <div class="form-group">
+                                    <input class="form-control" id="modal_input_woid_RPA" disabled>
+                                </div>
+
+                                <div class="form-group">
+                                    <select class="select2able select2-offscreen" id="select_modal_signum_RPA"></select>
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="modal-footer">
+                        <a id="submitModalRPA" class="btn btn-primary" onclick="transferWorkOrder()">Send</a>
+                        <button id="cancelModalRPA" type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal -->
+        <div class="modal fade" id="edit_success" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="scopeTitleModal">Work Order</h4>
+                    </div>
+                    <div class="modal-body" id="scopeContentModal">
+
+                        <label id="employee_change_status"></label>
+
+                    </div>
+                    <div class="modal-footer">
+                        @*<a id="submitModal" class="btn btn-primary" onclick="modalClose()">Close</a>*@
+                        <button id="cancelModal" type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal -->
+        <div class="modal fade" id="modal_work_order" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="scopeTitleModal">Edit Work Order</h4>
+                    </div>
+                    <div class="modal-body" id="scopeContentModal">
+
+                        <div class="row">
+                            <div class="col-lg-4">
+                                <div class="form-group">
+                                    <br />
+                                    <label>Work Order ID</label>
+                                </div>
+
+                                <br />
+                                <div class="form-group">
+                                    <label>Work Plan Order ID</label>
+                                </div>
+
+
+                                <div class="form-group">
+                                    <label>SignumID</label>
+                                </div>
+
+                                <div class="form-group">
+                                    <i class="fa fa-calendar"></i> <label>PlannedStartDate</label>
+                                    <br />
+                                </div>
+
+                                <br />
+                                <div class="form-group">
+                                    <i class="fa fa-calendar"></i> <label>PlannedEndDate</label>
+                                </div>
+
+                                <br />
+                                <div class="form-group">
+                                    <i class="fa fa-calendar"></i> <label>ActualStartDate</label>
+                                </div>
+
+                                <br />
+                                <div class="form-group">
+                                    <i class="fa fa-calendar"></i> <label>ActualEndDate</label>
+                                </div>
+
+
+                                <div class="form-group">
+                                    <br />
+                                    <label>Node Type</label>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Node Name</label>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Priority</label>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-6">
+                                <div class="form-group">
+                                    <input class="form-control" id="modal_input_wOID" disabled>
+                                </div>
+
+                                <div class="form-group">
+                                    <input class="form-control" id="modal_input_wOPlanID" disabled>
+                                </div>
+
+                                <div class="form-group">
+                                    <select class="select2able select2-offscreen" id="select_modal_signum2"></select>
+                                </div>
+
+                                <div class="form-group">
+                                    <input name="DateResigned" id="modal_planned_start_date" class="form-control" @*data-date-format='yyyy-mm-dd' placeholder="YYYY/MM/DD"*@ disabled />
+                                </div>
+                                <div class="form-group">
+                                    <input name="DateResigned" id="modal_planned_end_date" class="form-control" @*data-date-format='yyyy-mm-dd' placeholder="YYYY/MM/DD"*@ disabled />
+                                </div>
+                                <div class="form-group">
+                                    <input name="DateResigned" id="modal_actual_start_date" class="form-control" @*data-date-format='yyyy-mm-dd' placeholder="YYYY/MM/DD"*@ disabled />
+                                </div>
+                                <div class="form-group">
+                                    <input name="DateResigned" id="modal_actual_end_date" class="form-control" @*data-date-format='yyyy-mm-dd' placeholder="YYYY/MM/DD"*@ disabled />
+                                </div>
+
+                                <div class="form-group">
+                                    <select class="select2able select2-offscreen" id="select_node_type" onchange="wo_getNodeNames()"></select>
+                                </div>
+
+                                <div class="form-group">
+                                    <select class="select2able select2-offscreen" id="modal_select_node_name" onchange="wo_getNodeNames()"></select>
+                                </div>
+
+                                <div class="form-group">
+                                    <select class="select2able select2-offscreen" id="select_modal_priority"></select>
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="modal-footer">
+                        <a id="submitModal" class="btn btn-primary" onclick="updateWorkOrder();">Update</a>
+                        <button id="cancelModal" type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal -->
+        <!-- Modal -->
+
+
+
+        <div class="modal fade" id="WOmodal2" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">WO Created</h4>
+                    </div>
+                    <div class="modal-body">
+
+                        <div class="form-group">
+                            <label class="control-label col-lg-8" id="modal_text">Your WO was created successfully.</label>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="panel panel-default WOViewScreen">
+
+    <div class="panel-heading" style="text-align:left;">
+        <div class="col-lg-12">
+            <div class="row">
+                <div class="col-lg-1" style="font-size:13px;margin-top: 4px;">
+                    WO View
+                </div>
+                <label class="labelDist">Duration Till:</label>
+                <div class="col-lg-2 filterHrefs">
+                    <a href="#" class="dividerWOView" onclick="getDurationWOView(this.innerText, this)"><span class="link">Last Month</span></a>
+                    <a href="#" class="dividerWOView" onclick="getDurationWOView(this.innerText, this)"><span class="link">Last Week</span></a>
+                    <a href="#" class="dividerWOView" onclick="getDurationWOView(this.innerText, this)"><span class="link">Today</span></a>
+                    <a href="#" class="dividerWOView active" onclick="getDurationWOView(this.innerText, this)"><span class="link">This Week</span></a>
+                    <a href="#" class="dividerWOView" onclick="getDurationWOView(this.innerText, this)"><span class="link">Next Week</span></a>
+                    <a href="#" class="dividerWOView" onclick="getDurationWOView(this.innerText, this)"><span class="link">This Month</span></a>
+                    <a href="#" class="dividerWOView" onclick="getDurationWOView(this.innerText, this)" style="border-right:0px;"><span class="link">Next Month</span></a>
+                </div>
+
+                <label class="labelDist">WO Status:</label>
+                <div class="col-lg-2 filterHrefs" style="">
+                    <a href="#" class="dividerStatusWOView" onclick="getStatusWOView(this)"><span class="link">All</span></a>
+                    <a href="#" class="dividerStatusWOView active" onclick="getStatusWOView(this)"><span class="link">Assigned</span></a>
+                    <a href="#" class="dividerStatusWOView" onclick="getStatusWOView(this)"><span class="link">InProgress</span></a>
+                    <a href="#" class="dividerStatusWOView" onclick="getStatusWOView(this)"><span class="link">OnHold</span></a>
+                    <a href="#" class="dividerStatusWOView" onclick="getStatusWOView(this)"><span class="link">Deferred</span></a>
+                    <a href="#" class="dividerStatusWOView" onclick="getStatusWOView(this)" style="border-right:0px;"><span class="link">Unallocated</span></a>
+                </div>
+
+                @*<a href="#" class="pull-right" data-toggle="tooltip" title="Click to Download WorkOrder View Data" id="btnDownloadWOViewData" onclick=""><i class="fa fa-download glyphicon-ring glyphicon-green"></i></a>*@
+                <div id="WOViewButtons" class="col-lg-1">
+
+                </div>
+
+                @*<div class="col-lg-1" style="width:8%">
+            @Html.Partial("WorkOrderCreatePopUp")
+        </div>*@
+                <div>
+
+                    <a class="pull-right fa fa-angle-down" href="#WoPanel" aria-expanded="false" aria-controls="WoPanel" data-toggle="collapse"></a>
+                    @*<a id="expandCollapseLink" class="expandButton" title="Expand/Collapse All WOs" onclick="expandCollapseWO(this)"></a>*@
+                    @*<a class="fa fa-share-square-o" style="color:blue;" id="massTransferWO" href="#" title="Mass Transfer"></a>*@
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+
+
+    </div>
+
+
+    <div class="panel-body" id="WoPanel">
+
+        @*<input type="checkbox" title="Select All Work Orders" value="wOID" id="ckbCheckAllWO" style="display:none;">*@
+        <div class="widget-container fluid-height">
+
+            @*<br />
+                <label id="table_message">Data does not exists for selected filters.</label>*@
+
+            <div id="my-tab-content-WOView" style="padding-top:  0px !important;">
+
+                @*<button id="btn-show-all-children" type="button">Expand All</button>
+                    <button id="btn-hide-all-children" type="button" disabled>Collapse All</button>*@
+
+                <div class="table-responsive" style="overflow-x: auto;">
+
+                    <table id="table_wo" class="table table-striped table-bordered table-hover" style="width:100%">
+
+                        <tfoot>
+                            <tr>
+                                <th></th>
+                                <th></th>
+                                <th>Deliverable Name</th>
+                                <th>Deliverable Unit</th>
+                                <th>WOID</th>
+                                <th>WO Name</th>
+                                <th>WO AssignedTo</th>
+                                <th>Work Flow Version Name</th>
+                                <th>Network Element Name/ID</th>
+                                <th>Market Name</th>
+                                <th>Priority Last Modified On</th>
+                                <th>Created By</th>
+                                <th>Priority</th>
+                                <th>SLA</th>
+                                <th>Technology</th>
+                                <th>Planned Start Date</th>
+                                <th>Planned End Date</th>
+                                <th>Activity</th>
+                                <th>Subactivity</th>
+                                <th>StartedOn</th>
+                                @*<th>ClosedOn</th>*@
+                                <th>Status</th>
+                                @*<th>Reason</th>*@
+                                <th>WO Plan ID</th>
+                                <th></th>
+                            </tr>
+                        </tfoot>
+
+                        @*<thead>
+                                <tr>
+                                    <th></th>
+                                    <th>projectID</th>
+                                    <th>scopeID</th>
+                                    <th>createdBy</th>
+                                    <th>priority</th>
+                                </tr>
+                            </thead>
+                            <tfoot>
+                                <tr>
+                                    <th></th>
+                                    <th>projectID</th>
+                                    <th>scopeID</th>
+                                    <th>createdBy</th>
+                                    <th>priority</th>
+                                </tr>
+                            </tfoot>*@
+                    </table>
+
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div class="modal fade" id="modalPriority" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="setPriorityModal">Update Priority For Work Order</h4>
+            </div>
+            <div class="modal-body" id="setPriorityModal">
+
+                <div class="row">
+                    <div class="col-lg-4">
+                        @*<div class="form-group">
+                                <label>Work Order ID</label>
+                            </div>*@
+
+
+                        <div class="form-group">
+                            <label>Priority</label>
+
+                        </div>
+
+                        <div class="form-group">
+                            <label>Comment</label>
+
+                        </div>
+                    </div>
+
+                    <div class="col-lg-8">
+                        <div class="form-group">
+                            <input type="hidden" class="form-control" id="modal_woid" disabled />
+                        </div>
+
+                        <div class="form-group">
+                            <select class="select2able select2-offscreen" id="modal_priority">
+                                <option value="">Select Priority</option>
+                                <option value="Live">Live</option>
+                                <option value="Normal">Normal</option>
+                                <option value="Critical">Critical</option>
+                                <option value="High">High</option>
+                                <option value="Low">Low</option>
+                            </select>
+
+                        </div>
+                        <div class="form-group">
+                            <textarea rows="4" cols="50" id="prioty_comment" placeholder="Enter Comments"></textarea>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <a id="submitModalRPA" class="btn btn-primary" onclick="setPriority()">Save</a>
+                <button id="cancelModalRPA" type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="modal-edit-version" role="dialog" tabindex="-1" aria-labelledby="myModalLabel">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title text-center">Update WorkFlow Version</h4>
+            </div>
+            <div class="modal-body" id="WorkFlowVersionContent">
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="form-group">
+                            <label>Version</label>
+                            <select id="versionDropDown" class="select2able"></select>
+                            <input type="hidden" id="woID" />
+                            <input type="hidden" id="subActDefID" />
+                            <input type="hidden" id="woOrWOPlan" />
+                        </div>
+                    </div>
+                </div>
+                <hr />
+                <div class="row">
+                    <a id="submitModal" class="btn btn-primary" data-dismiss="modal" onclick="updateWorkFlowVersion($('#versionDropDown').val(), $('#woID').val(),$('#versionDropDown').find(':selected').attr('data-id'));">Update</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="modal_wo_nodes" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" style="z-index:9999">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="scopeTitleModal">Work Order Network Elements</h4>
+            </div>
+            <div class="modal-body" id="scopeContentModal">
+
+                <table id="table_wo_nodes" class="display table-bordered" cellspacing="0" width="100%"></table>
+
+            </div>
+            <div class="modal-footer">
+                @*<a id="submitModal" class="btn btn-primary" onclick="$('#modal_wo_nodes').modal('hide');">Close</a>*@
+                <button id="cancelModal" type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalTransfer" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="scopeTitleModal">Transfer Work Order</h4>
+            </div>
+            <div class="modal-body" id="scopeContentModal">
+
+                <div class="row">
+                    <div class="col-lg-3">
+                        <div class="form-group" style="margin-top:15px;">
+                            <label>Work Order ID</label>
+                        </div>
+
+                        <div class="form-group" style="margin-top:30px;">
+                            <label>Signum ID</label><a class="text-danger">*</a>
+                        </div>
+
+                        <div class="form-group" style="margin-top:30px;">
+                            <label>Step Name</label><a class="text-danger">*</a>
+                        </div>
+
+                        <div class="form-group" style="margin-top:60px;">
+                            <label>User Comments</label>
+                        </div>
+
+                    </div>
+
+                    <div class="col-lg-9">
+                        <div class="form-group">
+                            <input class="form-control" id="modal_input_woid" disabled>
+                        </div>
+
+                        <div class="form-group" id="signumbyprojectTransfersinglediv" hidden>
+                            <select class="select2able select2-offscreen" id="select_modal_signum"></select>
+                        </div>
+
+                        <div class="form-group" id="select_stepNameDiv" hidden>
+                            <select class="select2able select2-offscreen" id="select_stepName"></select>
+                        </div>
+
+                        <div class="form-group" id="tWOcommentsBoxDiv" hidden>
+                            <select class="select2able select2-offscreen" id="tWOcommentsBox"></select>
+                        </div>
+
+                        <div id="selectallSignumTransfersinglediv" class="form-group">
+                            <input id="selectUserAllSignumTransfersingle" style='width:100%' placeholder="Signum/Name" title="Minimum 3 characters required!" multiple />
+                        </div>
+                        <div id="selectAspUserSignumTransferDiv">
+                            <select class="select2 select2able" id="selectAspUserSignumTransfer" style='width:100%' placeholder="Signum/Name" multiple></select>
+                        </div>
+                        <div id="select_stepNameDiv" class="form-group" style="width:410px">
+
+                            <select class="select2able select2-offscreen" id="select_stepNameDOPlan" data-selectnext="0" tabindex="-1" aria-hidden="true">
+                            </select>
+                        </div>
+                        <div id="" class="form-group">
+                            <textarea id="tWOcommentsBoxDOPlan" rows="4" cols="58" type="text" placeholder="Enter comment (Max 250 characters)" style="resize: none;"></textarea>
+                        </div>
+                        <input type="hidden" id="assingedTo_modal" />
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-footer" style="margin-top:0px;">
+                <input type="hidden" id="viewValueSIngleTransfer" />
+                <button id="submitbtnModal" class="btn btn-primary"  onclick="transferWorkOrder()">Send</button>
+                <button id="cancelModal" type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="massTransferModalWO" role="dialog">
+    <div class="modal-dialog" style="margin-top:150px;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title text-center">Mass Change</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group" id="selectallSignumTransferMassdiv">
+                            <label>Select Employee Signum</label>
+                            <input id="selectUserAllSignumTransferMass" style='width:100%' placeholder="Signum/Name" title="Minimum 3 characters required!" multiple />
+                        </div>
+                        <div hidden>
+                            <select id="cbxSignumWO" class="select2able"></select>
+                        </div>
+
+                    </div>
+                    <div class="col-md-6">
+                        <div class="input-group date datepicker">
+                            <label>Start Date</label><input id="start_date_mtWO" class="form-control" data-date-format='yyyy-mm-dd' data-date-start-date="0d" placeholder="YYYY-MM-DD" type="text">
+
+                        </div>
+                    </div>
+
+                </div>
+                <hr />
+                <div class="row">
+                    <input type="hidden" id="viewValue" />
+                    <button id="massTransferSubmitWO" type="button" class="btn btn-default pull-right">Submit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="modal_WP_EditView" role="dialog" aria-labelledby="myModalLabel" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog" role="document" style="width: 50%">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" onclick="closeModalwp();" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <div class="row"><h5 class="modal-title" id="scopeTitleModal">Work Order Creation</h5></div>
+                <div class="row"><h4 class="modal-title" id="ActSubActSpwp"></h4></div>
+                <div class="row"><p class="modal-title" id="WfNamewp"></p></div>
+            </div>
+            <div class="modal-body" style="overflow-y: auto;">
+
+                <div class="row" style="padding-top:10px">
+                    <input class="form-control" id="woPlanIDwp" type="hidden" />
+                    <button type="button" id="btnview" class="btn btn-link" onclick="getTableWOPlan(localStorage.getItem('woPlanID'),1)">View</button>
+                    <button type="button" id="btnedit" class="btn btn-link" onclick="openWP()">Edit</button>
+                    <button type="button" id="btncopy" class="btn btn-link" onclick="getTableWOPlan(localStorage.getItem('woPlanID'),2)">Copy</button>
+                </div>
+
+                <div class="row">
+
+                    <input class="form-control" id="projectIDwp" type="hidden" />
+                    <input class="form-control" id="scopeIDwp" type="hidden" />
+                    <input class="form-control" id="SubActivityIDwp" type="hidden" />
+                    <input class="form-control" id="versionNumberwp" type="hidden" />
+                    <input class="form-control" id="versionNamewp" type="hidden" />
+                    <input class="form-control" id="domainSpwp" type="hidden" />
+                    <input class="form-control" id="subServSpwp" type="hidden" />
+                    <input class="form-control" id="scopeSpwp" type="hidden" />
+                    <input class="form-control" id="techSpwp" type="hidden" />
+                    <input class="form-control" id="flowchartdefID" type="hidden" />
+                </div>
+
+                <div class="row" id="execPlandiv">
+                    <table class="table table-bordered" id="execPlanTbl">
+                        <tbody>
+                            <tr>
+                                <td style="font-weight:600;">Deliverable Plan Name:</td>
+                                <td style="height:4px"><p class="projectDetails-cellmargin" id="exePlanwp"></p></td>
+                                <td style="font-weight:600;">Deliverable Plan Id:</td>
+                                <td style="height:4px"><p class="projectDetails-cellmargin" id="execPlanIdwp"></p></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="row">
+                        <label id="execPlanWarn" style="color:red; font-size:10px; text-align:center;display:none;">Only single workorder will be affected subsequencing not applicable</label>
+                    </div>
+                </div>
+
+                <div class="mandatory_Boxwp">
+
+                    <div class="row">
+                        <div class="col-lg-6" style="margin-bottom:0px;">
+                            <label style="margin-left:10px">WorkOrder Name:</label>
+                            <div style="width: 20px;  margin-left: 1px; margin-top: -25px; font-size: 17px; color:red;">*</div>
+                            <input class="form-control" placeholder="" id="WO_nameWP">
+                            <input type="hidden" id="WoPlanType">
+                            <div class="row">
+                                <label id="WO_name-Requiredwp" style="color:red; font-size:10px; text-align:center;"></label>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-6" style="margin-bottom:0px;" id="slaHrsDivwp">
+                            <label>SLA &nbsp;&nbsp;<i data-toggle="tooltip" title="Sla hrs should be in between 1-9" class="fa fa-info-circle"></i></label>
+                            <div style="width: 20px;  margin-left: 18px; margin-top: -25px; font-size: 17px; color:red;">*</div>
+                            <input type="number" name="quantity" id="slaHrswp" class="form-control" min="1" />
+                            <div class="row">
+                                <label id="slaHrsRequiredwp" style="color:red; font-size:10px; text-align:center;"></label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-lg-6" style="margin-bottom:0px;cursor: pointer;">
+                            <label style="margin-left:1px"><i class="fa fa-calendar"></i> Start Date</label>
+                            <div style="width: 20px;  margin-left: 13px; margin-top: -25px; font-size: 17px; color:red;">*</div>
+                            <input type="text" name="DateResigned" id="Start_Date_WP" class="form-control" data-date-format='yyyy-mm-dd' placeholder="yyyy/mm/dd" />
+                            <div class="row">
+                                <label id="Start_Date-Requiredwp" style="color:red; font-size:10px; text-align:center; margin-left:2px"></label>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-6" style="margin-bottom:0px;">
+                            <label style="margin-left:10px">&nbsp Start Time</label>
+                            <div style="width: 20px;  margin-left: 1px; margin-top: -25px; font-size: 17px; color:red;">*</div>
+                            <select class="select2able select2-offscreen" id="start_time_WP">
+                                <option value="0"></option>
+                                <option value="00:00:00">00:00:00</option>
+                                <option value="00:30:00">00:30:00</option>
+                                <option value="01:00:00">01:00:00</option>
+                                <option value="01:30:00">01:30:00</option>
+                                <option value="02:00:00">02:00:00</option>
+                                <option value="02:30:00">02:30:00</option>
+                                <option value="03:00:00">03:00:00</option>
+                                <option value="03:30:00">03:30:00</option>
+                                <option value="04:00:00">04:00:00</option>
+                                <option value="04:30:00">04:30:00</option>
+                                <option value="05:00:00">05:00:00</option>
+                                <option value="05:30:00">05:30:00</option>
+                                <option value="06:00:00">06:00:00</option>
+                                <option value="06:30:00">06:30:00</option>
+                                <option value="07:00:00">07:00:00</option>
+                                <option value="07:30:00">07:30:00</option>
+                                <option value="08:00:00">08:00:00</option>
+                                <option value="08:30:00">08:30:00</option>
+                                <option value="09:00:00">09:00:00</option>
+                                <option value="09:30:00">09:30:00</option>
+                                <option value="10:00:00">10:00:00</option>
+                                <option value="10:30:00">10:30:00</option>
+                                <option value="11:00:00">11:00:00</option>
+                                <option value="11:30:00">11:30:00</option>
+                                <option value="12:00:00">12:00:00</option>
+                                <option value="12:30:00">12:30:00</option>
+                                <option value="13:00:00">13:00:00</option>
+                                <option value="13:30:00">13:30:00</option>
+                                <option value="14:00:00">14:00:00</option>
+                                <option value="14:30:00">14:30:00</option>
+                                <option value="15:00:00">15:00:00</option>
+                                <option value="15:30:00">15:30:00</option>
+                                <option value="16:00:00">16:00:00</option>
+                                <option value="16:30:00">16:30:00</option>
+                                <option value="17:00:00">17:00:00</option>
+                                <option value="17:30:00">17:30:00</option>
+                                <option value="18:00:00">18:00:00</option>
+                                <option value="18:30:00">18:30:00</option>
+                                <option value="19:00:00">19:00:00</option>
+                                <option value="19:30:00">19:30:00</option>
+                                <option value="20:00:00">20:00:00</option>
+                                <option value="20:30:00">20:30:00</option>
+                                <option value="21:00:00">21:00:00</option>
+                                <option value="21:30:00">21:30:00</option>
+                                <option value="22:00:00">22:00:00</option>
+                                <option value="22:30:00">22:30:00</option>
+                                <option value="23:00:00">23:00:00</option>
+                                <option value="23:30:00">23:30:00</option>
+                            </select>
+                            <div class="row">
+                                <label id="start_time-Requiredwp" style="color:red; font-size:10px; text-align:center;"></label>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="row">
+                        <div class="col-lg-12" style="margin-bottom:0px;">
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <label style="margin-left:10px">Priority:</label>
+                                    <div style="width: 20px;  margin-left: 1px; margin-top: -25px; font-size: 17px; color:red;">*</div>
+                                    <div class="btn-group prioritywp" data-toggle="buttons">
+                                        <label class="btn btn-primary btn-sm" id="Livewp">
+                                            <input type="radio" name="radio_prioritywp" id="Live" value="Live">Live
+                                        </label>
+                                        <label class="btn btn-danger btn-sm " id="Criticalwp">
+                                            <input type="radio" name="radio_prioritywp" id="Critical" value="Critical">Critical
+                                        </label>
+                                        <label class="btn btn-warning btn-sm " id="Highwp">
+                                            <input type="radio" name="radio_prioritywp" id="High" value="High">High
+                                        </label>
+                                        <label class="btn btn-success btn-sm " id="Normalwp">
+                                            <input type="radio" name="radio_prioritywp" id="Normal" value="Normal">Normal
+                                        </label>
+                                        <label class="btn btn-info btn-sm " id="Lowwp">
+                                            <input type="radio" name="radio_prioritywp" id="Low" value="Low">Low
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <label>Total Unallocated Work Orders :</label><label id="woCountForWOPlan"></label>
+                                </div>
+                            </div>
+
+
+                        </div>
+                        <div class="row">
+                            <label id="priorityRequiredwp" style="color:red; font-size:10px; text-align:center;"></label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-12" id="nonAspEdit" style="margin-bottom:0px; overflow: auto;">
+                            <label style="margin-left:10px">Assign to User:</label><span id="allUserAnchorwpspan"><a onclick="getAllUserswp()" id="allUserAnchorwp" style="color:blue;font-size:10px;cursor:pointer"><i class="fa fa-lock" style="color:black"></i>(Click to unlock all users)</a><a onclick="getWFUserByProjectwp()" id="userByProjAnchorwp" style="color:blue;font-size:10px;cursor:pointer;display:none;"><i class="fa fa-undo" style="color:black;"></i>(Click to get user mapped to project)</a>&nbsp;&nbsp;<span style="color:darkred;font-size:10px;">Select multiple users for multiple workorders</span></span>
+                            <div id="selectallSignumdivwp">
+                                <div style="display:flex">
+                                    <input onkeyup="changeWOCountWP(this)" id="selectUserAllSignumwp" style='width:100%' placeholder="Signum/Name" title="Minimum 3 characters required!" multiple />
+                                </div>
+                                <br />
+                                <b>Minimum 3 characters required.(choose signum from the list)</b>
+                            </div>
+                            <div id="emptysignum-message" style="display:none; color: red">Please seletct a Signum from the list</div>
+                            @*<div style="width: 20px;  margin-left: 1px; margin-top: -25px; font-size: 17px; color:red; ">*</div>*@
+                            <div id="signumbyprojectdivwp" style="display:flex">
+                                <select onchange="changeWOCountWP(this)" class="select2able select2-offscreen assignuser" id="select_assign_to_user_wp" multiple></select>
+                            </div>
+                            <div class="row">
+                                <label id="select_assign_to_user-Requiredwp" style="color:red;margin-top: 14px; font-size:10px; text-align:center;"></label>
+                            </div>
+                        </div>
+                        <div class="col-lg-12" id="aspEdit" style="margin-bottom:0px; overflow: auto;">
+                            <label style="margin-left:10px">Assign to ASP User:</label>
+                            <div id="selectAspSignumDivwp">
+                                <select onchange="changeWOCountWP(this)" class="select2 select2able" id="selectAspUserSignumwp" style='width:100%' placeholder="Signum/Name" multiple></select>
+                                <br />
+                                <br />
+                                (Choose signum from the list.)
+                            </div>
+                            <div id="emptysignum-message" style="display:none; color: red">Please seletct an Signum from the list</div>
+                            @*<div style="width: 20px;  margin-left: 1px; margin-top: -25px; font-size: 17px; color:red; ">*</div>*@
+                            <div class="row">
+                                <label id="select_assign_to_user-Requiredwp" style="color:red;margin-top: 14px; font-size:10px; text-align:center;"></label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="woCountDivWP" class="row" style="display:none">
+                        <div class="col-lg-12" style="padding-left: 30px;">
+                            <label id="woVol">WO Volume :</label>
+                            <input id="woCountWP" class="woCountClass" style="width:50px;" type="number" value="1" min="1" max="20" onblur="checkNumber(this)">
+                        </div>
+                    </div>
+
+                    <div class="row">
+
+                        <div class="col-lg-6" style="margin-bottom:0px;">
+                            <i id="faDwnwp" class="fa fa-angle-right" style="color:blue;font-size:12px;"></i> <i id="faUpwp" style="display:none;color:red;font-size:12px;" class="fa fa-angle-left"></i>  <button id="btnRecurr" class="btn btn-link" onclick="openRecurrencewp()">Recurrence</button>
+
+                            <div class="btn-group recurrencewp" data-toggle="buttons" id="recGrpwp" style="display:none;">
+                                <label class="btn btn-primary btn-sm " id="Weekly_radio">
+                                    <input type="radio" name="radio_recurrwp" value="Weekly" autocomplete="off"> Weekly
+                                </label>
+                                <label class="btn btn-primary btn-sm" id="Daily_radio">
+                                    <input type="radio" name="radio_recurrwp" value="Daily" autocomplete="off"> Daily
+                                </label>
+                                <label class="btn btn-primary btn-sm" id="Hourly_radio">
+                                    <input type="radio" name="radio_recurrwp" value="Hourly" autocomplete="off" /> Hourly
+                                </label>
+                            </div>
+                            <div class="row">
+                                <label id="periodReqwp" style="color:red;margin-top: 14px; font-size:10px; text-align:center;"></label>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-6" style="margin-bottom:0px;cursor: pointer; display:none" id="endDateDivwp">
+                            <label><i class="fa fa-calendar"></i> &nbsp End By</label>
+                            <div style="width: 20px;  margin-left: 13px; margin-top: -25px; font-size: 17px; color:red;">*</div>
+                            <input type="text" name="EndDate" id="End_Date_wp" class="form-control" @*data-date-format='yyyy-mm-dd'*@ placeholder="yyyy/mm/dd" />
+                            <div class="row">
+                                <label id="End_Date-Requiredwp" style="color:red; font-size:10px; text-align:center;"></label>
+                            </div>
+                        </div>
+                        <div class="row" id="ContentDailywp" style="display:none;">
+
+                            <div class="btn-group dailywp" data-toggle="buttons">
+                                <label class="btn btn-warning " id="MondayChk">
+                                    <input type="checkbox" name="checkbox_dailywp" id="checkbox_dailywp" value="Monday">Mon
+                                </label>
+                                <label class="btn btn-warning " id="TuesdayChk">
+                                    <input type="checkbox" name="checkbox_dailywp" id="checkbox_dailywp" value="Tuesday">Tue
+                                </label>
+                                <label class="btn btn-warning " id="WednesdayChk">
+                                    <input type="checkbox" name="checkbox_dailywp" id="checkbox_dailywp" value="Wednesday">Wed
+                                </label>
+                                <label class="btn btn-warning " id="ThursdayChk">
+                                    <input type="checkbox" name="checkbox_dailywp" id="checkbox_dailywp" value="Thursday">Thu
+                                </label>
+                                <label class="btn btn-warning " id="FridayChk">
+                                    <input type="checkbox" name="checkbox_dailywp" id="checkbox_dailywp" value="Friday">Fri
+                                </label>
+                                <label class="btn btn-warning " id="SaturdayChk">
+                                    <input type="checkbox" name="checkbox_dailywp" id="checkbox_dailywp" value="Saturday">Sat
+                                </label>
+                                <label class="btn btn-warning " id="SundayChk">
+                                    <input type="checkbox" name="checkbox_dailywp" id="checkbox_dailywp" value="Sunday">Sun
+                                </label>
+                            </div>
+
+                        </div>
+
+                        <div class="row" id="ContentHourlywp" style="display:none;">
+
+                            <div class="btn-group hourlywp" data-toggle="buttons">
+                            </div>
+
+                        </div>
+
+                        <div class="row" id="ContentWeeklywp" style="display:none;">
+
+                            <div class="btn-group weeklywp" data-toggle="buttons">
+                                <label class="btn btn-primary " id="Monday">
+                                    <input type="radio" name="radio_weeklywp" id="mon" value="Monday">Mon
+                                </label>
+                                <label class="btn btn-primary " id="Tuesday">
+                                    <input type="radio" name="radio_weeklywp" id="tue" value="Tuesday">Tue
+                                </label>
+                                <label class="btn btn-primary " id="Wednesday">
+                                    <input type="radio" name="radio_weeklywp" id="wed" value="Wednesday">Wed
+                                </label>
+                                <label class="btn btn-primary " id="Thursday">
+                                    <input type="radio" name="radio_weeklywp" id="thu" value="Thursday">Thu
+                                </label>
+                                <label class="btn btn-primary " id="Friday">
+                                    <input type="radio" name="radio_weeklywp" id="fri" value="Friday">Fri
+                                </label>
+                                <label class="btn btn-primary " id="Saturday">
+                                    <input type="radio" name="radio_weeklywp" id="sat" value="Saturday">Sat
+                                </label>
+                                <label class="btn btn-primary " id="Sunday">
+                                    <input type="radio" name="radio_weeklywp" id="sun" value="Sunday">Sun
+                                </label>
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+                <a id="slideUpwp" class="btn btn-link" onclick="createTransition()" style="display:none;color:blue;font-size:10px"><em class="fa fa-angle-double-up" style="color:blue"></em> &nbsp;&nbsp;Select Network Elements for work order(Non-mandatory)</a>
+                <a id="slideDwnwp" class="btn btn-link" onclick="resetTransition()" style="display:none;color:green;font-size:10px"><em class="fa fa-angle-double-down" style="color:green"></em>&nbsp;&nbsp; Go Back</a>
+
+                <div class="commenting-field main" style="display:none;">
+                    <div class="col-lg-1"><i class="fa fa-user profile-picture"></i></div>
+                    <div class="textarea-wrapper">
+                        <div><textarea id="commentsBox" class="textarea edit" placeholder="Add a comment"></textarea></div>
+                    </div>
+                </div>
+
+                <div class="node_infowp" style="display:none;">
+                    <div class="row">
+
+                        <table class="table table-bordered" id="nodeDisplaywp">
+                            <tbody>
+                                <tr>
+                                    <td style="font-weight:600;">NodeType</td>
+                                    <td style="height:4px"><p class="projectDetails-cellmargin" id="nodetypeInfowp"></p></td>
+                                    <td style="font-weight:600;">Node Names</td>
+                                    <td style="height:4px"><p class="projectDetails-cellmargin" id="nodeNamesInfowp"></p></td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="node_boxwp" style="display:none;">
+                <hr />
+                <div class="row" style="">
+                    <div class="col-lg-4" style="margin-bottom:0px;">
+                        <label style="margin-left:10px">Element Type:</label>
+
+                        <select class="select2able select2-offscreen" id="select_nodeTypewp" onchange="getNodeTypeEdit()">
+                            <option value="0"></option>
+                        </select>
+                        <div class="row">
+                            <label id="select_nodeType-Required" style="color:red; font-size:10px; text-align:center;"></label>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4" style="margin-bottom:0px;">
+                        <label style="margin-left:10px">Node Type:</label>
+
+                        <select class="select2able select2-offscreen" id="select_nodeTypewp2" onchange="getMarketAreaWOwp()">
+                            <option value="0"></option>
+                        </select>
+                        <div class="row">
+                            <label id="select_nodeType2-Required" style="color:red; font-size:10px; text-align:center;"></label>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4" style="margin-bottom:0px;">
+                        <label style="margin-left:10px">Market Area:</label>
+
+                        <select class="select2able select2-offscreen" id="select_markAreawp" onchange="getVendorwp()">
+                            <option value="0"></option>
+                        </select>
+                        <div class="row">
+                            <label id="select_markArea-Required" style="color:red; font-size:10px; text-align:center;"></label>
+                        </div>
+                    </div>
+                </div>
+                <div class="row" style="">
+
+                    <div class="col-lg-6" style="margin-bottom:0px;">
+                        <label style="margin-left:10px">Vendor:</label>
+
+                        <select class="select2able select2-offscreen" id="select_vendorwp" onchange="getWFNodeNameswp()">
+                            <option value="0"></option>
+                        </select>
+                        <div class="row">
+                            <label id="select_vendor-Required" style="color:red; font-size:10px; text-align:center;"></label>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-6">
+                        <label style="margin-left:10px">Select Node Names:</label>
+
+                        <select class="select2able select2-offscreen " id="woc_select_nodeNamewp" multiple>
+                            <option value="0"></option>
+                        </select>
+                        @*<div class="row">
+                                <label id="woc_select_nodeName-Required" style="color:red; font-size:10px; text-align:center;margin-top: 15px;"></label>
+                            </div>*@
+                    </div>
+                </div>
+                <div class="row" style="">
+
+                    <div class="col-lg-10" style="margin-bottom: 0px; overflow: auto;">
+                        <label style="margin-left:10px">Enter & Validate Comma Seperated Nodes:</label>
+
+                        <input type="text" class="form-control" id="nodeViewwp" style="width:100%;padding:3px;" />
+                        <div class="row">
+                            <label id="woc_select_nodeName-Required" style="color:red; font-size:10px; text-align:center;margin-top: 15px;"></label>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-2" style="margin-bottom:0px; overflow: auto;top:22px;">
+                        <a id="validateNodes" href="#" style="float:left;" onclick="validateNodeswp();"><span class="fa fa-step-forward glyphicon-ring glyphicon-mediumorchid glyphicon-blue" data-placement="bottom" data-toggle="tooltip" title="Validate Nodes"></span>&nbsp;&nbsp;</a>
+                        <a id="validStatus" href="#" style="display:none;"><span id="changeIcon" class="glyphicon-ring glyphicon-mediumorchid" data-placement="bottom" data-toggle="tooltip"></span></a>
+                        <div class="row">
+                            <label id="validateNodes-Requiredwp" style="color:red; font-size:10px; text-align:center;margin-top: 15px;"></label>
+                        </div>
+                    </div>
+
+
+
+
+                </div>
+                <div class="row" style="">
+                    <div class="col-md-12">
+                        <div>
+                            <input type="checkbox" id="nodeWisewp" name="interest" value="" onclick="userWiseNodeSelectOtionwp()">
+                            <label style="color:red">Node wise work order Creation</label>&nbsp;&nbsp;<i data-toggle="tooltip" title="Check this only for node wise work order for single user. This will increase number of Work Order" class="fa fa-info-circle"></i>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="row" id="showUserSelect">
+                <div class="col-md-12">
+                    <div>
+                        <input type="checkbox" id="shownodeWisewp" name="interest" value="" disabled>
+                        <label style="color:red">Node wise work order Creation</label>&nbsp;&nbsp;<i data-toggle="tooltip" title="Check this only for node wise work order for single user. This will increase number of Work Order" class="fa fa-info-circle"></i>
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+
+                <button id="saveWorkOrderwp" style="display:none;" class="btn btn-primary" type="submit" onclick="modifyWorkOrderWrkFlow($('#scopeIDwp').val(), $('#SubActivityIDwp').val(), $('#versionNumberwp').val())">Save</button>
+                @*<a id="submitModal" class="btn btn-primary" onclick="modalClose()">Close</a>*@
+                <button id="closeModal" type="button" class="btn btn-default" onclick="closeModalwp();">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Not being used -->
+<div class="modal fade" id="editInputFilesModalWO" role="dialog" style="top:200px;">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-body" style="padding-bottom: 0px !important;padding-top: 20px !important;padding-right: 20px !important;border-left-width: 20px;padding-left: 20px !important;">
+
+                <div class="row"><div class="col-lg-11" style="margin-bottom: 0px;"><div class="row"><div class="col-lg-4" style="margin-bottom: 0px;">File Name</div><div class="col-lg-8" style="margin-bottom: 0px;">File URL</div></div></div><div class="col-lg-1" style="padding-left: 0px;margin-bottom: 0px;">Actions</div></div>
+
+                <div class="row" style="margin-bottom: 10px;">
+                    <div class="col-lg-11" style="margin-bottom: 0px;">
+                        <div class="row">
+                            <div class="col-lg-4" style="margin-bottom: 0px;">
+                                <input onkeyup="giveTitle(this)" id="editInputNameWO" class="inputFileClass" type="text">
+                                <input id="inputIndexWOp" type="hidden">
+                                <input id="inputWOIDWO" type="hidden">
+
+                            </div>
+                            <div class="col-lg-8" style="margin-bottom: 0px;">
+                                <input onkeyup="giveTitle(this)" id="editInputUrlWO" class="inputFileClass" type="text">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-1" style="padding-left: 0px;margin-bottom: 0px;">
+
+                        <a title="Check URL" style="color:#367bab;cursor:pointer" onclick="checkFileUrlWO()"> <i class="fa fa-lg fa-paper-plane"></i></a>
+
+                    </div>
+                </div>
+
+
+
+            </div>
+            <div class="modal-footer" style="margin-top: 0px;padding-top: 0px;">
+                <button class="btn btn-primary" onclick="updateInputFileWO()">Update File URL</button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div class="modal fade" id="OpenInputFilesModal" role="dialog">
+    <div class="modal-dialog" style="width:750px">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Input File URLs</h4>
+            </div>
+            <div class="modal-body" style="padding-bottom: 0px;max-height:470px;overflow-y: auto;">
+                <input id="inputWOIDWO" type="hidden" />
+                <button id="editInputButton" class="btn btn-xs btn-primary" onclick="editInputFilesWP()" style="margin-top: 0px;margin-left: 10px;"><i class="fa fa-pencil-square-o"></i> Edit/Add URLs</button>
+                <button id="addInputButton" class="btn btn-xs btn-success" onclick="addMoreInputFilesWP()" style="display:none;margin-top: 0px;margin-left: 10px;"><i class="fa fa-plus"></i> Add More URLs</button>
+                <div class="row" style="margin-left: 0px;margin-right: 0px;">
+                    <ul id="inputFileHeadersWP" style="padding-left: 0px;list-style-type: none;">
+                        <li><div class="row"><div class="col-lg-11" style="margin-bottom: 0px;"><div class="row"><div class="col-lg-4" style="margin-bottom: 0px;">File Name</div><div class="col-lg-8" style="margin-bottom: 0px;">File URL</div></div></div><div class="col-lg-1" style="padding-left: 0px;margin-bottom: 0px;">Actions</div></div></li>
+                    </ul>
+
+                    <ul id="inputFileWP" style="padding-left: 0px;list-style-type: none;"></ul>
+                </div>
+
+                <button class="btn btn-xs btn-primary showLocalGlobal" onclick="showLocalGlobalURLs('OpenInputFilesModal')" title="View all local and global URLs"><i class="fa fa-eye"></i> Show Local/Global URLs</button>
+                <button class="btn btn-xs btn-danger hideLocalGlobal" onclick="hideLocalGlobalURLs('OpenInputFilesModal')" title="Hide all local and global URLs" style="display:none"><i class="fa fa-eye-slash"></i> Hide Local/Global URLs</button>
+
+                <div class="panel panel-default localGlobalURLTables" style="display:none">
+                    <div class="panel-heading" style="padding-bottom: 0px;">
+                        <div class="row">
+                            <div class="col-lg-6" style="margin-bottom: 0px;text-align: center;">
+                                <h4>Global URLs</h4>
+            </div>
+                            <div class="col-lg-6" style="margin-bottom: 0px;text-align: center;">
+                                <h4>Local URLs</h4>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel-body" style="background: linear-gradient(#e8e8e8, #e8e8e8) no-repeat center/1.5px 100%;">
+
+                        <div class="row">
+
+                            <div class="col-lg-6">
+                                <div class="table-responsive globalURLTableAreaWOCreation" style="width:100%; overflow:auto">
+
+                                    <table class="table table-bordered table-striped table-hover globalURLTableWOCreation">
+                                    </table>
+
+                                </div>
+
+                            </div>
+
+                            <div class="col-lg-6">
+                                <div class="table-responsive localURLTableArea" style="width:100%; overflow:auto">
+
+                                    <table class="table table-bordered table-striped table-hover localURLTable">
+                                    </table>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-footer" style="margin-top: 0px;padding-top: 0px;">
+                <button id="inputUpdateButton" class="btn btn-primary" style="display:none" onclick="updateInputFileWO()">Update</button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+
+

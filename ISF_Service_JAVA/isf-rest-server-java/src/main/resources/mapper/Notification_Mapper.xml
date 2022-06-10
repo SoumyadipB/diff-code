@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ericsson.isf.mapper.NotificationMapper">
+
+<select id="getNotificationsBySignum" resultType='com.ericsson.isf.model.WebNotificationModel'>
+  	SELECT WETO.[NotificationID]
+      ,WETO.[NotificationSource]
+      ,WETO.[AuditComments]
+      ,WETO.[ToSignum]
+      ,WETO.[ReferenceID]
+      ,WETO.[Module]
+      ,WETO.[WOID]
+      ,WETO.[CreatedDate]
+      ,WETO.IsActive as active
+      ,CONCAT(WETO.[CreatedBy],' (',EMP.EmployeeName,')') as CreatedBy
+  FROM [transactionalData].[TBL_Web_Notification] WETO
+  inner join refData.TBL_Employees EMP on EMP.Signum=WETO.CreatedBy
+  where WETO.ToSignum=#{signum} and WETO.IsActive =1
+  <if test="role =='Project Manager'">
+   and WETO.[NotificationSource]!='ISF Mobile'
+  </if>
+  order by WETO.CreatedDate DESC
+  OFFSET ${start} ROWS
+  FETCH NEXT ${length} ROWS ONLY
+</select>
+
+</mapper>

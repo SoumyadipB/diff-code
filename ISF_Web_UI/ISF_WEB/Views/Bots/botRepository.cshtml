@@ -1,0 +1,805 @@
+@{
+    ViewBag.Title = "BOT REPOSITORY";
+}
+
+<link href="~/Scripts/lib/tooltip/protip/protip.min.css" rel="stylesheet">
+@Scripts.Render("~/bundles/BotRepository")
+@Scripts.Render("~/bundles/protip")
+@Scripts.Render("~/bundles/downloadBotFiles")
+
+
+<style>
+    .closeDownloadFile {
+        float: right !important;
+        position: inherit;
+        right: 1%;
+        top: 1%;
+    }
+
+    .fileLink {
+        border: 1px solid #7fbd7b;
+        padding: 2px 5px;
+        background-color: #51905c;
+        color: white;
+        box-shadow: #298441 0px 0px 4px;
+    }
+
+        .fileLink:hover {
+            border: 1px solid #86c797;
+            padding: 2px 5px;
+            background-color: #bbead2;
+            color: #0d4e19;
+            box-shadow: #56a56a 0px 0px 5px;
+        }
+
+    .downloadButtonClass {
+        border-top: 1px solid #57ae57;
+        position: absolute;
+        bottom: -75px;
+        width: 100%;
+        left: 0px;
+        padding: 15px 0px;
+        background-color: rgb(187,220,187);
+        height: 75px;
+        z-index: 1;
+    }
+
+    .boxHeaderCSS {
+        font-weight: bolder;
+        font-size: 15px;
+        color: #429342;
+    }
+
+    .boxDownloadIcon {
+        position: absolute;
+        bottom: 5%;
+        right: 12%;
+    }
+
+    .boxInfoIcon {
+        position: absolute;
+        right: 2%;
+        bottom: 5%;
+        /*padding: 1px 7px !important;*/
+    }
+
+    #Node_Names_WO_Create .select2-container .select2-selection {
+        height: 70px;
+        width: 90%;
+        overflow: auto;
+    }
+
+    .inputTextStyle {
+        width: 100%;
+        padding: 8px 15px;
+        display: inline-block;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+    }
+    /*CSS for Input Output Files*/
+    .linkHover:hover {
+        color: #007aff !important;
+    }
+
+    .filesDiv .dropdown-menu > li > a {
+        padding: 5px 15px 5px 2px;
+    }
+
+    .filesDiv:hover ul.dropdown-menu {
+        display: block;
+        max-height: 500px;
+        overflow-y: auto;
+    }
+
+    .inputFileClass {
+        width: 100%;
+        padding: 4px;
+        display: inline-block;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+    }
+
+    .inputSubMenu.dropdown-submenu:hover > .dropdown-menu {
+        display: block !important;
+        max-height: 500px !important;
+        overflow-y: auto !important;
+    }
+
+    .inputSubMenu {
+        position: relative !important;
+    }
+
+    .inputFilesList {
+        top: 0 !important;
+        left: 98% !important;
+        margin-top: -1px !important;
+    }
+
+    .select2-container {
+        z-index: 100000;
+    }
+
+    /*START - OVERRIDE SELECT2*/
+
+    .flowchartPullRightArea .select2-container--classic .select2-selection--single .select2-selection__arrow {
+        height: 20px;
+    }
+
+    .flowchartPullRightArea .select2-container .select2-selection--single {
+        height: 22px;
+        width: 130px;
+    }
+
+    .flowchartPullRightArea .select2-container--classic .select2-selection--single .select2-selection__rendered {
+        line-height: 22px;
+    }
+
+    /*START - OVERRIDE SELECT2*/
+
+
+    /*START BOOTSTRAO OVERRIDE*/
+    .btn-group {
+        margin: 0px;
+    }
+
+    .btn {
+        margin: 0px 3px 0px 0px;
+    }
+
+
+    .btn-group > .btn + .dropdown-toggle {
+        margin-left: 0px;
+        padding: 1px 5px;
+    }
+
+    .badge {
+        background-color: #faf9f9;
+        color: #a0a0a0;
+    }
+
+
+    .nopadding {
+        padding: 4px !important;
+        margin: 0px !important;
+    }
+
+    .label {
+        margin: 0 -2px;
+    }
+
+
+    .actionBtn {
+        background: #ffffff; /* Old browsers */
+        background: -moz-linear-gradient(top, #ffffff 0%, #e5e5e5 100%); /* FF3.6-15 */
+        background: -webkit-linear-gradient(top, #ffffff 0%,#e5e5e5 100%); /* Chrome10-25,Safari5.1-6 */
+        background: linear-gradient(to bottom, #ffffff 0%,#e5e5e5 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+        filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#e5e5e5',GradientType=0 ); /* IE6-9 */
+    }
+
+    .open > .dropdown-menu {
+        width: 207px;
+    }
+
+
+    /*END BOOTSTRAO OVERRIDE*/
+
+    .main_panel .panel-default .panel-heading {
+        text-align: left;
+        height: 31px;
+        padding: 5px;
+    }
+
+    .main_panel .main_heading {
+        text-align: left;
+        background: #ffffff; /* Old browsers */
+        background: -moz-linear-gradient(top, #ffffff 0%, #e5e5e5 100%); /* FF3.6-15 */
+        background: -webkit-linear-gradient(top, #ffffff 0%,#e5e5e5 100%); /* Chrome10-25,Safari5.1-6 */
+        background: linear-gradient(to bottom, #ffffff 0%,#e5e5e5 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+        filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#e5e5e5',GradientType=0 ); /* IE6-9 */
+    }
+
+    .myWorkOrderPanel.progress {
+        height: 7px;
+        background-color: #e6e3e3;
+        margin-bottom: 3px;
+        border-radius: 0px;
+    }
+
+    .flow_chart_one_panel .progress {
+        background-color: #e6e3e3;
+    }
+
+    .dBox .shape {
+        border-style: solid;
+        border-width: 0 70px 40px 0;
+        float: right;
+        height: 0px;
+        width: 0px;
+        -ms-transform: rotate(360deg); /* IE 9 */
+        -o-transform: rotate(360deg); /* Opera 10.5 */
+        -webkit-transform: rotate(360deg); /* Safari and Chrome */
+        transform: rotate(360deg);
+        position: absolute;
+        right: 0px;
+    }
+
+    .dBox {
+        background: #fff;
+        border: 1px solid #ddd;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        /*margin: 15px 0;*/
+        overflow: hidden;
+        margin-right: 7px;
+        position: relative;
+    }
+
+        .dBox .shape {
+            border-color: rgba(255,255,255,0) #d9534f rgba(255,255,255,0) rgba(255,255,255,0);
+        }
+
+    .dBox-radius {
+        border-radius: 7px;
+    }
+
+    .dBox-danger {
+        border-color: #d9534f;
+    }
+
+        .dBox-danger .shape {
+            border-color: transparent #d9534f transparent transparent;
+        }
+
+    .dBox-success {
+        border-color: #5cb85c;
+    }
+
+        .dBox-success .shape {
+            border-color: transparent #5cb85c transparent transparent;
+        }
+
+    .dBox-default {
+        border-color: #999999;
+    }
+
+        .dBox-default .shape {
+            border-color: transparent #999999 transparent transparent;
+        }
+
+    .dBox-primary {
+        border-color: #428bca;
+    }
+
+        .dBox-primary .shape {
+            border-color: transparent #428bca transparent transparent;
+        }
+
+    .dBox-info {
+        border-color: #5bc0de;
+    }
+
+        .dBox-info .shape {
+            border-color: transparent #5bc0de transparent transparent;
+        }
+
+    .dBox-warning {
+        border-color: #f0ad4e;
+    }
+
+        .dBox-warning .shape {
+            border-color: transparent #f0ad4e transparent transparent;
+        }
+
+    .dBox .shape-text {
+        color: #fff;
+        font-size: 12px;
+        font-weight: bold;
+        position: relative;
+        right: -31px;
+        top: -2px;
+        white-space: nowrap;
+        -ms-transform: rotate(30deg); /* IE 9 */
+        -o-transform: rotate(360deg); /* Opera 10.5 */
+        -webkit-transform: rotate(30deg); /* Safari and Chrome */
+        transform: rotate(30deg);
+    }
+
+    .dBox-content {
+        padding: 0 20px 10px;
+    }
+
+
+    /*INPROGRESS TASKS*/
+
+    .inprogressTask_panel, .work_order_panel, .flow_chart_main_panel {
+        box-shadow: 0px 0px 6px 1px rgba(0, 0, 0, 0.2);
+    }
+
+
+        .inprogressTask_panel .panel-heading, .work_order_panel .panel-heading {
+        }
+
+        .inprogressTask_panel .panel-body {
+            padding: 4px;
+        }
+
+
+    .inprogressTask_container {
+        width: 100%;
+        /*display: -webkit-box;*/
+        /*overflow: auto;*/
+        overflow-y: auto;
+        /*min-height:380px;*/
+    }
+
+
+
+    .inprogressTask_dBox {
+        width: 280px;
+        margin-right: 5px;
+        height: 180px;
+    }
+
+
+        .inprogressTask_dBox .dBox-content {
+            padding: 6px;
+        }
+
+            .inprogressTask_dBox .dBox-content .content-row {
+                margin-bottom: 1px;
+                display: inline-flex;
+                width: 100%;
+            }
+
+                .inprogressTask_dBox .dBox-content .content-row p {
+                    margin: 0px;
+                }
+
+            .inprogressTask_dBox .dBox-content .lbl {
+                font-weight: bold;
+                margin-right: 5px;
+            }
+
+            .inprogressTask_dBox .dBox-content .lbl2 {
+                font-weight: bold;
+                margin-left: 10px;
+                margin-right: 5px;
+            }
+
+
+
+            .inprogressTask_dBox .dBox-content .action_area i {
+                font-size: 14px;
+                margin-right: 5px;
+                cursor: pointer;
+                padding: 2px 3px;
+                border: 1px solid #ccc;
+                border-radius: 3px;
+                background-color: #f5f8fb;
+                width: 20px;
+                text-align: center;
+            }
+
+            .inprogressTask_dBox .dBox-content .time_area {
+                font-size: 18px;
+                font-weight: bold;
+                color: #2197d2;
+                margin-top: -2px;
+                margin-left: 7px;
+            }
+
+    .infoTaskBtn {
+        color: #0c13f5 !important;
+        border-radius: 10px !important;
+        background-color: #cbdcf1 !important;
+    }
+
+    /*INPROGRESS TASKS*/
+
+    /*WORKORDER BOXES*/
+
+    .work_order_panel {
+        overflow: auto;
+    }
+
+        .work_order_panel .panel-body {
+            padding: 4px;
+        }
+
+
+
+    .work_order_dBox_container {
+        width: 100%;
+        display: -webkit-box;
+        overflow: auto;
+    }
+
+
+    .work_order_dBox {
+        width: 250px;
+        margin-right: 5px;
+        border-radius: 0px;
+        overflow: hidden;
+        margin-bottom: 0px;
+        height: 97px;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    }
+
+        .work_order_dBox .panel-heading {
+            border-radius: 0px;
+        }
+
+        .work_order_dBox .panel-body {
+            padding: 6px;
+        }
+
+
+        .work_order_dBox .content-row {
+            display: inline-flex;
+            width: 100%;
+            border-bottom: 1px dotted #e0e0e0;
+        }
+
+            .work_order_dBox .content-row label {
+                font-weight: bold;
+                margin-right: 5px;
+            }
+
+            .work_order_dBox .content-row p {
+                margin: 0px;
+            }
+
+    .nodeNameP {
+        width: 158px;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+
+
+    .action-buttons .dropdown {
+    }
+
+    .work_order_panel.make_full_screen .work_order_dBox_container .work_order_dBox {
+        display: inline-block;
+    }
+
+    #woPriorityDropdown {
+        width: 135px;
+    }
+
+        #woPriorityDropdown > li > a, #woStatusDropdownUl > li > a {
+            padding: 1px 15px;
+            font-size: 10px;
+        }
+    /*WORKORDER BOXES*/
+
+
+
+
+    /* start FLOW CHARTS*/
+
+    .flow_chart_main_panel .woIdOnFlowchartHeader {
+        margin-right: 5px;
+    }
+
+    .flow_chart_main_panel {
+        overflow-x: hidden;
+        overflow-y: auto;
+    }
+
+        .flow_chart_main_panel .panel-body {
+            padding: 4px;
+        }
+
+        .flow_chart_main_panel .panel {
+            border-radius: 0px;
+            margin-bottom: 2px;
+        }
+
+
+    .legends {
+        display: inline-flex;
+        margin-right: 10px;
+    }
+
+        .legends .caption {
+            margin-right: 10px;
+        }
+
+
+    #flowchartRightHeader {
+        display: inline-flex;
+        height: 23px;
+    }
+    /*end FLOW CHARTS*/
+    /*START SCROLL BAR*/
+
+    /*END SCROLL BAR*/
+    .fixedThisToTop {
+        position: fixed;
+        top: 45px;
+        left: 65px;
+        width: 100%;
+        z-index: 1001;
+    }
+
+
+    .make_full_screen {
+        position: fixed;
+        top: 0px;
+        left: 0px;
+        width: 100%;
+        height: 100%;
+        z-index: 1030;
+    }
+
+
+    .searchText {
+        width: 200px;
+        font-size: 13px;
+        height: 22px;
+    }
+
+    .required:after {
+        content: " *";
+        color: red;
+    }
+
+    .notFound {
+        width: 100%;
+        text-align: center;
+        font-size: 18px;
+        padding: 36px;
+        color: red;
+    }
+
+        .notFound:before {
+            content: '\f119';
+            font-family: fontawesome;
+            margin-right: 5px;
+            font-size: 18px;
+        }
+    /*/////////////////////////////////*/
+
+    .funMsg {
+        width: 100%;
+        text-align: center;
+        font-size: 14px;
+        padding: 10px;
+        color: green;
+    }
+
+    .myWorkHelpBtn {
+        border-radius: 13px;
+    }
+
+        .myWorkHelpBtn i {
+            font-size: 15px;
+        }
+
+    /*FOR TEXTBOX WHICH TYPE IS SEARCH*/
+    input[type="search"]::-webkit-search-cancel-button {
+        /*Bootstrap 3 override*/
+        -webkit-appearance: searchfield-cancel-button;
+        cursor: pointer;
+    }
+
+
+    .sliderSource {
+        background-color: #5bc0de;
+    }
+
+    .disableAssessedBg {
+        background-color: #CCC !important;
+    }
+
+
+
+    .particularTabActions {
+        overflow: hidden;
+    }
+
+
+    /*start for assign stop me*/
+
+    a.divider:hover {
+        background-color: #eeeeee;
+    }
+
+    .divider.active {
+        background-color: #eeeeee;
+        text-decoration: none;
+    }
+
+    .divider {
+        border-right: 1px solid;
+        padding: 4px 0px 4px 0px;
+        color: #cec8c8;
+    }
+
+    .link {
+        margin: 0px 5px 0px 5px;
+        color: blue;
+    }
+
+    .filterHrefs {
+        width: auto;
+        text-align: center;
+        text-transform: capitalize;
+        background-color: #ffffffc2;
+        padding: 4px;
+        border: 1px solid;
+        border-radius: 10px;
+        border-color: #cec8c8;
+        font-size: 10px;
+    }
+
+    .labelDist {
+        font-size: 10px;
+        float: left;
+        margin: 5px 2px 0px 15px;
+    }
+
+
+    tfoot {
+        display: table-header-group;
+    }
+
+
+
+    a.dividerStatus:hover {
+        background-color: #eeeeee;
+    }
+
+    .dividerStatus.active {
+        background-color: #eeeeee;
+        text-decoration: none;
+    }
+
+    .dividerStatus {
+        border-right: 1px solid;
+        padding: 4px 0px 4px 0px;
+        color: #cec8c8;
+    }
+
+    a.dividerPriority:hover {
+        background-color: #eeeeee;
+    }
+
+    .dividerPriority.active {
+        background-color: #eeeeee;
+        text-decoration: none;
+    }
+
+    .dividerPriority {
+        border-right: 1px solid;
+        padding: 4px 0px 4px 0px;
+        color: #cec8c8;
+    }
+
+    a.dividerDate:hover {
+        background-color: #eeeeee;
+    }
+
+    .dividerDate.active {
+        background-color: #eeeeee;
+        text-decoration: none;
+    }
+
+    .dividerDate {
+        border-right: 1px solid;
+        padding: 4px 0px 4px 0px;
+        color: #cec8c8;
+    }
+
+    /*end for assign stop me*/
+
+    .ui-autocomplete {
+        z-index: 2147483647;
+    }
+
+    #boxDownloadDropdown:hover ul.dropdown-menu {
+        display: block;
+        max-height: 500px;
+        overflow-y: auto;
+    }
+</style>
+<div class="col-lg-12">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            Bot Repository
+        </div>
+
+        <div class="panel-body" style="padding-bottom: 0px;padding-top: 10px;">
+
+            <div class="row" style="padding-left: 0px;padding-bottom: 0px;padding-top: 5px;margin-bottom: 10px;">
+                <div class="col-lg-10" style="margin-top: 0px;">
+                    <div class="col-sm-1">
+                        <label style="font-weight: bolder;font-size: 13px; margin-top:30px;"><nobr>Filter BOTs :</nobr></label>
+                    </div>
+
+                    <div class="col-sm-2" style="z-index: 0;margin-bottom: 0px;">
+                        <label class="required">Domain/Subdomain:</label>
+                        <select id="domainFilter" class="select2able" onchange="onChangeDomain()">
+                            <option value=''>Select Domain/Subdomain</option>
+                        </select>
+                    </div>
+
+                    <div class="col-sm-2" style="z-index: 0;margin-bottom: 0px;">
+                        <label>Activity/Subactivity</label>
+                        <select id="activityFilter" class="select2able" onchange="onChangeActivity()">
+                            <option value=''>Select Activity/Subactivity</option>
+                        </select>
+                    </div>
+
+                    <div class="col-sm-2" style="z-index: 0;margin-bottom: 0px;">
+                        <label>Technology :</label>
+                        <select id="techFilter" class="select2able" onchange="getTasks()">
+                            <option value=''>Select Technology</option>
+                        </select>
+                    </div>
+                    <div class="col-sm-2" style="z-index: 0;margin-bottom: 0px;">
+                        <label>Tasks</label>
+                        <select id="taskFilter" class="select2able">
+                            <option value=''>Select Task</option>
+                        </select>
+                    </div>
+
+                    <div class="col-sm-2" style="z-index: 0;margin-bottom: 0px;">
+                        <label>Market Area :</label>
+                        <select id="marketFilter" class="select2able" onchange="onChangeMarketAreas()">
+                            <option value="" selected>ALL</option>
+                        </select>
+                    </div>
+
+                    <div class="col-sm-2" style="z-index: 0;margin-bottom: 0px;">
+
+                        <button onclick="getAllBots()" class="button" style="margin-top:10px;">Go</button>
+
+                    </div>
+
+
+                </div>
+
+                <div class="col-lg-2" style="margin-bottom: 10px;">
+                    <label>Global Search :</label>
+                    <br />
+                    <input type="text" id="searchBots" style="width: 80%;padding-bottom: 5px;padding-top: 5px;" class="inputTextStyle" placeholder="Type to search...">@*&nbsp;&nbsp; <button class="btn btn-primary">Search</button>*@
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="inprogressTask_container"></div>
+
+<div id="demoURLPopup" class="modal" role="dialog">
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            @*<h4 class="modal-title well well-sm text-center"></h4>*@
+        </div>
+        <div class="modal-body" id="demoURLBody">
+            <input type="hidden" id="rpaID" />
+            Demo Video URL:
+            <input type="text" id="videoURL" style="width:100%" readonly />
+        </div>
+        <div class="modal-footer">
+            <button id="closeModal" type="button" class="btn btn-sm btn-default" data-dismiss="modal">Close</button>
+        </div>
+    </div>
+</div>
+<script>
+    $('#demoURLPopup').on('show.bs.modal', function () {
+        $(this).find('.modal-content').css({
+            width: 'auto', //probably not needed
+            height: 'auto', //probably not needed
+            'max-width': '50%',
+            'margin': 'auto'
+        });
+    });
+
+</script>
+@Html.Partial("~/Views/Bots/botInfo.cshtml");

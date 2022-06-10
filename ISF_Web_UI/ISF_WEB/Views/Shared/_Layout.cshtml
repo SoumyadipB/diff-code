@@ -1,0 +1,1067 @@
+﻿@{
+
+    if (HttpContext.Current.Session["IsLoginModeAzureAd"] != null)
+    {
+        ViewBag.IsLoginModeAzureAd = (bool)HttpContext.Current.Session["IsLoginModeAzureAd"];
+    }
+    ViewBag.ExpirationTime = HttpContext.Current.Session["ExpirationTime"];
+    ViewBag.NotificationData = HttpContext.Current.Session["NotificationData"];
+
+}
+<!DOCTYPE html>
+<html>
+<head>
+	<style>
+		.displayInline {
+			display: inline-block !important;
+		}
+
+		.displayBlock {
+			display: block !important;
+		}
+
+		.displayNone {
+			display: none;
+		}
+
+		.arrow-up {
+			width: 0;
+			height: 0;
+			border-left: 5px solid transparent;
+			border-right: 5px solid transparent;
+			border-bottom: 5px solid black;
+		}
+
+		#notificationList {
+			overflow-y: auto;
+			overflow-x: hidden;
+		}
+
+		.notificationUl {
+			width: 250px !important;
+			background-color: #f0f5fa;
+		}
+
+		.dot {
+			height: 30px;
+			width: 30px;
+			background-color: #bbb;
+			border-radius: 50%;
+			display: inline-block;
+		}
+
+		.well-sm {
+			padding: 9px;
+			border-radius: 3px;
+		}
+
+		.feedback-custom.well-sm {
+			padding: 9px 0 9px 0 !important;
+			border-radius: 3px;
+		}
+
+		#switchP {
+			max-height: 400px;
+			overflow-y: auto;
+		}
+
+		#adhocDropdownList {
+			/*display: block;*/
+			max-height: 500px;
+			overflow-y: auto;
+		}
+
+		#adhocAnchor:hover .circle {
+			background-color: #023732;
+			border: 1px solid #087F74;
+		}
+
+		.hoverAdhocCss {
+			background-color: #023732;
+			border: 1px solid #087F74;
+		}
+
+		ul.dropdown-menu li a.highlight {
+			background-color: #428bca;
+			color: #ffffff;
+		}
+
+		.dropdown-submenu {
+			position: relative;
+		}
+
+			.dropdown-submenu .dropdown-menu {
+				top: 0;
+				left: -90%;
+				margin-top: -1px;
+			}
+
+		form#smileys input[type="radio"] {
+			-webkit-appearance: none;
+			width: 90px;
+			height: 90px;
+			border: none;
+			cursor: pointer;
+			transition: border 0.2s ease;
+			-webkit-filter: grayscale(100%);
+			filter: grayscale(100%);
+			margin: 0 5px;
+			transition: all 0.2s ease;
+		}
+
+			form#smileys input[type="radio"]:hover, form#smileys input[type="radio"]:checked {
+				-webkit-filter: grayscale(0);
+				filter: grayscale(0);
+			}
+
+			form#smileys input[type="radio"]:focus {
+				outline: 0;
+			}
+
+
+
+			form#smileys input[type="radio"].happy {
+				background: url("/Content/images/Ericsson/happy_ampvnc.svg") center;
+				background-size: cover;
+			}
+
+			form#smileys input[type="radio"].sad {
+				background: url("/Content/images/Ericsson/sad_emoji.svg") center;
+				background-size: cover;
+			}
+
+		.mtt {
+			position: fixed;
+			bottom: 10px;
+			right: 20px;
+			color: #999;
+			text-decoration: none;
+		}
+
+			.mtt span {
+				color: #e74c3c;
+			}
+
+			.mtt:hover {
+				color: #666;
+			}
+
+				.mtt:hover span {
+					color: #c0392b;
+				}
+
+		.feedback-custom {
+			/*background-color: #424344;*/
+			border-color: dimgrey;
+			overflow-y: auto;
+			height: 40px;
+		}
+
+		@@-webkit-keyframes adhocBoxStyle {
+			0% {
+				background-position: 0% 50%
+			}
+
+			50% {
+				background-position: 100% 50%
+			}
+
+			100% {
+				background-position: 0% 50%
+			}
+		}
+
+		@@-moz-keyframes adhocBoxStyle {
+			0% {
+				background-position: 0% 50%
+			}
+
+			50% {
+				background-position: 100% 50%
+			}
+
+			100% {
+				background-position: 0% 50%
+			}
+		}
+
+		@@keyframes adhocBoxStyle {
+			0% {
+				background-position: 0% 50%
+			}
+
+			50% {
+				background-position: 100% 50%
+			}
+
+			100% {
+				background-position: 0% 50%
+			}
+		}
+
+
+		.feedback-custom2 {
+			border: 1px solid blue;
+			border-radius: 10px;
+			height: 40px;
+			color: #fff;
+			background: linear-gradient(-45deg, #0B85B0,#2b323a,#0B85B0);
+			background-size: 400% 400%;
+			-webkit-animation: adhocBoxStyle 6s ease infinite;
+			-moz-animation: adhocBoxStyle 6s ease infinite;
+			animation: adhocBoxStyle 6s ease infinite;
+			box-shadow: #77DA24 0px 0px 12px;
+		}
+
+		.feedback-custom1 {
+			background-color: #424344;
+			border-color: dimgrey;
+			overflow-y: auto;
+			height: 40px;
+		}
+
+
+		button.truncate {
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+		}
+
+		.ScrollStyle {
+			max-height: 200px;
+			overflow-y: auto;
+		}
+
+		.activeListItem {
+			font-weight: bold;
+			background-color: #d2f3b3;
+			color: #5CAB19;
+			box-shadow: #77DA24 0px 0px 12px;
+		}
+
+		.activeListItem2 {
+			font-weight: bold;
+			color: #5CAB19;
+			box-shadow: #77DA24 0px 0px 12px;
+		}
+
+		.buttonFixed {
+			width: 60px;
+		}
+
+		.otherBreakCss {
+			padding-left: 0px;
+			padding-right: 0px;
+			left: 5px;
+		}
+
+		i.circle {
+			display: inline-block;
+			border-radius: 60px;
+			box-shadow: 0px 0px 2px #888;
+			padding: 0.3em 0.6em;
+		}
+
+		#loginMsgdiv {
+			position: absolute;
+			z-index: 99999999999999999;
+			background-color: #F32121D9;
+			text-align: left;
+			border: 1px solid #d3d3d3;
+			width: 580px;
+			top: 0px;
+			left: 18%;
+			box-shadow: 2px 2px 4px #000000;
+			overflow: hidden;
+			max-height: 300px;
+			border-radius: 5px;
+		}
+
+		#mydivheader {
+			padding: 5px;
+			cursor: move;
+			z-index: 10;
+			background-color: #d7a5a573;
+			color: #fff;
+			word-wrap: break-word;
+		}
+
+
+		.arrow-up {
+			width: 2px;
+			height: 2px;
+			border-left: 7px solid transparent;
+			border-right: 7px solid transparent;
+			border-bottom: 7px solid white;
+			float: right;
+			margin-right: 5px;
+			margin-top: 8px;
+		}
+
+		.arrow-down {
+			width: 2px;
+			height: 2px;
+			border-left: 7px solid transparent;
+			border-right: 7px solid transparent;
+			border-top: 7px solid white;
+			margin-right: 5px;
+			margin-top: 8px;
+			float: right;
+		}
+
+		.removePadding {
+			padding: 0px;
+			margin: 0px;
+		}
+
+		.bannerClose {
+			position: relative;
+			top: -5px;
+			float: right;
+			margin-right: 3px;
+			cursor: pointer;
+		}
+
+		#notification img {
+			width: 28px;
+			height: 23px;
+		}
+
+		.notificationScrollStyle {
+			max-height: 250px;
+			overflow-y: auto;
+			overflow-x: hidden;
+		}
+
+		.commentsTypeStyling {
+			min-width: 100px;
+			max-width: 300px;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+		}
+
+		#uploadNEInProgress {
+			position: absolute;
+			width: 487px;
+			top: 47px;
+			right: 1%;
+			padding-top: 8px;
+			height: 38px;
+		}
+
+		#divNEUploadStatus {
+			font-size: 11px;
+			font-family: "Ericsson Hilda" !important, sans-serif;
+		}
+
+		#closeNEPopup {
+			position: fixed;
+			top: 57px;
+			right: 1%;
+		}
+
+		.btnUploadOrCancel {
+			border-color: #242424;
+			border-radius: 3px;
+			height: 30px;
+		}
+
+		#btnCloseValidatePopup {
+			margin-top: 5px;
+			margin-right: 2px;
+			margin-bottom: 0px;
+			margin-left: 23px;
+			border: 1px solid #FFFFFF;
+			cursor: pointer;
+			font-size: 11px;
+			background-color: black;
+			color: #F2F2F2;
+			height: 26px;
+			border-radius: 3px;
+			width: 48px;
+		}
+	</style>
+	<!-- star rating CSS for feedback-->
+	<meta content="width=device-width, initial-scale=1.0" charset="utf-8" name="viewport" />
+	<title>ISF - @ViewBag.Title </title>
+	<link rel="icon" type="image/png" href="~/Content/images/Ericsson/favicon.ico" />
+	<script>
+        let RootDir = '@System.Configuration.ConfigurationManager.AppSettings["RootDir"].ToString()';
+    localStorage.setItem('UirootDir', RootDir);
+	</script>
+	<script src="~/Scripts/signalr.min.js"></script>
+	@*<script src="~/Scripts/UserMenu/UserMenu.js"></script>*@
+	<link rel="stylesheet" href="~/Content/CSS/jquery-ui-weekpicker.css">
+	@Scripts.Render("~/bundles/constants")
+	@Scripts.Render("~/bundles/UserMenu")
+	@Styles.Render("~/bundles/css/jqueryui")
+	@Scripts.Render("~/bundles/jquery")
+
+	@Styles.Render("~/bundles/css/bootstrap")
+
+
+	@Scripts.Render("~/bundles/jqueryui")
+
+	@Scripts.Render("~/bundles/bootstrap")
+	@Scripts.Render("~/bundles/GetSessionVars")
+
+	@Scripts.Render("~/bundles/config")
+	@*@Scripts.Render("~/bundles/datepicker")*@
+	@Styles.Render("~/bundles/css/select2")
+	@Scripts.Render("~/bundles/select2")
+	@Scripts.Render("~/bundles/TimeZone")
+	@Scripts.Render("~/bundles/protip")
+	@Styles.Render("~/bundles/css/protip")
+	@Styles.Render("~/bundles/css/darkTheme")
+	@*<script src="~/Scripts/DeliveryExecution/WebNotification.js"></script>*@
+
+	@*****Application Insights Script*****@
+	<script type="text/javascript">
+		!function (T, l, y) { var S = T.location, u = "script", k = "instrumentationKey", D = "ingestionendpoint", C = "disableExceptionTracking", E = "ai.device.", I = "toLowerCase", b = "crossOrigin", w = "POST", e = "appInsightsSDK", t = y.name || "appInsights"; (y.name || T[e]) && (T[e] = t); var n = T[t] || function (d) { var g = !1, f = !1, m = { initialize: !0, queue: [], sv: "4", version: 2, config: d }; function v(e, t) { var n = {}, a = "Browser"; return n[E + "id"] = a[I](), n[E + "type"] = a, n["ai.operation.name"] = S && S.pathname || "_unknown_", n["ai.internal.sdkVersion"] = "javascript:snippet_" + (m.sv || m.version), { time: function () { var e = new Date; function t(e) { var t = "" + e; return 1 === t.length && (t = "0" + t), t } return e.getUTCFullYear() + "-" + t(1 + e.getUTCMonth()) + "-" + t(e.getUTCDate()) + "T" + t(e.getUTCHours()) + ":" + t(e.getUTCMinutes()) + ":" + t(e.getUTCSeconds()) + "." + ((e.getUTCMilliseconds() / 1e3).toFixed(3) + "").slice(2, 5) + "Z" }(), iKey: e, name: "Microsoft.ApplicationInsights." + e.replace(/-/g, "") + "." + t, sampleRate: 100, tags: n, data: { baseData: { ver: 2 } } } } var h = d.url || y.src; if (h) { function a(e) { var t, n, a, i, r, o, s, c, p, l, u; g = !0, m.queue = [], f || (f = !0, t = h, s = function () { var e = {}, t = d.connectionString; if (t) for (var n = t.split(";"), a = 0; a < n.length; a++) { var i = n[a].split("="); 2 === i.length && (e[i[0][I]()] = i[1]) } if (!e[D]) { var r = e.endpointsuffix, o = r ? e.location : null; e[D] = "https://" + (o ? o + "." : "") + "dc." + (r || "services.visualstudiToStringToStringoStringToStringoString.com") } return e }(), c = s[k] || d[k] || "", p = s[D], l = p ? p + "/v2/track" : config.endpointUrl, (u = []).push((n = "SDK LOAD Failure: Failed to load Application Insights SDK script (See stack for details)", a = t, i = l, (o = (r = v(c, "Exception")).data).baseType = "ExceptionData", o.baseData.exceptions = [{ typeName: "SDKLoadFailed", message: n.replace(/\./g, "-"), hasFullStack: !1, stack: n + "\nSnippet failed to load [" + a + "] -- Telemetry is disabled\nHelp Link: https://go.microsoft.com/fwlink/?linkid=2128109\nHost: " + (S && S.pathname || "_unknown_") + "\nEndpoint: " + i, parsedStack: [] }], r)), u.push(function (e, t, n, a) { var i = v(c, "Message"), r = i.data; r.baseType = "MessageData"; var o = r.baseData; return o.message = 'AI (Internal): 99 message:"' + ("SDK LOAD Failure: Failed to load Application Insights SDK script (See stack for details) (" + n + ")").replace(/\"/g, "") + '"', o.properties = { endpoint: a }, i }(0, 0, t, l)), function (e, t) { if (JSON) { var n = T.fetch; if (n && !y.useXhr) n(t, { method: w, body: JSON.stringify(e), mode: "cors" }); else if (XMLHttpRequest) { var a = new XMLHttpRequest; a.open(w, t), a.setRequestHeader("Content-type", "application/json"), a.send(JSON.stringify(e)) } } }(u, l)) } function i(e, t) { f || setTimeout(function () { !t && m.core || a() }, 500) } var e = function () { var n = l.createElement(u); n.src = h; var e = y[b]; return !e && "" !== e || "undefined" == n[b] || (n[b] = e), n.onload = i, n.onerror = a, n.onreadystatechange = function (e, t) { "loaded" !== n.readyState && "complete" !== n.readyState || i(0, t) }, n }(); y.ld < 0 ? l.getElementsByTagName("head")[0].appendChild(e) : setTimeout(function () { l.getElementsByTagName(u)[0].parentNode.appendChild(e) }, y.ld || 0) } try { m.cookie = l.cookie } catch (p) { } function t(e) { for (; e.length;)!function (t) { m[t] = function () { var e = arguments; g || m.queue.push(function () { m[t].apply(m, e) }) } }(e.pop()) } var n = "track", r = "TrackPage", o = "TrackEvent"; t([n + "Event", n + "PageView", n + "Exception", n + "Trace", n + "DependencyData", n + "Metric", n + "PageViewPerformance", "start" + r, "stop" + r, "start" + o, "stop" + o, "addTelemetryInitializer", "setAuthenticatedUserContext", "clearAuthenticatedUserContext", "flush"]), m.SeverityLevel = { Verbose: 0, Information: 1, Warning: 2, Error: 3, Critical: 4 }; var s = (d.extensionConfig || {}).ApplicationInsightsAnalytics || {}; if (!0 !== d[C] && !0 !== s[C]) { method = "onerror", t(["_" + method]); var c = T[method]; T[method] = function (e, t, n, a, i) { var r = c && c(e, t, n, a, i); return !0 !== r && m["_" + method]({ message: e, url: t, lineNumber: n, columnNumber: a, error: i }), r }, d.autoExceptionInstrumented = !0 } return m }(y.cfg); (T[t] = n).queue && 0 === n.queue.length && n.trackPageView({}) }(window, document, {
+			src: "https://az416426.vo.msecnd.net/scripts/b/ai.2.min.js", // The SDK URL Source
+			//name: "appInsights", // Global SDK Instance name defaults to "appInsights" when not supplied
+			//ld: 0, // Defines the load delay (in ms) before attempting to load the sdk. -1 = block page load and add to head. (default) = 0ms load after timeout,
+			//useXhr: 1, // Use XHR instead of fetch to report failures (if available),
+			//crossOrigin: "anonymous", // When supplied this will add the provided value as the cross origin attribute on the script tag
+			cfg: { // Application Insights Configuration
+				instrumentationKey: AppInsights_Instrumentation_Key
+				/* ...Other Configuration Options... */
+			}
+		});
+	</script>
+
+
+
+	<script src="~/Scripts/SignalRClient/SignalRClient.js"></script>
+
+
+
+
+	@*<script type="text/javascript" src="~/Scripts/Rich-Text-Editor-jQuery-RichText/src/jquery.richtext.js"></script>
+		<script type="text/javascript" src="~/Scripts/Rich-Text-Editor-jQuery-RichText/src/jquery.richtext.min.js"></script>*@
+	@*//*****************************************************LAYOUT COLOR AND THEME*************************************************@
+	<link type="text/css" rel="stylesheet" href="~/Content/CSS/style.css" media="all" />
+	<link type="text/css" rel="stylesheet" href="~/Content/CSS/fontStyle.css" media="all" />
+	<link type="text/css" rel="stylesheet" href="~/Content/CSS/ericssonCSS.css" media="all" />
+	<link type="text/css" rel="stylesheet" href="~/Content/CSS/layoutTheme.css?1425466319" />
+	@*//*****************************************************ICONS ON MENU BAR******************************************************@
+	<link type="text/css" rel="stylesheet" href="~/Content/CSS/font-awesome.min.css?1422529194" />
+	<link type="text/css" rel="stylesheet" href="~/Content/CSS/iconic-font.min.css?1421434286" />
+	@*<link href="~/Scripts/lib/tooltip/protip/protip.min.css" rel="stylesheet" />*@
+	@*//***************************************************** MENU ITEMS AND NAVIGATION INSIDE MENU **************************@
+
+	@Scripts.Render("~/bundles/JsNetworkElement")
+	@Scripts.Render("~/bundles/MainPage")
+	@Scripts.Render("~/bundles/protip")
+	@Scripts.Render("~/bundles/profileRole")
+	@Scripts.Render("~/bundles/layoutTheme")
+	@Scripts.Render("~/bundles/App")
+	@*<script src="~/Scripts/TimeZone/moment.js"></script>
+		<script src="~/Scripts/TimeZone/moment-timezone-with-data.js"></script>*@
+	@*//*****************************************************SCROLL in Menu **************************@
+	@Scripts.Render("~/bundles/nanoscroller")
+	@*@Scripts.Render("~/bundles/WorkorderAndTask")*@
+	@*<script src="~/Scripts/DeliveryExecution/InprogressTasks.js"></script>*@
+	@Scripts.Render("~/bundles/NonWorkingHour")
+	@*//*****************************************************Rich Text Editor THEME*************************************************@
+	@*<link rel="stylesheet" href="~/Scripts/Rich-Text-Editor-jQuery-RichText/src/richtext.min.css">*@
+
+	@*<link rel="stylesheet" href="richtext.min.css">*@
+
+	@Scripts.Render("~/bundles/azure")
+
+	<script src="~/Scripts/MQTT/mqttConnection.js"></script>
+
+	<!-- Global site tag (gtag.js) - Google Analytics -->
+	<script async id="gtag"></script>
+	@Scripts.Render("~/bundles/gtag")
+	@*<script async src="https://www.googletagmanager.com/gtag/js?id=UA-133713981-1"></script>*@
+
+	<script>
+
+		//boolean variable to change bell icon
+		var isNotificationReceived = localStorage.getItem("isNotificationReceived");
+
+
+
+		function openAdhoc(obj) {
+			$(obj).next('ul').toggle();
+		}
+
+		$(document).ready(function () {
+			$('.dropdown-submenu a.test').on("click", function (e) {
+				$(this).next('ul').toggle();
+				//($(this).next('ul').css("display") == "none") ? $(this).next('ul').css("display", "block") : $(this).next('ul').css("display", "none");
+				e.stopPropagation();
+				e.preventDefault();
+			});
+			$.protip();
+
+
+		});
+
+		var allProjects = [];
+		//window.dataLayer = window.dataLayer || [];
+		//function gtag() { dataLayer.push(arguments); }
+		//gtag('js', new Date());
+		var locationSession = true;
+		//var el = $('.userLocation')
+		//if (locationSession == true) {
+		//    el.protipShow()
+		//}
+		//gtag('config', 'UA-133713981-1');
+		$(document).ready(function () {
+
+
+			if (isDesktopUpdateRequired != null && isDesktopUpdateRequired != undefined && isDesktopUpdateRequired === true) {
+				confirmForIsfDesktopVersionUpdate();
+			}
+
+			$('#shiftModal').on('show.bs.modal', function () {
+				$(this).find('.modal-content').css({
+					width: 'auto', //probably not needed
+					height: 'auto', //probably not needed
+					'max-width': '50%',
+					'margin': 'auto'
+				});
+			});
+
+			$('#locationModal').on('show.bs.modal', function () {
+				$(this).find('.modal-content').css({
+					width: 'auto', //probably not needed
+					height: 'auto', //probably not needed
+					'max-width': '36%',
+					'margin': 'auto'
+				});
+			});
+
+			$('#userModal').on('show.bs.modal', function () {
+				$(this).find('.modal-content').css({
+					width: 'auto', //probably not needed
+					height: 'auto', //probably not needed
+					'max-width': '50%',
+					'margin': 'auto'
+				});
+			});
+		});
+
+		//show bell icon to specific roles only
+		$(document).ready(function () {
+
+			// DR : 5, NE : 7, ASP : 14, ASP-DR : 15, PM : 1
+			var sessionData = JSON.parse(ActiveProfileSession);
+
+			if (sessionData != null && sessionData != undefined && (sessionData.roleID == 5 || sessionData.roleID == 7 || sessionData.roleID == 14 || sessionData.roleID == 15 || sessionData.roleID == 1)) {
+				addBellIcon();
+			}
+
+		});
+
+		//method to set bell icon
+		function addBellIcon() {
+			var NotificationData = document.getElementById('NotificationData').value;
+			var img = document.createElement('img');
+			img.id = "notificationImg";
+			if (isNotificationReceived === true || isNotificationReceived === "true" || NotificationData !== "") {
+				img.src = '../Content/images/notification-ring.svg';
+			}
+			else {
+				img.src = '../Content/images/notification.svg';
+			}
+			document.getElementById('webNotifications').appendChild(img);
+		}
+	</script>
+	@Scripts.Render("~/bundles/global")
+
+	@Scripts.Render("~/bundles/customConsole")
+	@Scripts.Render("~/bundles/ajaxRequest")
+	@Scripts.Render("~/bundles/SessionManagement")
+	@Scripts.Render("~/bundles/userLocation")
+
+	<script>
+		$(document).ready(function () {
+			$('ul li.dropdown.user.hidden-xs').not(document.getElementById("notification")).on('click', function (i) {
+				$('.x').hide();
+				$('.x').removeClass("displayInline");
+				$('.x').removeClass("displayBlock");
+				$('.x').css("display", "none !important");
+				notificationStart = 0;
+				$("#notificationul").animate({ scrollTop: 0 }, "fast");
+			});
+		});
+
+	</script>
+</head>
+
+
+<body class="menubar header-fixed menubar-first " @*onload="startTime()"*@>
+
+    <input type="hidden" id="user_name" value="@HttpContext.Current.Session["Signum"]" />
+
+    <!-- Navigation Bar -->
+    <div class="navbar navbar-fixed-top">
+
+        <input id="ExpirationTime" type="hidden" value="@ViewBag.ExpirationTime" />
+
+        <!--TOP BAR-->
+        <div class="eaContainer-SystemBar container-fluid top-bar">
+            @*<div style="top: 10px;position: absolute;width: 200px;text-align: center;left: 30%;font-size: 19px;color: #ea8090;">Please clear your browser history/cache.</div>*@
+            <div id="loginMsgdiv" style="display:none;">
+                <div onclick="closeBanner()" class="bannerClose">x</div>
+                <div id="arHead" class="arrow-down"></div>
+                <div id="mydivheader" class="msg" style="white-space: pre-wrap; cursor: move; height:40px;">Please clear your browser history/cache.</div>
+            </div>
+
+            <input type="hidden" id="NotificationData" value="@ViewBag.NotificationData" />
+            <!---- Popup showing NE Upload in-progress status starts -->
+            <div id="uploadNEInProgress" class="edsBackgroundColour" style="display:none;">
+                <div class="row">
+                    <div class="col-xs-1" id="neLoader" style="padding-right: 0px; width: 16px; margin: 0px; padding-left: 2px;">
+                        <img src="~/Content/images/runningLoader.gif" alt="Not Found" class="edsFontColour" style="height:20px; width:20px;">
+                    </div>
+                    <div class="col-xs-10" id="divNEDataUpload" style="margin-bottom:2px;">
+                        <div id="divNEUploadStatus" style="padding-top: 3px;height:18px;">
+                            <div class="col-xs-2 edsFontColour" id="neUploadStatus" style="padding-left:0px;column-gap:1px;">
+                                <strong>
+                                    Uploading NE is in-progress (Under bell icon you may check the latest update)
+                                </strong>
+                            </div>
+                            <div class="col-xs-10"><span style="display:none;" id="filename"></span></div>
+                        </div>
+                    </div>
+                    <div class="col-xs-1" id="closeNEPopup" style="padding-right: 0;width: 25px;margin-bottom: 3px;padding-left: 0px;">
+                        <button id="btnCloseValidatePopup" style="margin-left:-30px;padding-left:6px;margin-top:0px;" title="Close this popup" onclick="closeNEStatusPopup()">Close</button>
+                    </div>
+                </div>
+                <div class="row" style="display:none" id="validNEData"></div>
+                <div class="row" style="display:none" id="invalidNEData"></div>
+                <div class="row" style="display:none;margin-left:-7px" id="btnForNEUpload"></div>
+                <div class="row" style="display:none;margin-left:-4px" id="noteForNEUploadTime"></div>
+            </div>
+            <!---- Popup showing NE Upload in-progress status ends -->
+
+            <div class="list-group pull-right">
+
+                <ul class="nav navbar-nav pull-right">
+                    <li class="dropdown user hidden-xs " style="right: 10px;">
+                        <div id="adhocBox" class="well-sm feedback-custom2" style="display:none;padding-top: 3px;border-bottom-width: 0px;">
+                            <div style="display:none;display:inline;background-color:black;width:300px">
+                                <div class="adhocBooking_panel2" style="display:inline">
+                                    <div class="container">
+                                        <div class="row" style="margin-right: 0px;margin-left: 0px;">
+
+                                            <div class="col-lg-8" style="padding-left: 5px;padding-right: 0px;">
+                                                <input id="adhocBookingID" type="hidden" value="" />
+                                                <div class="adhocBooking_container2" style="display:inline"></div>
+                                            </div>
+                                            <div class="col-lg-4" style="margin-top: 5px;right: 0px;padding-right: 0px;left: 18%;">
+                                                <button title="Stop" class="btn btn-danger btn-xs" type="button" id="recordActualAdhocBooking" onclick="SendDataForUpdateNonWorkingHourBooking('ACTUAL')">Stop</button>
+                                            </div>
+
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                            </div>
+                        </div>
+                    </li>
+
+                    <li id="updatedAdhocPanel" class="dropdown user hidden-xs">
+                        <ul id="adhocActivity" onmouseover="addAdhocCSS()" onmouseout="removeAdhocCSS()" class="dropdown-menu" style="top: 99%;display:none; max-height:200px; overflow-y:auto;">
+                        </ul>
+                    </li>
+                    <li id="notification" class="dropdown notifications hidden-xs ">
+                        <a id="webNotifications" onclick="notficationIconClick();" class="" data-toggle="" style="float:right; cursor:pointer; margin:0px !important; text-decoration: none; color: white; padding-right: 0px; padding-bottom: 10px; padding-top: 8px; padding-left: 4px;" title="Notifications">
+                        </a>
+                        <ul id="notificationul" class="list-group dropdown x displayNone notificationScrollStyle" onscroll="scrollNotification(this);" style="border: solid 2px darkGray; height: auto; overflow-y: auto; width: 300px; top: 42px;right:-4px; position:absolute;">
+                        </ul>
+                    </li>
+
+                    <li>
+                        <div id="notificationPanelPointer" style="position:absolute; top:26px; right:7px;" class="arrow-up dropdown x displayNone"></div>
+                    </li>
+
+                    <!--NavBar TopRight Menu-->
+                    <li class="dropdown user hidden-xs" id="switchProfile">
+                        <a class="dropdown-toggle" style="padding:6px 10px 0 0 !important" data-toggle="dropdown" href="#widgets" id="empName">
+                            <i class="fa fa-user"></i>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a href="#widgets" class="dropdown-toggle" data-toggle="dropdown" onclick="getEmployeeDetailsBySignumView();">
+                                    <i class="fa fa-book"></i>
+                                    Employee Details
+                                </a>
+                            </li>
+                            <li class="dropdown user hidden-xs">
+                                <a href="#widgets" class="dropdown-toggle" data-toggle="dropdown" style="display:none;">
+                                    <i class="fa fa-cog"></i>
+                                    Settings
+                                </a>
+                            </li>
+                            <li class="dropdown-submenu">
+                                <a href="#" class="test">
+                                    <i class="fa fa-exchange"></i>
+                                    Switch Profile
+                                </a>
+                                <ul id="switchP" class="dropdown-menu x"></ul>
+                            </li>
+                            <li>
+                                <a href="#widgets" class="dropdown-toggle" data-toggle="dropdown" onclick="showRequestProfileModal(); getRolesRP();">
+                                    <i class="fa fa-hand-o-up"></i>
+                                    Request Profile
+                                </a>
+                            </li>
+                            <li>
+                                <!-- <a href="http://10.184.49.20/otrs/customer.pl" class="dropdown-toggle" target="_blank"> -->
+                                <!-- <a href="http://10.184.20.100/otrs/customer.pl" class="dropdown-toggle" target="_blank"> -->
+                                <a href="#widgets" onclick="getTimeZones(); getShiftTiming(signumGlobal, UserNameSession,false);" class="dropdown-toggle">
+                                    <i class="fa fa-clock-o"></i>
+                                    Shift Timing
+                                </a>
+                            </li>
+                            <li>
+                                <!-- <a href="http://10.184.49.20/otrs/customer.pl" class="dropdown-toggle" target="_blank"> -->
+                                <!-- <a href="http://10.184.20.100/otrs/customer.pl" class="dropdown-toggle" target="_blank"> -->
+                                <a href="https://support.integratedserviceflow.ericsson.net/" class="dropdown-toggle" target="_blank">
+                                    <img src="~/Content/images/Ericsson/Freshservice_icon.png" width="25" height="25">
+                                    Support Ticket
+                                </a>
+                            </li>
+                            <li>
+                                <!-- <a href="http://10.184.49.20/otrs/customer.pl" class="dropdown-toggle" target="_blank"> -->
+                                <!-- <a href="http://10.184.20.100/otrs/customer.pl" class="dropdown-toggle" target="_blank"> -->
+                                <a id="userPreference" href="#widgets" onclick="OpenPreferenceView(signumGlobal, UserNameSession);" class="dropdown-toggle" data-direction='right'>
+                                    <i class="fa fa-star"></i>
+                                    User Preferences
+                                </a>
+                            </li>
+
+
+
+                            <!--Menu Option for User Location -->
+                            <li>
+                                <a href="#" onclick="openLocationModal(signumGlobal, UserNameSession);" style="margin-left: 8px">
+                                    <i class="userLocation circle fa fa-map-marker fa-lg " style="padding-right:10px"></i>
+                                    Update Your Location
+                                </a>
+                            </li>
+
+
+
+                            <li>
+                                <a href="#feedback" onclick="feedbackForm()" class="dropdown-toggle" data-direction='right'>
+                                    <i class="fa fa-comment-o fa-lg"></i>
+                                    Feedback
+                                </a>
+                            </li>
+                            <li>
+                                <a href="https://ideaboxes.internal.ericsson.com/1/ideaboxdetail/1216" class="dropdown-toggle" data-direction='right' target="framename">
+                                    <i class="fa fa-lightbulb-o fa-lg"></i>
+                                    Idea Box
+                                </a>
+                            </li>
+
+
+
+                            <li>
+                                <a href="https://non-prod.integratedserviceflow.ericsson.net/ISF_ONLINE_HELP/WebHelp/Cover_Page.htm#ISF_Overview.htm" class="dropdown-toggle" data-direction='right' target="onlineHelpframename">
+                                    <i class="fa fa-book fa-lg"></i>
+                                    User Guide
+                                </a>
+                            </li>
+
+
+
+                        </ul>
+                    </li>
+                    <!--/NavBar TopRight Menu-->
+                    <!--Logout-->
+                    @if (ViewBag.IsLoginModeAzureAd == true)
+                    {
+                        <li class="dropdown user hidden-xs">
+                            <a id="lnkLogout" title="Logout" style="cursor: pointer" class="dropdown-toggle" onclick="ManualLogout()">
+                                <i class="circle fa fa-sign-out fa-lg" style="font-size:14px;"></i>
+                            </a>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="dropdown user hidden-xs">
+                            <a title="Logout" class="dropdown-toggle" data-toggle="dropdown" href="" onclick="UserLogout()">
+                                <i class="circle fa fa-sign-out fa-lg" style="font-size:14px;"></i>@*Logout*@
+                            </a>
+                        </li>
+                    }
+                    <!--/Logout-->
+                </ul>
+
+            </div>
+            <a href="~/Home" title="Home">
+                <div class="eaContainer-SystemBar-logo">
+                    <div class="isf-heading" style="padding: 4px 0 0 35px;">ISF <span style="font-size:12px;">Integrated Service Flow</span></div>
+                </div>
+            </a>
+            @*<button class="navbar-toggle">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>*@
+        </div>
+        <!--/TOP BAR-->
+        <!-- LEFT MENUBAR-->
+        <div id="menubar" class="menubar-inverse" ng-controller="titleController" ng-show="login.showHeaders" style="top:48px;">
+            <div class="menubar-fixed-panel">
+                <div>
+                    <a class="btn btn-icon-toggle btn-default menubar-toggle"
+                       data-toggle="menubar" href="javascript:void(0);" title="Toggle-Menu">
+                        <i class="fa fa-bars"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="menubar-scroll-panel" ng-init="selectedMenu = 1;">
+                <ul id="main-menu" class="gui-controls"></ul>
+                <div class="menubar-foot-panel">
+                    <small class="no-linebreak hidden-folded">
+                    </small>
+                </div>
+            </div>
+        </div>
+        <!-- /LEFT MENUBAR-->
+    </div>
+    <!-- /Navigation Bar -->
+    <!--Main Container : BASE-->
+    <div id="base">
+
+        @RenderBody()
+    </div>
+    <!--/Main Container : BASE-->
+    <!--MODAL BOXES -->
+    <!-- Employee Details Modal -->
+    <div class="modal fade" id="scopeModal1" role="dialog">
+        <div class="modal-dialog" style="width:80%">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Employee Details</h4>
+                </div>
+                <div class="modal-body">
+                    @*First Column*@
+                    <div class="col-lg-4">
+                        <div class="form-group">
+                            <label>Signum</label>
+                            <input class="form-control" placeholder="Signum" id="main_employee_signum">
+                        </div>
+
+                        <div class="form-group">
+                            <label>mail ID</label>
+                            <input class="form-control" placeholder="Email" id="main_employee_email">
+                        </div>
+                        <div class="form-group">
+                            <label>Team</label>
+                            <input class="form-control" placeholder="Team" id="main_employee_team">
+                        </div>
+                        <div class="form-group">
+                            <label>Job Role</label>
+                            <input class="form-control" placeholder="Job Role" id="main_employee_jobRole">
+                        </div>
+                        <div class="form-group">
+                            <label>Career Start</label>
+                            <input class="form-control" placeholder="Career Start" id="main_employee_careerStartDate">
+                        </div>
+                        <div class="form-group">
+                            <label>Service Area</label>
+                            <input class="form-control" placeholder="Service Area" id="main_employee_serviceArea">
+                        </div>
+                        <div class="form-group">
+                            <label>Building</label>
+                            <input class="form-control" placeholder="Building" id="main_employee_officeBuilding">
+                        </div>
+                        @*<div class="form-group">
+                                <label>Contact No.</label>
+                                <input class="form-control" placeholder="Contact Number" id="main_employee_contactNumber">
+                            </div>*@
+
+                    </div>
+                    @*Second Column*@
+                    <div class="col-lg-4">
+                        <div class="form-group">
+                            <label>Name</label>
+                            <input class="form-control" placeholder="Name" id="main_employee_employeeName">
+
+                        </div>
+                        <div class="form-group">
+                            <label>Personnel No</label>
+                            <input class="form-control" placeholder="Personnel No" id="main_employee_personnelNumber">
+                        </div>
+                        <div class="form-group">
+                            <label>Manager Signum</label>
+                            <input class="form-control" placeholder="Manager Signum" id="main_employee_reportingManager">
+                        </div>
+                        @*<div class="form-group">
+                                <label>Job Stage</label>
+                                <input class="form-control" placeholder="Job Stage" id="main_employee_jobStage">
+                            </div>*@
+                        <div class="form-group">
+                            <label>Job Role Family</label>
+                            <input class="form-control" placeholder="Job Family" id="main_employee_jobRoleFamily">
+                        </div>
+                        <div class="form-group">
+                            <label>Ericsson Date of Joining</label>
+                            <input class="form-control" placeholder="Ericsson DoJ" id="main_employee_dateOfJoining">
+                        </div>
+                        <div class="form-group">
+                            <label>City</label>
+                            <input class="form-control" placeholder="City" id="main_employee_city">
+                        </div>
+                        <div class="form-group">
+                            <label>Floor</label>
+                            <input class="form-control" placeholder="Floor" id="main_employee_floor">
+                        </div>
+
+                    </div>
+                    @*Third Column*@
+                    <div class="col-lg-4">
+                        <div class="form-group">
+                            <label>Employee No</label>
+                            <input class="form-control" placeholder="Employee ID" id="main_employee_id">
+
+                        </div>
+                        <div class="form-group">
+                            <label>Cost Center</label>
+                            <input class="form-control" placeholder="Cost Center" id="main_employee_costCenter">
+                        </div>
+                        <div class="form-group">
+                            <label>Grade</label>
+                            <input class="form-control" placeholder="Grade" id="main_employee_grade">
+                        </div>
+                        <div class="form-group">
+                            <label>Functional Area</label>
+                            <input class="form-control" placeholder="Functional Area" id="main_employee_functionalArea">
+                        </div>
+                        @*<div class="form-group">
+                                <label>Gender</label>
+                                <input class="form-control" placeholder="Gender" id="main_employee_gender">
+                            </div>*@
+                        <div class="form-group">
+                            <label>HR Location</label>
+                            <input class="form-control" placeholder="HR Location" id="main_employee_hrLocation">
+                        </div>
+                        <div class="form-group">
+                            <label>Seat Number</label>
+                            <input class="form-control" placeholder="Seat Number" id="main_employee_seatNumber">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /Employee Details Modal -->
+    <!--SWITCH PROFILE MODAL-->
+    <div class="modal fade" id="SwitchProfileModal" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Profiles</h4>
+                </div>
+                <div class="modal-body">
+                    <h3>Active Profile: <strong id="lblActiveProfile"></strong></h3>
+                    <h5>
+                        Switch Profile
+                        <select id="selectProfile">
+                            <option id="1">test</option>
+                        </select>
+                    </h5>
+                    <button onclick="switchProfile()">Change Profile</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--/SWITCH PROFILE MODAL-->
+    <!--Request Profile Modal-->
+    <div class="modal fade" id="RequestProfileModal" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content" style="height:150px;">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Request Profile</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="col-lg-12">
+                        <div class="col-lg-4">
+                            <div class="form-group">
+                                <label>Select Role</label>
+                                <select id="cbxRolesRP" class="select2able" onchange="getAccessProfileByRoleRP()"></select>
+                            </div>
+                        </div>
+                        <div class="col-lg-5">
+                            <div class="form-group">
+                                <label>Select Access Profile</label>
+                                <select id="cbxAccessProfileRP" class="select2able"></select>
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <br />
+                            <button class="btn btn-primary" style="height:28px; padding:3px 12px;" onclick="requestAccessProfile();">Request</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+	<!--/Request Profile Modal-->
+    <!--Adhoc Booking Code-->
+    <!--/Adhoc Booking Code-->
+    <!--Shift Timing Modal-->
+    @Html.Partial("~/Views/Shared/shiftTimeView.cshtml")
+    @Html.Partial("~/Views/Shared/userLocationView.cshtml")
+    @Html.Partial("~/Views/Shared/userPreference.cshtml")
+
+    <!--/Shift Timing Modal-->
+</body>
+</html>
+@Scripts.Render("~/bundles/AzureADLogin")
+<script>
+
+    if ($('#user_name').val() === undefined || $('#user_name').val() === null || $('#user_name').val() === "") {
+        localStorage.clear();
+    }
+
+    let menu = getUserMenuFromSession();
+    $('#main-menu').append(menu);
+    InitiateSignalRConnection();
+
+</script>
+
+<script>
+    var refID;
+
+    console.log('Redis Notification Data :: ');
+    var NotificationData = document.getElementById('NotificationData').value;
+    console.log(NotificationData);
+
+    //check in localstorage if not found check in redis.
+    refID = localStorage.getItem('currentRefID');
+
+
+    if (refID !== null || refID !== "null" && refID !== undefined) {
+        checkNEUploadFileStatus(refID);
+    } else {
+        // first login
+        if (NotificationData !== null && NotificationData !== "") {
+            refID = JSON.parse(NotificationData).neUploadedId;
+            localStorage.setItem('currentRefID', refID);
+
+            //$('#NotificationData').val('');
+            console.log('------------- FIRST LOGIN [data saved in localstorage from REDIS] ------------');
+        }
+    }
+
+    console.log(`RefID [_Layout] :: ${refID}`);
+</script>

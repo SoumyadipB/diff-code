@@ -1,0 +1,63 @@
+﻿@*<style>
+    .modal.fade:not(.in).right .modal-dialog {
+        -webkit-transform: translate3d(125%, 0, 0);
+        transform: translate3d(125%, 0, 0);
+    }
+</style>*@
+
+    <div id="userModal" class="modal" role="dialog"  style="top:70px;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                @*<h6 id="userTitle" class="text-left" style="margin-bottom: 5px;"></h6>*@
+                <h4 class="modal-title text-center">Preferences</h4>
+            </div>
+            <div class="modal-body" id="userBody">
+
+                <div class="panel panel-default" style="margin: 10px;">
+                    <div class="panel-body" style="padding: 0px;">
+                        <div id="newUserPreference">
+
+                            <div class="row">
+                                <div class="col-lg-6" style="margin-bottom:0px;">
+                                    <div class="form-group" style="margin-bottom: 2px;">
+                                        <label style="margin-left:10px"><span style="font-size: 17px;width: 20px; color:red;">*</span>Time Zone:</label>
+                                        <select class="select2able select2-offscreen" id="user_time_zone">
+                                            <option value="0"></option>
+                                        </select>
+                                    </div>
+
+                                </div>
+                            </div>
+                            <hr style="margin-bottom: 15px;" />
+                            @*<span style="font-size: 17px;width: 20px; color:red;">*</span>*@
+                            <div class="row" style="margin-bottom:10px;">
+
+                                <div class="col-lg-12" style="margin-bottom:15px;">
+                                    <div class="form-group col-lg-6" style="margin-bottom: 2px;">
+                                        <label style="margin-left:10px">Default Profile:</label>
+                                        <select class="select2able select2-offscreen" id="user_profile">
+                                        </select>
+                                    </div>
+                                    <div class="form-group col-lg-6" style="margin-bottom: 2px">
+                                        @*   <span style="font-size: 17px;width: 20px; color:red;">*</span>*@
+                                        <label style="margin-left:10px">Landing Page:</label>
+                                        <select class="select2able select2-offscreen" id="landing_page">
+                                        </select>
+                                    </div>
+
+                                </div>
+
+
+                            </div>
+                        </div>
+                </div>
+                <div class="row">
+                    <div class="pull-right">
+                        <button type="submit" onclick="saveUserPreference()" class="btn btn-sm btn-success">Save Preference</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+

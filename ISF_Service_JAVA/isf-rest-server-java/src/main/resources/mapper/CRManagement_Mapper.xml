@@ -1,0 +1,604 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ericsson.isf.mapper.CRManagementMapper">
+    
+    
+     <resultMap type="com.ericsson.isf.model.CRManagementResultModel" id="CRManagementModelResult">        
+        <result property="comments" column="comment" />
+        <result property="previouscomment" column="comments" />
+        <result property="crID" column="CRID"/>
+        <result property="currentSignumID" column="CurrentSignumID" />
+        <result property="proposedSignumID" column="ProposedSignumID"/>
+        <result property="currentStartDate" column="CurrentStartDate" />
+        <result property="proposedStartDate" column="ProposedStartDate" />
+        <result property="currentEndDate" column="CurrentEndDate" />
+        <result property="proposedEndDate" column="ProposedEndDate" />
+        <result property="requestedBy" column="CreatedBy" />
+        <result property="requestedOn" column="CreatedOn" />
+        
+          <result property="projectID" column="ProjectID" />
+          <result property="actionTakenBy" column="actionTakenBy" />
+          <result property="actionTakenon" column="actionTakenon" />
+          
+          
+        <result property="resourcePositionID" column="resourcePositionID" />
+        <result property="resourceRequestID" column="resourceRequestID" />
+        <result property="status" column="status" />
+       
+        <result property="actionType" column="actionType" />
+        <result property="positionStatus" column="positionStatus" />
+        <result property="workEffortIdExisting" column="workEffortIdExisting" />
+        <result property="workEffortIdProposed" column="workEffortIdProposed" />
+        
+        
+       
+        
+        
+        
+    </resultMap>
+    
+    <resultMap type="com.ericsson.isf.model.ChangeRequestPositionNewModel" id="ChangeRequestPositionNewModelResult">        
+        <id property="crID" column="CRID" />
+        <result property="resourcePositionID" column="ResourcePositionID" />
+        <result property="resourceRequestID" column="ResourceRequestID" />
+        <result property="createdBy" column="CreatedBy" />
+        <result property="createdOn" column="CreatedOn" />
+        <result property="status" column="Status" />
+        <result property="comments" column="Comments" />
+        <result property="actionType" column="ActionType" />
+        <result property="positionStatus" column="PositionStatus" />
+        <result property="workEffortIdExisting" column="WorkEffortIdExisting" />
+        <result property="workEffortIdProposed" column="WorkEffortIdProposed" />
+        <result property="actionTakenBy" column="ActionTakenBy" />
+        <result property="actionTakenon" column="ActionTakenon" />
+    </resultMap>
+
+<!--    <select id='getCRDetails' resultMap="CRManagementModelResult">
+        select * from TRANSACTIONALDATA.TBL_ChangeRequestPosition where Status='OPEN'
+    </select>-->
+    
+    <select id='getCRDetailsByID' resultMap="ChangeRequestPositionNewModelResult">
+      select WorkEffortIdExisting,WorkEffortIdProposed,ActionType from TRANSACTIONALDATA.TBL_ChangeRequestPosition where CRID = #{crID}
+    </select>
+    
+    <select id='getCRDetails' resultMap="CRManagementModelResult">
+        select distinct rr.ProjectID as ProjectID, crp.crID as CRID,crp.CreatedOn,crp.ResourcePositionID as ResourcePositionID,crp.ResourceRequestID as ResourceRequestID, crp.createdBy as requestedBy, 
+        crp.createdOn as requestedOn,crp.status as Status,crp.Comments as Comments,crp.actionType as ActionType,crp.PositionStatus as PositionStatus,
+        crp.workEffortIdExisting as WorkEffortIdExisting, crp.workEffortIdProposed as WorkEffortIdProposed,crp.actionTakenBy as ActionTakenBy,
+        CONVERT(date, crp.actionTakenOn) as ActionTakenon,wef.signum as currentSignumID,wefp.signum as proposedSignumID
+        ,wef.StartDate as currentStartDate,wefp.StartDate as proposedStartDate
+         ,wef.EndDate as currentEndDate,wefp.EndDate as proposedEndDate
+         ,'' as Comment
+        
+        	
+        from transactionaldata.tbl_changeRequestPosition crp
+        left join transactionaldata.TBL_WorkEffort wef on crp.WorkEffortIdExisting=wef.workeffortid
+        left join transactionaldata.TBL_WorkEffort wefp on crp.WorkEffortIdProposed=wefp.workeffortid
+        inner join transactionaldata.tbl_resourcerequests rr on rr.resourcerequestid= crp.resourcerequestid
+        inner join transactionaldata.tbl_projects p on p.projectid= rr.projectid
+        inner join transactionaldata.tbl_projectscope ps on p.projectid=ps.projectid
+        inner join transactionaldata.tbl_projectscopedetail psd on ps.projectscopeid=psd.projectscopeid 
+        inner join refdata.tbl_domainspoc ds on psd.domainid=ds.domainid 
+        inner join refdata.tbl_marketareas ma on ds.marketareaid=ma.marketareaid
+        where ds.spoc=#{signumID} and crp.status='OPEN' and crp.ActionType=#{view}
+        and wef.IsActive=1
+          <if test ="marketArea !='All'"> 
+ 		and ma.MarketAreaName=#{marketArea}
+ 		</if>
+        
+    </select>
+    
+    
+    <select id='getCRDetailsPm' resultMap="CRManagementModelResult">
+        select distinct rr.ProjectID as ProjectID, crp.crID as CRID,crp.CreatedOn,crp.ResourcePositionID as ResourcePositionID,crp.ResourceRequestID as ResourceRequestID, crp.createdBy as requestedBy, 
+        crp.createdOn as requestedOn,crp.status as Status,crp.Comments as Comments,crp.actionType as ActionType,crp.PositionStatus as PositionStatus,
+        crp.workEffortIdExisting as WorkEffortIdExisting, crp.workEffortIdProposed as WorkEffortIdProposed,crp.actionTakenBy as ActionTakenBy,
+        CONVERT(date, crp.actionTakenOn) as ActionTakenon,wef.signum as currentSignumID,wefp.signum as proposedSignumID
+        ,wef.StartDate as currentStartDate,wefp.StartDate as proposedStartDate
+         ,wef.EndDate as currentEndDate,wefp.EndDate as proposedEndDate
+         ,'' as Comment
+        
+        	
+        from transactionaldata.tbl_changeRequestPosition crp
+        left join transactionaldata.TBL_WorkEffort wef on crp.WorkEffortIdExisting=wef.workeffortid
+        left join transactionaldata.TBL_WorkEffort wefp on crp.WorkEffortIdProposed=wefp.workeffortid
+        inner join transactionaldata.tbl_resourcerequests rr on rr.resourcerequestid= crp.resourcerequestid
+        inner join transactionaldata.tbl_projects p on p.projectid= rr.projectid
+        inner join transactionaldata.tbl_projectscope ps on p.projectid=ps.projectid
+        inner join transactionaldata.tbl_projectscopedetail psd on ps.projectscopeid=psd.projectscopeid 
+        where p.projectCreator=#{signumID} and crp.status='OPEN' and crp.ActionType=#{view}
+         
+        <if test ="marketArea !='All'"> 
+ 		and p.ProjectName like '%${marketArea}%'
+ 		</if>
+         
+</select>
+    
+    <select id='getCRDetailsByCRID' resultMap="CRManagementModelResult">
+        select ResourcePositionID, ResourceRequestID, WorkEffortIdExisting, WorkEffortIdProposed, ActionType, Status, PositionStatus from TRANSACTIONALDATA.TBL_ChangeRequestPosition 
+        WHERE CRID= #{cRID}
+    </select>
+    
+    <select id="getExistingComments" resultType="String">
+        select Comments from TRANSACTIONALDATA.TBL_ChangeRequestPosition WHERE CRID= #{cRID}
+    </select>    
+    
+    
+    <select id='checkSignumInWEffort' resultType='String'>
+        select signum from TransactionalData.TBL_WORKEFFORT where CRID=#{cRID} and isActive=1
+    </select>
+    
+    <select id='getAllocatedSignum' resultType='String'>
+        select distinct signum from TransactionalData.TBL_WORKEFFORT where ResourcePositionID=#{rPID} and isActive=1
+    </select>
+    
+    <update id='acceptCRByID'>
+        
+        update TRANSACTIONALDATA.TBL_ChangeRequestPosition set Status='ACCEPTED',ActionTakenBy=#{signumID},ActionTakenon=dbo.GetDateIST(),Comments=#{comment},ModifiedBy=#{signumID},ModifiedDate=dbo.GetDateIST()
+        WHERE CRID= #{CRID}
+    </update>
+    
+    
+    <update id='changeCrStatus' parameterType="com.ericsson.isf.model.AllocatedResourceModel">
+        
+        update TRANSACTIONALDATA.TBL_ChangeRequestPosition set Status=#{cr.cRStatus},ActionTakenBy=#{cr.currentSignumID},ActionTakenOn=dbo.GetDateIST(),Comments=CONCAT(Comments,#{cr.comments} ,', '),ModifiedBy=#{cr.currentSignumID},ModifiedDate=dbo.GetDateIST()
+        WHERE CRID= #{cr.cRID}
+    </update>
+    
+    <update id='updateCrStatus'>
+        update TRANSACTIONALDATA.TBL_ChangeRequestPosition set Status='WITHDRAW',ModifiedBy=#{signum},ModifiedDate=dbo.GetDateIST()
+        WHERE CRID= #{crID} and Status = 'OPEN'
+    </update>
+    
+    <update id='rejectCRByID'>
+        update TRANSACTIONALDATA.TBL_ChangeRequestPosition set Status='REJECTED',ActionTakenBy=#{signumID},ActionTakenOn=dbo.GetDateIST(),Comments=#{comment},ModifiedBy=#{signumID},ModifiedDate=dbo.GetDateIST()
+        WHERE CRID= #{cRID}
+    </update>
+ 
+     <update id='deleteRpID'>
+        update [transactionalData].[TBL_ResourcePosition] 
+        set IsActivie = 0,
+        LastModifiedBy = #{signum},
+        LastModifiedOn = dbo.GetDateIST()
+        WHERE ResourcePositionID= #{rPID}
+    </update>
+    
+    <select id='getRRIDFlag' resultType="java.util.LinkedHashMap">
+        select 
+		SUM(
+		CASE WHEN
+			(IsActivie = 1 and PositionStatus not in ('Proposal Pending'))
+		THEN 1
+			ELSE 		0 
+		END	
+		) AS  total,
+
+
+		SUM(
+		CASE WHEN
+			(IsActivie = 0 )
+		THEN 1
+			ELSE 		0 
+		END	
+		) AS  deleted from transactionalData.TBL_ResourcePosition where ResourceRequestID = #{rRID}
+    </select>
+    
+    
+    <select id='getCrfromStartDate' resultType="java.util.LinkedHashMap">
+       select distinct StartDate from transactionalData.TBL_WorkEffort where WorkEffortID in (
+  	   select WorkEffortIdProposed FROM transactionalData.TBL_ChangeRequestPosition where ResourcePositionID
+  	   = #{cRObject.rpID}
+  ) 
+    </select>
+    
+    <select id='getEndDatefromWorkEffort' resultType="java.util.LinkedHashMap">
+       select top 2 EndDate from transactionalData.TBL_WorkEffort where WorkEffortID in (
+		select WorkEffortIdProposed from transactionalData.TBL_ChangeRequestPosition where ResourcePositionID = #{cRObject.rpID}
+	   )
+	   order by WorkEffortID desc 
+    </select>
+    
+        <select id='getLastInsertedID' resultType="java.util.LinkedHashMap">
+       select top 1 WorkEffortID from transactionalData.TBL_WorkEffort where ResourcePositionID = #{cRObject.rpID} order by WorkEffortID desc
+    </select>
+
+	<resultMap type="ProposedResourcesModel"
+		id="ProposedResourcesModelResult">
+		<id property="workEffortID" column="WorkEffortID" />
+		<result property="resourcePositionID" column="ResourcePositionID" />
+		<result property="signum" column="Signum" />
+		<result property="employeeName" column="EmployeeName" />
+		<result property="requestedOn" column="RequestedOn" />
+		<result property="startDate" column="StartDate" />
+		<result property="endDate" column="EndDate" />
+		<result property="availability" column="Availability" />
+		<result property="jobStage" column="JobStage" />
+		<result property="managerName" column="ManagerName" />
+		<result property="managerSignum" column="ManagerSignum" />
+		<result property="domain" column="Domain" />
+		<result property="subDomain" column="subDomain" />
+		<result property="serviceArea" column="ServiceArea" />
+		<result property="subServiceArea" column="SubServiceArea" />
+		<result property="demandType" column="demandType" />
+
+		<result property="projectID" column="ProjectID" />
+		<result property="projectName" column="ProjectName" />
+		<result property="cRID" column="CRID" />
+		<result property="isPendingCR" column="IsPendingCR" />
+		<result property="remote_Onsite" column="Remote_Onsite" />
+		
+		<result property="workEffortStatus" column="WorkEffortStatus" />
+		<result property="positionStatus" column="PositionStatus" />
+		<result property="hours" column="Hours" />
+		<result property="fte" column="FTE" />
+		<result property="positionStartDate" column="PositionStartDate" />
+		<result property="positionEndDate" column="PositionEndDate" />
+		<result property="resourceRequestID" column="ResourceRequestID" />
+		<result property="commentsByFm" column="commentsByFm" />
+		<result property="isVisible" column="isVisible" />
+		<collection property='technology' ofType='java.lang.String'
+			javaType="ArrayList">
+			<result property="technology" column="Technology" />
+		</collection>
+
+	</resultMap>
+    
+<select id='getPositionsAndProposedResources' resultMap="ProposedResourcesModelResult">
+select a.ResourcePositionID as ResourcePositionID,  
+Remote_Onsite,
+WorkEffortID,
+WorkEffortStatus,
+PositionStatus,
+Hours,
+Signum,
+StartDate,
+EndDate,
+FTE,
+JobStage,
+ManagerName,
+SubDomain,
+ServiceArea,
+ManagerSignum,
+Technology,
+SubServiceArea,
+Domain,
+EmployeeName,
+ProjectID,
+ProjectName,
+PositionStartDate,
+PositionEndDate,
+ResourceRequestID,
+commentsByFm, 
+b.CRID,
+CASE WHEN b.Status = 'OPEN' THEN 1 ELSE 0 END AS IsPendingCR,
+CASE WHEN WorkEffortStatus in ( ${status} ) THEN 1 ELSE 0 END AS isVisible 
+, b.CRID,CASE WHEN b.Status = 'OPEN' THEN 1 ELSE 0 END AS IsPendingCR,CASE WHEN WorkEffortStatus in ( ${status} ) THEN 1 ELSE 0 END AS isVisible 
+, demandTypeID, demandType from 
+(select t1.resourcePositionId as ResourcePositionID,t1.Remote_Onsite,t3.WorkEffortID,t3.PositionStatus WorkEffortStatus,t1.PositionStatus ,t3.Hours, upper(t3.signum) as Signum ,convert(nvarchar(MAX), t3.startDate, 23) as StartDate,
+convert(nvarchar(MAX), t3.endDate, 23) as EndDate ,t3.FTE_Percent as FTE,
+t4.JobStage,t9.EmployeeName as ManagerName,t6.SubDomain,t7.ServiceArea,
+t4.ManagerSignum,t8.Technology,t7.SubServiceArea,t6.Domain,t4.EmployeeName, pro.ProjectID, pro.ProjectName,
+convert(nvarchar(MAX), t10.startDate, 23) as PositionStartDate, convert(nvarchar(MAX), t10.EndDate, 23) as PositionEndDate,
+t2.ResourceRequestID,t1.commentsByFm, t2.DemandTypeID, dt.demandType
+from 
+transactionalData.TBL_ResourceRequests t2
+join transactionalData.TBL_ResourcePosition t1 on (t1.ResourceRequestID=t2.ResourceRequestID)
+join transactionalData.TBL_WorkEffort t3 on (t1.ResourcePositionID=t3.resourcePositionId)
+left join refData.TBL_Employees t4 on (t3.signum=t4.signum)
+join transactionalData.TBL_PROJECTSCOPEDETAIL t5 on (t5.ProjectScopeDetailID=t2.ProjectScopeDetailID)
+left JOIN (select distinct rrid, technologyID from [transactionalData].[TBL_DEMAND_VENDOR_MAPPING]) dv on dv.RRID=t2.ResourceRequestID
+join refData.TBL_DOMAIN t6 on (t6.DomainID=t5.DomainID)
+join refData.TBL_SERVICEAREA t7 on (t7.ServiceAreaID=t5.ServiceAreaID)
+join refData.tbl_technology t8 on (t8.TechnologyID=dv.TechnologyID)
+left join refData.tbl_employees t9 on (t4.ManagerSignum=t9.signum)
+join transactionalData.TBL_PROJECTS pro on pro.projectID = t2.ProjectID
+left join refData.TBL_Demand_Type dt on dt.demandTypeID = t2.demandTypeID
+
+join transactionalData.TBL_ResourceRequestWorkEfforts t10 on t10.ResourceRequestID = t2.ResourceRequestID
+and t1.IsActivie = 1 and t5.Active =1 and ( (t3.IsActive = 1 and t3.PositionStatus in ('Resource Allocated','Deployed','Proposal Pending','Closed') ) OR (t3.IsActive = 0 and t3.PositionStatus in ('Proposed', 'Pre-Closure') ) )
+and t3.PositionStatus in ( 'Resource Allocated','Proposal Pending','Deployed','Proposed','Closed', 'Pre-Closure' ) and pro.ProjectCreator = #{signum}
+and t1.PositionStatus not in ('Rejected', 'Cancelled') and t2.active=1 and t1.IsActivie=1
+<if test ="projectID != null and projectID != 0"> 
+and pro.projectID = #{projectID}
+</if> 
+<if test ="marketArea !='All'"> 
+and pro.ProjectName like '%${marketArea}%'
+</if>
+) a left join
+
+( select CRID, ResourcePositionID, STATUS from transactionalData.TBL_ChangeRequestPosition where status not in ('WITHDRAW', 'CLOSED', 'REJECTED','ACCEPTED') ) b on a.ResourcePositionID = b.ResourcePositionID
+
+order by ResourcePositionID desc, StartDate 
+
+</select>
+
+
+    
+    <select id='getResourceRequestWorkEffortsDetailsById' resultType="java.util.LinkedHashMap">
+       select * from transactionalData.TBL_ResourceRequestWorkEfforts rrw 
+		inner join [transactionalData].[TBL_ResourceRequests] rr on rrw.resourcerequestid=rr.resourcerequestid
+		where rr.resourcerequestid=#{rrId}
+
+    </select>
+    
+  <!-- //TODO code cleanup 
+       <select id='getApprovedResourceList' resultMap='ProposedResourcesModelResult'>
+        select t1.resourcePositionId as ResourcePositionID,t3.signum as Signum ,convert(nvarchar(MAX), t3.startDate, 23) as StartDate,
+		convert(nvarchar(MAX), t3.endDate, 23) as EndDate ,t3.FTE_Percent as Availability,
+		t4.JobStage,t9.EmployeeName as ManagerName,t6.SubDomain,t7.ServiceArea,
+ 		t4.ManagerSignum,t8.Technology,t7.SubServiceArea,t6.Domain,t4.EmployeeName, pro.ProjectID, pro.ProjectName,
+		creq.CRID,CASE WHEN creq.CRStatus = 'OPEN' THEN 1 ELSE 0 END AS IsPendingCR
+		from 
+		transactionalData.TBL_ResourcePosition t1 left join transactionalData.TBL_ResourceRequests t2
+		on (t1.ResourceRequestID=t2.ResourceRequestID)
+ 		left join transactionalData.TBL_WorkEffort t3 on (t1.ResourcePositionID=t3.resourcePositionId)
+		left join refData.TBL_Employees t4 on (t3.signum=t4.signum)
+		left join transactionalData.TBL_PROJECTSCOPEDETAIL t5 on (t5.ProjectScopeDetailID=t2.ProjectScopeDetailID)
+		left join refData.TBL_DOMAIN t6 on (t6.DomainID=t5.DomainID)
+		left join refData.TBL_SERVICEAREA t7 on (t7.ServiceAreaID=t5.ServiceAreaID)
+		left join refData.tbl_technology t8 on (t8.TechnologyID=t5.TechnologyID)
+		left join refData.tbl_employees t9 on (t4.ManagerSignum=t9.signum)
+		left join transactionalData.TBL_PROJECTS pro on pro.projectID = t2.ProjectID
+		left join transactionalData.TBL_ChangeRequestPosition creq on creq.ResourceRequestID = t2.ResourceRequestID
+		where t1.PositionStatus in ('Resource Allocated') and t4.ManagerSignum = #{signum} and t3.signum is not null
+    </select>
+ -->    
+    <resultMap type="WorkEffortModel" id="WorkEffortModelResult">
+        <id property="workEffortID" column="WorkEffortID" />
+        <result property="resourcePositionID" column="ResourcePositionID" />
+        <result property="startDate" column="StartDate" />
+        <result property="endDate" column="EndDate" />
+        <result property="duration" column="Duration" />
+        <result property="fte_Percent" column="FTE_Percent" />
+        <result property="hours" column="Hours" />
+        <result property="signum" column="Signum" />
+        <result property="workEffortStatus" column="WorkEffortStatus" />
+        <result property="isActive" column="IsActive" />
+        <result property="cRID" column="CRID" />
+        <result property="createdBy" column="CreatedBy" />
+        <result property="createdOn" column="CreatedOn" />
+        <result property="lastModifiedBy" column="LastModifiedBy" />
+        <result property="lastModifiedOn" column="LastModifiedOn" />
+        <result property="allocatedBy" column="AllocatedBy" />
+    </resultMap>
+    
+          <resultMap type='java.util.LinkedHashMap' id='linkedhashmap'>
+	           
+    </resultMap>
+    <update id='updateWorkEffortDetails'>
+        UPDATE TRANSACTIONALDATA.TBL_WORKEFFORT SET AllocatedBy=#{signumID},
+         LASTMODIFIEDBY=#{signumID},LASTMODIFIEDON=dbo.GetDateIST(),Duration=#{days},
+         startdate=#{stDate},enddate=#{edDate},
+          Hours=#{totalHrs}
+        WHERE WorkEffortID=#{WorkEffortID}
+    </update>
+    
+    
+    <update id='updateWorkEffortSignum'>
+        UPDATE TRANSACTIONALDATA.TBL_WORKEFFORT SET signum =#{signum}, LASTMODIFIEDBY=#{signumID},LASTMODIFIEDON=dbo.GetDateIST()
+        WHERE WorkEffortID=#{WorkEffortID}
+    </update>
+    
+    <update id='updateWorkEffortHours'>
+        UPDATE TRANSACTIONALDATA.TBL_WORKEFFORT SET Hours = #{totalHrs} where WorkEffortID = #{id}
+    </update>
+    
+    <update id='disableBookedResourceByWEID'>
+        UPDATE TRANSACTIONALDATA.TBL_BOOKED_RESOURCE SET ACTIVE=0 WHERE WFID= #{workEffortID}
+    </update>
+    
+   <!--   //TODO code cleanup
+   <update id='updateWorkEffortStatus'>
+        UPDATE transactionalData.TBL_WorkEffort
+			SET IsActive = CASE 
+ 		   	WHEN IsActive = 0  THEN 1
+ 		   	WHEN IsActive = 1  THEN 0
+			END
+  		where ResourcePositionID = #{rPID}
+    </update> -->
+    
+    <update id='updateWorkEffortID'>
+        UPDATE transactionalData.TBL_WorkEffort
+			SET IsActive = CASE 
+ 		   	WHEN IsActive = 0  THEN 1
+ 		   	WHEN IsActive = 1  THEN 0
+			END
+  		where WorkEffortID = #{id}
+    </update>
+    
+    <select id='getWorkEffortByCRID' resultMap="WorkEffortModelResult">
+        select *from TRANSACTIONALDATA.TBL_WORKEFFORT WHERE CRID= #{cRID} and isActive=1
+    </select>
+
+    <select id='getWorkEffortDetailsByID' resultMap="WorkEffortModelResult">
+        select StartDate , EndDate , ResourcePositionID, Duration , Hours ,  FTE_Percent , WorkEffortStatus ,
+        PositionStatus , WorkEffortID , Signum  , AllocatedBy , IsActive , CRID
+        from TRANSACTIONALDATA.TBL_WORKEFFORT WHERE WorkEffortID= #{weId} 
+    </select>
+    
+    <select id='getWorkEffortByID' resultMap="WorkEffortModelResult">
+        select StartDate , EndDate , FTE_Percent ,  WorkEffortID , Signum , ResourcePositionID , CRID
+         from TRANSACTIONALDATA.TBL_WORKEFFORT WHERE WorkEffortID= #{weId} 
+    </select>
+    
+    <select id='getWorkEffortsByRpId' resultMap="WorkEffortModelResult">
+        select ResourcePositionID,StartDate,EndDate,Duration,FTE_Percent,Hours,Signum,WorkEffortStatus,isActive,CRID,CreatedBy,CreatedOn,
+        LastModifiedOn,LastModifiedBy,AllocatedBy,PositionStatus,Reason,WorkEffortID from TRANSACTIONALDATA.TBL_WORKEFFORT 
+        WHERE ResourcePositionID= #{rpId} and isActive=1
+    </select>
+    
+    <select id='checkRpID' resultType="java.util.LinkedHashMap">
+        select * from TRANSACTIONALDATA.TBL_ChangeRequestPosition WHERE ResourcePositionID= #{rpID}
+    </select>
+    
+    <select id='getWorkEffortDetailsFromRpid' resultType="java.util.LinkedHashMap">
+        select WorkEffortIdExisting,WorkEffortIdProposed from TRANSACTIONALDATA.TBL_ChangeRequestPosition WHERE ResourcePositionID= #{rPID} and status = 'OPEN'
+    </select>
+    
+    <select id='checkOpenStatusCount' resultType="Integer">
+        select count(1) as count1 from [transactionalData].[TBL_ChangeRequestPosition] where ResourcePositionID = #{rpID} and Status = 'OPEN'
+    </select>
+    
+     <select id='getFtePercentage' resultType="Float">
+        select distinct FTE_Percent from transactionalData.TBL_WorkEffort where ResourcePositionID = #{rPID}
+    </select>
+    
+    <select id='getRemoteOnsite' resultType="java.util.LinkedHashMap">
+        select Remote_Onsite from transactionalData.TBL_ResourcePosition where ResourcePositionID = #{rPID}
+    </select>
+    
+    <select id='getWorkEffortID' resultType="java.util.LinkedHashMap">
+        select WorkEffortID from transactionalData.TBL_WorkEffort where resourcePositionid = #{rPID} and isactive = #{status}
+    </select>
+    
+    <insert id='insertBookedResource'>
+        INSERT INTO TRANSACTIONALDATA.TBL_BOOKED_RESOURCE(PROJECTID,POSITIONID,WFID,SIGNUM,DATE,BLOCKEDHRS,ACTIVE) VALUES(#{projectID},#{resourcePositionID},#{workEffortID},#{signum},#{targetDate},#{hours},NULL)
+    </insert>
+    
+      <insert id='raiseChangeManagment'>
+        insert into [transactionalData].[TBL_ChangeRequestPosition] ([ResourcePositionID],[ResourceRequestID],
+        [CreatedBy],[CreatedOn],[Status],[Comments],[ActionType],[PositionStatus],[WorkEffortIdExisting],[WorkEffortIdProposed],
+        [ActionTakenBy],[ActionTakenon],[Reason],[ModifiedBy],[ModifiedDate]) 
+        
+		(select distinct rp.ResourcePositionID, rp.ResourceRequestID, #{cRObject.loggedInSignum}, dbo.GetDateIST(), #{status}, #{cRObject.comments},
+		 #{cRObject.actionType}, 'Resource Allocated'
+		, #{existing}, #{proposed}, NULL ,NULL,#{reason},#{cRObject.loggedInSignum},dbo.GetDateIST()
+		from transactionalData.TBL_ResourcePosition RP 
+		join transactionalData.TBL_ResourceRequests RR on rp.ResourceRequestID = RR.ResourceRequestID
+		join transactionalData.TBL_WorkEffort WE on we.ResourcePositionID = RP.ResourcePositionID
+		where RP.ResourcePositionID = #{cRObject.rpID})
+    </insert>
+    
+    
+    <insert id='insertInWorkEffort' parameterType="WorkEffortModel">
+       INSERT INTO [transactionalData].[TBL_WorkEffort]
+           ([ResourcePositionID]
+           ,[StartDate]
+           ,[EndDate]
+           ,[Duration]
+           ,[FTE_Percent]
+           ,[Hours]
+           ,[Signum]
+           ,[WorkEffortStatus]
+           ,[IsActive]
+           ,[CRID]
+           ,[CreatedBy]
+           ,[CreatedOn]
+           ,[LastModifiedOn]
+           ,[LastModifiedBy]
+           ,[AllocatedBy]
+           ,[PositionStatus]
+           )
+     VALUES
+           (#{we.resourcePositionID}
+           ,#{we.startDate}
+           ,#{we.endDate}
+           , #{we.duration}
+           , #{we.fte_Percent}
+           ,#{we.hours}
+           , #{we.signum}
+           ,#{we.workEffortStatus}
+           ,#{we.isActive}
+           ,#{we.cRID}
+           ,#{we.createdBy}
+           ,dbo.GetDateIST()
+           ,dbo.GetDateIST()
+           , #{we.lastModifiedBy}
+           , #{we.allocatedBy}
+           ,#{we.positionStatus}
+           )
+    </insert>
+    
+    <update id='updateWorkEffortStatusByWeId'>
+       update [transactionalData].[TBL_WorkEffort]
+           set isActive=#{isActive}
+     	where WorkEffortID=#{WorkEffortID}
+    </update>
+    
+    
+    <update id='updateWorkEffortPositionStatusByWeId'>
+       update [transactionalData].[TBL_WorkEffort]
+           set PositionStatus=#{status}
+     	where WorkEffortID=#{WorkEffortID}
+    </update>
+    
+     <update id='updateCrStatusPreClosure'>
+     	update [transactionalData].[TBL_ChangeRequestPosition] 
+     	set status = 'CLOSED' where ResourcePositionID = #{id}
+    </update>
+    
+    
+    
+    
+    <update id='updateRPDates'>
+        UPDATE transactionalData.TBL_WorkEffort SET StartDate=#{startDate},EndDate=#{endDate},LastModifiedOn=dbo.GetDateIST(),LastModifiedBy = #{signum}, Hours = #{hours},Reason=#{reason}
+        WHERE ResourcePositionID=#{rPID}
+    </update>
+    
+     <select id='getProjectIdbyWorkeffort' resultType="Integer">
+			SELECT rr.ProjectID
+			  FROM
+			 [transactionalData].TBL_ResourceRequests rr
+			 left join [transactionalData].TBL_ResourcePosition rp on rp.resourcerequestid=rr.ResourceRequestID
+			 left join [transactionalData].[TBL_WorkEffort] we on we.resourcepositionid=rp.resourcepositionid
+			
+			 where we.WorkEffortID=#{weId}    
+ 	</select>
+ 	
+ 	
+ 	<select id='getProjectIdbyRpId' resultType="Integer">
+			SELECT rr.ProjectID
+			  FROM
+			 [transactionalData].TBL_ResourceRequests rr
+			 left join [transactionalData].TBL_ResourcePosition rp on rp.resourcerequestid=rr.ResourceRequestID
+			 
+			
+			 where rp.ResourcePositionID=#{rpId}    
+ 	</select>
+ 	
+ 	
+ 	 <select id='getFutureWorkEffortsBySignum' resultMap="WorkEffortModelResult">
+         select ResourcePositionID,StartDate,EndDate,Duration,FTE_Percent,Hours,Signum,WorkEffortStatus,isActive,CRID,CreatedBy,CreatedOn,
+         LastModifiedOn,LastModifiedBy,AllocatedBy,PositionStatus,Reason,WorkEffortID from TRANSACTIONALDATA.TBL_WORKEFFORT 
+         WHERE signum= #{signum} 
+         and enddate > dbo.GetDateIST()
+    </select>
+    
+        <select id='getProposedWorkEfforts' resultType="hashmap">
+        select WorkEffortID,Hours,Duration,StartDate,EndDate  from transactionaldata.TBL_PROPOSED_WORK_EFFORTS where WorkEffortID = #{workEffortID}
+    </select>
+    
+    
+    
+    <update id='changeBookedResourceStatusByWEIDAndDates'>
+        UPDATE TRANSACTIONALDATA.TBL_BOOKED_RESOURCE SET ACTIVE=#{status} 
+        WHERE WFID= #{workEffortID} and [Date] between #{startDate} and #{endtDate}
+    </update>
+    <select id='getReason' resultType='hashmap' >
+        Select ReasonID,Reason from refData.TBL_Demand_Request_Reason where Active=1 and Category='Rampdown' order by Reason asc
+    </select>
+    
+     <select id='getResourcePositionDataByRpID' resultType="java.util.LinkedHashMap">
+        select ResourceRequestID,PositionStatus,Remote_Onsite,ResourcePositionID
+        from transactionalData.TBL_ResourcePosition where ResourcePositionID=#{rpId}
+    </select>
+
+	<update id='updateResourceRequestCount'>
+		update transactionalData.TBL_ResourceRequests
+		set
+		<if test="remoteOnsite != null and remoteOnsite == 'onsite'">
+			OnsiteCount= OnsiteCount-1
+		</if>
+		<if test="remoteOnsite != null and remoteOnsite == 'remote'">
+			RemoteCount= RemoteCount-1
+		</if>
+		where ResourceRequestID=#{rrID}
+	</update>
+	
+	<select id='getPositionStatus' resultType="String">
+       select rp.PositionStatus from transactionalData.TBL_ResourcePosition rp
+       inner join transactionalData.TBL_ChangeRequestPosition cr on rp.ResourcePositionID=cr.ResourcePositionID
+       where cr.CRID=#{crID}
+    </select>
+    
+</mapper>

@@ -1,0 +1,1042 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ericsson.isf.mapper.DemandForecastMapper">
+
+	<resultMap type="DemandForecastDetailModel" id="DemandForecastDetailModelResult">
+	     <id property="positionId" column="positionId" />
+		<result property='projectScopeId' column='projectScopeId' />
+		<result property='resourceType' column='resourceType' />
+		<result property='remoteCount' column='remoteCount' />
+		<result property='onsiteCount' column='onsiteCount' />
+		<result property='jobRoleId' column='jobRoleId' />
+		<result property='jobStageId' column='jobStageId' />
+		
+		<result property='jobRoleName' column='jobRoleName' />
+		<result property='jobStageName' column='jobStageName' />
+		<result property='projectScopeName' column='projectScopeName' />
+		<result property='startDate' column='StartDate' />
+		<result property='endDate' column='EndDate' />
+		<result property='projectScopeDetailId'
+			column='projectScopeDetailId' />
+		<result property='serviceArea' column='serviceArea' />
+		<result property='status' column='status' />
+		<result property='domain_subDomain' column='domain_subDomain' />
+		<result property='spSource' column='spSource' />
+		<result property='hours' column='hours' />
+		<result property='fte' column='fte' />
+		<result property='duration' column='duration' />
+		<result property='country' column='country' />
+		<result property='city' column='city' />
+		<result property='latitude' column='latitude' />
+		<result property='longitude' column='longitude' />
+		<result property='description' column='description' />
+		<result property='timeZone' column='timeZone' />
+		<result property='serviceAreaID' column='serviceAreaID' />
+		<result property='domainID' column='domainID' />
+		<result property='scopeStartDate' column='scopeStartDate' />
+		<result property='demandType' column='demandType' />
+		<result property='demandTypeID' column='demandTypeID' />
+
+		<collection property="vendorTechModel"
+			ofType="VendorTechModel">
+			<id property="positionID" column="RRID" />
+			<result property="vendorTech" column="vendorTech" />
+			<result property="vendorTechID" column="vendorTechID" />
+			<result property="vendor" column="Vendor" />
+			<result property="technologyID" column="TechnologyID" />
+			<result property="technology" column="Technology" />
+			<result property="vendorID" column="VendorID" />
+		</collection>
+		<collection property='toolList' ofType='Integer'>
+			<result property="toolList" column="toolList" />
+		</collection>
+	</resultMap>
+
+
+	<resultMap type="DemandForecastFulfillmentModel"
+		id="DemandForecastFulfillmentModelResult">
+		<id property="workEffortId" column="WorkEffortID" />
+		<result property='projectScopeId' column='projectScopeId' />
+		<result property='resourceType' column='resourceType' />
+		<result property='remote_onsite' column='remote_Onsite' />
+		<result property='jobRoleId' column='JobRoleID' />
+
+		<result property='jobStageId' column='JobStageID' />
+		<result property='demandType' column='DemandType' />
+
+		<result property='positionId' column='positionId' />
+		<result property='jobRoleName' column='jobRoleName' />
+		<result property='jobStageName' column='jobStageName' />
+		<result property='projectScopeName' column='projectScopeName' />
+		<result property='positionStatus' column='positionstatus' />
+		<result property='startDate' column='StartDate' />
+		<result property='endDate' column='EndDate' />
+		<result property='projectScopeDetailId'
+			column='projectScopeDetailId' />
+		<result property='serviceArea' column='serviceArea' />
+		<result property='subdomain' column='subDomain' />
+		<result property='domain' column='domain' />
+		<result property='location' column='location' />
+		<result property='domainSubDomain' column='domainSubDomain' />
+		<result property='sAreaSubSArea' column='sAreaSubSArea' />
+		<result property='jStageJRole' column='jStageJRole' />
+		<result property='requesttype' column='requesttype' />
+		<result property='deliverableUnit' column='deliverableUnit' />
+		<result property='subServiceArea' column='subServiceArea' />
+		<result property='fte' column='fte' />
+		<result property='signum' column='signum' />
+		<result property='PositionId_WorkEffortID'
+			column='PositionId_WorkEffortID' />
+		<result property='text' column='text' />
+
+		<result property='scopeStartDate' column='scopeStartDate' />
+		<result property='scopeEndDate' column='scopeEndDate' />
+
+		<collection property="lstVendorTechModel"
+			ofType="VendorTechModel">
+			<id property="positionID" column="RRID" />
+			<result property="vendorTech" column="vendorTechName" />
+			<result property="vendorTechID" column="vendorTechID" />
+			<result property="vendor" column="Vendor" />
+			<result property="technologyID" column="TechnologyID" />
+			<result property="technology" column="Technology" />
+			<result property="vendorID" column="VendorID" />
+		</collection>
+
+	</resultMap>
+     
+<select id='getDemandSummary' resultType="java.util.LinkedHashMap">
+SELECT distinct PROJ.projectId as Actions,concat(PROJ.projectId,'-',PROJ.projectName) as 'Project Name' 
+into #tempData
+from transactionalData.TBL_Projects proj 
+<if test='role == "Fulfillment Manager"'>
+join transactionalData.TBL_OPPORTUNITY op on op.OpportunityID = proj.OpportunityID 
+join [transactionalData].[TBL_PROJECTSCOPE] ps on ps.ProjectID=proj.ProjectID
+join transactionalData.TBL_PROJECTSCOPEDETAIL psd on psd.ProjectScopeID=ps.ProjectScopeID
+join [refData].[TBL_DomainSpoc] ds on op.MarketAreaID = ds.MarketAreaID and PROJ.ServAreaID = ds.ServAreaID and psd.DomainID=ds.DomainID
+join refData.TBL_MARKETAREAS ma on ma.MarketAreaID =ds.MarketAreaID
+WHERE ds.SPOC=#{signum} and
+
+<if test='marketArea != "SDU Optimize" and marketArea != "All" '>
+ma.MarketAreaName=#{marketArea} AND
+</if>
+ps.Active=1 and psd.active=1
+
+</if>
+<if test='role == "Project Manager"'>
+join transactionalData.TBL_OPPORTUNITY op on op.OpportunityID = proj.OpportunityID 
+join [refData].[TBL_DomainSpoc] ds on op.MarketAreaID = ds.MarketAreaID and PROJ.ServAreaID = ds.ServAreaID
+join refData.TBL_MARKETAREAS ma on ma.MarketAreaID =ds.MarketAreaID
+join [transactionalData].[TBL_PROJECTSCOPE] ps on ps.ProjectID=proj.ProjectID
+join transactionalData.TBL_PROJECTSCOPEDETAIL psd on psd.ProjectScopeID=ps.ProjectScopeID
+WHERE 
+<if test='marketArea != "SDU Optimize" and marketArea != "All" '>
+ma.MarketAreaName=#{marketArea} AND
+</if>
+proj.ProjectCreator = #{signum} AND ps.Active=1 and psd.active=1
+
+</if>
+<if test='role == "Resource Planning Manager"'>
+join [transactionalData].[TBL_RESOURCE_PLANNING_MANAGER] rpm on rpm.projectid=proj.projectid and rpm.Active = 1
+join transactionalData.TBL_OPPORTUNITY op on op.OpportunityID = proj.OpportunityID 
+join refData.TBL_MARKETAREAS ma on ma.MarketAreaID =op.MarketAreaID
+join [transactionalData].[TBL_PROJECTSCOPE] ps on ps.ProjectID=proj.ProjectID
+join transactionalData.TBL_PROJECTSCOPEDETAIL psd on psd.ProjectScopeID=ps.ProjectScopeID
+
+WHERE rpm.RPMSignumID=#{signum} AND
+<if test='marketArea != "SDU Optimize" and marketArea != "All" '>
+ma.MarketAreaName=#{marketArea} AND
+</if>
+ps.Active=1 and psd.active=1
+</if>
+and proj.IsDeleted=0 and STATUS='Approved' and proj.projecttype!='ASP'
+
+SELECT p.Actions,p.[Project Name],ROLE AS [Head Count],${uniqueDates}
+FROM 
+(
+
+SELECT p.projectId pid,FORMAT( d.Month, 'MMM yyyy' ) month,d.positionCount,
+D.ROLE 
+FROM transactionalData.TBL_Projects p
+left join [transactionalData].[TBL_DemandForecast_Master] d on d.projectId=p.ProjectID
+where p.IsDeleted=0
+
+union 
+
+select p.projectId pid,FORMAT( we.StartDate, 'MMM yyyy' ) month,0 positionCount,
+'Fulfillment Manager' ROLE 
+from transactionalData.TBL_ResourcePosition rp
+join transactionalData.TBL_ResourceRequests rr on rr.ResourceRequestID=rp.ResourceRequestID
+join transactionaldata.TBL_PROJECTS p on p.projectid=rr.projectid
+join transactionalData.TBL_WorkEffort we on we.ResourcePositionID = rp.ResourcePositionID
+join #tempData td on td.Actions = p.projectId
+where rp.PositionStatus in ('Proposed','Resource Allocated') 
+
+) AS SourceTable 
+
+PIVOT 
+( 
+sum(positionCount) 
+FOR month IN (${uniqueDates}) 
+) AS PivotTable
+
+right join #tempData p on p.actions =PivotTable.pid
+order by PivotTable.pid,role desc
+</select>
+
+
+
+    
+     <select id='getDemandSummaryByRole' resultType="java.util.LinkedHashMap">
+		SELECT d.projectId pid,FORMAT( d.Month, 'MMM yyyy' ) month,d.positionCount,
+			D.ROLE  
+			    FROM [transactionalData].[TBL_DemandForecast_Master] d
+					where d.projectid=#{projectId} and d.role=#{role}
+	</select>
+    
+    
+    
+    
+    
+     <select id='getUniqueDatesForForcast' resultType="String">
+		select STUFF((SELECT distinct ',' + QUOTENAME(d.Month) 
+            FROM transactionalData.TBL_Projects p
+            left join [transactionalData].[TBL_DemandForecast_Master] d on d.projectId=p.ProjectID
+				where p.IsDeleted =0 
+				and	(p.RPM = #{signum} or p.ProjectCreator = #{signum}) 
+            FOR XML PATH(''), TYPE 
+            ).value('.', 'NVARCHAR(MAX)') 
+        ,1,1,'' ) as s
+    </select>
+     
+     <insert id='saveDemandSummaryDraft' parameterType="com.ericsson.isf.model.DemandForecastModel" >
+     	IF NOT EXISTS (select 1 from [transactionalData].[TBL_DemandForecast_Master] 
+     		where projectId = #{demandSummarySaveRequest.projectId} and ROLE = #{demandSummarySaveRequest.role} and 
+        	Month = #{demandSummarySaveRequest.month}) 
+        	BEGIN
+               INSERT INTO [transactionalData].[TBL_DemandForecast_Master]
+	           ([projectId]
+	           ,[ROLE]
+	           ,[Month]
+	           ,[positionCount]
+	           ,[Active]
+	           ,[CreatedBy]
+	           ,[CreatedOn]
+	           ,[ModifiedBy]
+	           ,[ModifiedOn]
+	           )
+	      	   VALUES
+	           (#{demandSummarySaveRequest.projectId}
+	           ,#{demandSummarySaveRequest.role}
+	           ,#{demandSummarySaveRequest.month}
+	           ,#{demandSummarySaveRequest.positionCount}
+	           ,1
+	           ,#{demandSummarySaveRequest.signum}
+	           ,dbo.GetDateIST()
+	           ,#{demandSummarySaveRequest.signum}
+	           ,dbo.GetDateIST()
+	           )
+            END
+         ELSE
+            BEGIN
+                update [transactionalData].[TBL_DemandForecast_Master]
+	            set [positionCount]=#{demandSummarySaveRequest.positionCount},[Active]=1,[ModifiedBy]=#{demandSummarySaveRequest.signum},[ModifiedON]=dbo.GetDateIST()
+	      		where projectid=#{demandSummarySaveRequest.projectId} and role=#{demandSummarySaveRequest.role} and month=#{demandSummarySaveRequest.month}
+            END
+     	
+	     
+    </insert>
+    
+    <update id='updateDemandSummaryDraft' parameterType="com.ericsson.isf.model.DemandForecastModel">
+	      update [transactionalData].[TBL_DemandForecast_Master]
+	          set [positionCount]=#{demandSummarySaveRequest.positionCount},[Active]=1,[ModifiedBy]=#{demandSummarySaveRequest.signum},[ModifiedON]=dbo.GetDateIST()
+	      where 
+	           projectid=#{demandSummarySaveRequest.projectId} and
+	           role=#{demandSummarySaveRequest.role}
+	           and month=#{demandSummarySaveRequest.month}
+    </update>
+    
+    <select id = 'getToolDetails' resultType = "hashmap">
+    	select ToolID,Tool from refData.TBL_TOOL_INVENTORY
+    	where ToolID in (select ToolID from transactionalData.TBL_DEMAND_TOOL_MAPPING where RRID = #{positionId} and isActive = 1)
+    </select>
+    
+    <update id='removeDupilcateDemandSummaryDraft' parameterType="com.ericsson.isf.model.DemandForecastModel">
+	     update [transactionalData].[TBL_DemandForecast_Master]
+	         set [Active]=0,[ModifiedBy]=#{demandSummarySaveRequest.signum},[ModifiedON]=dbo.GetDateIST()
+	      where 
+	           projectid=#{demandSummarySaveRequest.projectId} and
+	           role=#{demandSummarySaveRequest.role}
+	           and month=#{demandSummarySaveRequest.month}
+    </update>
+    
+    <select id='getDemandForecastDetails' resultMap="DemandForecastDetailModelResult">
+		SELECT 	psd.projectScopeDetailId,ResReq.ResourceRequestID as positionId 
+				,ps.ProjectScopeID as projectScopeId
+				,ResReq.resourceType
+		        ,ResReq.requestType
+		        ,ResReq.onsiteCount
+		        ,ResReq.remoteCount
+	            ,ResReq.JobRoleID
+      		    ,ResReq.JobStageID
+      		    ,dt.demandType
+      		    ,dt.demandTypeID
+      		    ,RRWE.startDate
+          		,RRWE.endDate
+          		,ps.ScopeName as projectScopeName
+				,js.JobStageName as jobStageName
+				,jr.JobRoleName as jobRoleName
+				 ,v.vendor    AS vendor
+				,ResReq.status as status
+				,DM.Domain+' / '+DM.SubDomain as domain_subDomain
+				,SA.ServiceArea+' / '+SA.SubServiceArea as serviceArea
+				 ,TCH.technology as technology
+				 ,v.VendorID as vendorID
+				,RRWE.FTEPercent as fte
+				,RRWE.Hours as duration
+				,RRWE.Hours as hours
+				,ResReq.RemoteLocation as spSource
+				,ResReq.City as city 
+				,ResReq.Country as country 
+				,ResReq.Latitude as latitude 
+				,ResReq.Longitude as longitude 
+				,SA.ServiceAreaID as serviceAreaID
+				,TCH.TechnologyID as technologyID
+				,DM.DomainID as domainID
+				,ResReq.tools as toolList
+				,ResReq.ResourceDescription as description
+				,ps.StartDate scopeStartDate
+				, Concat (dv.VendorId, '-', dv.TechnologyID) as vendorTechID
+	           , CONCAT (v.vendor, '-', tch.Technology) as vendorTech
+          FROM transactionalData.TBL_ResourceRequests ResReq
+		  join transactionaldata.TBL_PROJECTS p on ResReq.ProjectID=p.ProjectID
+		  JOIN transactionalData.TBL_ResourceRequestWorkEfforts RRWE on ResReq.ResourceRequestID = RRWE.ResourceRequestID
+		  join [transactionalData].[TBL_PROJECTSCOPEDETAIL] psd on ResReq.ProjectScopeDetailID=psd.ProjectScopeDetailID
+		  join  transactionalData.TBL_PROJECTSCOPE ps on ps.ProjectScopeID= psd.ProjectScopeID
+		  join refData.TBL_jobstages js on js.jobstageID=ResReq.jobstageID
+		  join refData.TBL_JobRoles jr on jr.JobRoleID= ResReq.JobRoleID
+		  left JOIN [transactionalData].[TBL_DEMAND_VENDOR_MAPPING] dv on dv.RRID=ResReq.ResourceRequestID
+		  left join refData.TBL_VENDOR v on v.VendorID=dv.VendorId
+		  left join refdata.TBL_Demand_Type dt on ResReq.DemandTypeId=dt.DemandTypeId
+		  left join refData.TBL_DOMAIN DM on DM.DomainID=psd.DomainID
+		  left join refData.TBL_SERVICEAREA SA on SA.ServiceAreaID = psd.ServiceAreaID
+		  left join refData.TBL_TECHNOLOGY TCH on Tch.TechnologyID= dv.TechnologyID
+		  left join (
+
+		  SELECT count(1) allocatedCount,rr.resourcerequestId FROM transactionalData.TBL_ResourceRequests rr
+				join transactionalData.TBL_ResourcePosition rp on rr.ResourceRequestID=rp.ResourceRequestID
+
+			WHERE projectId=#{projectId} and rp.positionstatus in ('Resource Allocated','Deployed') 
+
+			group by rr.resourcerequestId
+
+		  ) rp on rp.resourcerequestId=ResReq.resourcerequestId
+		  
+		 <!--  <if test='role ==  "Resource Planning Manager"'>
+				join [transactionalData].[TBL_RESOURCE_PLANNING_MANAGER] rpm on rpm.projectid=p.projectid
+			</if> -->
+		  where 
+		  (rp.allocatedCount=0 or rp.allocatedCount is null)
+		  and ResReq.active=1 
+		  	and ps.Active=1
+			and js.active=1
+			and DM.Active=1
+			and SA.Active=1
+			and TCH.Active=1
+			and ResReq.status!= 'DELETED'
+            and ResReq.ProjectID = #{projectId}  
+            and
+            (
+			ResReq.status!='draft'
+			or
+				(
+					ResReq.status='draft'
+					 <!-- <if test='role ==  "Resource Planning Manager"'>
+					
+						 and rpm.RPMSignumID=#{signum}
+					</if> -->
+				 	and ResReq.draftcreatedby =#{signum} 
+					and ResReq.draftRole=#{role}
+				)
+			)
+           and (
+           		RRWE.StartDate between #{startDate} and DATEADD(month, 12, #{startDate}) OR
+				 RRWE.EndDate between #{startDate} and DATEADD(month, 12, #{startDate}) OR
+					 (RRWE.StartDate &lt;= #{startDate}  and RRWE.EndDate &gt;= DATEADD(month, 12, #{startDate}))
+				)
+			
+			<!-- and	(p.RPM = #{signum} or p.ProjectCreator = #{signum}) -->
+    </select>
+    
+    
+    <select id='getAllDemandForecastDetailsByRole' resultType="com.ericsson.isf.model.DemandForecastDetailModel">
+		SELECT 	ResReq.ResourceRequestID as positionId 
+		        ,ResReq.onsiteCount
+		        ,ResReq.remoteCount
+      		    ,RRWE.startDate
+          		,RRWE.endDate
+          FROM transactionalData.TBL_ResourceRequests ResReq
+		  JOIN transactionalData.TBL_ResourceRequestWorkEfforts RRWE on ResReq.ResourceRequestID = RRWE.ResourceRequestID
+		  where 
+		   ResReq.active=1 
+			and ResReq.status not in ('DELETED','draft')
+			
+            and ResReq.ProjectID =#{projectId}  
+			and ResReq.draftRole=#{role}
+			<!-- and RRWE.endDate>getdate()	 -->	
+					
+    </select>
+    
+    
+    
+    
+    
+    
+     <select id='isDraftAllowed' resultType="int">
+       <if test='role ==  "Resource Planning Manager"'>
+      	 	SELECT count(1) FROM transactionalData.TBL_DemandForecast_Master WHERE projectId=#{projectId}
+       </if>
+       <if test='role ==  "Project Manager"'>
+       		SELECT count(1) FROM transactionalData.TBL_ResourceRequests 
+				WHERE projectId=#{projectId}  AND status!='DRAFT' AND STATUS!='deleted'
+		</if>
+     </select>
+
+	<select id='getProjectScopeDetail'
+		parameterType="com.ericsson.isf.model.DemandForecastDetailModel"
+		resultType="int">
+		select max(ProjectScopeDetailID) ProjectScopeDetailID from
+		[transactionalData].[TBL_PROJECTSCOPEDETAIL]
+		where active=1 and ProjectScopeID = #{demandForecastDetails.projectScopeId}
+		and DomainID = #{demandForecastDetails.domainID}
+		and ServiceAreaID = #{demandForecastDetails.serviceAreaID}
+
+
+	</select>
+     
+     
+<!--     
+     <insert id='saveDemandForecastDetails' parameterType="com.ericsson.isf.model.DemandForecastDetailModel" 
+     useGeneratedKeys="true" keyProperty="demandForecastDetails.positionId" keyColumn="ResourceRequestID">
+	     INSERT INTO [transactionalData].[TBL_ResourceRequests]
+           ([ResourceType]
+           ,[RequestType]
+           ,[OnsiteCount]
+           ,[RemoteCount]
+           ,[CreatedBy]
+           ,[CreatedOn]
+           ,[LastModifiedBy]
+           ,[LastModifiedOn]
+           ,[JobRoleID]
+           ,[JobStageID]
+           ,[OnsiteLocationID]
+           ,[ProjectID]
+           ,[ProjectScopeDetailID]
+           ,[active]
+           ,[ResourceDescription]
+           ,[OnsiteLocation]
+           ,[RemoteLocation]
+           ,[City]
+           ,[Country]
+           ,[Longitude]
+           ,[Latitude]
+           ,[TimeZone]
+           ,[status]
+           ,[draftcreatedby]
+           ,[draftRole]
+           )
+     VALUES
+           (
+		   #{demandForecastDetails.resourceType}
+		   ,null
+           ,#{demandForecastDetails.onsiteCount}
+           ,#{demandForecastDetails.remoteCount}
+           ,#{signum}
+           ,getDate()
+           ,null
+           ,getDate()
+           ,#{demandForecastDetails.jobRoleId}
+           ,#{demandForecastDetails.jobStageId}
+           ,null
+           ,#{projectId}
+           ,#{demandForecastDetails.projectScopeDetailId}
+           ,1
+           ,#{demandForecastDetails.description}
+           ,null
+           ,#{demandForecastDetails.spSource}
+           ,#{demandForecastDetails.city}
+           ,#{demandForecastDetails.country}
+           ,#{demandForecastDetails.longitude}
+           ,#{demandForecastDetails.latitude}
+           ,#{demandForecastDetails.timeZone}
+           ,<if test ="operation != null and operation == 'saveasdraft'"> 
+              'DRAFT'
+         	</if> 
+           <if test ="operation != null and operation == 'sendtospm'"> 
+              'SENDTOSPM'
+         	</if>
+         	<if test ="operation != null and operation == 'sendbacktorpm'"> 
+              'SAVEDBYSPM'
+         	</if>
+         	<if test ="operation != null and operation == 'sendtofm'"> 
+              'SUBMITTED'
+         	</if>
+           ,#{signum}
+           ,#{role}
+           )
+    </insert>
+ -->
+ 
+	<select id='saveDemandForecastDetails' statementType="CALLABLE" parameterType="com.ericsson.isf.model.DemandForecastDetailModel" resultType="int">
+	{call usp_insertTBL_ResourceRequests(
+		#{demandForecastDetails.resourceType}
+        ,#{demandForecastDetails.onsiteCount}
+        ,#{demandForecastDetails.remoteCount}
+        ,#{signum}
+        ,#{demandForecastDetails.jobRoleId}
+        ,#{demandForecastDetails.jobStageId}
+        ,#{projectId}
+        ,#{demandForecastDetails.projectScopeDetailId}
+        ,#{demandForecastDetails.description}
+        ,#{demandForecastDetails.spSource}
+        ,#{demandForecastDetails.city}
+        ,#{demandForecastDetails.country}
+        ,#{demandForecastDetails.longitude}
+        ,#{demandForecastDetails.latitude}
+        ,#{demandForecastDetails.timeZone}
+        ,#{operation}
+        ,#{signum}
+        ,#{role}
+        ,#{demandForecastDetails.demandTypeID}
+         
+	)}
+	</select>
+ 
+     <select id='sendToFM' statementType="CALLABLE" resultType="int">
+        {call SaveDemandRequest_FORECAST(#{resourceRequestID})}
+     </select>
+    
+    
+    
+
+    
+    
+     <insert id='saveResourceRequestWorkEfforts' parameterType="com.ericsson.isf.model.ResourceRequestWorkEffortsModel" >
+	      insert into transactionalData.TBL_ResourceRequestWorkEfforts (StartDate,EndDate,Duration,FTEPercent,Hours,CreatedBy
+           ,CreatedOn
+           ,LastModifiedBy
+		   ,LastModifiedOn
+		   ,ResourceRequestID)
+	   values (#{resourceRequestWorkEffort.startDate}
+	   		,#{resourceRequestWorkEffort.endDate}
+		   ,#{resourceRequestWorkEffort.duration}
+		   ,#{resourceRequestWorkEffort.ftePercent}
+		   ,#{resourceRequestWorkEffort.hours}
+		   ,#{resourceRequestWorkEffort.createdBy}
+		   ,dbo.GetDateIST()
+		   ,#{resourceRequestWorkEffort.createdBy}
+		   ,dbo.GetDateIST()
+		   ,#{resourceRequestWorkEffort.resourceRequestID} )
+    </insert>
+    
+    
+    <insert id='updateResourceRequestWorkEfforts' parameterType="com.ericsson.isf.model.ResourceRequestWorkEffortsModel" >
+	      update transactionalData.TBL_ResourceRequestWorkEfforts 
+	      set StartDate=#{resourceRequestWorkEffort.startDate}
+	      ,EndDate=#{resourceRequestWorkEffort.endDate}
+	      ,Duration=#{resourceRequestWorkEffort.duration}
+	      ,FTEPercent=#{resourceRequestWorkEffort.ftePercent}
+	      ,Hours=#{resourceRequestWorkEffort.hours}
+           ,LastModifiedBy=#{resourceRequestWorkEffort.createdBy}
+		   ,LastModifiedOn=dbo.GetDateIST()
+		   where ResourceRequestID=#{resourceRequestWorkEffort.resourceRequestID}
+    </insert>
+    
+   
+
+     <select id='getDemandForecastDetailsByfilter'  resultMap="DemandForecastFulfillmentModelResult" >
+     select psd.projectScopeId,resourceType,remote_Onsite,rr.JobRoleID,rr.JobStageID,
+     rp.ResourcePositionID positionId,
+		jr.jobRoleName
+		,ps.ScopeName as projectScopeName
+		,ps.startDate scopeStartDate
+		,ps.endDate scopeEndDate
+		,ps.requesttype
+		,ps.deliverableUnit
+		,psd.projectScopeDetailId
+		,dt.DemandType
+		,vendor
+		,TCH.Technology as Technology
+		,v.vendorID as VendorID
+		,tch.technologyID as TechnologyID
+		
+		,we.WorkEffortID,
+		we.StartDate, we.EndDate,js.jobstagename,WE.positionstatus
+		,DM.Domain as domain
+		,DM.SubDomain as subDomain
+		,SA.ServiceArea as serviceArea
+		,SA.SubServiceArea as subServiceArea
+		 ,Concat (dv.VendorId, '-', dv.TechnologyID) as vendorTechID
+	, CONCAT (v.vendor, '-', tch.Technology) as vendorTechName
+		,RRWE.FTEPercent as fte
+		,we.Signum as signum
+		,rr.City as location
+		,DM.Domain+' / '+DM.SubDomain   as domainSubDomain
+		,js.jobstagename+' / '+jr.JobRoleName  as jStageJRole
+		,SA.ServiceArea+' / '+SA.SubServiceArea  as sAreaSubSArea
+		,CONVERT(varchar(10), rp.ResourcePositionID)+' / '+CONVERT(varchar(10), we.WorkEffortID) as PositionId_WorkEffortID
+		 from transactionalData.TBL_ResourcePosition rp
+		join transactionalData.TBL_ResourceRequests rr on rr.ResourceRequestID=rp.ResourceRequestID
+		left JOIN [transactionalData].[TBL_DEMAND_VENDOR_MAPPING] dv on dv.RRID=rr.ResourceRequestID and dv.active=1
+		left join refData.TBL_VENDOR v on v.VendorID=dv.VendorId
+		join refData.TBL_JobRoles jr on jr.JobRoleID= rr.JobRoleID
+		join [transactionalData].[TBL_PROJECTSCOPEDETAIL] psd on rr.ProjectScopeDetailID=psd.ProjectScopeDetailID
+		join  transactionalData.TBL_PROJECTSCOPE ps on ps.ProjectScopeID= psd.ProjectScopeID
+		join transactionalData.TBL_WorkEffort  we on we.ResourcePositionID = rp.ResourcePositionID
+		join refData.TBL_jobstages js on js.jobstageID=rr.jobstageID
+		left join refData.TBL_DOMAIN DM on DM.DomainID=psd.DomainID
+		left join refdata.TBL_Demand_Type dt on rr.DemandTypeId=dt.DemandTypeId
+		left join refData.TBL_SERVICEAREA SA on SA.ServiceAreaID = psd.ServiceAreaID
+		left join refData.TBL_TECHNOLOGY TCH on TCH.TechnologyID = dv.TechnologyID
+		
+		JOIN transactionalData.TBL_ResourceRequestWorkEfforts RRWE on rp.ResourceRequestID = RRWE.ResourceRequestID 
+		where rr.ProjectID=#{projectID} and (rr.status!= 'DELETED' or rr.status is null) and rr.active=1
+		<if test="positionStatus != null">
+				and WE.PositionStatus=#{positionStatus}
+		</if>
+   	</select>
+	<update  id='updateDemandForecastDetails' parameterType="com.ericsson.isf.model.DemandForecastDetailModel">
+	
+	Update [transactionalData].[TBL_ResourceRequests]
+	      set     [ResourceType]= #{demandForecastDetails.resourceType}
+	           ,[RequestType] =null
+	           ,[OnsiteCount]= #{demandForecastDetails.onsiteCount}
+	           ,[RemoteCount] = #{demandForecastDetails.remoteCount}
+	           ,[LastModifiedBy] = #{signum}
+	           ,[LastModifiedOn] = dbo.GetDateIST()
+	           ,[JobRoleID] = #{demandForecastDetails.jobRoleId}
+	           ,[JobStageID] = #{demandForecastDetails.jobStageId}
+	           ,[DemandTypeID] = #{demandForecastDetails.demandTypeID}
+	           ,[OnsiteLocationID] = null
+	           ,[ProjectID] = #{projectId}
+	           ,[ProjectScopeDetailID] = (
+					select max(ProjectScopeDetailID) from [transactionalData].[TBL_PROJECTSCOPEDETAIL]
+					where active=1 and ProjectScopeID = #{demandForecastDetails.projectScopeId}
+					and DomainID = #{demandForecastDetails.domainID}
+					and ServiceAreaID = #{demandForecastDetails.serviceAreaID}
+					
+	           )
+	           <choose>
+		            <when  test ='demandForecastDetails.status ==  "DELETED"'> 
+		             ,[active] = 0
+		         	</when > 
+		         	<otherwise>
+				       ,[active] = 1
+				    </otherwise>
+	           </choose>
+	           ,[RemoteLocation]	=	#{demandForecastDetails.spSource}
+	           ,[City]	=	#{demandForecastDetails.city}
+	           ,[Country]	=	#{demandForecastDetails.country}
+	           ,[Longitude] = #{demandForecastDetails.longitude}
+	           ,[Latitude]	=	 #{demandForecastDetails.latitude}
+	           ,[TimeZone]	=	#{demandForecastDetails.timeZone}
+	           ,
+	           <choose>
+		           <when  test ='operation != null and operation == "saveasdraft" and demandForecastDetails.status==""'> 
+		              [status] = 'DRAFT'
+		         	</when > 
+		            <when  test = 'operation != null and operation == "sendtospm" and demandForecastDetails.status!="SUBMITTED"'> 
+	            	   [status] = 'SENDTOSPM'
+		         	</when >
+		         	<when  test ='operation != null and operation == "sendbacktorpm" and demandForecastDetails.status!="SUBMITTED"'> 
+		               [status] = 'SAVEDBYSPM'
+		         	</when >
+		         	<when  test ='operation != null and operation == "sendtofm"'> 
+		               [status] = 'SUBMITTED'
+		         	</when >
+		         	<otherwise>
+				      [status]=#{demandForecastDetails.status}
+				    </otherwise>
+	           </choose>
+
+	           ,[draftcreatedby] = #{signum}
+	           ,[draftRole] = #{role}
+			where 
+				ResourceRequestID= #{demandForecastDetails.positionId}
+	</update>
+	
+	
+	
+	<update  id='deleteOthersUsersDrafts'>
+	
+		Update [transactionalData].[TBL_ResourceRequests]
+	      	set   
+	               [status] = 'DELETED',
+	               active=0
+			where 
+				[draftcreatedby] != #{signum}
+				and projectId=#{projectId}
+	</update>
+	
+	<insert id='saveDemandVendorMapping' >
+	
+	insert into [transactionalData].[TBL_DEMAND_VENDOR_MAPPING]
+	(RRID,VendorId)
+		values
+	(#{positionId}, (select vendorID from refData.TBL_VENDOR where Vendor=#{vendor}))
+	</insert>
+	<insert id='saveDemandToolMapping' >
+	insert into [transactionalData].[TBL_DEMAND_TOOL_MAPPING]
+	(RRID,ToolId,isActive)
+		values
+	(#{positionId}, #{toolId},1)
+	</insert>
+	<delete id="deleteDemandToolMapping">
+		update [transactionalData].[TBL_DEMAND_TOOL_MAPPING]
+		set isActive = 0
+		where RRID=#{positionId}
+	</delete>
+	<delete id="deleteDemandVendorMapping">
+		delete from [transactionalData].[TBL_DEMAND_VENDOR_MAPPING]
+		where RRID=#{positionId}
+	</delete>
+	
+	<select id='getDemandForecastDetailsByRRID'   resultType="com.ericsson.isf.model.DemandForecastDetailModel">
+      select ResourceType,RequestType,OnsiteCount,RemoteCount,JobRoleID,JobStageID,OnsiteLocationID,
+      ProjectID,ProjectScopeDetailID,status,ResourceRequestID from transactionalData.TBL_ResourceRequests
+		where ResourceRequestID	=	#{rrid}
+    </select>
+    <select id='getVendorNameByID'   resultType="Integer">
+      select vendorID from refData.TBL_VENDOR where Vendor=#{vendor})
+    </select>
+    
+     <select id='getDomainSubdomain' resultType='hashmap'>
+   			SELECT distinct D.Domain + ' / ' + D.SubDomain as Domain_SubDomain, PSD.[domainID]
+               FROM transactionalData.[TBL_PROJECTSCOPEDETAIL] PSD
+               JOIN refData.TBL_DOMAIN D on PSD.DomainID = D.DomainID
+               JOIN refData.TBL_SERVICEAREA SA on PSD.ServiceAreaID = SA.ServiceAreaID
+			   JOIN refData.TBL_TECHNOLOGY T on PSD.TechnologyID = T.TechnologyID
+               where PSD.Active = 1 
+               and ProjectScopeID = #{projectScopeID} and PSD.[ServiceAreaID]=#{serviceAreaID}
+       </select> 
+       
+        <select id='getTechnologies' resultType='hashmap'>
+   			SELECT distinct T.technology as Technology,PSD.[technologyID]
+               FROM transactionalData.[TBL_PROJECTSCOPEDETAIL] PSD
+               JOIN refData.TBL_DOMAIN D on PSD.DomainID = D.DomainID
+               JOIN refData.TBL_SERVICEAREA SA on PSD.ServiceAreaID = SA.ServiceAreaID
+			   JOIN refData.TBL_TECHNOLOGY T on PSD.TechnologyID = T.TechnologyID
+               where PSD.Active = 1 
+               and ProjectScopeID = #{projectScopeID} and PSD.[ServiceAreaID]=#{serviceAreaID}
+                and PSD.[DomainID]=#{domainID}
+       </select>          
+      <select id='getScopeDetails' resultType='hashmap'>
+   			
+		
+			SELECT ScopeName +' - '+SubServiceArea+' - '+  Domain +' - '+SubDomain+' - '+Technology label, psd.ProjectScopeDetailID projectScopeDetailId FROM transactionalData.[TBL_PROJECTSCOPEDETAIL] PSD
+               JOIN refData.TBL_DOMAIN D on PSD.DomainID = D.DomainID
+               JOIN refData.TBL_SERVICEAREA SA on PSD.ServiceAreaID = SA.ServiceAreaID
+			   JOIN refData.TBL_TECHNOLOGY T on PSD.TechnologyID = T.TechnologyID
+			   JOIN transactionalData.TBL_PROJECTSCOPE ps on ps.ProjectScopeID =psd.ProjectScopeID
+               
+			   
+			   where PSD.Active = 1 
+               and ProjectID=#{projectId}
+			   order by ScopeName 
+       </select>          
+        
+        
+       <!-- //TODO Code cleanup
+         <select id='getDemandForecastDetailsForMigration' resultType="com.ericsson.isf.model.DemandForecastDetailModel">
+		SELECT 	psd.projectScopeDetailId,ResReq.ResourceRequestID as positionId 
+				,ps.ProjectScopeID as projectScopeId
+				,ResReq.resourceType
+		        ,ResReq.requestType
+		        ,ResReq.onsiteCount
+		        ,ResReq.remoteCount
+	            ,ResReq.JobRoleID
+      		    ,ResReq.JobStageID
+      		    ,RRWE.startDate
+          		,RRWE.endDate
+          		,ps.ScopeName as projectScopeName
+				,js.JobStageName as jobStageName
+				,jr.JobRoleName as jobRoleName
+				,v.Vendor as vendor 
+				,ResReq.status as status
+				,DM.Domain+' / '+DM.SubDomain as domain_subDomain
+				,SA.ServiceArea+' / '+SA.SubServiceArea as serviceArea
+				,TCH.Technology as tech
+				,RRWE.FTEPercent as fte
+				,RRWE.Hours as duration
+				,RRWE.Hours as hours
+				,ResReq.RemoteLocation as spSource
+				,ResReq.City as city 
+				,ResReq.Country as country 
+				,ResReq.Latitude as latitude 
+				,ResReq.Longitude as longitude 
+				,SA.ServiceAreaID as serviceAreaID
+				,TCH.TechnologyID as technologyID
+				,DM.DomainID as domainID
+				,ResReq.tools as toolList
+				,ResReq.ResourceDescription as description
+          FROM transactionalData.TBL_ResourceRequests ResReq
+		  join transactionaldata.TBL_PROJECTS p on ResReq.ProjectID=p.ProjectID
+		  JOIN transactionalData.TBL_ResourceRequestWorkEfforts RRWE on ResReq.ResourceRequestID = RRWE.ResourceRequestID
+		  join [transactionalData].[TBL_PROJECTSCOPEDETAIL] psd on ResReq.ProjectScopeDetailID=psd.ProjectScopeDetailID
+		  join  transactionalData.TBL_PROJECTSCOPE ps on ps.ProjectScopeID= psd.ProjectScopeID
+		  join refData.TBL_jobstages js on js.jobstageID=ResReq.jobstageID
+		  join refData.TBL_JobRoles jr on jr.JobRoleID= ResReq.JobRoleID
+		  left JOIN [transactionalData].[TBL_DEMAND_VENDOR_MAPPING] dv on dv.RRID=ResReq.ResourceRequestID
+		  left join refData.TBL_VENDOR v on v.VendorID=dv.VendorId
+		  left join refData.TBL_DOMAIN DM on DM.DomainID=psd.DomainID
+		  left join refData.TBL_SERVICEAREA SA on SA.ServiceAreaID = psd.ServiceAreaID
+		  left join refData.TBL_TECHNOLOGY TCH on TCH.TechnologyID = psd.TechnologyID
+		  left join (
+
+		  SELECT count(1) allocatedCount,rr.resourcerequestId FROM transactionalData.TBL_ResourceRequests rr
+				join transactionalData.TBL_ResourcePosition rp on rr.ResourceRequestID=rp.ResourceRequestID
+
+			WHERE projectId=#{projectId} and rp.positionstatus in ('Resource Allocated','Deployed') 
+
+			group by rr.resourcerequestId
+
+		  ) rp on rp.resourcerequestId=ResReq.resourcerequestId
+		  
+		  <if test='role ==  "Resource Planning Manager"'>
+				join [transactionalData].[TBL_RESOURCE_PLANNING_MANAGER] rpm on rpm.projectid=p.projectid
+			</if>
+		  where 
+		   ResReq.active=1 
+		  	and ps.Active=1
+			and js.active=1
+			and DM.Active=1
+			and SA.Active=1
+			and TCH.Active=1
+			and ResReq.status!= 'DELETED'
+            and ResReq.ProjectID = #{projectId}  
+            and
+			ResReq.status='submitted'
+			and	(p.RPM = #{signum} or p.ProjectCreator = #{signum})
+    </select>   -->     
+    <select id='getDemandPositionDetailsByprojectId'  resultMap="DemandForecastFulfillmentModelResult" >
+     select remote_Onsite,we.WorkEffortID, 
+		we.StartDate, we.EndDate,WE.positionstatus
+		from transactionalData.TBL_ResourcePosition rp
+		join transactionalData.TBL_ResourceRequests rr on rr.ResourceRequestID=rp.ResourceRequestID
+		left JOIN [transactionalData].[TBL_DEMAND_VENDOR_MAPPING] dv on dv.RRID=rr.ResourceRequestID
+		left join refData.TBL_VENDOR v on v.VendorID=dv.VendorId
+		join refData.TBL_JobRoles jr on jr.JobRoleID= rr.JobRoleID
+		join [transactionalData].[TBL_PROJECTSCOPEDETAIL] psd on rr.ProjectScopeDetailID=psd.ProjectScopeDetailID
+		join  transactionalData.TBL_PROJECTSCOPE ps on ps.ProjectScopeID= psd.ProjectScopeID
+		join transactionalData.TBL_WorkEffort  we on we.ResourcePositionID = rp.ResourcePositionID
+		join refData.TBL_jobstages js on js.jobstageID=rr.jobstageID
+		left join refData.TBL_DOMAIN DM on DM.DomainID=psd.DomainID
+		left join refData.TBL_SERVICEAREA SA on SA.ServiceAreaID = psd.ServiceAreaID
+		left join refData.TBL_TECHNOLOGY TCH on TCH.TechnologyID = dv.TechnologyID
+		JOIN transactionalData.TBL_ResourceRequestWorkEfforts RRWE on rp.ResourceRequestID = RRWE.ResourceRequestID 
+		where rr.ProjectID=#{projectID} and rr.active=1 
+		and WE.PositionStatus in ('Post-Closure',
+		'Proposed',
+		'Deployed',
+		'Closed',
+		'Pre-Closure',
+		'Resource Allocated'
+		)
+		
+   	</select>           	
+    
+    <resultMap type="ProjectScopeDetailMappingModel" id="projectScopDetail">
+		<id property="projectScopeID" column="ProjectScopeID"/>
+		<result property="projectID" column="ProjectID"/>
+		<result property="scopeName" column="ScopeName"/>
+		<collection property="scopeDetailsModel" ofType="ScopeDetailsModel">
+			<id property="projectScopeDetailID" column="ProjectScopeDetailID"/>
+			<result property="endDate" column="EndDate"/>
+			<result property="requestType" column="requestType"/>
+			<result property="domain" column="Domain"/>
+			<result property="domainID" column="DomainID"/>
+			<result property="serviceArea" column="ServiceArea"/>
+			<result property="serviceAreaID" column="ServiceAreaID"/>
+			<result property="startDate" column="StartDate"/>
+			<result property="technology" column="Technology"/>
+			<result property="technologyID" column="TechnologyID"/>		
+		</collection>
+    </resultMap>
+    
+    
+    
+     <select id='getAllScopeDetailsByProject' resultMap='projectScopDetail' >
+		SELECT ps.[ProjectScopeID]
+                ,ps.[ScopeName]
+                ,ps.[StartDate]
+                ,ps.[EndDate]
+                ,ps.[ProjectID]      
+                ,ps.[requestType]
+                ,psd.ProjectScopeDetailID
+             ,psd.DomainID
+             ,psd.ServiceAreaID
+             ,psd.TechnologyID
+             ,d.Domain + '/' + d.SubDomain as Domain
+             ,sa.ServiceArea + '/' + sa.SubServiceArea as 'ServiceArea'
+             ,t.Technology
+          FROM [transactionalData].[TBL_PROJECTSCOPE] ps
+          join
+          [transactionalData].[TBL_PROJECTSCOPEDETAIL] psd on ps.ProjectScopeID = psd.ProjectScopeID
+          join
+          [refData].[TBL_DOMAIN] d on psd.DomainID = d.DomainID
+          join
+          [refData].[TBL_SERVICEAREA] sa on psd.ServiceAreaID = sa.ServiceAreaID
+          join
+          [refData].[TBL_TECHNOLOGY] t on psd.TechnologyID = t.TechnologyID
+          where ps.Active = 1
+          and psd.Active = 1
+          and ps.ProjectID =#{projectId}
+    </select> 
+    
+    
+    
+	<update  id='deleteResourcePositionByRrID'>
+	
+		Update transactionalData.TBL_ResourcePosition
+	      	set   
+	              IsActivie=0,
+	              LastModifiedBy = #{signum},
+	              LastModifiedOn = dbo.GetDateIST()
+			where
+				ResourceRequestID=#{positionId}
+	</update>
+	<update  id='deleteWorkEffortsByRrID'>
+	
+		Update transactionalData.TBL_WorkEffort
+	      	set   
+	              IsActive=0,
+	              LastModifiedBy = #{signum},
+	              LastModifiedOn = dbo.GetDateIST()
+			where
+				ResourcePositionID IN ( 
+				Select distinct ResourcePositionID from  transactionalData.TBL_ResourcePosition where ResourceRequestID=#{positionId})
+	</update>
+    <select id='getResourceRequestedBySubScope' resultType='hashmap'>
+    	SELECT ResReq.ResourceRequestID
+        ,ResReq.ResourceType
+        ,ResReq.RequestType
+        ,ResReq.OnsiteCount
+        ,ResReq.RemoteCount
+        ,ResReq.CreatedBy
+        ,ResReq.CreatedOn
+        ,ResReq.LastModifiedBy
+        ,ResReq.LastModifiedOn
+        ,ResReq.JobRoleID
+        ,ResReq.JobStageID
+        ,ResReq.OnsiteLocationID
+        ,ResReq.ProjectID
+        ,ResReq.ProjectScopeDetailID
+        ,ResReq.ResourceDescription
+        ,ResReq.RemoteLocation
+        ,ResReq.OnsiteLocation
+        ,ResReq.City
+		,ResReq.Country
+		,ResReq.Longitude
+		,ResReq.Latitude
+		,ResReq.TimeZone
+        ,JR.JobRoleName
+        ,JS.JobStageName
+        ,RRWE.StartDate
+        ,RRWE.EndDate
+        ,RRWE.Duration
+        ,RRWE.FTEPercent
+        ,RRWE.Hours
+        FROM transactionalData.TBL_ResourceRequests ResReq
+        JOIN
+        refData.TBL_JobRoles JR on ResReq.JobRoleID = JR.JobRoleID
+        JOIN
+        refData.TBL_JobStages JS on ResReq.JobStageID = JS.JobStageID
+        JOIN
+        transactionalData.TBL_ResourceRequestWorkEfforts RRWE on ResReq.ResourceRequestID = RRWE.ResourceRequestID 
+        where ResReq.active=1
+        and ResReq.ProjectID=#{projectID}
+		and ResReq.ProjectScopeDetailID=#{projectScopeDetailID};
+    </select>
+     <select id='getDemandSummaryDraftDetails' parameterType="com.ericsson.isf.model.DemandForecastModel" resultType="int">
+	      select positionCount from [transactionalData].[TBL_DemandForecast_Master]
+	      where 
+	           projectid=#{demandSummarySaveRequest.projectId} and
+	           role=#{demandSummarySaveRequest.role}
+	           and month=#{demandSummarySaveRequest.month}
+    </select>
+    <select id='getDemandForecastDetailsByRrIdAndPId'   resultType="com.ericsson.isf.model.DemandForecastDetailModel">
+      select ResReq.OnsiteCount,ResReq.RemoteCount,RRWE.StartDate,RRWE.EndDate from transactionalData.TBL_ResourceRequests ResReq
+      LEFT JOIN transactionalData.TBL_ResourceRequestWorkEfforts RRWE on ResReq.ResourceRequestID = RRWE.ResourceRequestID
+		where ResReq.ResourceRequestID	=	#{positionId} and ResReq.projectId= #{projectId} 
+    </select>
+
+	<select id='getVendorTechCombination'
+	resultType="com.ericsson.isf.model.VendorTechModel">
+	select * from (
+	select Concat(v.vendor , '-' , t.Technology) vendorTech,
+	Concat(v.VendorID, '-', t.TechnologyID) vendorTechID,
+	v.vendor,
+	v.VendorID, t.Technology, t.TechnologyID from refData.TBL_VENDOR v
+	cross join refData.TBL_Technology t where v.active = 1 and t.Active=1
+	and t.Technology Not Like '%MULTI%' and v.vendor Not Like '%MULTI%')
+	a
+	where vendorTech like '%${term}%'
+	order
+	by vendorTech
+	OFFSET ${start} ROWS
+	FETCH NEXT ${length} ROWS ONLY
+</select>
+	
+	<select id="saveDemandVendorTechCombination">
+
+	<foreach item="Item" index="index"
+	collection="vendorTechDataModel" open="begin" close=";end;"
+	separator=";">
+	insert into transactionalData.TBL_Demand_Vendor_Mapping
+	(RRID,
+	VendorID,
+	TechnologyID,
+	Active,
+	CreatedBy,
+	CreatedOn,
+	ModifiedBy,
+	ModifiedOn
+
+	)
+
+	values
+	(#{Item.positionID},
+	(select vendorID from
+	refData.TBL_VENDOR where Vendor=#{Item.vendor}),
+	(select technologyID
+	from refData.TBL_Technology where Technology=#{Item.technology}),
+
+
+	1,
+	#{Item.createdBy},
+	dbo.GetDateIST(),
+	#{Item.createdBy},
+	dbo.GetDateIST()
+
+	)
+
+</foreach>
+
+</select>
+<select id="validateVendortech" resultType="Boolean">
+	If Exists(select 1 from (
+	select Concat(v.vendor , '-' , t.Technology) vendorTech from refData.TBL_VENDOR v
+	cross join refData.TBL_Technology t where v.active = 1 and t.Active=1)
+	a
+	where a.vendorTech = #{vendortechname})
+	Begin
+		Select 1 as 'Result'
+	End
+	else
+	Begin
+		Select 0 as 'Result'
+	End
+	
+</select>
+	
+</mapper>

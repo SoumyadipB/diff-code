@@ -1,0 +1,66 @@
+﻿
+@Scripts.Render("~/bundles/DeliveryIndex")
+@Scripts.Render("~/bundles/DataTableScript")
+
+@Styles.Render("~/bundles/css/DataTableStyle")
+@Styles.Render("~/bundles/css/select2")
+@Scripts.Render("~/bundles/select2")
+@Scripts.Render("~/bundles/DataTablesAdvancedScript")
+
+@*<div class="col-md-3"><div id="gaugeContainerE_PER" style="min-width: 100px; max-width: 250px; height: 200px; margin: 0 auto"></div></div>*@
+<div class="row">
+    <div class="col-sm-12" style="display:flex;padding-bottom:10px">
+        <div class="col-sm-5">
+            Projects: <br />
+            <select class="select2able select2-offscreen" id="combo_project" style="padding-left:10px" onchange="projectChange()"></select>
+        </div>
+        <div class="col-sm-5">
+            SubActivity: <br />
+            <select class="select2able select2-offscreen" id="combo_subact" onchange="subactChange()"></select>
+        </div>
+        <button id="btn_submit" class="btn btn-primary col-sm-1" style="margin-left: 10px;width:110px;" onclick=" populateTable()">
+            Submit
+        </button>
+    </div>
+</div>
+<div class="col-lg-12">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            @*<a class="pull-right fa fa-angle-down" href="#WFCreationPanel" aria-expanded="false" aria-controls="WFCreationPanel" data-toggle="collapse"></a>*@
+            Delivery Index
+        </div>
+        <div class="panel-body" id="WFCreationPanel">
+            <div id="page-wrapper">
+                <div class="row">
+                    <div class="col-lg-12">
+
+                    </div>
+                </div>
+
+                <div class="col-md-16 ">
+                    @*<div class="table-responsive" style="overflow-x: auto;">
+                            <table id="tbReqBody" class="table table-striped table-bordered table-hover" style="width:100%"></table>
+                        </div>*@
+                    <div><table class="table table-bordered"><tbody id="tableDI"></tbody></table></div>
+
+                </div>
+
+            </div>
+
+            <!--view task modal-->
+            <!--view task modal end-->
+
+
+        </div>
+    </div>
+</div>
+
+
+<script>
+    $(document).ready(function () {
+        //getTable();
+        //getRequestDetails();
+        getAllProjectDetails()
+        //createGauge('gaugeContainerE_PER', 'Title', [{ name: 'E-PER', data: [50] }]);
+    });
+</script>

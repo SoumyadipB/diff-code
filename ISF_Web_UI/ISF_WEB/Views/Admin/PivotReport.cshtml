@@ -1,0 +1,34 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>ISF - PivotReport </title>
+   
+    @Scripts.Render("~/bundles/flexmonsterScript")
+
+</head>
+<body>
+    
+    <div id="pivotContainer">The component will appear here</div>
+    <script>
+        var viewName = "vw_ProjectDetails";
+        var pivot = new Flexmonster({
+            container: "pivotContainer",
+            toolbar: true,
+            report: {
+                dataSource: {
+                    dataSourceType: "ocsv", //Data Compressor
+                    /* URL to the Data Compressor .NET */
+                    filename: service_java_URL + "appUtil/generateFlexMonsterReport/view/" + viewName
+            
+                }
+            },
+            //licenseKey: "Z7LJ-XG5D5L-2C6F1E-1Q1Q4P-0E651D-706E05-42062V-2P4O3C-6P",
+            licenseKey: "Z7ZS-XD210R-6D0Y0J-1P5O48", //New License key valid till 1st Sep'2018
+            //licenseKey: "Z7NE-XCE56D-710V4L-283Z37",
+            componentFolder: UiRootDir + "/Scripts/flexmonster/"
+            //componentFolder: "/Scripts/flexmonster/"
+            
+        });
+    </script>
+</body>
+</html>

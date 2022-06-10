@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ericsson.isf.mapper.CountriesMapper">
+
+	<select id='isCountryExists' resultType="Boolean">
+            IF EXISTS(select 1 from refData.TBL_COUNTRIES where CountryName = #{countryName})
+                BEGIN
+                    SELECT 1 AS 'RESULT'
+                END
+            ELSE
+                BEGIN
+                    SELECT 0 AS 'RESULT'
+                END
+    </select>
+
+</mapper>
+

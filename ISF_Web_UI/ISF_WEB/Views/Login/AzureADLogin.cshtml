@@ -1,0 +1,105 @@
+﻿@{
+    /**/
+
+    Layout = null;
+}
+@{
+    ViewBag.title = "AzureADLogin";
+
+}
+<script>
+    let RootDir = '@System.Configuration.ConfigurationManager.AppSettings["RootDir"].ToString()';
+    localStorage.setItem('UirootDir', RootDir);
+</script>
+<link rel="icon" type="image/png" href="~/Content/images/Ericsson/favicon.ico" />
+<link type="text/css" rel="stylesheet" href="~/Content/CSS/fontStyle.css" media="all" />
+<link type="text/css" rel="stylesheet" href="~/Content/CSS/font-awesome.min.css?1422529194" />
+<title>ISF - @ViewBag.Title </title>
+@Styles.Render("~/bundles/css/bootstrap")
+
+@Scripts.Render("~/bundles/jquery")
+@Scripts.Render("~/bundles/GetSessionVars")
+@Scripts.Render("~/bundles/config")
+@Scripts.Render("~/bundles/bootstrap")
+@Scripts.Render("~/bundles/AzureADLogin")
+
+
+<style>
+    .bg {
+        /* The image used */
+        /* Full height */
+        height: 100%;
+        /* Center and scale the image nicely */
+        background-repeat: no-repeat;
+        background-size: cover;
+    }
+
+    body {
+        font-family: 'Ericsson Hilda' !important;
+    }
+
+    h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
+        font-family: 'Ericsson Hilda' !important;
+    }
+
+    .centered {
+        position: fixed; /* or absolute */
+        top: 30%;
+        left: 50%;
+        margin-left: -30px;
+    }
+
+    .nav > li > a:hover, .nav > li > a:focus {
+        background-image: linear-gradient(to right, #113975, #1e58ad);
+    }
+
+    .nav-tabs > li.active > a, .nav-tabs > li.active > a:hover, .nav-tabs > li.active > a:focus {
+        color: #ffffff;
+        border: 1px solid #2e6dca;
+        border-bottom: 1px solid #00000000;
+        background-image: linear-gradient(to right, #113975, #1e58ad);
+    }
+
+        .nav-tabs > li.active > a:focus {
+            color: #ffffff;
+            background-image: linear-gradient(to right, #113975, #1e58ad);
+        }
+
+    .nav-tabs.nav-justified > .active > a {
+        border-bottom-color: #00000000;
+    }
+
+    .nav-tabs.nav-justified > li > a {
+        border-bottom: 1px solid #2e6dca;
+    }
+</style>
+
+@if (Request.IsAuthenticated)
+{
+<body style="background-color:#132f58;" class="bg">
+    <input type="hidden" id="user_name" value="@HttpContext.Current.Session["UserEmaiId"]" />
+    <input type="hidden" id="user_type" value="@HttpContext.Current.Session["UserType"]" />
+    <input type="hidden" id="user_upn" value="@HttpContext.Current.Session["UserUpn"]" />
+</body>
+    <script>
+        $(document).ready(function () {
+            prevent();
+                
+    });
+    </script>   
+    
+}
+else
+{
+    <body style="background-color:#132f58;" class="bg">
+
+    </body>
+}
+
+@Scripts.Render("~/bundles/customConsole")
+@Scripts.Render("~/bundles/SessionManagement")
+@Scripts.Render("~/bundles/ajaxRequest")
+
+
+
+

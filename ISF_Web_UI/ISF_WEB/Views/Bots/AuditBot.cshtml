@@ -1,0 +1,72 @@
+﻿@{
+    ViewBag.Title = "BOTS/AUDIT BOTS";
+}
+@Scripts.Render("~/bundles/DataTableScript")
+
+@Styles.Render("~/bundles/css/DataTableStyle")
+@Styles.Render("~/bundles/css/select2")
+
+@Scripts.Render("~/bundles/DataTablesAdvancedScript")
+
+@*@Scripts.Render("~/bundles/BotStore")*@
+@*<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">*@
+
+<style>
+    tfoot {
+        display: table-header-group;
+    }
+
+    .heading {
+        font-weight: bold;
+    }
+</style>
+
+<div class="col-lg-12">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            Audit Bots
+        </div>
+		<div class="row">
+			<label id="lblMacroBotsMsg" for="message">
+			</label>
+		</div>
+        <div class="panel-body">
+            <div class="table-responsive" style="overflow-x: auto;">
+                <table id="tbAudit" class="table table-striped table-bordered table-hover" style="width:100%">
+                    @*<tfoot><tr><th></th><th>Request Id</th><th>Project</th><th>Subactivity</th><th>Workflow</th><th>SPOC</th><th>Request Raised On</th><th>Execution(Weekly)</th><th> Current Status</th><th>Request Type</th><th>Bot Language</th><th>Assigned To</th><th>Bot Name</th></tr></tfoot>*@
+                    @*<tfoot><tr><th>Request Id</th><th>Project Name</th><th>SPOC</th><th>Execution(Weekly)</th><th>Status</th></tr></tfoot>*@
+                </table>
+            </div>
+
+        </div>
+    </div>
+</div>
+@*<script src="~/Scripts/global.js"></script>*@
+@Scripts.Render("~/bundles/BotAudit")
+@*@Scripts.Render("~/bundles/rappid")*@
+@*@Scripts.Render("~/bundles/bootstrap")*@
+@*@Scripts.Render("~/bundles/DataTableScript")
+    @Styles.Render("~/bundles/css/DataTableStyle")
+    @Scripts.Render("~/bundles/select2")
+
+    @Scripts.Render("~/bundles/DataTablesAdvancedScript")*@
+
+@*@Scripts.Render("~/bundles/Admin")*@
+@Scripts.Render("~/bundles/jquery-dateformat")
+<script>
+
+    $(document).ready(function () {
+        getDeployedBots();
+
+    });
+
+</script>
+<style>
+    header {
+        background-color: #666;
+        padding: 30px;
+        text-align: center;
+        font-size: 35px;
+        color: white;
+    }
+</style>

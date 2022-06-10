@@ -1,0 +1,430 @@
+﻿@{
+    Layout = "";
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Work Flow</title>
+    @Styles.Render("~/bundles/css/rappid")
+    <link href="~/Scripts/select2/select2.min.css" rel="stylesheet" />
+    <link type="text/css" rel="stylesheet" href="~/Content/CSS/style.css" media="all" />
+    @Styles.Render("~/bundles/css/DataTableStyle")
+
+    @Styles.Render("~/bundles/css/bootstrap")
+    <link type="text/css" rel="stylesheet" href="~/Content/CSS/font-awesome.min.css" />
+    <link type="text/css" rel="stylesheet" href="~/Content/CSS/style.css" />
+
+    <style>
+
+        .joint-lightbox.modal {
+            display: block;
+        }
+
+        body {
+            padding-top: 10px;
+        }
+
+        tfoot {
+            display: table-header-group;
+        }
+
+        td, th {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
+
+        .datalist {
+            height: 50px !important;
+            max-height: 80px !important;
+            overflow-y: auto;
+            display: block !important;
+        }
+
+        .icon-size {
+            font-size: 20px;
+        }
+
+        .joint-toolbar.joint-theme-material button {
+            height: 29px;
+        }
+
+        .navigator-container {
+            bottom: 50px;
+        }
+
+        .joint-popup.joint-theme-material {
+            background-color: lightcyan;
+            border: 2px solid #31d0c6;
+            border-radius: 10px;
+            padding: 10px;
+            font-family: lato-light,Arial,sans-serif;
+        }
+
+        .popover {
+            max-width: 100%;
+        }
+
+        .toolbar-container button.joint-widget[data-type="zoomIn"], .toolbar-container button.joint-widget[data-type="zoomOut"] {
+            display: block;
+        }
+
+
+
+        /*For Rappid overwrite*/
+        .app-title h1 {
+            font-size: 12px;
+            line-height: 33px !important;
+        }
+
+        .app-header {
+            height: 28px !important;
+        }
+
+        .joint-widget.joint-theme-material[data-type=zoomToFit]:after {
+            background-position: 0px -39px;
+        }
+
+        .joint-widget.joint-theme-material[data-name=layout]:after {
+            background-position: -5px -104px;
+        }
+
+        .joint-widget.joint-theme-material[data-type=zoomOut]:after {
+            background-position: -62px -4px;
+        }
+
+        .joint-widget.joint-theme-material[data-type=zoomIn]:after {
+            background-position: -27px -39px;
+        }
+
+        .joint-widget.joint-theme-material[data-type=fullscreen]:after {
+            background-position: -58px -33px;
+        }
+
+        .joint-widget.joint-theme-material[data-type=undo]:after, .joint-widget.joint-theme-material[data-type=redo]:after, .joint-widget.joint-theme-material[data-type=zoomToFit]:after, .joint-widget.joint-theme-material[data-type=zoomIn]:after, .joint-widget.joint-theme-material[data-type=zoomOut]:after, .joint-widget.joint-theme-material[data-type=fullscreen]:after {
+            background-size: 92px;
+        }
+
+        .stencil-container {
+            max-height: 75%;
+        }
+
+        .joint-app.joint-theme-material .toolbar-container {
+            overflow-y: inherit;
+        }
+        /*Navigater*/
+        .joint-navigator {
+            right: 18px !important;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            background-color: #fdfdfd;
+        }
+
+        .navigator-container {
+            bottom: 52px !important;
+        }
+
+        .joint-select-button-group.joint-theme-material {
+            display: none;
+        }
+
+
+        .sliderSource {
+            background-color: #5bc0de;
+        }
+    </style>
+
+</head>
+<body>
+    <div class="container" style="max-width:1500px">
+
+        <div id="wOdetailForWF"></div>
+
+        <div class="row">
+
+            <div class="col-md-12">
+                Project ID:<span class=""><label id="projectId" style="width:auto; padding-left:5px;" /></span>
+                WorkFlow Name:<span class=""><label id="WFName" style="width: auto; padding-left:5px;" /></span>
+            </div>
+
+
+        </div>
+        <div class="row" id="assessedOrExperiencedDiv" style="display:none;text-align:center;"></div>
+
+
+        <div class="modal fade" id="addEditStep" role="dialog">
+            <div class="modal-dialog">
+
+                <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header btn-primary">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">Add Step</h4>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" id="hiddenVal" />
+                        <div class="form-group">
+
+                            <label for="Step" class="astrick">Step Name</label>
+                            <input type="text" class="form-control" id="stepName">
+                        </div>
+                        <div class="form-group">
+                            <label for="Task">Task Name</label>
+                            <select class="form-control" id="taskName"></select>
+                        </div>
+                        <div class="form-group">
+                            <label for="avgHrs">Average Estimated Hours(minutes)</label>
+                            <input type="number" placeholder="0.00" min="0" value="" class="form-control" id="avgHrs">
+                        </div>
+                        <div class="form-group">
+                            <label for="tool">Tools</label>
+                            <select class="form-control" id="toolName"></select>
+                        </div>
+                        <div class="form-group">
+                            <label for="reason" class="astrick">Reason</label>
+                            <input type="text" class="form-control" id="reasonName">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="execType">Step Type</label>
+                            <select class="form-control execType" id="execTypeName">
+                                <option>Manual</option>
+                                <option>Decision</option>
+                                <option>Automatic</option>
+                            </select>
+                        </div>
+                        <div class="form-group" style="float:right;">
+                            <button type="submit" class="btn btn-primary" onclick="btnAddStep()">Add</button>
+                            <button type="reset" class="btn btn-default" id="btn_reset">Reset</button>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Modal -->
+        <div class="modal fade" id="saveVersionedWF" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <!--<h4 class="modal-title" id="scopeTitleModal">Work Order</h4>-->
+                    </div>
+                    <div class="modal-body" id="versionContentModal">
+
+                        <label>Do you want to save WorkFlow with same name or create new version?</label>
+
+
+                    </div>
+                    <div class="modal-footer">
+
+                        <button id="existingWFVersion" type="button" class="btn btn-default" onclick="ViewsaveJsonfromUI(projID, subID, subActivityDefID, version, $('#WFName').text(), true, 'updateexisting')" data-dismiss="modal">Update Existing</button>
+                        <button id="createNewWFVersion" type="button" class="btn btn-default" data-dismiss="modal" data-toggle="modal" data-target="#newVersionWFName">Create New</button>
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="newVersionWFName" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <!--<h4 class="modal-title" id="scopeTitleModal">Work Order</h4>-->
+                    </div>
+                    <div class="modal-body" id="versionContentModal">
+
+                        <label>Work Flow Name:</label>&nbsp;&nbsp;<input id="workflowName" type="text" />
+
+
+                    </div>
+                    <div class="modal-footer">
+
+                        <button id="enterNewWFName" type="button" class="btn btn-default" data-dismiss="modal" onclick="ViewsaveJsonfromUI(projID, subID, 0, version, $('#workflowName').val(), true, 'createnew')">OK</button>
+                        <button id="" type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @*MODAL BOT STORE*@
+        @Html.Partial("BotStore")
+
+    </div>
+
+    <div class="row" id="experiencedWFFlage" align="center" style="display:none;">
+        <input type="radio" name="WFType" id="assessed" value="Assessed" checked="checked" /> Assessed WF
+        <input type="radio" name="WFType" id="experienced" value="Experienced" /> Experienced WF
+
+        <input type="hidden" id="assessedHiddenVal" />
+        <input type="hidden" id="experiencedHiddenVal" />
+    </div>
+
+    <div class="container" id="app" style="max-width:1500px">
+        <div class="app-header" style="height:43px">
+            <div class="app-title">
+                <h1>VIEW WorkFlow</h1>
+            </div>
+            <div class="toolbar-container"></div>
+        </div>
+        <div class="app-body">
+            <div class="stencil-container"></div>
+            <div class="paper-container"></div>
+            <div class="inspector-container"></div>
+            <div class="navigator-container"></div>
+        </div>
+    </div>
+    <!-- Rappid/JointJS dependencies: -->
+    @Scripts.Render("~/bundles/rappid")
+    @Scripts.Render("~/bundles/jqueryui")
+    @Scripts.Render("~/bundles/GetSessionVars")
+    @Scripts.Render("~/bundles/config")
+    @Scripts.Render("~/bundles/bootstrap")
+    @Scripts.Render("~/bundles/datepicker")
+    @*@Scripts.Render("~/bundles/Project")*@
+
+
+    @Scripts.Render("~/bundles/global")
+    @Scripts.Render("~/bundles/select2")
+    @Scripts.Render("~/bundles/DataTableScript")
+    @Scripts.Render("~/bundles/DataTablesAdvancedScript")
+    @Scripts.Render("~/bundles/jquery-dateformat")
+    @Scripts.Render("~/bundles/FlowChartWorkOrderView")
+    @Scripts.Render("~/bundles/downloadBotFiles")
+    @Scripts.Render("~/bundles/SessionManagement")
+    @*<script src="~/Scripts/Login/AzureADLogin.js"></script>*@
+    @Scripts.Render("~/bundles/formbuilder")
+    @Scripts.Render("~/bundles/customConsole")
+    @Scripts.Render("~/bundles/ajaxRequest")
+
+    <script>
+
+
+        $(document).ready(function () {
+            checkAuthorization();
+            var subActivityDefID = null;
+            flag = '';
+            viewFlowChartWorkOrder(projID, subID, version, wfid);
+            setInterval(function () {
+                var isUserLoggedin = signumGlobal;
+                if (isUserLoggedin == null) {
+                    //window.location.href = UiRootDir + "/";
+                    window.close();
+                }
+            }, 3000);
+            //getTools();
+            //getTasks(subID);
+            //getViewTasks(projID, subID);
+
+
+
+        });
+
+        function checkAuthorization() {
+            var urlParams = new URLSearchParams(window.location.search);
+            let projectID = urlParams.get('projID');
+
+            if (projectID == null || projectID == "null" || projectID == undefined) {
+                window.location.href = UiRootDir + '/Login/UnauthorizedWarning';
+            }
+            else {
+
+                $.isf.ajax({
+                    url: service_java_URL + "flowchartController/checkUserAuthenticationForWorkFlow?projectId=" + projectID,
+                    crossdomain: true,
+                    contentType: 'application/json',
+                    async: false,
+                    success: function (data) {
+                        if (data.isValidationFailed) {
+                            window.location.href = UiRootDir + '/Login/UnauthorizedWarning';
+                        }
+                    },
+                    error: function () {
+
+                    }
+                })
+            }
+             
+        }
+
+        joint.setTheme('material');
+        app = new App.MainView({ el: '#app' });
+        themePicker = new App.ThemePicker({ mainView: app });
+        themePicker.render().$el.appendTo(document.body);
+
+        window.addEventListener('load', function () {
+
+        });
+
+        $("#toggleEditMode").css("font-size", "18px");
+        $("#toggleEditMode").css("color", "gold");
+
+        flagForEditMode = true;
+
+        app.paper.on('cell:pointerclick', function (cellView, evt, x, y) {
+
+            taskID = cellView.model.attributes.attrs.task.taskID;
+            taskName = cellView.model.attributes.attrs.task.taskName;
+            executionType = cellView.model.attributes.attrs.task.executionType;
+            avgEstdEffort = cellView.model.attributes.attrs.task.avgEstdEffort;
+            toolID = cellView.model.attributes.attrs.task.toolID;
+            toolName = cellView.model.attributes.attrs.task.toolName;
+            rpaID = cellView.model.attributes.attrs.tool.RPAID;
+            stepID = cellView.model.attributes.id;
+            currentShape = cellView.model.attributes.type;
+
+            if (currentShape == 'ericsson.Automatic')
+                $(".rpaid").show();
+            else
+                $(".rpaid").hide();
+            //   if (executionType == "Automatic" && currentShape == 'erd.WeakEntity') {
+            ////     $("#exeView").attr("readOnly", false);
+            // }
+            // else
+            //   $("#exeView").attr("readOnly", true);
+            if (currentShape == "ericsson.Manual" || currentShape == 'ericsson.Automatic') {
+                // if (flagForEditMode) {
+                // console.log(currentShape + ' ' + executionType + ' ' + avgEstdEffort + ' ' + taskID + ' ' + taskName + ' ' + rpaID + ' ' + stepID + ' ' + version + ' ' + toolID + ' ' + toolName);
+                funcRpa1(currentShape, executionType, avgEstdEffort, taskID, taskName, rpaID, stepID, version, toolID, toolName);
+                //    }
+                //    else {
+                //   $(".inspector-container").find('[data-attribute="attrs/executiontype"]').val(executionType);
+                //   $(".inspector-container").find('[data-attribute="attrs/avgEstdTime"]').val(avgEstdEffort);
+                //   $(".inspector-container").find('[data-attribute="attrs/text/taskName"]').val(taskName);
+                //    }
+            }
+
+        });
+
+
+    </script>
+    <!-- Local file warning: -->
+    <div id="message-fs" style="display: none;">
+        <p>The application was open locally using the file protocol. It is recommended to access it trough a <b>Web server</b>.</p>
+        <p>Please see <a href="README.md">instructions</a>.</p>
+    </div>
+    <script>
+        (function () {
+            var fs = (document.location.protocol === 'file:');
+            var ff = (navigator.userAgent.toLowerCase().indexOf('firefox') !== -1);
+            if (fs && !ff) {
+                (new joint.ui.Dialog({
+                    width: 300,
+                    type: 'alert',
+                    title: 'Local File',
+                    content: $('#message-fs').show()
+                })).open();
+            }
+        })();
+    </script>
+
+</body>
+</html>
+

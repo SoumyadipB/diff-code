@@ -1,0 +1,69 @@
+﻿
+
+@Scripts.Render("~/bundles/ReportIndex")
+
+@{
+    ViewBag.Title = "Reports/TableauReport";
+}
+
+
+<script type='text/javascript' src='https://tbsrvp.internal.ericsson.com/javascripts/api/viz_v1.js'></script>
+<style>
+    #Panel_Report_Title{
+        font-family:'Ericsson Hilda'!important;
+        font-weight:bold !important;
+        color:blue !important;
+        
+    }
+
+</style>
+<script>
+
+    $(document).ready(function () {
+       var Tableau_Script_Report =  localStorage.getItem('Tableau_Report_Script');
+        console.log(localStorage.getItem('Tableau_Report_Name'));
+        var Tableau_Name_Report = localStorage.getItem('Tableau_Report_Name');
+        $('#Tableau_ReportView').append(Tableau_Script_Report);
+        $('#Panel_Report_Title').append(Tableau_Name_Report);
+        if (Tableau_Name_Report == "SQL Monitoring Report") {
+            myInterval = setInterval(function () {
+                // getVideoStreamingUrl(botid, bookingid);
+                //getBotLogs(bookingid, isfBotId);
+                //getReportModuleWise();
+                window.location.reload();
+            }, 900000);
+        }
+    });
+
+
+    
+</script>
+<style>
+    hr {
+        margin-top: -5px;
+    }
+    .panel-default {
+        overflow-y: auto;
+    }
+    
+</style>
+
+
+    @*<div class="container" style="width:100%">*@
+        <div class="col-md-12">
+            <div class="panel panel-default" style="padding-top: 0%">
+                <div class="panel-heading" id="Panel_Report_Title" style="width:100%">
+
+                    <a onclick="history.back();" class="btn btn-info rm " role="button" style="float:right">Back to Reports Index</a>
+                </div>
+
+                <div class="panel-body" style="overflow-x:scroll;overflow-y:scroll;width:100%;">
+                    <div id="Tableau_ReportView">
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    @*</div>*@
+    

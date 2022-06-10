@@ -1,0 +1,92 @@
+﻿
+@Styles.Render("~/bundles/css/DataTableStyle")
+@Scripts.Render("~/bundles/DataTableScript")
+@Scripts.Render("~/bundles/DataTablesAdvancedScript")
+@Styles.Render("~/bundles/css/darkTheme")
+
+<style>
+    .labelDist {
+        font-size: 10px;
+        float: left;
+        margin: 5px 2px 0px 15px;
+    }
+
+    .filterHrefs {
+        width: auto;
+        text-align: center;
+        text-transform: capitalize;
+        background-color: #ffffffc2;
+        padding: 4px;
+        border: 1px solid;
+        border-radius: 10px;
+        border-color: #cec8c8;
+        font-size: 10px;
+    }
+
+    .dividerStatusNE.active {
+        background-color: #eeeeee;
+        text-decoration: underline;
+    }
+
+    .dividerStatusNE {
+        border-right: 1px solid;
+        padding: 4px 0px 4px 0px;
+        color: #cec8c8;
+    }
+
+    .link {
+        margin: 0px 5px 0px 5px;
+        color: blue;
+    }
+
+    .table_status {
+        float: left;
+    }
+    .neDataColourCodeInfo{
+        font-size:10px;
+    }
+</style>
+
+<div class="modal fade in" id="networkElementDuplicateModal" role="dialog" style="font-size:12px;text-transform:none;overflow:scroll; z-index:2000">
+    <input type="hidden" id="pageType" />
+    <div class="modal-dialog" style="width:85%">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Network Element Validation</h4>
+            </div>
+            <div class="modal-body validateNetworkElementDiv">
+                <div class="panel panel-default" style="margin-bottom: 0px;">
+                    <div class="panel-heading" style="text-align:left;">
+                        <div class="col-lg-12">
+                            <div class="row">
+                                    <label class="labelDist">Status:</label>
+                                    <div class="col-lg-3 filterHrefs">
+                                        <a href="#" id="neStatusGroup" class="dividerStatusNE active" onclick="handleStatusFilterForNE(this)"><span class="link">Group&nbsp;<i class="fa fa-info-circle neDataColourCodeInfo" title="1. Grouping is shown based on same “Network Element Name/ID column”&#013;2. Each group separated by color coding (White & Grey)&#013;3. Only one row entry selection is allowed from each group"></i>
+                                        </span></a>
+                                        <a href="#" class="dividerStatusNE" onclick="handleStatusFilterForNE(this)"><span class="link">Valid</span></a>
+                                        <a href="#" class="dividerStatusNE" onclick="handleStatusFilterForNE(this)"><span class="link">InValid&nbsp;<i class="fa fa-info-circle neDataColourCodeInfo" title="NEID's not available in C-NEDB"></i>
+                                        </span></a>
+                                    </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="panel-body" id="NEDuplicatePanel">
+                        <div class="widget-container fluid-height">
+                            <div class="table-responsive">
+                                <table id="table_NE_Details" class="table table-striped table-bordered table-hover" aria-describedby="Network Elements" style="width:100%"></table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer" style="margin-top: 0px;padding-top: 0px;padding-bottom: 20px;">
+                <button class="btn btn-primary" onclick="handleDoneBtnNetworkElementPopUp()">Done</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="handleCloseBtnNetworkElementPopUp()">Close</button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,468 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="com.ericsson.isf.mapper.ReportManagementMapper">
+	<cache type="org.mybatis.caches.ehcache.EhcacheCache" />
+
+	<select id='getReportList' resultMap='ReportModelResult'>
+		SELECT * FROM
+		refData.TBL_Reports t1 inner join
+		refData.TBL_Reports_Module_SubModule t2 on t1.modSubModuleId=t2.Id
+	</select>
+	<resultMap type='ReportModel' id="ReportModelResult">
+		<id property="reportId" column="reportId" />
+		<result property="reportName" column="reportName" />
+		<result property="moduleName" column="moduleName" />
+		<result property="subModuleName" column="subModuleName" />
+		<result property="reportDescription" column="reportDescription" />
+		<result property="formula" column="formula" />
+		<result property="technicalExplaination"
+			column="technicalExplaination" />
+		<result property="remarks" column="remarks" />
+		<result property="detailQuery" column="detailQuery" />
+		<result property="chartQuery" column="chartQuery" />
+		<result property="filterAttribute" column="filterAttribute" />
+		<result property="chartType" column="chartType" />
+		<result property="axisType" column="axisType" />
+		<result property="xAxisLabel" column="xAxisLabel" />
+		<result property="yAxisLabel" column="yAxisLabel" />
+		<result property="columnChart" column="columnChart" />
+		<result property="columnDetailQuery" column="columnDetailQuery" />
+		<result property="active" column="active" />
+		<result property="createdBy" column="createdBy" />
+		<result property="CreatedOn" column="CreatedOn" />
+		<result property="modifiedBy" column="modifiedBy" />
+		<result property="ModifiedOn" column="ModifiedOn" />
+		<result property="selectGroupBy" column="selectGroupBy" />
+		<result property="chartTypeConfig" column="chartTypeConfig" />
+		<result property="reportInfoImg" column="reportInfoImg" />
+	</resultMap>
+
+
+	<resultMap type='com.ericsson.isf.model.DhashboardConfModel'
+		id="DhashboardConfModel">
+		<id property="reportId" column="Reportid" />
+		<result property="dashboardId" column="sequence" />
+		<result property="sequence" column="dashboardId" />
+		<result property="widgetName" column="widgetName" />
+
+	</resultMap>
+
+	<resultMap type='com.ericsson.isf.model.FilterModel'
+		id="FilterModelResult">
+		<id property="filterGroup" column="filterGroup" />
+		<result property="filterDescription" column="filterDescription" />
+		<result property="filterconfig" column="filterconfig" />
+	</resultMap>
+
+
+	<insert id='addReport' parameterType="ReportModel">
+		INSERT into refData.TBL_Reports (reportName,reportDescription,formula,
+		technicalExplaination,remarks,detailQuery,chartQuery,selectGroupBy,filterAttribute,
+		chartType,axisType,xAxisLabel,yAxisLabel,columnChart,columnDetailQuery,active,
+		createdBy,CreatedOn,modSubModuleId
+		)
+		values(#{reportModel.reportName,jdbcType=VARCHAR},
+		#{reportModel.reportDescription,jdbcType=VARCHAR},#{reportModel.formula,jdbcType=VARCHAR},#{reportModel.technicalExplaination,jdbcType=VARCHAR},
+		#{reportModel.remarks,jdbcType=VARCHAR},
+		#{reportModel.detailQuery,jdbcType=VARCHAR},#{reportModel.chartQuery,jdbcType=VARCHAR},#{reportModel.selectGroupBy,jdbcType=VARCHAR},
+		#{reportModel.filterAttribute,jdbcType=VARCHAR},#{reportModel.chartType,jdbcType=VARCHAR},
+		#{reportModel.axisType,jdbcType=VARCHAR},#{reportModel.xAxisLabel,jdbcType=VARCHAR},
+		#{reportModel.yAxisLabel,jdbcType=VARCHAR},#{reportModel.columnChart,jdbcType=VARCHAR},
+		#{reportModel.columnDetailQuery,jdbcType=VARCHAR},#{reportModel.active},
+		#{reportModel.createdBy,jdbcType=VARCHAR},dbo.GetDateIST(),
+		(select Id from refData.TBL_Reports_Module_SubModule where moduleName =
+		#{reportModel.moduleName}
+		and subModuleName = #{reportModel.subModuleName})
+		);
+	</insert>
+
+	<update id='updateReport' parameterType="ReportModel">
+		UPDATE
+		refData.TBL_Reports
+
+		<set>
+			<if test="reportModel.reportName != null">reportName=#{reportModel.reportName,jdbcType=VARCHAR},
+			</if>
+			<if
+				test="reportModel.moduleName != null and reportModel.subModuleName != null">modSubModuleId=(select Id from
+				refData.TBL_Reports_Module_SubModule where moduleName =
+				#{reportModel.moduleName} and
+				subModuleName=#{reportModel.subModuleName}),</if>
+			<if test="reportModel.reportDescription != null">reportDescription=#{reportModel.reportDescription,jdbcType=VARCHAR},
+			</if>
+			<if test="reportModel.formula != null">formula=#{reportModel.formula,jdbcType=VARCHAR},</if>
+			<if test="reportModel.technicalExplaination != null">technicalExplaination=#{reportModel.technicalExplaination,jdbcType=VARCHAR},
+			</if>
+			<if test="reportModel.remarks != null">remarks=#{reportModel.remarks,jdbcType=VARCHAR},</if>
+			<if test="reportModel.detailQuery != null">detailQuery=#{reportModel.detailQuery,jdbcType=VARCHAR},
+			</if>
+			<if test="reportModel.chartQuery != null">chartQuery=#{reportModel.chartQuery,jdbcType=VARCHAR},
+			</if>
+			<if test="reportModel.selectGroupBy != null">selectGroupBy=#{reportModel.selectGroupBy,jdbcType=VARCHAR},
+			</if>
+			<if test="reportModel.filterAttribute != null">filterAttribute=#{reportModel.filterAttribute,jdbcType=VARCHAR},
+			</if>
+			<if test="reportModel.chartType != null">chartType=#{reportModel.chartType,jdbcType=VARCHAR},</if>
+			<if test="reportModel.axisType != null">axisType=#{reportModel.axisType,jdbcType=VARCHAR},</if>
+			<if test="reportModel.xAxisLabel != null">xAxisLabel=#{reportModel.xAxisLabel,jdbcType=VARCHAR},
+			</if>
+			<if test="reportModel.yAxisLabel != null">yAxisLabel=#{reportModel.yAxisLabel,jdbcType=VARCHAR},
+			</if>
+			<if test="reportModel.columnDetailQuery != null">columnDetailQuery=#{reportModel.columnDetailQuery,jdbcType=VARCHAR},
+			</if>
+			<if test="reportModel.modifiedBy != null">modifiedBy=#{reportModel.modifiedBy,jdbcType=VARCHAR},
+			</if>
+			<if test="reportModel.active != null">active=#{reportModel.active},</if>
+			modifiedOn=dbo.GetDateIST()
+
+
+		</set>
+		where
+		reportId=#{reportModel.reportId}
+	</update>
+
+
+	<resultMap type='java.util.LinkedHashMap' id='linkedhashmap'>
+
+	</resultMap>
+	<select id='searchReport' resultType="java.util.LinkedHashMap">
+		select reportName, moduleName, subModuleName, active from
+		refData.TBL_Reports t1
+		inner join [refData].[TBL_Reports_Module_SubModule] t2 on
+		t1.modSubModuleId=t2.Id
+		<where>
+			<if test="reportName != null">
+				reportName like '%${reportName}%'
+			</if>
+			<if test="subModule != null">
+
+				<if test="reportName != null">
+					and
+				</if>
+
+				subModuleName like '%${subModule}%'
+			</if>
+			<if test="module != null">
+
+
+				<if test="reportName != null or subModule != null">
+					and
+				</if>
+				moduleName like '%${module}%'
+			</if>
+		</where>
+	</select>
+	<select id='getReportDetail'
+		parameterType='com.ericsson.isf.model.ReportModel'
+		resultMap='ReportModelResult'>
+		select detailQuery, chartQuery, selectGroupBy,
+		filterAttribute, reportName, subModuleName, moduleName, active,
+		reportDescription, chartType,chartTypeConfig from
+		refData.TBL_Reports
+		t1 inner join
+		refData.TBL_Reports_Module_SubModule t2 on t1.modSubModuleId=t2.Id
+		where reportName =#{reportRequest.reportName} and
+		subModuleName=#{reportRequest.subModuleName} and moduleName
+		=#{reportRequest.moduleName};
+
+	</select>
+	<update id="deleteReport" parameterType="ReportModel">
+		update refData.TBL_Reports set active=0 where reportName
+		=#{reportModel.reportName} and
+
+		modSubModuleId=(select Id from refData.TBL_Reports_Module_SubModule where moduleName =
+		#{reportModel.moduleName}
+		and subModuleName = #{reportModel.subModuleName})
+	</update>
+
+	<select id='checkIFModuleSubModuleExists' resultType="Boolean"
+		parameterType="ReportModel">
+		IF EXISTS(SELECT 1 FROM refData.TBL_Reports_Module_SubModule WHERE
+		moduleName=#{reportModel.moduleName,jdbcType=VARCHAR} AND
+		subModuleName=#{reportModel.subModuleName,jdbcType=VARCHAR})
+		BEGIN
+		SELECT 1 AS 'RESULT'
+		END
+		ELSE
+		BEGIN
+		SELECT 0 AS 'RESULT'
+		END
+
+	</select>
+
+	<insert id='addModuleSubModule'>
+		INSERT into refData.TBL_Reports_Module_SubModule(moduleName,subModuleName)
+		values(#{reportModel.module,jdbcType=VARCHAR},#{reportModel.subModule,jdbcType=VARCHAR}
+		);
+	</insert>
+
+	<select id='getAllModuleSubmodule' resultType='hashMap'>
+		select
+		a.moduleName,a.subModuleName , b.reportName
+		from
+		refData.TBL_Reports_Module_SubModule a
+		left join refData.TBL_Reports b
+		on
+		b.modSubModuleId=a.Id
+		<if test="activeFlag != null">
+			where b.active=#{activeFlag}
+		</if>
+
+	</select>
+
+	<select id='getReportByModule' resultType='hashMap'>
+
+		select id, moduleName,subModuleName,reportName,reportDescription,
+		reportInfoImg from
+		refData.TBL_Reports t1 join refData.TBL_Reports_Module_SubModule t2
+		on(t1.modSubModuleId=t2.Id)
+		where active=1 and (Role is null or role='ALL')
+		union
+		select id, moduleName,subModuleName,reportName,reportDescription,
+		reportInfoImg from
+		refData.TBL_Reports t1 join refData.TBL_Reports_Module_SubModule t2
+		on(t1.modSubModuleId=t2.Id)
+		where active=1
+		<if test="role != null">
+			and t1.Role like '%${role}%'
+		</if>
+		order by moduleName
+
+	</select>
+
+	<resultMap type='ExportedReportHistoryModel'
+		id="ExportedReportHistoryModel">
+		<id property="exportedReportHistory" column="ExportedReportHistory" />
+		<id property="reportName" column="ReportName" />
+		<result property="reportFile" column="reportFile" />
+		<result property="fileUplodedOn" column="FileUplodedOn" />
+		<result property="modifiedOn" column="ModifiedOn" />
+		<result property="description" column="description" />
+
+
+	</resultMap>
+
+	<select id='getDumpData' resultType='ExportedReportHistoryModel'>
+
+		select
+		ExportedReportHistory,ReportName,reportFile,FileUplodedOn,ModifiedOn,description
+		from transactionalData.TBL_ExportedReportHistory where IsActive = 1
+		<if test="marketArea !='All'">
+			and ReportName like '%${marketArea}%' or ReportName like '%All%'
+		</if>
+
+	</select>
+
+
+
+	<select id="getFilterData" resultType='java.util.LinkedHashMap'>
+		select distinct ${cols} from ${tablename};
+	</select>
+
+
+
+	<select id="generateReport" resultType='java.util.LinkedHashMap'>
+		<if test="request.selectGroupBy != null or request.aggColumn!=null">
+			select
+			<if test="request.aggColumn != null">
+				${request.aggColumn}
+			</if>
+			<if
+				test="request.selectGroupBy != null and request.aggColumn!=null">
+				,
+			</if>
+			<if test="request.selectGroupBy != null">
+				${request.selectGroupBy}
+			</if>
+			from
+		</if>
+
+		(${request.detailQuery} )
+
+		<if test="request.selectGroupBy != null or request.aggColumn!=null">
+			table1
+		</if>
+		<if test="request.selectGroupBy != null">
+			group by ${request.selectGroupBy}
+		</if>
+	</select>
+	<select id="generateChartReport"
+		resultType='java.util.LinkedHashMap' useCache="true">
+		${request.chartQuery}
+	</select>
+	<select id="validateDetailedQuery"
+		resultType='java.util.LinkedHashMap'>
+		${request.detailQuery}
+	</select>
+	<select id="generateDetailedReport"
+		resultType='java.util.LinkedHashMap'>
+
+		select * from (
+		${request.detailQuery}
+		) a
+
+
+		<if test="request.filterAttribute != null">
+			${request.filterAttribute}
+		</if>
+	</select>
+	<select id="getReportFilters" resultType='hashmap'
+		useCache="true">
+		select filterGroup,filterDescription from
+		refData.TBL_Reports_Filters
+	</select>
+
+	<select id="getReportDate" resultMap='FilterModelResult'>
+		select filterGroup, filterDescription, filterconfig from
+		[refData].[TBL_Reports_Filters]
+	</select>
+
+
+
+	<select id='getFilters' resultMap='FilterModelResult'>
+		select filterGroup, filterDescription, filterconfig from
+		[refData].[TBL_Reports_Filters]
+		<if test="filterGroup != null">
+			where filterGroup in (${filterGroup})
+		</if>
+	</select>
+
+	<select id="getDhashboardDetailsById"
+		resultMap='DhashboardConfModel'>
+		SELECT dashboardID, reportID, sequence, widgetName FROM
+		[refData].[TBL_DASHBOARD_CONFIG]
+		where dashboardid=#{dashboardId}
+		and
+		sequence=#{sequence}
+	</select>
+
+
+
+	<select id='getReportDetailsById' resultMap='ReportModelResult'>
+		select reportName,
+		reportDescription, detailQuery,chartQuery,selectGroupBy,
+		filterAttribute, chartType, axisType,xAxisLabel,
+		yAxisLabel,moduleName,subModuleName , reportID, active from
+		refData.TBL_Reports t1 inner join
+		refData.TBL_Reports_Module_SubModule t2 on t1.modSubModuleId=t2.Id
+		where reportId =#{reportId}
+
+	</select>
+
+	<insert id='insertReportHistory'>
+		INSERT INTO
+		TRANSACTIONALDATA.TBL_REPORT_GENERATE_HISTORY(SIGNUMID,MODULENAME,SUBMODULENAME,REPORTNAME,GROUPBY,GENERATEDDATE,CreatedBy,CreatedDate,ModifiedBy,ModifiedDate)
+		VALUES(#{signumID},#{moduleName},#{subModuleName},#{reportName},#{selectGroupBy},dbo.GetDateIST(),#{signumID},dbo.GetDateIST(),#{signumID},dbo.GetDateIST())
+	</insert>
+
+
+	<select id='getTableauReport' statementType="CALLABLE">
+		{call GetEIReport };
+
+	</select>
+
+	<select id='getEFiciencyIndexDump_V' resultType="Integer">
+		select Count(1) from ISFReporting.Reports.EFiciencyIndexDump_V
+
+	</select>
+	<select id="getAllTableauReport"
+		resultType='java.util.LinkedHashMap'>
+		select TableauReportID, TableauReportName,
+		TableauDescription,Script_Tableau, TableauReportImage,isLive,Active
+		from transactionalData.TBL_Tableau_Reports where Active=1 and isLive=0
+	</select>
+	<select id='getDeliveryDashboardData'
+		resultType='java.util.LinkedHashMap'>
+		Select T3.PROJECTID, MA.ProjectName, MA.MarketAreaName,
+		T3.CompletedTodayCount, T3.TotalTodayCount,
+		T3.Completion_Percent_Today, T3.CompletedWeekCount, T3.TotalWeekCount,
+		T3.Completion_Percent_Month, T3.CompletedCount, T3.TotalWOCount,
+		T3.Completion_Percent_Week
+		from (
+		select T2.PROJECTID, T2.CompletedTodayCount, T2.TotalTodayCount,
+		CASE WHEN TotalTodayCount = 0 then 0 else
+		isNULL((CompletedTodayCount/TotalTodayCount),0) * 100 END as
+		Completion_Percent_Today,
+		T2.CompletedWeekCount, T2.TotalWeekCount,
+		CASE WHEN TotalWOCount = 0 then 0 else
+		isNULL((CompletedCount/TotalWOCount),0) * 100 END as
+		Completion_Percent_Month,
+		T2.CompletedCount, T2.TotalWOCount,
+		CASE WHEN TotalWeekCount = 0 then 0 else
+		isNULL((CompletedWeekCount/TotalWeekCount),0) * 100 END as
+		Completion_Percent_Week
+		from (
+		Select PROJECTID, COUNT(WOID) as TotalWOCount,
+		SUM(CASE When Status = 'CLOSED' then 1 else 0 End) as CompletedCount,
+		SUM(Case when DATEPART(Week, PlannedStartDate) = DATEPART(WEEK,
+		dbo.GetDateIST()) then 1 else 0 end) as TotalWeekCount,
+		SUM(Case when DATEPART(Week, PlannedStartDate) = DATEPART(WEEK,
+		dbo.GetDateIST()) and Status = 'CLOSED' then 1 else 0 end) as
+		CompletedWeekCount,
+		SUM(Case when CAST(PlannedStartDate as DATE) = CAST(dbo.GetDateIST()as DATE)
+		then 1 else 0 end) as TotalTodayCount,
+		SUM(Case when CAST(PlannedStartDate as DATE) = CAST(dbo.GetDateIST()as DATE)
+		and Status = 'CLOSED' then 1 else 0 end) as CompletedTodayCount
+		from (
+		select p1.PROJECTID, wo.WOID
+		, Status, PlannedStartDate,ActualEndDate
+		from (SELECT t1.ProjectID
+		FROM [transactionalData].[TBL_PROJECTS] as t1 join
+		transactionalData.TBL_OPPORTUNITY t2 on
+		t1.OpportunityID=t2.OpportunityID
+		left join refData.TBL_MARKETAREAS as t3 on t2.MarketAreaID=t3.MarketAreaID
+		<if test="role =='Delivery Responsible'">
+			join [transactionalData].[TBL_DELIVERY_RESPONSIBLE] TDR on
+			TDR.ProjectID=t1.ProjectID and TDR.signumid=#{signum} and
+			TDR.Active=1
+		</if>
+		where t1.IsDeleted=0
+		<if test="marketArea !='All'">
+			and t3.MarketAreaName=#{marketArea}
+		</if>
+		<if test="role =='Project Manager'">
+			and t1.ProjectCreator=#{signum}
+		</if>
+		<if test="role =='Operational Manager'">
+			and t1.OperationalManager=#{signum}
+		</if>
+		and t1.Status != 'Closed'
+		) p1
+		left join transactionalData.TBL_WORK_ORDER wo on wo.projectid=p1.projectid
+		and DATEPART(MONTH,CAST(PlannedStartDate AS DATE)) =
+		DATEPART(MONTH,dbo.GetDateIST()) and
+		DATEPART(YEAR,CAST(PlannedStartDate AS DATE)) =
+		DATEPART(YEAR,dbo.GetDateIST()) and Active = 1
+
+
+
+		) T1
+		Group by PROJECTID
+		) T2
+		Group by T2.PROJECTID, T2.CompletedTodayCount, T2.TotalTodayCount,
+		T2.CompletedWeekCount, T2.TotalWeekCount, T2.CompletedCount,
+		T2.TotalWOCount
+		) T3
+		Left join
+		(
+		select P.ProjectID, P.ProjectName, O.MarketAreaID, MA.MarketAreaName
+		from transactionalData.TBL_PROJECTS P
+		Left Join
+		transactionalData.TBL_OPPORTUNITY O
+		on P.OpportunityID = O.OpportunityID
+		Left Join refData.TBL_MARKETAREAS MA
+		on O.MarketAreaID = MA.MarketAreaID
+		) MA
+		on T3.PROJECTID = MA.ProjectID
+	</select>
+
+	<select id="getAllTableauDataLive"
+		resultType='java.util.LinkedHashMap'>
+		select TableauReportID, TableauReportName,
+		TableauDescription,Script_Tableau, TableauReportImage,isLive,Active
+		from transactionalData.TBL_Tableau_Reports where Active=1 and isLive=1
+	</select>
+
+</mapper>
+

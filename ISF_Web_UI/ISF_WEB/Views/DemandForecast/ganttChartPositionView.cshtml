@@ -1,0 +1,170 @@
+﻿@{
+    Layout = "";
+}
+
+<!DOCTYPE html>
+<head>
+    <meta charset="utf-8">
+    <title>Work Flow</title>
+
+    @Scripts.Render("~/bundles/jquery")
+
+    @Scripts.Render("~/bundles/gantt")
+
+    @Scripts.Render("~/bundles/GetSessionVars")
+
+    @Scripts.Render("~/bundles/config")
+
+    @Scripts.Render("~/bundles/bootstrap")
+
+    @Scripts.Render("~/bundles/global")
+
+    @Scripts.Render("~/bundles/ganttEnterprise")
+
+
+
+
+
+
+
+
+    <link href="/Content/CSS/gantt/dhtmlxgantt.css" rel="stylesheet" />
+
+
+
+
+
+    @Scripts.Render("~/bundles/profileRole")
+    @Scripts.Render("~/bundles/config")
+
+
+
+
+
+    <link type="text/css" rel="stylesheet" href="~/Content/CSS/font-awesome.min.css" />
+
+    <style>
+
+        #gantt_here {
+            height: 400px !important;
+            width: 100%;
+        }
+
+        #demandBody {
+            height: 300px !important;
+            width: 100%;
+        }
+    </style>
+
+
+</head>
+<body>
+
+
+    
+
+    <div id="demandBody" style="width:100%;height:100%">    </div>
+
+</body>
+
+<script>
+
+
+    function configureGanttForModal() {
+        ganttInstanceForModal = Gantt.getGanttInstance();
+        ganttInstanceForModal.config.grid_resize = true;
+        ganttInstanceForModal.templates.tooltip_text = function (start, end, task) {
+            return "";
+        };
+        ganttInstanceForModal.config.scale_unit = "month";
+        ganttInstanceForModal.config.date_scale = "%M";
+        ganttInstanceForModal.config.duration_unit = "hour";
+        ganttInstanceForModal.config.subscales = [
+            { unit: "week", step: 1, date: "#%w" }
+        ];
+        ganttInstanceForModal.config.columns = [
+            { name: "ServiceArea/SubServiceArea", label: "Sub-ServiceArea", align: "center", width: 120, resize: true },
+            { name: "Domain/Subdomain", label: "Sub-Domain", align: "center", width: 120, resize: true },
+            { name: "VendorTech", label: "Vendor-Tech", align: "center", width: 50, resize: true },
+            { name: "signum", label: "Signum", align: "center", width: 50, resize: true },
+            { name: "JobStage", label: "Job Stage", align: "center", width: 80, resise: true },
+        ];
+    }
+
+    configureGanttForModal();
+
+
+    function showdataforFM(projectID) {
+        projectNo = projectID;
+        var kt; var objk = {};
+
+        $.isf.ajax({
+            type: "GET",
+            url: service_java_URL + "resourceManagement/getPositionsAndAllocatedResources?spoc=" + signumGlobal + "&projectId=" + projectID,
+            success: appendPlanSourcesFM_modal,
+            error: function (msg) {
+            },
+            complete: function (msg) {
+            }
+        });
+
+        function appendPlanSourcesFM_modal(data) {
+            if (data.length) {
+                ganttInstanceForModal.attachEvent("onBeforeParse", function () { ganttInstanceForModal.clearAll(); });
+                kt = data;
+                objk.data = kt;
+
+
+                ganttInstanceForModal.attachEvent("onBeforeGanttRender", function () {
+                    $(".gantt_grid_data").on('scroll', function () {
+                        $(".gantt_data_area").scrollTop($(this).scrollTop());
+                    });
+                    $(".gantt_data_area").on('scroll', function () {
+                        $(".gantt_grid_data").scrollTop($(this).scrollTop());
+                    });
+                });
+
+                ganttInstanceForModal.init("demandBody");
+                ganttInstanceForModal.parse(objk);
+
+
+
+                ganttInstanceForModal.attachEvent('onBeforeLightbox', function (id) {
+                    return false;
+
+                });
+                ganttInstanceForModal.eachTask(function (task) {
+                })
+
+
+
+                pwIsf.removeLayer();
+
+            } else {
+                pwIsf.alert({ msg: "Data not found", type: 'warning' });
+                pwIsf.removeLayer();
+
+            }
+        }
+    }
+
+
+    //$.ajaxSetup({
+    //    beforeSend: function (xhr) {
+    //        var role = JSON.parse(localStorage.getItem("ActiveProfile")).role;
+    //        var marketAreaName = JSON.parse(localStorage.getItem("ActiveProfile")).organisation;
+    //        var accessProfileName = JSON.parse(localStorage.getItem("ActiveProfile")).accessProfileName;
+    //        if (!marketAreaArray.includes(marketAreaName)) {
+    //            xhr.setRequestHeader("MarketArea", "All");
+    //        }
+    //        else
+    //            xhr.setRequestHeader("MarketArea", marketAreaName);
+    //        xhr.setRequestHeader("Signum", signumGlobal);
+    //        xhr.setRequestHeader("Role", role);
+    //    }
+    //});
+
+
+    showdataforFM(78);
+
+</script>

@@ -1,0 +1,958 @@
+﻿@Scripts.Render("~/bundles/jquery")
+@Scripts.Render("~/bundles/zip")
+<script src="~/Scripts/Bots/PythonExecutionScript.js"></script>
+
+<style>
+
+
+    tfoot {
+        display: table-header-group;
+    }
+
+    .heading {
+        font-weight: bold;
+    }
+
+    .required:before {
+        content: '* ';
+        color: red;
+        font-weight: 300;
+    }
+
+    .elementSize {
+        /*font-size: 12px;*/
+        transform: scale(0.8, 0.8);
+        -ms-transform: scale(0.8, 0.8); /* IE 9 */
+        -webkit-transform: scale(0.8, 0.8); /* Safari and Chrome */
+        -o-transform: scale(0.8, 0.8); /* Opera */
+        -moz-transform: scale(0.8, 0.8);
+    }
+
+
+    .formBuilderDivOnBotStore {
+        /*display: none;*/
+        border: 1px solid #d0cfcf;
+        max-height: 300px;
+        overflow: auto;
+        overflow-x: hidden;
+        width: 49%;
+        position: absolute;
+        right: 20px;
+        background-color: white;
+        margin-top: 100px;
+    }
+
+
+    .formBuilderDivHeader {
+        height: 30px;
+        background-color: #ccc;
+        margin-bottom: 5px;
+        display: flex;
+        padding: 5px;
+    }
+
+    /*for form builder*/
+    .form-wrap.form-builder .stage-wrap.empty:after {
+        padding-top: 2em;
+    }
+
+    .form-wrap.form-builder .stage-wrap.empty {
+        border: 1px dashed #ccc;
+    }
+    /*for form builder*/
+
+</style>
+
+<div class="modal fade" id="modalBotStore" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document" style="overflow-y: initial !important;width: 90%;">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color:#d9edf7">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title text-center" id="myModalLabel">ISF BOT STORE</h4>
+            </div>
+            <div class="modal-body" style="width: 100%;">
+
+                <div class="panel panel-default" id="isfBotStore">
+
+                    <div class="panel-body panel-collapse" id="collapsebot">
+                        <div id="projectData" class="well well-sm text-center">
+
+                        </div>
+                        <ul class="nav nav-pills" id="mainTabs">
+                            <li class="active"><a data-toggle="pill" title="Explore Bots" href="#home">Reuse</a></li>
+                            <li id="tabnewbotRequest"><a data-toggle="pill" title="New Automation to be developed" href="#tabNewRequest">New Development</a></li>
+                            <li id="creationTabBotStore"><a data-toggle="pill" title="Automation is existing, only BOT ID to be created" href="#creationMaster">Own Development</a></li>
+                            <div class="pull-right">
+                                <a onclick="this.href = downloadISFSetup" id="onMainHeader_downloadApp" class="btn-default btn-sm" style="cursor: pointer"><i class="fa fa-download" aria-hidden="true"></i> Download ISF setup</a>
+                                <a href="~/Content/templateFiles/ISF Guideline for Local BOTs integration.pptx" id="onMainHeader_downloadApp" target="_blank" class="btn-default btn-sm"><i class="fa fa-download" aria-hidden="true"></i>Creation Template</a>
+
+                                <a href="~/Content/templateFiles/Logic.docx" id="onMainHeader_downloadApp" target="_blank" class="btn-default btn-sm"><i class="fa fa-download" aria-hidden="true"></i>Logic Template</a>
+                            </div>
+                        </ul>
+                    </div>
+
+                    <hr />
+
+                    <div class="tab-content">
+
+                        <div id="home" class="tab-pane fade in active">
+                            <div id="divMacroBotNote">
+                                <label id="lblMacroBotsMsg" for="message">
+                                </label>
+                            </div>
+                            <div class="table-responsive" style="overflow-x: auto;">
+                                <table id="tbBotBody" class="table table-striped table-bordered table-hover" style="width:100%"></table>
+                            </div>
+
+                        </div>
+
+                        <div id="botData" class="modal" role="dialog" style="top:70px;">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss-modal="modal2">&times;</button>
+                                    <div class="panel-heading">BOT Details</div>
+
+                                </div>
+                                <div class="modal-body" id="botDetails">
+
+                                </div>
+                                <div class="modal-footer" id="botFooter">
+
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="dtrcaConfig" class="modal" role="dialog" style="top:70px;">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss-modal="modal">&times;</button>
+                                    <div class="panel-heading">Configuration</div>
+
+                                </div>
+
+                                <div class="modal-body">
+                                    <div class="row">
+                                        <div class="col-lg-3">
+                                            Project:<br />
+                                            <select class="select2able select2-offscreen" id="project">
+                                                <option value="0"></option>
+                                            </select>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            Technology:<br />
+                                            <select class="select2able select2-offscreen" id="tech">
+                                                <option value="0"></option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="pull-right">
+
+                                        <button type="button" class="btn btn-secondary" onclick="">Save</button>
+                                        <div class="row">
+                                            <div class="col-lg-3">
+                                                Deliverable:<br />
+                                                <select class="select2able select2-offscreen" id="deliverable">
+                                                    <option value="0"></option>
+                                                </select>
+                                            </div>
+                                            <div class="pull-right">
+
+                                                <button type="button" class="btn btn-secondary" onclick="">Save</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="modal-footer pull-right">
+
+                                </div>
+                            </div>
+                        </div>
+                        @*<div id="tabNewRequest" class="tab-pane fade">*@
+                        <div id="tabNewRequest" class="tab-pane fade">
+                            <form method="POST" enctype="multipart/form-data" id="raisNewBotFrm">
+                                <div id="newRequestHidden_tblRpaRequestStr"></div>
+                                <div id="projectData1" class="well well-sm text-center">
+                                    AUTOMATION INFORMATION
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <label style="margin-left:10px" class="required">Automation Name:</label>
+                                        <input type="text" class="form-control" name="tblRpaRequestStr{}requestName" required pattern="[a-zA-Z0-9 _]{1,200}" />
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label style="margin-left:10px" class="required">Manual Execution Time (Min.):</label>
+                                        <input type="number" class="form-control" name="tblRpaRequestStr{}currentAvgExecutiontime" required min="0" />
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label style="margin-left:10px" class="required">Weekly Execution Count:</label>
+                                        <input type="number" class="form-control" name="tblRpaRequestStr{}currentExecutioncountWeekly" required min="0" />
+                                    </div>
+                                </div>
+                                <hr />
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="inputGroup row">
+                                            <div class="col-lg-5" style="margin: 0px;">
+                                                <label class="required inputDiv">Input Sample :</label>
+                                            </div>
+                                            <div class="col-lg-2" style="margin: 0px;">
+                                                <div class="checkbox-container">
+                                                    <label class="checkbox-label">
+                                                        <input id="inputRequiredCheckboxNewDev" type="checkbox" name="tblRpaRequestStr{}isInputRequired" onchange="toggleCheckbox(this)" checked>
+                                                        <span class="checkbox-custom rectangular"></span>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <label for="inputRequiredCheckboxNewDev" class="inputLabel">Bot Input Required</label>
+                                            </div>
+
+                                            <input class="btn btn-default inputDiv" type="file" id="inputFile" style="margin-left:10px;" name="infile" required accept=".zip">
+                                        </div>
+
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label style="margin-left:10px" class="required">Output Sample :</label>
+                                        <input class="btn btn-default" type="file" id="outputFile" name="outfile" required accept=".zip">
+
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <label style="margin-left:10px" class="required">Logic Doc :</label>
+                                        <input class="btn btn-default" type="file" id="logicFile" name="logicFile" required accept=".zip">
+                                    </div>
+                                </div>
+                                <hr />
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label style="margin-left:10px">Description:</label>
+                                        <textarea class="form-control" rows="3" name="tblRpaRequestStr{}description" maxlength="2000"></textarea>
+                                        <small>Max size of the description should be 2000 characters</small>
+                                    </div>
+                                </div>
+                                <hr />
+                                <h5><small>NOTE: Zip format allowed for file upload.</small></h5>
+
+                                <div class="row">
+                                    <div class="col-md-2 pull-right">
+                                        <button type="submit" id="subRaiseBotRequest" class="btn btn-sm btn-success">RAISE REQUEST</button>
+                                    </div>
+                                </div>
+
+                            </form>
+                        </div>
+
+                        @*START - CRAETION TAB*@
+                        <div id="creationMaster" class="tab-pane fade">
+
+                            <div id="creationDR" style="display:none;">
+
+                                <div id="approveDiv" class="tab-content">
+                                    <div class="text-center">
+                                        <h4>CHOOSE LANGUAGE</h4>
+                                    </div>
+                                    <ul class="nav nav-pills" id="languageUl_forCreation">
+                                        <li><a data-toggle="pill" href="#javaDiv">JAVA</a></li>
+                                        <li><a data-toggle="pill" href="#pythonDiv">PYTHON</a></li>
+                                        <li><a data-toggle="pill" href="#dotNetDiv">DotNet</a></li>
+                                    </ul>
+                                    <hr />
+                                    <div class="tab-content">
+
+                                        @*Form builder div*@
+                                        <div class="formBuilderDivOnBotStore">
+                                            <div class="formBuilderDivHeader">
+                                                <div class="row" style="width:100%">
+                                                    <div class="col-md-8"><h5 style="margin-top:2px;">Settings For Bot Configuration</h5></div>
+                                                    <div class="col-md-4">@*<a href="#" onclick="downloadSampleJson()">Sample JSON</a>*@</div>
+                                                </div>
+                                            </div>
+
+                                            <div id="formBuilderWillComeHere"></div>
+
+                                        </div>
+
+
+                                        <div id="dtrcaDiv" class="tab-pane fade">
+                                            <div class="row pull-right" style="padding-right:26px">
+                                                <a class='icon-edit lsp' title='Configuration' data-toggle='modal' data-target='#dtrcaConfig'><i class='fa fa-location-arrow'></i></a>
+                                            </div>
+                                            <div class="row">
+
+                                                <div class="col-md-4">
+                                                    <label style="margin-left:10px" class="required">Config ID:</label>
+                                                    <input type="text" class="form-control" name="configId" id="configId" />
+                                                </div>
+
+
+                                                <div class="col-md-4" style="padding-top:21px;">
+                                                    <button type="submit" class="btn btn-sm btn-success" style="margin-left:10px;" onclick="generateConfigIdDTRCA();">GENERATE ID</button>
+                                                </div>
+                                                <div class="col-md-2" id="dtrcaLink" style="padding-top:21px;">
+
+                                                </div>
+                                            </div>
+                                            <h5><small style="color:red"><b>NOTE: To customise from defalut please fill Config Details.</b></small></h5>
+                                            <div class="row">
+                                                <div class="pull-right">
+                                                    <button type="submit" class="btn btn-sm btn-success" style="margin-left:10px" onclick="">SUBMIT</button>
+                                                    <button type="button" id="testBtnNewBotRequestDtrca" data-language="Macro" data-details="" class="btn btn-sm btn-warning testNewBotRequest" style="margin-left:10px" disabled>TEST BOT</button>
+                                                    <button type="button" id="stopTestBtnBotRequestDtrca" data-details="" class="btn btn-sm btn-danger stopTestBtnBotRequest" style="margin-left:10px" disabled>STOP TEST-BOT</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        @*JAVA DIV*@
+                                        <div id="javaDiv" class="tab-pane fade">
+
+                                            <form method="POST" enctype="multipart/form-data" id="newBotJavaFrm">
+                                                <input type="hidden" id="jsonFromFormBuilderForJava_hiddenOnBotStore" name="tblRpaBotstagingStr{}botConfigJson" />
+
+                                                <input type="hidden" name="tblRpaBotstagingStr{}botlanguage" id="hiddenLanguageNameForBotNewRequest_Java" />
+
+                                                <div id="botJavaHidden_tblRpaRequestStr"></div>
+                                                <div id="botJavaHidden_tblRpaBotstagingStr"></div>
+                                                <div id="botJavaHidden_tblRpaBotstagingStr1"></div>
+
+                                                <div class="row">
+
+                                                    <div class="col-md-4">
+                                                        <label class="required">Automation Name:</label>
+                                                        <input type="text" class="form-control" name="tblRpaBotstagingStr{}botname" required pattern="[a-zA-Z0-9 _]{1,200}" />
+                                                        <span style="color:red"><small><b>No special chracters allowed,except underscore</b></small></span>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <label class="required">Manual Execution Time (Min.):</label>
+                                                        <input type="number" class="form-control" name="tblRpaBotstagingStr{}rpaexecutionTime" required min="0" />
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <label class="required">Weekly Execution Count:</label>
+                                                        <input type="number" class="form-control" name="tblRpaRequestStr{}currentExecutioncountWeekly" required min="0" />
+                                                    </div>
+                                                </div>
+                                                <hr />
+
+                                                <div class="row">
+
+                                                    <div class="col-md-6">
+                                                        <div class="row">
+                                                            <div class="col-md-12">
+                                                                <label>Description:</label>
+                                                                <textarea class="form-control" rows="3" name="tblRpaRequestStr{}description" maxlength="2000"></textarea>
+                                                                <small style="color:red">Max size of the description should be 2000 characters</small>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="row">
+
+                                                            <div class="col-md-6">
+                                                                <label class="required">Java Class Name:</label>
+                                                                <input class="form-control" type="text" name="tblRpaBotstagingStr{}moduleClassName" required pattern="[a-zA-Z0-9_]{1,100}">
+                                                                <span style="color:red"><small><b>Min 1 and max 100 (No special chracters allowed except underscore,Case Sensitive)</b></small></span>
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                <label class="required">Upload BOT Jar File</label>
+                                                                <input type="file" required aria-required="true" accept=".zip" name="exefile">
+                                                            </div>
+
+                                                        </div>
+
+                                                        <div class="row">
+                                                            <br />
+                                                            <div class="col-md-6">
+                                                                <label class="required">Upload code zip : </label>
+                                                                <input type="file" required aria-required="true" accept=".zip" name="codefile">
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                <label class="required">Output Sample :</label>
+                                                                <input type="file" required aria-required="true" accept=".zip" name="outfile">
+                                                            </div>
+
+
+                                                        </div>
+
+                                                        <div class="row inputGroup">
+                                                            <br />
+                                                            @Html.Partial("_BotInputRequired")
+                                                            <div class="col-md-6">
+                                                                <label class="required inputDiv">Input Sample :</label>
+                                                                <input type="file" class="inputDiv" required aria-required="true" accept=".zip" name="infile">
+                                                            </div>
+
+                                                        </div>
+
+                                                        <div class="row">
+                                                            <br />
+                                                            <div class="col-md-6">
+                                                                <label class="required">Logic Doc :</label>
+                                                                <input type="file" required aria-required="true" accept=".zip" name="logicfile">
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
+
+                                                    <div class="col-md-6"></div>
+
+                                                </div>
+
+
+
+                                                <hr />
+                                                <h5><small style="color:red"><b>NOTE: Only zip format allowed for the file upload.</b></small></h5>
+                                                <div class="row">
+                                                    <div class="pull-right">
+
+                                                        <button type="submit" class="btn btn-sm btn-success" style="margin-left:10px">SUBMIT</button>
+                                                        <button type="button" id="testBtnNewBotRequestJava" data-language="Java" data-details="" class="btn btn-sm btn-warning testNewBotRequest" style="margin-left:10px" disabled>TEST BOT</button>
+                                                        <button type="button" id="stopTestBtnBotRequestJava" data-details="" class="btn btn-sm btn-danger stopTestBtnBotRequest" style="margin-left:10px" disabled>STOP TEST-BOT</button>
+                                                    </div>
+
+
+                                                </div>
+                                            </form>
+                                        </div>
+
+
+                                        <div id="pythonDiv" class="tab-pane fade">
+
+
+                                            <form method="POST" enctype="multipart/form-data" id="newBotPythonFrm">
+                                                <input type="hidden" id="jsonFromFormBuilderForPython_hiddenOnBotStore" name="tblRpaBotstagingStr{}botConfigJson" />
+                                                <input type="hidden" name="tblRpaBotstagingStr{}botlanguage" id="hiddenLanguageNameForBotNewRequest_Python" />
+
+                                                <div id="botPythonHidden_tblRpaRequestStr"></div>
+                                                <div id="botPythonHidden_tblRpaBotstagingStr"></div>
+                                                <div id="botPythonHidden_tblRpaBotstagingStr1"></div>
+
+                                                <div class="row">
+
+                                                    <div class="col-md-4">
+                                                        <label class="required">Automation Name:</label>
+                                                        <input type="text" class="form-control" name="tblRpaBotstagingStr{}botname" required pattern="[a-zA-Z0-9 _]{1,200}" />
+                                                        <span style="color:red"><small><b>No special chracters allowed,except underscore</b></small></span>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <label class="required">Manual Execution Time (Min.):</label>
+                                                        <input type="number" class="form-control" name="tblRpaBotstagingStr{}rpaexecutionTime" required min="0" />
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <label class="required">Weekly Execution Count:</label>
+                                                        <input type="number" class="form-control" name="tblRpaRequestStr{}currentExecutioncountWeekly" required min="0" />
+                                                    </div>
+                                                </div>
+                                                <hr />
+
+
+                                                <div class="row">
+
+                                                    <div class="col-md-6">
+                                                        <div class="row">
+                                                            <div class="col-md-12">
+                                                                <label>Description:</label>
+                                                                <textarea class="form-control" rows="3" name="tblRpaRequestStr{}description" maxlength="2000"></textarea>
+                                                                <small style="color:red;">Max size of the description should be 2000 characters</small>
+                                                            </div>
+
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-md-6">
+                                                                <label class="required">Upload whl file</label>
+                                                                <input type="file" id="whlInputFile" required aria-required="true" accept=".whl" name="whlfile">
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                <label class="required">Upload code zip : </label>
+                                                                <input type="file" required aria-required="true" accept=".zip" name="codefile">
+                                                                <span style="color:red"><small><b>Code should contain .py file</b></small></span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="inputGroup row">
+                                                            <br />
+                                                            @Html.Partial("_BotInputRequired")
+                                                            <div class="col-md-6">
+                                                                <label class="required inputDiv">Input Sample :</label>
+
+                                                                <input type="file" class="inputDiv" required aria-required="true" accept=".zip" name="infile">
+                                                                <span class="inputDiv" style="color:red"><small><b>Input Sample must contain exe file</b></small></span>
+                                                            </div>
+
+                                                        </div>
+                                                        <div class="row">
+                                                            <br />
+                                                            <div class="col-md-6">
+                                                                <label class="required">Logic Doc :</label>
+                                                                <input type="file" required aria-required="true" accept=".zip" name="logicfile">
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                <label class="required">Output Sample :</label>
+                                                                <input type="file" required aria-required="true" accept=".zip" name="outfile">
+                                                            </div>
+
+                                                        </div>
+
+                                                        <div class="row">
+                                                            <br />
+                                                            <div class="col-md-6">
+                                                                <label class="required">Python Base Version :</label>
+                                                                <select class="select2able select2-offscreen select2-hidden-accessible" name="selectVersion" id="selectVersion" data-selectnext="0" tabindex="-1" aria-hidden="true">
+                                                                </select>
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                <label class="required">Package Name :</label>
+                                                                <input type="text" required class="form-control" name="packageName" id="packageName">
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
+
+                                                    <div class="col-md-6">
+
+                                                    </div>
+
+                                                </div>
+
+                                                <hr />
+                                                <h5><small style="color:red"><b>NOTE: Only zip format allowed for the file upload. For Python Bots .whl file need to be Uploaded.</b></small></h5>
+                                                <div class="row">
+                                                    <div class="pull-right">
+                                                        <button type="submit" class="btn btn-sm btn-success" style="margin-left:10px">SUBMIT</button>
+                                                        <button type="button" id="testBtnNewBotRequestPython" data-language="Python" data-details="" class="btn btn-sm btn-warning testNewBotRequest" style="margin-left:10px" disabled>TEST BOT</button>
+                                                        <button type="button" id="stopTestBtnBotRequestPython" data-details="" class="btn btn-sm btn-danger stopTestBtnBotRequest" style="margin-left:10px" disabled>STOP TEST-BOT</button>
+                                                    </div>
+
+
+                                                </div>
+                                            </form>
+                                        </div>
+
+
+                                        @*MyCode--Priyanka *@
+
+
+                                        @*DotNet DIV*@
+                                        <div id="dotNetDiv" class="tab-pane fade">
+
+
+                                            <form method="POST" enctype="multipart/form-data" id="newBotDotNetFrm">
+                                                <input type="hidden" id="jsonFromFormBuilderForDotnet_hiddenOnBotStore" name="tblRpaBotstagingStr{}botConfigJson" />
+                                                <input type="hidden" name="tblRpaBotstagingStr{}botlanguage" id="hiddenLanguageNameForBotNewRequest_DotNet" />
+                                                <div id="botDotNetHidden_tblRpaRequestStr"></div>
+                                                <div id="botDotNetHidden_tblRpaBotstagingStr"></div>
+                                                <div id="botDotNetHidden_tblRpaBotstagingStr1"></div>
+
+                                                <div class="row">
+
+                                                    <div class="col-md-4">
+                                                        <label class="required">Automation Name:</label>
+                                                        <input type="text" class="form-control" name="tblRpaBotstagingStr{}botname" required pattern="[a-zA-Z0-9 _]{1,200}" />
+                                                        <span style="color:red"><small><b>No special chracters allowed,except underscore</b></small></span>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <label class="required">Manual Execution Time (Min.):</label>
+                                                        <input type="number" class="form-control" name="tblRpaBotstagingStr{}rpaexecutionTime" required min="0" />
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <label class="required">Weekly Execution Count:</label>
+                                                        <input type="number" class="form-control" name="tblRpaRequestStr{}currentExecutioncountWeekly" required min="0" />
+                                                    </div>
+                                                </div>
+
+
+                                                <div class="row">
+
+                                                    <div class="col-md-6">
+
+                                                        <div class="row">
+                                                            <div class="col-md-12">
+                                                                <label>Description:</label>
+                                                                <textarea class="form-control" rows="3" name="tblRpaRequestStr{}description" maxlength="2000"></textarea>
+                                                                <small style="color:red;">Max size of the description should be 2000 characters</small>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-md-6">
+                                                                <label class="required">Upload EXE</label>
+                                                                <input type="file" required aria-required="true" accept=".zip" name="exefile">
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                <label class="required">Upload code zip : </label>
+                                                                <input type="file" required aria-required="true" accept=".zip" name="codefile">
+                                                                <span style="color:red"><small><b>Code should contain .exe and dll file</b></small></span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row inputGroup">
+                                                            <br />
+                                                            @Html.Partial("_BotInputRequired")
+                                                            <div class="col-md-6">
+                                                                <label class="inputDiv required">Input Sample :</label>
+
+                                                                <input class="inputDiv" type="file" required aria-required="true" accept=".zip" name="infile">
+                                                                <span class="inputDiv" style="color:red"><small><b>Input Sample must contain exe file</b></small></span>
+                                                            </div>
+
+                                                        </div>
+                                                        <div class="row">
+                                                            <br />
+                                                            <div class="col-md-6">
+                                                                <label class="required">Logic Doc :</label>
+                                                                <input type="file" required aria-required="true" accept=".zip" name="logicfile">
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                <label class="required">Output Sample :</label>
+                                                                <input type="file" required aria-required="true" accept=".zip" name="outfile">
+                                                            </div>
+                                                        </div>
+
+
+
+                                                    </div>
+
+                                                    <div class="col-md-6"></div>
+
+                                                </div>
+
+
+                                                <h5><small style="color:red"><b>NOTE: Only zip format allowed for the file upload. For Python Bots .whl file need to be Uploaded.</b></small></h5>
+                                                <div class="row">
+                                                    <div class="pull-right">
+                                                        <button type="submit" class="btn btn-sm btn-success" style="margin-left:10px">SUBMIT</button>
+                                                        <button type="button" id="testBtnNewBotRequestDotNet" data-language="DotNet" data-details="" class="btn btn-sm btn-warning testNewBotRequest" style="margin-left:10px; margin-right:15px;" disabled>TEST BOT</button>
+                                                        <button type="button" id="stopTestBtnBotRequestDotNet" data-details="" class="btn btn-sm btn-danger stopTestBtnBotRequest" style="margin-left:10px" disabled>STOP TEST-BOT</button>
+                                                    </div>
+
+
+                                                </div>
+                                            </form>
+                                        </div>
+
+
+
+
+
+
+                                        @*MyCode--Priyanka *@
+
+
+
+
+
+                                    </div>
+                                </div>
+
+
+                            </div>
+
+                            <div id="creation" style="display:none;">
+                                <div id="projectData" class="well well-sm text-center">
+                                    Creation
+                                </div>
+                                <div class="table-responsive" style="overflow-x: auto;">
+                                    <table id="tbReqBody" class="table table-striped table-bordered table-hover" style="width:100%"></table>
+                                </div>
+                            </div>
+
+
+                        </div>
+
+                        <hr />
+                        <div class="modal" id="approveModal" role="dialog" style="top:70px;">
+
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <div class="modal-title">
+                                        <h4>CHOOSE LANGUAGE</h4>
+                                    </div>
+                                    <button type="button" class="close" onclick="$('#approveModal').modal('hide')" data-dismiss-modal="modal">&times;</button>
+
+                                </div>
+
+                                <div class="modal-body">
+                                    <ul class="nav nav-pills" id="approveBotRequestUL">
+                                        <li><a data-toggle="pill" href="#macro">MACRO</a></li>
+                                        <li><a data-toggle="pill" href="#java">JAVA</a></li>
+                                        <li><a data-toggle="pill" href="#python">PYTHON</a></li>
+                                        <li><a data-toggle="pill" href="#dotNet">DotNet</a></li>
+
+
+
+                                    </ul>
+                                    <hr />
+
+                                    <div class="tab-content">
+                                        <input type="hidden" id="botLanguage" />
+                                        @*START - MACRO LAANGUAGE DIV*@
+
+                                        <div id="macro" class="tab-pane fade">
+                                            <form method="POST" enctype="multipart/form-data" id="approveRequest_frm">
+                                                <input type="hidden" id="approveModal_rpaRequestId" name="rpaId" />
+                                                <input type="hidden" id="approveModal_assignedTo" name="assignedTo" />
+                                                <input type="hidden" id="approveModal_botname" name="botname" />
+                                                <input type="hidden" id="approveModal_rpaexecutionTime" name="rpaexecutionTime" />
+                                                <input type="hidden" id="approveModal_botlanguage" name="botlanguage" />
+                                                <input type="hidden" id="approveModal_parallelWoexecution" name="parallelWoexecution" />
+                                                <input type="hidden" id="approveModal_status" name="status" />
+                                                <input type="hidden" id="approveModal_createdBy" name="createdBy" />
+                                                <input type="hidden" id="approveModal_isActive" name="isActive" />
+
+
+
+                                                <div class="row">
+                                                    <div class="col-md-4">
+                                                        <label style="margin-left:10px" class="required">Upload Macro File</label>
+                                                        <input style="margin-left:10px" class="btn btn-default" id="codefile" name="codefile" type="file" required accept=".zip">
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <label style="margin-left:10px" class="required">Module Name : </label>
+                                                        <input class="form-control" type="text" name="moduleClassName" required pattern="^\S{1,20}">
+                                                        <small>Min 1 and max 20 (No special chracters allowed)</small>
+                                                    </div>
+
+                                                    <div class="col-md-4">
+                                                        <label style="margin-left:10px" class="required">Module Method Name :</label>
+                                                        <input class="form-control" type="text" name="moduleClassMethod" required pattern="^\S{1,20}">
+                                                        <small>Min 1 and max 20 (No special chracters allowed)</small>
+                                                    </div>
+                                                </div>
+                                                <hr />
+                                                <h5><small>NOTE: Zip format allowed for file upload.</small></h5>
+                                                <div class="row">
+                                                    <button class=" btn btn-default" title="Input File">
+                                                        <i class="fa fa-download" aria-hidden="true"></i>
+                                                        Input File
+                                                    </button>
+                                                    <button class=" btn btn-default" title="Output File">
+                                                        <i class="fa fa-download" aria-hidden="true"></i>
+                                                        Output File
+                                                    </button>
+                                                    <button class=" btn btn-default" title="Logic File">
+                                                        <i class="fa fa-download" aria-hidden="true"></i>
+                                                        Logic File
+                                                    </button>
+                                                </div>
+                                                <hr />
+                                                <div class="row">
+                                                    <div class="pull-right">
+                                                        <button type="submit" class="btn btn-sm btn-success" style="margin-left:10px">SUBMIT</button>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+
+                                        @*END - MACRO LANGUAGE DIV*@
+
+                                        @*START - JAVA LAANGUAGE DIV*@
+                                        <div id="java" class="tab-pane fade">
+                                            <form method="POST" enctype="multipart/form-data" id="approveRequestJava_frm">
+                                                <input type="hidden" id="approveRequestJava_frm_rpaRequestId" name="rpaId" />
+                                                <input type="hidden" id="approveRequestJava_frm_assignedTo" name="assignedTo" />
+                                                <input type="hidden" id="approveRequestJava_frm_botname" name="botname" />
+                                                <input type="hidden" id="approveRequestJava_frm_rpaexecutionTime" name="rpaexecutionTime" />
+                                                <input type="hidden" id="approveRequestJava_frm_botlanguage" name="botlanguage" />
+                                                <input type="hidden" id="approveRequestJava_frm_parallelWoexecution" name="parallelWoexecution" />
+                                                <input type="hidden" id="approveRequestJava_frm_status" name="status" />
+                                                <input type="hidden" id="approveRequestJava_frm_createdBy" name="createdBy" />
+                                                <input type="hidden" id="approveRequestJava_frm_isActive" name="isActive" />
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        <label style="margin-left:10px" class="required">Upload BOT Jar File</label>
+                                                        <input style="margin-left:10px" class="btn btn-default" type="file" required accept=".zip" name="exeFile">
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <label style="margin-left:10px" class="required">Upload code zip : </label>
+                                                        <input class="btn btn-default" type="file" required accept=".zip" name="codefile">
+                                                    </div>
+                                                </div>
+
+                                                <hr />
+                                                <h5><small>NOTE: Zip format allowed for file upload.</small></h5>
+                                                <div class="row">
+                                                    <button class=" btn btn-default" title="Input File">
+                                                        <i class="fa fa-download" aria-hidden="true"></i>
+                                                        Input File
+                                                    </button>
+                                                    <button class=" btn btn-default" title="Output File">
+                                                        <i class="fa fa-download" aria-hidden="true"></i>
+                                                        Output File
+                                                    </button>
+                                                    <button class=" btn btn-default" title="Logic File">
+                                                        <i class="fa fa-download" aria-hidden="true"></i>
+                                                        Logic File
+                                                    </button>
+                                                </div>
+
+                                                <hr />
+                                                <div class="row">
+                                                    <div class="pull-right">
+                                                        <button type="submit" class="btn btn-sm btn-success" style="margin-left:10px">SUBMIT</button>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+                                        @*END - JAVA LANGUAGE DIV*@
+
+                                        @*START - PYTHON LAANGUAGE DIV*@
+                                        <div id="python" class="tab-pane fade">
+                                            <form method="POST" enctype="multipart/form-data" id="approveRequestPython_frm">
+                                                <input type="hidden" id="approveRequestPython_frm_rpaRequestId" name="rpaId" />
+                                                <input type="hidden" id="approveRequestPython_frm_assignedTo" name="assignedTo" />
+                                                <input type="hidden" id="approveRequestPython_frm_botname" name="botname" />
+                                                <input type="hidden" id="approveRequestPython_frm_rpaexecutionTime" name="rpaexecutionTime" />
+                                                <input type="hidden" id="approveRequestPython_frm_botlanguage" name="botlanguage" />
+                                                <input type="hidden" id="approveRequestPython_frm_parallelWoexecution" name="parallelWoexecution" />
+                                                <input type="hidden" id="approveRequestPython_frm_status" name="status" />
+                                                <input type="hidden" id="approveRequestPython_frm_createdBy" name="createdBy" />
+                                                <input type="hidden" id="approveRequestPython_frm_isActive" name="isActive" />
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        <label style="margin-left:10px" class="required">Upload EXE</label>
+                                                        <input style="margin-left:10px" class="btn btn-default" type="file" required accept=".zip" name="exeFile">
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <label style="margin-left:10px" class="required">Upload code zip : </label>
+                                                        <input class="btn btn-default" type="file" required accept=".zip" name="codefile">
+                                                    </div>
+                                                </div>
+
+                                                <hr />
+                                                <h5><small>NOTE: Zip format allowed for file upload.</small></h5>
+                                                <div class="row">
+                                                    <button class=" btn btn-default" title="Input File">
+                                                        <i class="fa fa-download" aria-hidden="true"></i>
+                                                        Input File
+                                                    </button>
+                                                    <button class=" btn btn-default" title="Output File">
+                                                        <i class="fa fa-download" aria-hidden="true"></i>
+                                                        Output File
+                                                    </button>
+                                                    <button class=" btn btn-default" title="Logic File">
+                                                        <i class="fa fa-download" aria-hidden="true"></i>
+                                                        Logic File
+                                                    </button>
+                                                </div>
+
+                                                <hr />
+                                                <div class="row">
+                                                    <div class="pull-right">
+                                                        <button type="submit" class="btn btn-sm btn-success" style="margin-left:10px">SUBMIT</button>
+                                                    </div>
+                                                </div>
+
+                                            </form>
+
+                                        </div>
+                                        @*END - PYTHON LAANGUAGE DIV*@
+
+
+                                        @*START - DotNet Framework DIV*@
+                                        <div id="dotNet" class="tab-pane fade">
+                                            <form method="POST" enctype="multipart/form-data" id="approveRequestDotNet_frm">
+                                                <input type="hidden" id="approveRequestDotNet_frm_rpaRequestId" name="rpaId" />
+                                                <input type="hidden" id="approveRequestDotNet_frm_assignedTo" name="assignedTo" />
+                                                <input type="hidden" id="approveRequestDotNet_frm_botname" name="botname" />
+                                                <input type="hidden" id="approveRequestDotNet_frm_rpaexecutionTime" name="rpaexecutionTime" />
+                                                <input type="hidden" id="approveRequestDotNet_frm_botlanguage" name="botlanguage" />
+                                                <input type="hidden" id="approveRequestDotNet_frm_parallelWoexecution" name="parallelWoexecution" />
+                                                <input type="hidden" id="approveRequestDotNet_frm_status" name="status" />
+                                                <input type="hidden" id="approveRequestDotNet_frm_createdBy" name="createdBy" />
+                                                <input type="hidden" id="approveRequestDotNet_frm_isActive" name="isActive" />
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        <label style="margin-left:10px" class="required">Upload EXE</label>
+                                                        <input style="margin-left:10px" class="btn btn-default" type="file" required accept=".zip" name="exeFile">
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <label style="margin-left:10px" class="required">Upload code zip : </label>
+                                                        <input class="btn btn-default" type="file" required accept=".zip" name="codefile">
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label style="margin-left:10px" class="required">Upload code zip : </label>
+                                                    <input class="btn btn-default" type="file" required accept=".zip" name="codefile">
+                                                </div>
+                                        </div>
+
+                                        <hr />
+                                        <h5><small>NOTE: Zip format allowed for file upload.</small></h5>
+                                        <div class="row">
+                                            <button class=" btn btn-default" title="Input File">
+                                                <i class="fa fa-download" aria-hidden="true"></i>
+                                                Input File
+                                            </button>
+                                            <button class=" btn btn-default" title="Output File">
+                                                <i class="fa fa-download" aria-hidden="true"></i>
+                                                Output File
+                                            </button>
+                                            <button class=" btn btn-default" title="Logic File">
+                                                <i class="fa fa-download" aria-hidden="true"></i>
+                                                Logic File
+                                            </button>
+                                        </div>
+
+                                        <hr />
+                                        <div class="row">
+                                            <div class="pull-right">
+                                                <button type="submit" class="btn btn-sm btn-success" style="margin-left:10px">SUBMIT</button>
+                                            </div>
+                                        </div>
+
+                                        </form>
+
+                                    </div>
+                                    @*END - DotNet Framework DIV*@
+
+
+
+
+
+                                </div>
+                            </div>
+
+                        </div>
+
+
+                    </div>
+
+
+                    <div id="rejectModal" class="modal" role="dialog" style="top:70px;">
+                        <form method="POST" id="rejectRequest_frm">
+                            <input type="hidden" id="rejectModal_rpaRequestId" name="rpaId" />
+                            <input type="hidden" id="rejectModal_assignedTo" name="assignedTo" />
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" onclick="$('#rejectModal').modal('hide')" data-dismiss-modal="modal2">&times;</button>
+                                    <h4 class="modal-title" id="rejected">Rejected</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="row">
+                                        <div class="col-md-5">
+                                            <label style="margin-left:10px" class="required">Reason For Rejection:</label>
+                                            <input class="form-control" name="desc" required />
+
+                                        </div>
+
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="submit" class="btn btn-danger" style="margin-left:10px">Reject</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+
+                    @*END - CRAETION TAB*@
+                </div>
+            </div>
+
+
+
+
+        </div>
+
+    </div>
+
+
+
+</div>
+</div>
